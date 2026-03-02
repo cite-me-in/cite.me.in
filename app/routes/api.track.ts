@@ -8,7 +8,7 @@ const BotTrackSchema = z.object({
   userAgent: z.string(),
   accept: z.string(),
   ip: z.string(),
-  referer: z.string().optional(),
+  referer: z.string().nullable().optional(),
 });
 
 const CORS_HEADERS = {
@@ -49,7 +49,7 @@ export async function action({ request }: Route.ActionArgs) {
     userAgent,
     accept,
     ip,
-    referer: referer ?? null,
+    referer: referer || null,
   });
   return Response.json({ tracked, reason }, { headers: CORS_HEADERS });
 }
