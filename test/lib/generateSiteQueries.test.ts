@@ -3,6 +3,7 @@ import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 
 vi.mock("ai", () => ({ generateObject: vi.fn() }));
 vi.mock("@ai-sdk/anthropic", () => ({ anthropic: vi.fn().mockReturnValue("mock-model") }));
+vi.mock("~/lib/envVars", () => ({ default: { ANTHROPIC_API_KEY: "test-key" } }));
 
 const MOCK_QUERIES = [
   { group: "1.discovery", query: "How do I find short-term retail space?" },

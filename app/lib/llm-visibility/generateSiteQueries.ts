@@ -1,6 +1,8 @@
 import { anthropic } from "@ai-sdk/anthropic";
+import { invariant } from "es-toolkit";
 import { generateObject } from "ai";
 import { z } from "zod";
+import envVars from "~/lib/envVars";
 
 export const CATEGORIES = [
   {
@@ -32,6 +34,7 @@ const schema = z.object({
 export default async function generateSiteQueries(
   content: string,
 ): Promise<{ group: string; query: string }[]> {
+  invariant(envVars.ANTHROPIC_API_KEY, "ANTHROPIC_API_KEY is not set");
   const { object } = await generateObject({
     model: anthropic("claude-haiku-4-5-20251001"),
     schema,
