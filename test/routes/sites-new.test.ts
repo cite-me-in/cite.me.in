@@ -154,3 +154,84 @@ describe("add site — successful save", () => {
     },
   );
 });
+
+describe("add site — save-queries phase 2", () => {
+  it("creates SiteQuery rows and redirects", async () => {
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { email: EMAIL },
+    });
+    const site = await prisma.site.create({
+      data: {
+        id: "site-phase2-1",
+        domain: "phase2-test.example.com",
+        accountId: user.accountId,
+        content: "some content",
+      },
+    });
+
+    const token = crypto.randomUUID();
+    await prisma.session.create({
+      data: { token, userId: user.id, ipAddress: "127.0.0.1", userAgent: "test" },
+    });
+    const cookieHeader = await sessionCookie.serialize(token);
+
+    const queries = [
+      { group: "1.discovery", query: "How do I find pop-up retail space?" },
+      { group: "2.active_search", query: "Short-term kiosk rental" },
+    ];
+
+    const form = new FormData();
+    form.append("_intent", "save-queries");
+    form.append("siteId", site.id);
+    form.append("queries", JSON.stringify(queries));
+
+    const response = await fetch(`http://localhost:${port}/sites/new`, {
+      method: "POST",
+      headers: { Cookie: cookieHeader },
+      body: form,
+      redirect: "manual",
+    });
+
+    expect(response.status).toBe(302);
+    expect(response.headers.get("location")).toContain(`/site/${site.id}`);
+
+    const rows = await prisma.siteQuery.findMany({ where: { siteId: site.id } });
+    expect(rows).toHaveLength(2);
+    expect(rows.map((r) => r.query)).toContain("How do I find pop-up retail space?");
+  });
+
+  it("skips empty queries", async () => {
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { email: EMAIL },
+    });
+    const site = await prisma.site.create({
+      data: {
+        id: "site-phase2-2",
+        domain: "phase2-empty.example.com",
+        accountId: user.accountId,
+      },
+    });
+
+    const token = crypto.randomUUID();
+    await prisma.session.create({
+      data: { token, userId: user.id, ipAddress: "127.0.0.1", userAgent: "test" },
+    });
+    const cookieHeader = await sessionCookie.serialize(token);
+
+    const form = new FormData();
+    form.append("_intent", "save-queries");
+    form.append("siteId", site.id);
+    form.append("queries", JSON.stringify([{ group: "1.discovery", query: "  " }]));
+
+    const response = await fetch(`http://localhost:${port}/sites/new`, {
+      method: "POST",
+      headers: { Cookie: cookieHeader },
+      body: form,
+      redirect: "manual",
+    });
+
+    expect(response.status).toBe(302);
+    const rows = await prisma.siteQuery.findMany({ where: { siteId: site.id } });
+    expect(rows).toHaveLength(0);
+  });
+});
