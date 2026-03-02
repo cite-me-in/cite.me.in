@@ -85,7 +85,7 @@ describe("api.track", () => {
         url: "https://apitrack.example.com/",
         userAgent:
           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
-        accept: ["text/html"],
+        accept: "text/html",
         ip: "1.2.3.4",
       });
       expect(res.status).toBe(200);
@@ -98,7 +98,7 @@ describe("api.track", () => {
       const res = await post({
         url: "https://unknown-domain-xyz.example.com/",
         userAgent: "GPTBot/1.0",
-        accept: ["text/html"],
+        accept: "text/html",
         ip: "1.2.3.4",
       });
       expect(res.status).toBe(200);
@@ -111,7 +111,7 @@ describe("api.track", () => {
       const res = await post({
         url: "https://apitrack.example.com/about",
         userAgent: "GPTBot/1.0",
-        accept: ["text/html", "text/plain"],
+        accept: "text/html, text/plain",
         ip: "1.2.3.4",
         referer: "https://chatgpt.com",
       });
@@ -132,13 +132,13 @@ describe("api.track", () => {
       await post({
         url: "https://apitrack.example.com/repeated",
         userAgent: "PerplexityBot/1.0",
-        accept: ["text/html"],
+        accept: "text/html",
         ip: "1.2.3.4",
       });
       await post({
         url: "https://apitrack.example.com/repeated",
         userAgent: "PerplexityBot/1.0",
-        accept: ["text/html"],
+        accept: "text/html",
         ip: "1.2.3.4",
       });
 
