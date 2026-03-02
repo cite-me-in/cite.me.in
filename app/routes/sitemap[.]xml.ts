@@ -14,11 +14,6 @@ export async function loader() {
 
 const routes = {
   "/": { id: "routes/home/route.tsx", module: "home", path: "/" },
-  "/pricing": {
-    id: "routes/pricing/route.tsx",
-    module: "pricing",
-    path: "/pricing",
-  },
   "/faq": { id: "routes/faq/route.tsx", module: "faq", path: "/faq" },
   "/about": { id: "routes/about/route.tsx", module: "about", path: "/about" },
   "/blog": {

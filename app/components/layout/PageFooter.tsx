@@ -4,10 +4,7 @@ import CiteUpIcon from "./CiteUpLogo";
 const links = [
   {
     title: "Product",
-    links: [
-      { to: "/pricing", label: "Pricing" },
-      { to: "/faq", label: "FAQ" },
-    ],
+    links: [{ to: "/faq", label: "FAQ" }],
   },
   {
     title: "Resources",

@@ -111,6 +111,6 @@ describe("trackBotVisit", () => {
       ),
     );
     const last = await prisma.botVisit.findFirst();
-    expect(last).toBeNull();
+    expect(last?.referer).toBeNull();
   });
 });

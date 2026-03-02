@@ -25,12 +25,6 @@ describe("sitemap.xml", () => {
     expect(xml.urlset.url).toContainEqual({ loc: "https://citeup.com/" });
   });
 
-  it("should include /pricing", () => {
-    expect(xml.urlset.url).toContainEqual({
-      loc: "https://citeup.com/pricing",
-    });
-  });
-
   it("should include /faq", () => {
     expect(xml.urlset.url).toContainEqual({ loc: "https://citeup.com/faq" });
   });
