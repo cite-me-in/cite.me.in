@@ -1,5 +1,6 @@
 import { expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vitest";
+import { sessionCookie } from "~/lib/cookies.server";
 import prisma from "~/lib/prisma.server";
 import type { User } from "~/prisma";
 import { removeElements } from "../helpers/formatHTML";
@@ -146,6 +147,56 @@ describe("site queries page", () => {
       await expect(page.locator("main")).toMatchScreenshot({
         name: "site-queries",
       });
+    });
+  });
+
+  describe("suggest action", () => {
+    it("returns error when site has no content", async () => {
+      const token = crypto.randomUUID();
+      await prisma.session.create({
+        data: { token, userId: user.id, ipAddress: "127.0.0.1", userAgent: "test" },
+      });
+      const cookieHeader = await sessionCookie.serialize(token);
+
+      const form = new FormData();
+      form.append("_intent", "suggest");
+
+      const response = await fetch(
+        `http://localhost:${port}/site/${siteId}/queries`,
+        { method: "POST", headers: { Cookie: cookieHeader }, body: form },
+      );
+      expect(response.status).toBe(200);
+      const body = await response.text();
+      expect(body).toContain("No site content available");
+    });
+
+    it("completes gracefully when site has content", async () => {
+      const siteWithContent = await prisma.site.create({
+        data: {
+          id: "site-suggest-1",
+          domain: "suggest-test.example.com",
+          accountId: user.accountId,
+          content: "Rentail helps brands find short-term retail space.",
+        },
+      });
+
+      const token = crypto.randomUUID();
+      await prisma.session.create({
+        data: { token, userId: user.id, ipAddress: "127.0.0.1", userAgent: "test" },
+      });
+      const cookieHeader = await sessionCookie.serialize(token);
+
+      const form = new FormData();
+      form.append("_intent", "suggest");
+
+      const response = await fetch(
+        `http://localhost:${port}/site/${siteWithContent.id}/queries`,
+        { method: "POST", headers: { Cookie: cookieHeader }, body: form },
+      );
+      // Action succeeds or fails gracefully — page renders, no server crash
+      expect(response.status).toBe(200);
+      const body = await response.text();
+      expect(body).toContain("Citation Queries");
     });
   });
 });
