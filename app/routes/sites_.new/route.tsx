@@ -1,7 +1,7 @@
 import { captureException } from "@sentry/react-router";
 import { PlusIcon, TrashIcon } from "lucide-react";
-import { useEffect, useState } from "react";
-import { redirect, useFetcher, useNavigate } from "react-router";
+import { useEffect, useRef, useState } from "react";
+import { Link, redirect, useFetcher, useNavigate } from "react-router";
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import { Field, FieldError, FieldLabel } from "~/components/ui/FieldSet";
@@ -37,6 +37,8 @@ const CATEGORY_LABELS: Record<string, string> = {
   "2.active_search": "Active search — user wants what you offer",
   "3.comparison": "Comparison — user is evaluating options",
 };
+
+const GROUPS = ["1.discovery", "2.active_search", "3.comparison"] as const;
 
 export async function action({
   request,
@@ -167,6 +169,8 @@ export default function AddSitePage() {
   );
 }
 
+type SuggestionItem = Suggestion & { id: number };
+
 function ReviewScreen({
   siteId,
   initialSuggestions,
@@ -178,22 +182,22 @@ function ReviewScreen({
   isProcessing: boolean;
   fetcher: ReturnType<typeof useFetcher<ActionResult>>;
 }) {
-  const [suggestions, setSuggestions] = useState(initialSuggestions);
-  const groups = ["1.discovery", "2.active_search", "3.comparison"];
+  const nextId = useRef(initialSuggestions.length);
+  const [suggestions, setSuggestions] = useState<SuggestionItem[]>(() =>
+    initialSuggestions.map((s, i) => ({ ...s, id: i })),
+  );
   const nonEmpty = suggestions.filter((q) => q.query.trim());
 
-  function updateQuery(index: number, query: string) {
-    setSuggestions((prev) =>
-      prev.map((q, i) => (i === index ? { ...q, query } : q)),
-    );
+  function updateQuery(id: number, query: string) {
+    setSuggestions((prev) => prev.map((q) => (q.id === id ? { ...q, query } : q)));
   }
 
-  function removeQuery(index: number) {
-    setSuggestions((prev) => prev.filter((_, i) => i !== index));
+  function removeQuery(id: number) {
+    setSuggestions((prev) => prev.filter((q) => q.id !== id));
   }
 
   function addQuery(group: string) {
-    setSuggestions((prev) => [...prev, { group, query: "" }]);
+    setSuggestions((prev) => [...prev, { group, query: "", id: nextId.current++ }]);
   }
 
   function handleSave() {
@@ -201,7 +205,7 @@ function ReviewScreen({
       {
         _intent: "save-queries",
         siteId,
-        queries: JSON.stringify(nonEmpty),
+        queries: JSON.stringify(nonEmpty.map(({ group, query }) => ({ group, query }))),
       },
       { method: "post" },
     );
@@ -218,10 +222,8 @@ function ReviewScreen({
       </div>
 
       <div className="space-y-4">
-        {groups.map((group) => {
-          const items = suggestions
-            .map((q, i) => ({ ...q, index: i }))
-            .filter((q) => q.group === group);
+        {GROUPS.map((group) => {
+          const items = suggestions.filter((q) => q.group === group);
           return (
             <Card key={group}>
               <CardContent className="space-y-2">
@@ -229,20 +231,20 @@ function ReviewScreen({
                   {CATEGORY_LABELS[group] ?? group}
                 </p>
                 <ul className="space-y-1">
-                  {items.map(({ query, index }) => (
-                    <li key={index} className="flex items-center gap-2">
+                  {items.map(({ query, id }, pos) => (
+                    <li key={id} className="flex items-center gap-2">
                       <Input
-                        aria-label="Query text"
+                        aria-label={`${CATEGORY_LABELS[group] ?? group} — query ${pos + 1}`}
                         className="flex-1 text-sm"
                         value={query}
-                        onChange={(e) => updateQuery(index, e.target.value)}
+                        onChange={(e) => updateQuery(id, e.target.value)}
                       />
                       <Button
                         variant="ghost"
                         size="sm"
                         type="button"
                         aria-label="Remove query"
-                        onClick={() => removeQuery(index)}
+                        onClick={() => removeQuery(id)}
                       >
                         <TrashIcon className="h-4 w-4" />
                       </Button>
@@ -271,9 +273,9 @@ function ReviewScreen({
         >
           {isProcessing ? "Saving…" : "Save queries"}
         </Button>
-        <a href={`/site/${siteId}`} className="text-foreground/60 text-sm underline">
+        <Link to={`/site/${siteId}`} className="text-foreground/60 text-sm underline">
           Skip
-        </a>
+        </Link>
       </div>
     </main>
   );
