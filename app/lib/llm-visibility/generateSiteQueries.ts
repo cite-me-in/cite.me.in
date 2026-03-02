@@ -57,7 +57,7 @@ Rules:
   return output;
 }
 
-if (require.main === module) {
+if (import.meta.main) {
   const site = await prisma.site.findFirstOrThrow({
     where: { domain: "rentail.space" },
   });

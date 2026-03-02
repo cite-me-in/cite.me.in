@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 
 vi.mock("ai", () => ({ generateText: vi.fn(), Output: { array: vi.fn() } }));
@@ -29,17 +29,46 @@ describe("generateSiteQueries", () => {
     vi.clearAllMocks();
   });
 
-  it("returns 9 queries across 3 groups", async () => {
-    const { generateText } = await import("ai");
-    // biome-ignore lint/suspicious/noExplicitAny: test mock
-    vi.mocked(generateText).mockResolvedValue({ output: MOCK_QUERIES } as any);
+  describe("successfully generates queries", () => {
+    let result: { group: string; query: string }[];
 
-    const result = await generateSiteQueries(
-      "Rentail helps brands find pop-up retail space.",
-    );
-    expect(result).toHaveLength(9);
-    const groups = [...new Set(result.map((q) => q.group))];
-    expect(groups).toEqual(["1.discovery", "2.active_search", "3.comparison"]);
+    beforeAll(async () => {
+      const { generateText } = await import("ai");
+      // biome-ignore lint/suspicious/noExplicitAny: test mock
+      vi.mocked(generateText).mockResolvedValue({
+        output: MOCK_QUERIES,
+      } as any);
+      result = await generateSiteQueries(
+        "Rentail helps brands find pop-up retail space.",
+      );
+    });
+
+    it("returns 9 queries across 3 groups", async () => {
+      expect(result).toHaveLength(9);
+    });
+
+    it("returns 3 groups", async () => {
+      const groups = [...new Set(result.map((q) => q.group))];
+      expect(groups).toEqual([
+        "1.discovery",
+        "2.active_search",
+        "3.comparison",
+      ]);
+    });
+
+    it("returns 3 queries per group", async () => {
+      const groups = [...new Set(result.map((q) => q.group))];
+      expect(groups).toEqual([
+        "1.discovery",
+        "2.active_search",
+        "3.comparison",
+      ]);
+    });
+
+    it("returns queries that are specific to the site", async () => {
+      const queries = result.map((q) => q.query);
+      expect(queries).toEqual(MOCK_QUERIES.map((q) => q.query));
+    });
   });
 
   it("propagates errors from generateText", async () => {
