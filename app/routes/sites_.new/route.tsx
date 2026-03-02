@@ -1,5 +1,6 @@
 import { captureException } from "@sentry/react-router";
-import { useEffect } from "react";
+import { PlusIcon, TrashIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { redirect, useFetcher, useNavigate } from "react-router";
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
@@ -30,6 +31,12 @@ type ActionResult =
   | { error: string }
   | { siteId: string }
   | { siteId: string; suggestions: Suggestion[] };
+
+const CATEGORY_LABELS: Record<string, string> = {
+  "1.discovery": "Discovery — user is looking for solutions",
+  "2.active_search": "Active search — user wants what you offer",
+  "3.comparison": "Comparison — user is evaluating options",
+};
 
 export async function action({
   request,
@@ -105,10 +112,20 @@ export default function AddSitePage() {
   const error = result && "error" in result ? result.error : undefined;
 
   useEffect(() => {
-    if (result && "siteId" in result) {
+    if (result && "siteId" in result && !("suggestions" in result)) {
       navigate(`/site/${result.siteId}`);
     }
   }, [result, navigate]);
+
+  if (result && "suggestions" in result)
+    return (
+      <ReviewScreen
+        siteId={result.siteId}
+        initialSuggestions={result.suggestions}
+        isProcessing={isProcessing}
+        fetcher={fetcher}
+      />
+    );
 
   return (
     <main className="flex min-h-screen items-center justify-center p-4">
@@ -121,7 +138,7 @@ export default function AddSitePage() {
             <div className="flex items-center gap-3 py-6">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-foreground/20 border-t-foreground" />
               <p className="text-foreground/70">
-                Verifying domain and fetching content…
+                Verifying domain and generating queries…
               </p>
             </div>
           ) : (
@@ -146,6 +163,118 @@ export default function AddSitePage() {
           )}
         </CardContent>
       </Card>
+    </main>
+  );
+}
+
+function ReviewScreen({
+  siteId,
+  initialSuggestions,
+  isProcessing,
+  fetcher,
+}: {
+  siteId: string;
+  initialSuggestions: Suggestion[];
+  isProcessing: boolean;
+  fetcher: ReturnType<typeof useFetcher<ActionResult>>;
+}) {
+  const [suggestions, setSuggestions] = useState(initialSuggestions);
+  const groups = ["1.discovery", "2.active_search", "3.comparison"];
+  const nonEmpty = suggestions.filter((q) => q.query.trim());
+
+  function updateQuery(index: number, query: string) {
+    setSuggestions((prev) =>
+      prev.map((q, i) => (i === index ? { ...q, query } : q)),
+    );
+  }
+
+  function removeQuery(index: number) {
+    setSuggestions((prev) => prev.filter((_, i) => i !== index));
+  }
+
+  function addQuery(group: string) {
+    setSuggestions((prev) => [...prev, { group, query: "" }]);
+  }
+
+  function handleSave() {
+    fetcher.submit(
+      {
+        _intent: "save-queries",
+        siteId,
+        queries: JSON.stringify(nonEmpty),
+      },
+      { method: "post" },
+    );
+  }
+
+  return (
+    <main className="mx-auto max-w-2xl space-y-6 px-6 py-12">
+      <div>
+        <h1 className="font-heading text-2xl font-bold">Review suggested queries</h1>
+        <p className="mt-1 text-foreground/60 text-sm">
+          Edit, remove, or add queries before saving. These will be used to
+          track your citation visibility across AI platforms.
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        {groups.map((group) => {
+          const items = suggestions
+            .map((q, i) => ({ ...q, index: i }))
+            .filter((q) => q.group === group);
+          return (
+            <Card key={group}>
+              <CardContent className="space-y-2">
+                <p className="font-heading text-sm font-semibold">
+                  {CATEGORY_LABELS[group] ?? group}
+                </p>
+                <ul className="space-y-1">
+                  {items.map(({ query, index }) => (
+                    <li key={index} className="flex items-center gap-2">
+                      <Input
+                        aria-label="Query text"
+                        className="flex-1 text-sm"
+                        value={query}
+                        onChange={(e) => updateQuery(index, e.target.value)}
+                      />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        type="button"
+                        aria-label="Remove query"
+                        onClick={() => removeQuery(index)}
+                      >
+                        <TrashIcon className="h-4 w-4" />
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  type="button"
+                  onClick={() => addQuery(group)}
+                >
+                  <PlusIcon className="h-4 w-4" />
+                  Add query
+                </Button>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      <div className="flex items-center gap-4">
+        <Button
+          onClick={handleSave}
+          disabled={nonEmpty.length === 0 || isProcessing}
+        >
+          {isProcessing ? "Saving…" : "Save queries"}
+        </Button>
+        <a href={`/site/${siteId}`} className="text-foreground/60 text-sm underline">
+          Skip
+        </a>
+      </div>
     </main>
   );
 }
