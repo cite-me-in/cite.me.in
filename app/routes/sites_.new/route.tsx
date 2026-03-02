@@ -1,10 +1,12 @@
+import { captureException } from "@sentry/react-router";
 import { useEffect } from "react";
-import { useFetcher, useNavigate } from "react-router";
+import { redirect, useFetcher, useNavigate } from "react-router";
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import { Field, FieldError, FieldLabel } from "~/components/ui/FieldSet";
 import { Input } from "~/components/ui/Input";
 import { requireUser } from "~/lib/auth.server";
+import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import prisma from "~/lib/prisma.server";
 import {
   extractDomain,
@@ -22,23 +24,58 @@ export function meta(): Route.MetaDescriptors {
   return [{ title: "Add a Site | CiteUp" }];
 }
 
-type ActionResult = { error: string } | { siteId: string };
+type Suggestion = { group: string; query: string };
+
+type ActionResult =
+  | { error: string }
+  | { siteId: string }
+  | { siteId: string; suggestions: Suggestion[] };
 
 export async function action({
   request,
-}: Route.ActionArgs): Promise<ActionResult> {
+}: Route.ActionArgs): Promise<ActionResult | Response> {
   const user = await requireUser(request);
   const form = await request.formData();
-  const url = form.get("url")?.toString().trim() ?? "";
+  const intent = form.get("_intent")?.toString();
 
+  // Phase 2: save approved queries then redirect
+  if (intent === "save-queries") {
+    const siteId = form.get("siteId")?.toString() ?? "";
+    const site = await prisma.site.findFirst({
+      where: { id: siteId, accountId: user.accountId },
+    });
+    if (!site) return { error: "Site not found" };
+
+    const raw = form.get("queries")?.toString() ?? "[]";
+    let queries: Suggestion[] = [];
+    try {
+      const parsed: unknown = JSON.parse(raw);
+      if (Array.isArray(parsed)) queries = parsed as Suggestion[];
+    } catch {
+      // ignore
+    }
+    const valid = queries.filter((q) => q.group && q.query.trim());
+    if (valid.length > 0) {
+      await prisma.siteQuery.createMany({
+        data: valid.map((q) => ({
+          siteId: site.id,
+          group: q.group,
+          query: q.query.trim(),
+        })),
+      });
+    }
+    return redirect(`/site/${site.id}`);
+  }
+
+  // Phase 1: validate + create site + generate suggestions
+  const url = form.get("url")?.toString().trim() ?? "";
   const domain = extractDomain(url);
   if (!domain) return { error: "Enter a valid website URL or domain name" };
 
   const existing = await prisma.site.findFirst({
     where: { accountId: user.accountId, domain },
   });
-  if (existing)
-    return { error: "That domain is already added to your account" };
+  if (existing) return { error: "That domain is already added to your account" };
 
   const dnsOk = await verifyDomain(domain);
   if (!dnsOk)
@@ -49,7 +86,15 @@ export async function action({
     data: { domain, account: { connect: { id: user.accountId } }, content },
   });
 
-  return { siteId: site.id };
+  if (!content) return { siteId: site.id };
+
+  try {
+    const suggestions = await generateSiteQueries(content);
+    return { siteId: site.id, suggestions };
+  } catch (error) {
+    captureException(error, { extra: { siteId: site.id } });
+    return { siteId: site.id };
+  }
 }
 
 export default function AddSitePage() {
