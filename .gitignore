@@ -2,6 +2,7 @@
 .env
 .claude/
 prisma/generated
+backup.sql
 
 # React Router
 /.react-router/

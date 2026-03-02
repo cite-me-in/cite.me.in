@@ -3,15 +3,18 @@
 	"type": "module",
 	"license": "AGPL-3.0-only",
 	"scripts": {
-		"build": "prisma generate && react-router build",
-		"check": "secretlint **/* --format stylish && biome lint && tsc --noEmit --strict",
+		"build": "prisma generate && react-router build --force",
+		"check": "secretlint **/* --format stylish && biome lint && react-router typegen && tsc --noEmit --strict",
 		"clean": "rm -rf node_modules/.vite .react-router build",
+		"clone": "./scripts/clone.sh",
 		"dev": "react-router dev",
 		"format": "biome format --write",
 		"lint": "biome lint",
+		"promote": "./scripts/promote.ts",
 		"start": "react-router-serve ./build/server/index.js",
 		"test": "pnpm run check && pnpm --expose-gc --max-old-space-size=3096 vitest run",
-		"typecheck": "react-router typegen && tsc --noEmit --strict"
+		"typecheck": "react-router typegen && tsc --noEmit --strict",
+		"upgrade": "./scripts/upgrade.sh"
 	},
 	"dependencies": {
 		"@ai-sdk/anthropic": "^3.0.50",
