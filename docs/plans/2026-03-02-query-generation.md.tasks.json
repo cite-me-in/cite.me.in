@@ -1,0 +1,14 @@
+{
+  "planPath": "docs/plans/2026-03-02-query-generation.md",
+  "tasks": [
+    { "id": 6, "subject": "Task 1: Write failing unit test for generateSiteQueries", "status": "pending" },
+    { "id": 7, "subject": "Task 2: Implement generateSiteQueries", "status": "pending", "blockedBy": [6] },
+    { "id": 8, "subject": "Task 3: Update sites_.new action — two-phase logic", "status": "pending", "blockedBy": [7] },
+    { "id": 9, "subject": "Task 4: Update sites_.new UI — review screen", "status": "pending", "blockedBy": [8] },
+    { "id": 10, "subject": "Task 5: Add suggest intent to queries page action", "status": "pending", "blockedBy": [7] },
+    { "id": 11, "subject": "Task 6: Add SuggestedQueries component to queries page", "status": "pending", "blockedBy": [10] },
+    { "id": 12, "subject": "Task 7: Route tests — sites-new phase 2", "status": "pending", "blockedBy": [9] },
+    { "id": 13, "subject": "Task 8: Route tests — queries page suggest action", "status": "pending", "blockedBy": [11, 12] }
+  ],
+  "lastUpdated": "2026-03-02T00:00:00Z"
+}
