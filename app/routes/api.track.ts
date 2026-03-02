@@ -6,7 +6,7 @@ import type { Route } from "./+types/api.track";
 const BotTrackSchema = z.object({
   url: z.url(),
   userAgent: z.string(),
-  accept: z.array(z.string()),
+  accept: z.string(),
   ip: z.string(),
   referer: z.string().optional(),
 });
@@ -45,11 +45,11 @@ export async function action({ request }: Route.ActionArgs) {
 
   const { url: rawUrl, userAgent, accept, ip, referer } = data;
   const { tracked, reason } = await recordBotVisit({
-    url: new URL(rawUrl),
+    url: rawUrl,
     userAgent,
     accept,
     ip,
-    referer,
+    referer: referer ?? null,
   });
   return Response.json({ tracked, reason }, { headers: CORS_HEADERS });
 }

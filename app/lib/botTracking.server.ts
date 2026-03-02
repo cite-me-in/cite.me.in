@@ -78,20 +78,19 @@ export async function recordBotVisit({
   ip,
   referer,
 }: {
-  url: URL;
+  url: string;
   userAgent: string;
-  accept: string[];
-  ip?: string;
-  referer?: string;
+  accept: string | null;
+  ip: string | null;
+  referer: string | null;
 }): Promise<{ tracked: boolean; reason?: string }> {
   const botType = classifyBot(userAgent);
   if (!botType) return { tracked: false, reason: "not a bot" };
   if (/Better Stack/i.test(userAgent))
     return { tracked: false, reason: "excluded" };
 
-  const domain = url.hostname.toLowerCase();
-  const path = url.pathname;
-
+  const { hostname, pathname } = new URL(url);
+  const domain = hostname.toLowerCase();
   const site = await prisma.site.findFirst({ where: { domain } });
   if (!site) return { tracked: false, reason: "site not found" };
 
@@ -102,24 +101,31 @@ export async function recordBotVisit({
   try {
     await prisma.botVisit.upsert({
       where: {
-        date_siteId_userAgent_path: { date, siteId: site.id, userAgent, path },
+        date_siteId_userAgent_path: {
+          date,
+          path: pathname,
+          siteId: site.id,
+          userAgent,
+        },
       },
       update: { count: { increment: 1 }, lastSeen: new Date() },
       create: {
-        accept,
+        accept: parseAccept(accept),
         botType,
         count: 1,
         date,
         ip,
-        path,
-        referer,
+        path: pathname,
+        referer: parseReferer(referer, new URL(url)),
         site: { connect: { id: site.id } },
         userAgent,
       },
     });
     return { tracked: true };
   } catch (error) {
-    captureException(error, { extra: { botType, domain, path, userAgent } });
+    captureException(error, {
+      extra: { botType, domain, pathname, userAgent },
+    });
     return { tracked: false, reason: "db error" };
   }
 }
@@ -131,27 +137,28 @@ export async function trackBotVisit(request: Request): Promise<void> {
   const userAgent = request.headers.get("user-agent");
   if (!userAgent) return;
 
-  const url = new URL(request.url);
-  const accept = parseAccept(request.headers.get("accept") ?? "");
-  const ip = request.headers.get("x-real-ip") ?? undefined;
-  const referer = parseReferer(request.headers.get("referer"), url);
+  const url = request.url;
+  const accept = request.headers.get("accept");
+  const ip = request.headers.get("x-real-ip");
+  const referer = request.headers.get("referer");
 
   await recordBotVisit({ url, userAgent, accept, ip, referer });
 }
 
-function parseAccept(acceptHeader: string): string[] {
+function parseAccept(acceptHeader?: string | null): string[] {
+  if (!acceptHeader) return [];
   return acceptHeader
     .split(",")
     .map((t) => t.split(";")[0].trim())
     .filter(Boolean);
 }
 
-function parseReferer(referer: string | null, requestURL: URL): string | undefined {
-  if (!referer) return undefined;
+function parseReferer(referer: string | null, requestURL: URL): string | null {
+  if (!referer) return null;
   try {
     const refererURL = new URL(referer);
     if (refererURL.hostname.toLowerCase() === requestURL.hostname.toLowerCase())
-      return undefined;
+      return null;
   } catch {
     // ignore parse errors, keep referer as is
   }
