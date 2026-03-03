@@ -16,13 +16,22 @@ const logFile = import.meta.env.TEST
   ? createWriteStream(resolve("server.log"), { flags: "a" })
   : null;
 
+// @see https://no-color.org
+const isColorEnabled = !process.env.NO_COLOR;
+
 for (const level of ["debug", "error", "info", "log", "trace", "warn"]) {
   const logtailFunction = Reflect.get(logger, level);
   const colorCode = colors[level as keyof typeof colors];
 
   Reflect.set(console, level, (message: string, ...metadata: unknown[]) => {
     const formattedMessage = format(message, ...metadata);
-    process.stdout.write(`${colorCode(formattedMessage)}\n`);
+
+    process.stdout.write(
+      isColorEnabled
+        ? `${colorCode(formattedMessage)}\n`
+        : `${formattedMessage}\n`,
+    );
+
     try {
       if (logtailFunction)
         logtailFunction.call(logger, formattedMessage, ...metadata);
@@ -31,6 +40,7 @@ for (const level of ["debug", "error", "info", "log", "trace", "warn"]) {
         error instanceof Error ? error.message : String(error);
       process.stderr.write(`${errorMessage}\n`);
     }
+
     if (logFile) logFile.write(`${formattedMessage}\n`);
   });
 }
