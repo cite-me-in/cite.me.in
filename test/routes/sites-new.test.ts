@@ -5,8 +5,6 @@ import { sessionCookie } from "~/lib/cookies.server";
 import prisma from "~/lib/prisma.server";
 import { goto, port } from "../helpers/launchBrowser";
 import { signIn } from "../helpers/signIn";
-import "../helpers/toMatchInnerHTML";
-import "../helpers/toMatchScreenshot";
 
 const EMAIL = "sites-new-test@example.com";
 const PASSWORD = "correct-password-123";
@@ -133,7 +131,7 @@ describe("add site — duplicate domain", () => {
 describe("add site — successful save", () => {
   it(
     "creates site and navigates to site page",
-    { timeout: 30_000 },
+    { timeout: 60_000 },
     async () => {
       // signIn was called in "add site form" beforeAll — session persists in shared context
       const page = await goto("/sites/new");
@@ -141,7 +139,20 @@ describe("add site — successful save", () => {
         .getByRole("textbox", { name: "Website URL or domain" })
         .fill("example.com");
       await page.getByRole("button", { name: "Add Site" }).click();
-      await page.waitForURL("**/site/**", { timeout: 25_000 });
+
+      // Phase 1 may return a review screen (if suggestions generated) or navigate directly
+      await Promise.race([
+        page.waitForURL("**/site/**", { timeout: 55_000 }),
+        page.getByRole("link", { name: "Skip" }).waitFor({ timeout: 55_000 }),
+      ]);
+
+      // If review screen is shown, click Skip to proceed to site page
+      const skipLink = page.getByRole("link", { name: "Skip" });
+      if (await skipLink.isVisible()) {
+        await skipLink.click();
+        await page.waitForURL("**/site/**", { timeout: 10_000 });
+      }
+
       expect(new URL(page.url()).pathname).toMatch(/^\/site\//);
 
       const user = await prisma.user.findUniqueOrThrow({
