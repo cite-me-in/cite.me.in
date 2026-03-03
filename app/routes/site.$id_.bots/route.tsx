@@ -145,8 +145,13 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   const totalVisits = sumBy(Object.values(botTotals), (c) => c);
 
+  const insight = await prisma.botInsight.findUnique({
+    where: { siteId: site.id },
+  });
+
   return {
     site,
+    insight,
     chartData,
     topBots,
     botActivity,
@@ -179,6 +184,7 @@ const fmt = new Intl.DateTimeFormat("en-US", {
 export default function SiteBotsPage({ loaderData }: Route.ComponentProps) {
   const {
     site,
+    insight,
     chartData,
     topBots,
     botActivity,
@@ -196,6 +202,15 @@ export default function SiteBotsPage({ loaderData }: Route.ComponentProps) {
       <SitePageHeader site={site} title="Bot Traffic">
         <DateRangeSelector />
       </SitePageHeader>
+
+      {insight && (
+        <div className="rounded-base border-2 border-black bg-[hsl(47,100%,95%)] p-6 shadow-shadow">
+          <p className="font-medium leading-relaxed">{insight.content}</p>
+          <p className="mt-2 text-foreground/50 text-xs">
+            Updated {fmt.format(insight.generatedAt)}
+          </p>
+        </div>
+      )}
 
       {isEmpty ? (
         <div className="rounded-base border-2 border-black bg-secondary-background p-12 text-center shadow-shadow">

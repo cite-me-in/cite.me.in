@@ -208,4 +208,31 @@ describe("site bots page", () => {
       });
     });
   });
+
+  describe("with bot insight", () => {
+    let page: Awaited<ReturnType<typeof goto>>;
+
+    beforeAll(async () => {
+      await prisma.botInsight.create({
+        data: {
+          siteId,
+          content: "ChatGPT visited 8 times this week, mostly your homepage.",
+          generatedAt: new Date("2026-02-26T12:00:00Z"),
+        },
+      });
+      page = await goto(`/site/${siteId}/bots?from=2026-01-27&until=2026-02-26`);
+    });
+
+    it("shows the insight text", async () => {
+      await expect(
+        page.getByText(
+          "ChatGPT visited 8 times this week, mostly your homepage.",
+        ),
+      ).toBeVisible();
+    });
+
+    it("shows the Updated label", async () => {
+      await expect(page.getByText(/Updated/)).toBeVisible();
+    });
+  });
 });
