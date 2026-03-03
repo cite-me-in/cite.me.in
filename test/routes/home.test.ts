@@ -1,8 +1,6 @@
 import { expect } from "@playwright/test";
 import { describe, it } from "vitest";
 import { goto, port } from "../helpers/launchBrowser";
-import "../helpers/toMatchInnerHTML";
-import "../helpers/toMatchScreenshot";
 
 describe("home page", () => {
   it("shows the landing page hero", async () => {

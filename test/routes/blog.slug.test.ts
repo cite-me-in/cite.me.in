@@ -1,6 +1,6 @@
 import { type Page, type Response, expect } from "playwright/test";
 import { afterAll, beforeAll, describe, it } from "vitest";
-import { goto } from "../helpers/launchBrowser";
+import { goto } from "~/test/helpers/launchBrowser";
 
 const POST_SLUG = "2026-02-26-how-citeup-was-born";
 const POST_TITLE =

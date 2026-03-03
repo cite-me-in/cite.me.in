@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import prisma from "~/lib/prisma.server";
-import { port } from "../helpers/launchBrowser";
+import { port } from "~/test/helpers/launchBrowser";
 
 const BASE_URL = `http://localhost:${port}/api/track`;
 

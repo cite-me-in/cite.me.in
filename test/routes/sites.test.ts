@@ -5,8 +5,6 @@ import { removeElements } from "~/lib/html/parseHTML";
 import prisma from "~/lib/prisma.server";
 import { goto, port } from "../helpers/launchBrowser";
 import { signIn } from "../helpers/signIn";
-import "../helpers/toMatchInnerHTML";
-import "../helpers/toMatchScreenshot";
 
 const EMAIL = "sites-test@example.com";
 const PASSWORD = "correct-password-123";

@@ -27,6 +27,7 @@ export async function launchServer(port: number): Promise<void> {
       ...process.env,
       NODE_ENV: "test",
       PORT: port.toString(),
+      VITE_TEST_MODE: "1",
     },
   });
 

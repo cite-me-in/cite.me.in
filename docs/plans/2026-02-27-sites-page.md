@@ -13,6 +13,7 @@
 ### Task 1: Server utilities — domain extraction, DNS verification, content fetch
 
 **Files:**
+
 - Create: `app/lib/sites.server.ts`
 - Test: `test/sites.server.test.ts`
 
@@ -176,6 +177,7 @@ git commit -m "feat: add sites server utilities for domain extraction, DNS verif
 ### Task 2: `/sites` list route
 
 **Files:**
+
 - Create: `app/routes/sites/route.tsx`
 - Test: `test/routes/sites.test.ts`
 
@@ -187,10 +189,8 @@ Create `test/routes/sites.test.ts`:
 import { expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vitest";
 import prisma from "~/lib/prisma.server";
-import { goto, port } from "../helpers/launchBrowser";
-import { signIn } from "../helpers/signIn";
-import "../helpers/toMatchInnerHTML";
-import "../helpers/toMatchScreenshot";
+import { goto, port } from "~/test/helpers/launchBrowser";
+import { signIn } from "~/test/helpers/signIn";
 
 describe("unauthenticated access", () => {
   it("redirects to /sign-in", async () => {
@@ -384,6 +384,7 @@ git commit -m "feat: add /sites list page with empty state and site cards"
 ### Task 3: `/sites/new` — action + step 1 (URL input)
 
 **Files:**
+
 - Create: `app/routes/sites.new/route.tsx`
 - Test: `test/routes/sites-new.test.ts`
 
@@ -395,10 +396,8 @@ Create `test/routes/sites-new.test.ts`:
 import { expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vitest";
 import prisma from "~/lib/prisma.server";
-import { goto, port } from "../helpers/launchBrowser";
-import { signIn } from "../helpers/signIn";
-import "../helpers/toMatchInnerHTML";
-import "../helpers/toMatchScreenshot";
+import { goto, port } from "~/test/helpers/launchBrowser";
+import { signIn } from "`/test/helpers/signIn";
 
 describe("unauthenticated access", () => {
   it("redirects to /sign-in", async () => {
@@ -703,6 +702,7 @@ git commit -m "feat: add /sites/new route with step 1 URL validation"
 ### Task 4: `/sites/new` — test DNS failure and content fetch steps
 
 **Files:**
+
 - Modify: `test/routes/sites-new.test.ts`
 
 **Step 1: Add tests for DNS failure, content fetch, and confirm**
@@ -821,6 +821,7 @@ git commit -m "test: add DNS failure, duplicate domain, and successful save test
 ### Task 5: `/sites/:id` placeholder route
 
 **Files:**
+
 - Create: `app/routes/sites.$id/route.tsx`
 
 **Step 1: Write the route**
@@ -879,6 +880,7 @@ git commit -m "feat: add /sites/:id placeholder page"
 ### Task 6: Fix home route — redirect to `/sites` when no site found
 
 **Files:**
+
 - Modify: `app/routes/home/route.tsx:18-21`
 - Test: `test/routes/home.test.ts` — add a test for the no-site redirect
 

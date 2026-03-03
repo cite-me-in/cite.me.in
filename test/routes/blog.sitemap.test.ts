@@ -1,7 +1,7 @@
 import { XMLParser } from "fast-xml-parser";
 import { expect } from "playwright/test";
 import { beforeAll, describe, it } from "vitest";
-import { port } from "../helpers/launchBrowser";
+import { port } from "~/test/helpers/launchBrowser";
 
 describe("blog/sitemap.xml", () => {
   let sitemapContent: string;

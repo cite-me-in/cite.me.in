@@ -2,9 +2,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Links, Meta, Scripts, ScrollRestoration } from "react-router";
+import PageLoadingBouncer from "~/components/ui/PageLoadingBouncer";
 import "~/global.css";
 import { useGoogleAnalytics } from "~/lib/useAnalytics";
-import PageLoadingBouncer from "../ui/PageLoadingBouncer";
 import PageFooter from "./PageFooter";
 import PageHeader from "./PageHeader";
 
@@ -51,7 +51,6 @@ export default function PageLayout({
 
         <Meta />
         <Links />
-        <script type="application/ld+json">{JSON.stringify(schema)}</script>
       </head>
       <body className="relative">
         <QueryClientProvider client={new QueryClient()}>
@@ -71,6 +70,7 @@ export default function PageLayout({
         <Scripts />
         <Analytics />
         <SpeedInsights />
+        <script type="application/ld+json">{JSON.stringify(schema)}</script>
       </body>
     </html>
   );
@@ -78,7 +78,8 @@ export default function PageLayout({
 
 function DevTag() {
   return (
-    import.meta.env.DEV && (
+    !import.meta.env.PROD &&
+    !import.meta.env.VITE_TEST_MODE && (
       <span className="fixed top-4 left-4 z-1000 rounded-full bg-red-400 px-4 py-2 font-bold text-white shadow-lg">
         DEV
       </span>

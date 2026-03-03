@@ -5,8 +5,6 @@ import prisma from "~/lib/prisma.server";
 import type { User } from "~/prisma";
 import { goto, port } from "../helpers/launchBrowser";
 import { signIn } from "../helpers/signIn";
-import "../helpers/toMatchInnerHTML";
-import "../helpers/toMatchScreenshot";
 
 // ---------------------------------------------------------------------------
 // Fixed seed data — deterministic so baselines never drift

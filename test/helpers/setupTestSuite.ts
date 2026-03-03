@@ -5,7 +5,7 @@
 import * as Sentry from "@sentry/react-router";
 import { afterAll, beforeAll } from "vitest";
 import prisma from "~/lib/prisma.server";
-import msw from "../mocks/msw";
+import msw from "~/test/mocks/msw";
 import "./toMatchInnerHTML";
 import "./toMatchScreenshot";
 import "./trimConsole";
