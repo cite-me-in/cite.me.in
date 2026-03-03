@@ -8,13 +8,22 @@ export default async function seedSite(): Promise<Site> {
 }
 
 async function seedAccount(): Promise<User> {
-  const user = await prisma.user.upsert({
-    where: { email: "assaf@labnotes.org" },
+  const account = await prisma.account.upsert({
+    where: { id: "cmm4h5qam000004l75z7mobty" },
     update: {},
     create: {
+      id: "cmm4h5qam000004l75z7mobty",
+    },
+  });
+
+  const user = await prisma.user.upsert({
+    where: { id: "cmm4h5qb5000104l75s5fu1de" },
+    update: {},
+    create: {
+      id: "cmm4h5qb5000104l75s5fu1de",
       email: "assaf@labnotes.org",
       passwordHash: await bcrypt.hash("EhnGjs7JMsq3oKrkfwZk", 1),
-      account: { create: {} },
+      account: { connect: { id: account.id } },
     },
     include: { account: true },
   });
@@ -25,10 +34,11 @@ async function seedAccount(): Promise<User> {
 async function seedSites(user: User): Promise<Site> {
   const rentail = await prisma.site.upsert({
     where: {
-      accountId_domain: { accountId: user.accountId, domain: "rentail.space" },
+      id: "cmm6i5m3p0000mfrcir8ilttq",
     },
     update: {},
     create: {
+      id: "cmm6i5m3p0000mfrcir8ilttq",
       accountId: user.accountId,
       content:
         "rentail .space  Sign In  🎉 Rent for days, weeks, or months Find Your Next Mall Space in Under 2 Minutes Find short-term retail spaces in shopping centers—without the broker meetings or endless phone calls. Built for small businesses and seasonal sellers. Just instant matches with spaces ready for your products. Find My Match Why Choose rentail .space? Short-term retail spaces in shopping centers near you.",
@@ -38,13 +48,11 @@ async function seedSites(user: User): Promise<Site> {
 
   const citeUp = await prisma.site.upsert({
     where: {
-      accountId_domain: {
-        accountId: user.accountId,
-        domain: "citeup.vercel.app",
-      },
+      id: "cmm6jgk1u0000f5rcxmtgpwga",
     },
     update: {},
     create: {
+      id: "cmm6jgk1u0000f5rcxmtgpwga",
       accountId: user.accountId,
       content:
         "CiteUp Sign in Get started The Search Console for AI Does ChatGPT mention  your brand? CiteUp runs your queries across ChatGPT, Claude, Gemini, and Perplexity — and records every time they cite your website.",

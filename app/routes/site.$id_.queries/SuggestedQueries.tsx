@@ -1,6 +1,8 @@
+import { sortBy } from "es-toolkit";
 import { AlertCircleIcon, PlusIcon, SparklesIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import { useFetcher } from "react-router";
+import { twMerge } from "tailwind-merge";
 import { Alert, AlertTitle } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent } from "~/components/ui/Card";
@@ -26,6 +28,20 @@ export default function SuggestedQueries({
   const error =
     fetcher.state === "idle" && data && !data.ok ? data.error : undefined;
 
+  // Group suggestions by group and sort by group/group's queries
+  const groupedSuggestions = suggestions
+    ? sortBy(suggestions, ["group", "query"]).reduce(
+        (acc, suggestion) => {
+          if (!acc[suggestion.group]) {
+            acc[suggestion.group] = [];
+          }
+          acc[suggestion.group].push(suggestion);
+          return acc;
+        },
+        {} as Record<string, typeof suggestions>,
+      )
+    : {};
+
   return (
     <div className="space-y-3">
       {!suggestions && (
@@ -40,7 +56,9 @@ export default function SuggestedQueries({
               fetcher.submit({ _intent: "suggest" }, { method: "post" });
             }}
           >
-            <SparklesIcon className="h-4 w-4" />
+            <SparklesIcon
+              className={twMerge(isLoading ? "animate-spin" : "", "size-4")}
+            />
             {isLoading ? "Generating…" : "Suggest queries"}
           </Button>
         </div>
@@ -69,16 +87,14 @@ export default function SuggestedQueries({
               </Button>
             </div>
 
-            {GROUPS.map((group) => {
-              const items = suggestions.filter((s) => s.group === group);
+            {Object.entries(groupedSuggestions).map(([group, items]) => {
               if (items.length === 0) return null;
               return (
                 <div key={group} className="space-y-1">
                   <p className="text-base text-foreground/50 uppercase tracking-wide">
-                    {defaultQueryCategories.find((c) => c.group === group)
-                      ?.intent ?? group}
+                    {group}
                   </p>
-                  <ul className="space-y-1">
+                  <ul className="space-y-2">
                     {items.map((s) => (
                       <SuggestionRow key={s.query} suggestion={s} />
                     ))}

@@ -46,10 +46,10 @@ model BotVisit {
 }
 
 model BotInsight {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @map("created_at") @default(now())
-  updatedAt   DateTime @map("updated_at") @updatedAt
-  siteId      String   @map("site_id") @unique
+  id          String                        @id @default(cuid())
+  createdAt   DateTime @map("created_at")   @default(now())
+  updatedAt   DateTime @map("updated_at")   @updatedAt
+  siteId      String   @map("site_id")      @unique
   site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
   content     String   @map("content")
   generatedAt DateTime @map("generated_at")
@@ -132,17 +132,18 @@ model Session {
 }
 
 model Site {
-  id           String                                @id @default(cuid())
-  createdAt    DateTime           @map("created_at") @default(now())
-  updatedAt    DateTime           @map("updated_at") @updatedAt
-  accountId    String             @map("account_id")
-  account      Account            @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  domain       String             @map("domain")
-  content      String?            @map("content")
-  citationRuns CitationQueryRun[]
-  botVisits    BotVisit[]
-  botInsight   BotInsight?
-  siteQueries  SiteQuery[]
+  account              Account               @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  accountId            String                @map("account_id")
+  botInsight           BotInsight?
+  botVisits            BotVisit[]
+  citationRuns         CitationQueryRun[]
+  content              String?               @map("content")
+  createdAt            DateTime              @map("created_at") @default(now())
+  domain               String                @map("domain")
+  id                   String                                   @id @default(cuid())
+  siteQueries          SiteQuery[]
+  siteQuerySuggestions SiteQuerySuggestion[]
+  updatedAt            DateTime              @map("updated_at") @updatedAt
 
   @@index([domain])
   @@unique([accountId, domain])
@@ -150,30 +151,43 @@ model Site {
 }
 
 model SiteQuery {
-  id        String                      @id @default(cuid())
   createdAt DateTime @map("created_at") @default(now())
-  updatedAt DateTime @map("updated_at") @updatedAt
-  siteId    String   @map("site_id")
-  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
   group     String   @map("group")
+  id        String                      @id @default(cuid())
   query     String   @map("query")
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId    String   @map("site_id")
+  updatedAt DateTime @map("updated_at") @updatedAt
 
   @@index([siteId])
   @@map("site_queries")
 }
 
+model SiteQuerySuggestion {
+  createdAt DateTime @map("created_at") @default(now())
+  group     String   @map("group")
+  id        String                      @id @default(cuid())
+  query     String   @map("query")
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId    String   @map("site_id")
+  updatedAt DateTime @map("updated_at") @updatedAt
+
+  @@index([siteId])
+  @@map("site_query_suggestions")
+}
+
 model User {
-  id                      String                                             @id @default(cuid())
-  createdAt               DateTime                 @map("created_at")        @default(now())
-  updatedAt               DateTime                 @map("updated_at")        @updatedAt
-  accountId               String                   @map("account_id")
   account                 Account                  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  accountId               String                   @map("account_id")
+  createdAt               DateTime                 @map("created_at")        @default(now())
   email                   String                   @map("email")             @unique
-  passwordHash            String                   @map("password_hash")
-  emailVerifiedAt         DateTime?                @map("email_verified_at")
-  sessions                Session[]
-  passwordRecoveryTokens  PasswordRecoveryToken[]
   emailVerificationTokens EmailVerificationToken[]
+  emailVerifiedAt         DateTime?                @map("email_verified_at")
+  id                      String                                             @id @default(cuid())
+  passwordHash            String                   @map("password_hash")
+  passwordRecoveryTokens  PasswordRecoveryToken[]
+  sessions                Session[]
+  updatedAt               DateTime                 @map("updated_at")        @updatedAt
 
   @@index([accountId])
   @@map("users")

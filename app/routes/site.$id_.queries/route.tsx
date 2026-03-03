@@ -49,27 +49,26 @@ export async function action({ request, params }: Route.ActionArgs) {
   switch (intent) {
     case "add-group": {
       const group = String(data.get("group")).trim();
-      if (!group)
-        return { ok: false as const, error: "Group name is required" };
+      if (!group) return { ok: false, error: "Group name is required" };
       await prisma.siteQuery.create({
         data: { siteId: site.id, group, query: "" },
       });
-      return { ok: true as const };
+      return { ok: true };
     }
     case "rename-group": {
       const oldGroup = String(data.get("oldGroup"));
       const newGroup = String(data.get("newGroup")).trim();
-      if (!newGroup || newGroup === oldGroup) return { ok: true as const };
+      if (!newGroup || newGroup === oldGroup) return { ok: true };
       await prisma.siteQuery.updateMany({
         where: { siteId: site.id, group: oldGroup },
         data: { group: newGroup },
       });
-      return { ok: true as const };
+      return { ok: true };
     }
     case "delete-group": {
       const group = String(data.get("group"));
       await prisma.siteQuery.deleteMany({ where: { siteId: site.id, group } });
-      return { ok: true as const };
+      return { ok: true };
     }
     case "add-query": {
       const group = String(data.get("group"));
@@ -77,7 +76,7 @@ export async function action({ request, params }: Route.ActionArgs) {
       await prisma.siteQuery.create({
         data: { siteId: site.id, group, query },
       });
-      return { ok: true as const };
+      return { ok: true };
     }
     case "update-query": {
       const id = String(data.get("id"));
@@ -85,39 +84,39 @@ export async function action({ request, params }: Route.ActionArgs) {
       const existing = await prisma.siteQuery.findFirst({
         where: { id, siteId: site.id },
       });
-      if (!existing) return { ok: false as const, error: "Query not found" };
+      if (!existing) return { ok: false, error: "Query not found" };
       await prisma.siteQuery.update({ where: { id }, data: { query } });
-      return { ok: true as const };
+      return { ok: true };
     }
     case "delete-query": {
       const id = String(data.get("id"));
       const existing = await prisma.siteQuery.findFirst({
         where: { id, siteId: site.id },
       });
-      if (!existing) return { ok: false as const, error: "Query not found" };
+      if (!existing) return { ok: false, error: "Query not found" };
       await prisma.siteQuery.delete({ where: { id } });
-      return { ok: true as const };
+      return { ok: true };
     }
     case "suggest": {
       if (!site.content)
         return {
-          ok: false as const,
+          ok: false,
           error: "No site content available to generate suggestions from.",
         };
       try {
-        const suggestions = await generateSiteQueries(site.content);
-        return { ok: true as const, suggestions };
+        const suggestions = await generateSiteQueries(site);
+        return { ok: true, suggestions };
       } catch (error) {
         captureException(error, { extra: { siteId: site.id } });
         return {
-          ok: false as const,
+          ok: false,
           error: "Couldn't generate suggestions. Please try again.",
         };
       }
     }
   }
 
-  return { ok: false as const, error: "Unknown action" };
+  return { ok: false, error: "Unknown action" };
 }
 
 export default function SiteQueriesPage({ loaderData }: Route.ComponentProps) {
