@@ -1,6 +1,6 @@
 import { Link, useSearchParams } from "react-router";
-import { Tabs, TabsList, TabsTrigger } from "~/components/ui/Tabs";
 import SitePageHeader from "~/components/ui/SitePageHeader";
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/Tabs";
 import { requireUser } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
@@ -36,7 +36,9 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   return { site, runs };
 }
 
-export default function SiteCitationsPage({ loaderData }: Route.ComponentProps) {
+export default function SiteCitationsPage({
+  loaderData,
+}: Route.ComponentProps) {
   const { site, runs } = loaderData;
   const [searchParams, setSearchParams] = useSearchParams();
   const platform = searchParams.get("platform") ?? PLATFORMS[0].name;
@@ -46,7 +48,7 @@ export default function SiteCitationsPage({ loaderData }: Route.ComponentProps) 
     <main className="mx-auto max-w-5xl space-y-6 px-6 py-12">
       <SitePageHeader site={site} title="Citations">
         <Link
-          className="text-foreground/60 text-sm hover:underline"
+          className="text-base text-foreground/60 hover:underline"
           to={`/site/${site.id}/queries`}
         >
           Edit queries →

@@ -7,8 +7,8 @@ import { WaveLoading } from "respinner";
 import { getCurrentUser } from "~/lib/auth.server";
 import recordBotVisit from "~/lib/botTracking.server";
 import prisma from "~/lib/prisma.server";
-import PageLayout from "./components/layout/PageLayout";
 import type { Route } from "./+types/root";
+import PageLayout from "./components/layout/PageLayout";
 import "./global.css";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -133,7 +133,7 @@ export function HydrateFallback() {
     <Layout>
       <main className="prose prose-lg mx-auto flex flex-col items-center justify-center gap-4">
         <WaveLoading color="#111111" count={2} />
-        <p className="text-gray-500 text-sm">Loading, please wait...</p>
+        <p className="text-gray-500 text-lg">Loading, please wait...</p>
       </main>
     </Layout>
   );

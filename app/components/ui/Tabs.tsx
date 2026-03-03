@@ -26,7 +26,7 @@ const TabsTrigger = React.forwardRef<
   <BaseUITabs.Tab
     ref={ref}
     className={twMerge(
-      "inline-flex items-center justify-center whitespace-nowrap rounded-base border-2 border-transparent px-4 py-2 font-bold text-black text-sm transition-all duration-100 hover:border-black hover:bg-white data-active:border-black data-active:bg-[#F59E0B] data-active:shadow-[2px_2px_0px_0px_black]",
+      "inline-flex items-center justify-center whitespace-nowrap rounded-base border-2 border-transparent px-4 py-2 font-bold text-base text-black transition-all duration-100 hover:border-black hover:bg-white data-active:border-black data-active:bg-[#F59E0B] data-active:shadow-[2px_2px_0px_0px_black]",
       className?.toString(),
     )}
     {...props}

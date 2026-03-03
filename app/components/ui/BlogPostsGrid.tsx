@@ -74,7 +74,7 @@ function BlogPostCard({ post }: { post: BlogPost }) {
             {post.title}
           </h2>
         </div>
-        <p className="line-clamp-3 font-medium text-black text-sm">
+        <p className="line-clamp-3 font-medium text-base text-black">
           {post.summary}
         </p>
         <div className="flex items-center gap-2 font-bold text-[#F59E0B] text-sm">

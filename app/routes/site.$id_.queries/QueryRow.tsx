@@ -22,7 +22,7 @@ export default function QueryRow({ query }: { query: SiteQueryRow }) {
       <div className="flex items-center gap-1">
         <Input
           aria-label="Query text"
-          className="h-auto flex-1 border-transparent bg-transparent px-2 py-1 text-sm shadow-none hover:border-border focus-visible:translate-x-0 focus-visible:translate-y-0 focus-visible:border-border focus-visible:shadow-none"
+          className="h-auto flex-1 border-transparent bg-transparent px-2 py-1 text-base shadow-none hover:border-border focus-visible:translate-x-0 focus-visible:translate-y-0 focus-visible:border-border focus-visible:shadow-none"
           placeholder="Enter query…"
           value={value}
           onChange={(e) => setValue(e.target.value)}

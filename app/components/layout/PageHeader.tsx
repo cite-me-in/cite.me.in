@@ -66,7 +66,7 @@ function HeaderLinks({ links }: { links: HeaderLink[] }) {
           to={link.to}
           className={({ isActive }) =>
             twMerge(
-              "whitespace-nowrap font-bold text-black text-sm",
+              "whitespace-nowrap font-bold text-base text-black",
               "transition-colors hover:text-[#F59E0B]",
               isActive && "text-[#F59E0B]",
             )
@@ -122,7 +122,7 @@ function DropdownMenu({ links }: { links: HeaderLink[] }) {
             <li key={index.toString()}>
               <Link
                 to={link.to}
-                className="block w-full px-4 py-2 text-left font-medium text-black text-sm transition-colors hover:bg-[hsl(47,100%,95%)] hover:text-[#F59E0B]"
+                className="block w-full px-4 py-2 text-left font-medium text-black transition-colors hover:bg-[hsl(47,100%,95%)] hover:text-[#F59E0B]"
                 onClick={() => setIsOpen(false)}
                 viewTransition
               >

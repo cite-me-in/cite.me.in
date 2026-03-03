@@ -67,7 +67,7 @@ export default function VisibilityCharts({ runs }: { runs: Run[] }) {
       {CHART_KEYS.map((key) => (
         <Card key={key}>
           <CardHeader>
-            <CardTitle className="text-sm">{chartConfig[key].label}</CardTitle>
+            <CardTitle>{chartConfig[key].label}</CardTitle>
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfig} className="h-36 w-full">

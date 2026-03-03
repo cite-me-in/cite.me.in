@@ -1,4 +1,4 @@
-import { cva, type VariantProps } from "class-variance-authority";
+import { type VariantProps, cva } from "class-variance-authority";
 import type * as React from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -17,7 +17,8 @@ const cardVariants = cva(
   },
 );
 
-type CardProps = React.ComponentProps<"div"> & VariantProps<typeof cardVariants>;
+type CardProps = React.ComponentProps<"div"> &
+  VariantProps<typeof cardVariants>;
 
 function Card({ className, variant, ...props }: CardProps) {
   return (
@@ -56,7 +57,7 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-description"
-      className={twMerge("font-base text-sm", className)}
+      className={twMerge("font-base text-base", className)}
       {...props}
     />
   );

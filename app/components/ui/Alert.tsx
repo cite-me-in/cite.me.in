@@ -3,7 +3,7 @@ import type * as React from "react";
 import { twMerge } from "tailwind-merge";
 
 const alertVariants = cva(
-  "relative w-full rounded-base border-2 border-border px-4 py-3 text-sm grid has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] grid-cols-[0_1fr] has-[>svg]:gap-x-3 gap-y-0.5 items-start [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current shadow-shadow",
+  "relative w-full rounded-base border-2 border-border px-4 py-3 text-base grid has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] grid-cols-[0_1fr] has-[>svg]:gap-x-3 gap-y-0.5 items-start [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current shadow-shadow",
   {
     variants: {
       variant: {
@@ -54,7 +54,7 @@ function AlertDescription({
     <div
       data-slot="alert-description"
       className={twMerge(
-        "col-start-2 grid justify-items-start gap-1 font-base text-sm [&_p]:leading-relaxed",
+        "col-start-2 grid justify-items-start gap-1 font-base text-base [&_p]:leading-relaxed",
         className,
       )}
       {...props}

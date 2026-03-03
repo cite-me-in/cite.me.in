@@ -200,7 +200,7 @@ export default function SiteBotsPage({ loaderData }: Route.ComponentProps) {
       {isEmpty ? (
         <div className="rounded-base border-2 border-black bg-secondary-background p-12 text-center shadow-shadow">
           <p className="mb-2 font-bold text-xl">No bot traffic recorded</p>
-          <p className="text-foreground/60 text-sm">
+          <p className="text-base text-foreground/60">
             Bot visits are tracked automatically. Check back once bots have
             crawled {site.domain}.
           </p>
@@ -216,11 +216,9 @@ export default function SiteBotsPage({ loaderData }: Route.ComponentProps) {
                 value: Math.round(totalVisits / period).toLocaleString(),
               },
             ].map(({ label, value }) => (
-              <Card
-                key={label}
-              >
+              <Card key={label}>
                 <CardContent className="pt-6">
-                  <p className="text-foreground/60 text-sm">{label}</p>
+                  <p className="text-base text-foreground/60">{label}</p>
                   <p className="font-bold text-2xl">{value}</p>
                 </CardContent>
               </Card>
@@ -332,7 +330,7 @@ export default function SiteBotsPage({ loaderData }: Route.ComponentProps) {
                   <TableBody>
                     {topPaths.map((row) => (
                       <TableRow key={row.path}>
-                        <TableCell className="font-mono text-sm">
+                        <TableCell className="font-mono text-base">
                           {row.path}
                         </TableCell>
                         <TableCell className="text-right">
@@ -363,7 +361,7 @@ export default function SiteBotsPage({ loaderData }: Route.ComponentProps) {
                   <TableBody>
                     {mimeTypes.map((row) => (
                       <TableRow key={row.mime}>
-                        <TableCell className="font-mono text-sm">
+                        <TableCell className="font-mono text-base">
                           {row.mime}
                         </TableCell>
                         <TableCell className="text-right">

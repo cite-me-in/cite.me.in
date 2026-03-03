@@ -57,7 +57,7 @@ export default function SuggestedQueries({
         <Card>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <p className="font-semibold text-sm">Suggested queries</p>
+              <p className="font-semibold text-base">Suggested queries</p>
               <Button
                 variant="ghost"
                 size="sm"
@@ -74,7 +74,7 @@ export default function SuggestedQueries({
               if (items.length === 0) return null;
               return (
                 <div key={group} className="space-y-1">
-                  <p className="text-foreground/50 text-xs uppercase tracking-wide">
+                  <p className="text-base text-foreground/50 uppercase tracking-wide">
                     {defaultQueryCategories.find((c) => c.group === group)
                       ?.intent ?? group}
                   </p>
@@ -102,7 +102,7 @@ function SuggestionRow({
   const added = addFetcher.data?.ok === true;
 
   return (
-    <li className="flex items-center gap-2 text-sm">
+    <li className="flex items-center gap-2 text-base">
       <span className="flex-1 text-foreground/80">{suggestion.query}</span>
       <Button
         variant="outline"

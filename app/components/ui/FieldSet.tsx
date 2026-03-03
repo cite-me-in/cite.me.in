@@ -30,7 +30,7 @@ function FieldLegend({
       className={twMerge(
         "mb-3 font-medium",
         "data-[variant=legend]:text-base",
-        "data-[variant=label]:text-sm",
+        "data-[variant=label]:text-base",
         className,
       )}
       {...props}
@@ -128,7 +128,7 @@ function FieldTitle({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="field-label"
       className={twMerge(
-        "flex w-fit items-center gap-2 font-medium text-sm leading-snug group-data-[disabled=true]/field:opacity-50",
+        "flex w-fit items-center gap-2 font-medium text-base leading-snug group-data-[disabled=true]/field:opacity-50",
         className,
       )}
       {...props}
@@ -141,7 +141,7 @@ function FieldDescription({ className, ...props }: React.ComponentProps<"p">) {
     <p
       data-slot="field-description"
       className={twMerge(
-        "font-normal text-muted-foreground text-sm leading-normal group-has-data-[orientation=horizontal]/field:text-balance",
+        "font-normal text-muted-foreground text-base leading-normal group-has-data-[orientation=horizontal]/field:text-balance",
         "nth-last-2:-mt-1 last:mt-0 [[data-variant=legend]+&]:-mt-1.5",
         "[&>a:hover]:text-primary [&>a]:underline [&>a]:underline-offset-4",
         className,
@@ -163,7 +163,7 @@ function FieldSeparator({
       data-slot="field-separator"
       data-content={!!children}
       className={twMerge(
-        "relative -my-2 h-5 text-sm group-data-[variant=outline]/field-group:-mb-2",
+        "relative -my-2 h-5 text-base group-data-[variant=outline]/field-group:-mb-2",
         className,
       )}
       {...props}
@@ -221,7 +221,7 @@ function FieldError({
     <div
       role="alert"
       data-slot="field-error"
-      className={twMerge("font-normal text-destructive text-sm", className)}
+      className={twMerge("font-normal text-base text-destructive", className)}
       {...props}
     >
       {content}

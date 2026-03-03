@@ -89,7 +89,7 @@ function HeroSection({ isSignedIn }: { isSignedIn: boolean }) {
   return (
     <section className="border-black border-b-2 bg-[#F59E0B] px-6 py-20 md:py-32">
       <div className="mx-auto max-w-4xl">
-        <div className="mb-6 inline-block rounded-base border-2 border-black bg-white px-4 py-1 font-bold text-sm shadow-[2px_2px_0px_0px_black]">
+        <div className="mb-6 inline-block rounded-base border-2 border-black bg-white px-4 py-1 font-bold text-base shadow-[2px_2px_0px_0px_black]">
           The Search Console for AI
         </div>
         <h1 className="mb-6 font-bold text-4xl text-black leading-tight md:text-6xl">
@@ -164,18 +164,16 @@ function HowItWorksSection() {
           {STEPS.map(({ number, title, body, icon: Icon }) => (
             <div
               key={number}
-              className="flex flex-col gap-4 rounded-base border-2 border-black bg-white p-6 shadow-[4px_4px_0px_0px_black]"
+              className="flex flex-col gap-4 rounded-base border-2 border-black bg-white p-6 text-base text-black shadow-[4px_4px_0px_0px_black]"
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-base border-2 border-black bg-[#F59E0B] font-bold text-black shadow-[2px_2px_0px_0px_black]">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-base border-2 border-black bg-[#F59E0B] font-bold shadow-[2px_2px_0px_0px_black]">
                   {number}
                 </div>
-                <Icon className="h-5 w-5 text-black" />
+                <Icon className="h-5 w-5" />
               </div>
-              <h3 className="font-bold text-black text-xl">{title}</h3>
-              <p className="font-medium text-black text-sm leading-relaxed">
-                {body}
-              </p>
+              <h3 className="font-bold text-xl">{title}</h3>
+              <p className="font-medium leading-relaxed">{body}</p>
             </div>
           ))}
         </div>
@@ -221,15 +219,13 @@ function ForWhoSection() {
           {PERSONAS.map(({ icon: Icon, title, body }) => (
             <div
               key={title}
-              className="flex flex-col gap-4 rounded-base border-2 border-black bg-white p-6 shadow-[4px_4px_0px_0px_black]"
+              className="flex flex-col gap-4 rounded-base border-2 border-black bg-white p-6 text-base text-black shadow-[4px_4px_0px_0px_black]"
             >
               <div className="flex h-12 w-12 items-center justify-center rounded-base border-2 border-black bg-[#F59E0B] shadow-[2px_2px_0px_0px_black]">
-                <Icon className="h-6 w-6 text-black" />
+                <Icon className="h-6 w-6" />
               </div>
-              <h3 className="font-bold text-black text-xl">{title}</h3>
-              <p className="font-medium text-black text-sm leading-relaxed">
-                {body}
-              </p>
+              <h3 className="font-bold text-xl">{title}</h3>
+              <p className="font-medium leading-relaxed">{body}</p>
             </div>
           ))}
         </div>
@@ -252,7 +248,7 @@ function BlogSection({ posts }: { posts: BlogPost[] }) {
           </h2>
           <Link
             to="/blog"
-            className="font-bold text-[#F59E0B] text-sm underline underline-offset-4 hover:text-black"
+            className="font-bold text-[#F59E0B] text-base underline underline-offset-4 hover:text-black"
           >
             View all →
           </Link>

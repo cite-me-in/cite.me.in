@@ -141,7 +141,7 @@ export default function AddSitePage() {
             </div>
           ) : (
             <fetcher.Form method="post" noValidate className="space-y-4">
-              <p className="text-foreground/60 text-sm">
+              <p className="text-base text-foreground/60">
                 Enter a full URL (https://yoursite.com) or just the domain name
                 (yoursite.com).
               </p>
@@ -218,7 +218,7 @@ function ReviewScreen({
     <main className="mx-auto max-w-2xl space-y-6 px-6 py-12">
       <div>
         <h1 className="font-heading text-2xl">Review suggested queries</h1>
-        <p className="mt-1 text-foreground/60 text-sm">
+        <p className="mt-1 text-base text-foreground/60">
           Edit, remove, or add queries before saving. These will be used to
           track your citation visibility across AI platforms.
         </p>
@@ -230,7 +230,7 @@ function ReviewScreen({
           return (
             <Card key={group}>
               <CardContent className="space-y-2">
-                <p className="font-heading text-sm">
+                <p className="font-heading text-base">
                   {defaultQueryCategories.find(
                     (c: { group: string }) => c.group === group,
                   )?.intent ?? group}
@@ -240,7 +240,7 @@ function ReviewScreen({
                     <li key={id} className="flex items-center gap-2">
                       <Input
                         aria-label={`${group} — query ${pos + 1}`}
-                        className="flex-1 text-sm"
+                        className="flex-1 text-base"
                         value={query}
                         onChange={(e) => updateQuery(id, e.target.value)}
                       />
@@ -280,7 +280,7 @@ function ReviewScreen({
         </Button>
         <Link
           to={`/site/${siteId}`}
-          className="text-foreground/60 text-sm underline"
+          className="text-base text-foreground/60 underline"
         >
           Skip
         </Link>

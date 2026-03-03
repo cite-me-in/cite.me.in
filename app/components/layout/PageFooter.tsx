@@ -25,15 +25,15 @@ const links = [
 
 export default function PageFooter() {
   return (
-    <footer className="flex flex-col gap-8 border-black border-t-2 bg-[hsl(60,100%,99%)] px-6 py-12 sm:flex-row sm:justify-between print:hidden">
-      <aside className="flex flex-col gap-4 text-black">
+    <footer className="flex flex-col gap-8 border-black border-t-2 bg-[hsl(60,100%,99%)] px-6 py-12 text-base text-black sm:flex-row sm:justify-between print:hidden">
+      <aside className="flex flex-col gap-4">
         <CiteUpIcon />
         <div className="flex flex-col gap-2">
           <p className="font-medium">
             Monitor AI citation visibility for your brand. Built for small
             businesses and seasonal sellers. AI powered.
           </p>
-          <p className="font-medium text-sm">
+          <p className="font-medium">
             © {new Date().getFullYear()} citeup.com. All rights reserved.
           </p>
         </div>
@@ -43,13 +43,11 @@ export default function PageFooter() {
       <div className="mx-auto grid w-full grid-cols-3 gap-4 md:max-w-1/2">
         {links.map((column) => (
           <nav key={column.title} className="flex flex-col gap-2">
-            <h3 className="flex flex-col gap-4 font-bold text-black">
-              {column.title}
-            </h3>
+            <h3 className="flex flex-col gap-4 font-bold">{column.title}</h3>
             {column.links.map((link) => (
               <NavLink
                 aria-label={`Go to ${link.label} page`}
-                className="font-medium text-black text-sm transition-colors hover:text-[#F59E0B]"
+                className="font-medium transition-colors hover:text-[#F59E0B]"
                 key={link.to}
                 to={link.to}
               >
@@ -67,7 +65,7 @@ function SocialLinks() {
   return (
     <div className="flex items-center gap-2">
       <Link
-        className="inline-flex items-center gap-1 font-medium text-black text-sm transition-colors hover:text-[#F59E0B]"
+        className="inline-flex items-center gap-1 font-medium transition-colors hover:text-[#F59E0B]"
         rel="noopener noreferrer"
         target="_blank"
         to="https://github.com/assaf/citeup"

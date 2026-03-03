@@ -36,7 +36,7 @@ export default function SitesPage({ loaderData }: Route.ComponentProps) {
         <h1 className="font-heading text-3xl">Your Sites</h1>
         <div className="rounded-base border-2 border-black bg-secondary-background p-8 text-center shadow-shadow">
           <p className="mb-2 font-bold text-xl">No sites yet</p>
-          <p className="mb-6 text-foreground/60 text-sm">
+          <p className="mb-6 text-base text-foreground/60">
             Add your first site to start tracking when AI platforms cite you.
           </p>
           <ActiveLink variant="button" to="/sites/new" bg="yellow">

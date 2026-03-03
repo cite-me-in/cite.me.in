@@ -77,7 +77,7 @@ export default function Post({ loaderData }: { loaderData: BlogPost }) {
           {body}
         </Streamdown>
 
-        <p className="flex items-center gap-2 pt-8 text-gray-500 text-sm">
+        <p className="flex items-center gap-2 pt-8 text-base text-gray-500">
           <HeartIcon className="h-4 w-4 text-red-500" fill="currentColor" />
           <span>
             Brought to you by{" "}
