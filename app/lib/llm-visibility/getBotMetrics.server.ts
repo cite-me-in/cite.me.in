@@ -8,7 +8,7 @@ export interface BotMetrics {
 
 export async function getBotMetrics(
 	siteId: string,
-	days: number = 14,
+	days = 14,
 ): Promise<BotMetrics> {
 	const now = Temporal.Now.plainDateISO();
 	const from = now.subtract({ days });
