@@ -94,7 +94,7 @@ export async function action({
   if (!content) return { siteId: site.id };
 
   try {
-    const suggestions = await generateSiteQueries(content);
+    const suggestions = await generateSiteQueries(site);
     return { siteId: site.id, suggestions };
   } catch (error) {
     captureException(error, { extra: { siteId: site.id } });

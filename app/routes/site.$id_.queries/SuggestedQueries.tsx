@@ -6,10 +6,7 @@ import { twMerge } from "tailwind-merge";
 import { Alert, AlertTitle } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent } from "~/components/ui/Card";
-import defaultQueryCategories from "~/lib/llm-visibility/defaultQueryCategories";
 import type { action } from "./route";
-
-const GROUPS = Object.keys(defaultQueryCategories);
 
 export default function SuggestedQueries({
   hasContent,

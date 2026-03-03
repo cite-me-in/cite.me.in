@@ -9,16 +9,16 @@ vi.mock("~/lib/llm-visibility/anthropic", () => ({
 }));
 
 const MOCK_QUERIES = [
-  { group: "1.discovery", query: "How do I find short-term retail space?" },
-  { group: "1.discovery", query: "Best platforms for pop-up shops?" },
-  { group: "1.discovery", query: "Where to rent a temporary store?" },
-  { group: "2.active_search", query: "Lease a kiosk in a mall for 3 months" },
-  { group: "2.active_search", query: "Short-term retail lease options" },
-  { group: "2.active_search", query: "Pop-up shop rental near me" },
-  { group: "3.comparison", query: "Rentail vs Storefront alternatives" },
-  { group: "3.comparison", query: "Best temporary retail platforms compared" },
+  { group: "1. discovery", query: "How do I find short-term retail space?" },
+  { group: "1. discovery", query: "Best platforms for pop-up shops?" },
+  { group: "1. discovery", query: "Where to rent a temporary store?" },
+  { group: "2. active_search", query: "Lease a kiosk in a mall for 3 months" },
+  { group: "2. active_search", query: "Short-term retail lease options" },
+  { group: "2. active_search", query: "Pop-up shop rental near me" },
+  { group: "3. comparison", query: "Rentail vs Storefront alternatives" },
+  { group: "3. comparison", query: "Best temporary retail platforms compared" },
   {
-    group: "3.comparison",
+    group: "3. comparison",
     query: "Which pop-up rental site is most reliable?",
   },
 ];
@@ -49,10 +49,7 @@ describe("generateSiteQueries", () => {
     expect(suggestions).toEqual(MOCK_QUERIES);
   });
 
-  it("should save suggestions to the database", async () => {
-    const { generateText } = await import("ai");
-    vi.mocked(generateText).mockResolvedValue({ output: MOCK_QUERIES } as any);
-
+  it("should store suggestions in the database", async () => {
     await generateSiteQueries(site);
     const suggestions = await prisma.siteQuerySuggestion.findMany({
       where: { siteId: site.id },
