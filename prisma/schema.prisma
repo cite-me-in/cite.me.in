@@ -45,6 +45,18 @@ model BotVisit {
   @@map("bot_visits")
 }
 
+model BotInsight {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @map("created_at") @default(now())
+  updatedAt   DateTime @map("updated_at") @updatedAt
+  siteId      String   @map("site_id") @unique
+  site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  content     String   @map("content")
+  generatedAt DateTime @map("generated_at")
+
+  @@map("bot_insights")
+}
+
 model CitationQuery {
   id           String                                 @id @default(cuid())
   createdAt    DateTime         @map("created_at")    @default(now())
@@ -129,6 +141,7 @@ model Site {
   content      String?            @map("content")
   citationRuns CitationQueryRun[]
   botVisits    BotVisit[]
+  botInsight   BotInsight?
   siteQueries  SiteQuery[]
 
   @@index([domain])
