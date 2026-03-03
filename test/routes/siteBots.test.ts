@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { beforeAll, describe, it } from "vitest";
+import { afterAll, beforeAll, describe, it } from "vitest";
 import { removeElements } from "~/lib/html/parseHTML";
 import prisma from "~/lib/prisma.server";
 import type { User } from "~/prisma";
@@ -221,6 +221,10 @@ describe("site bots page", () => {
         },
       });
       page = await goto(`/site/${siteId}/bots?from=2026-01-27&until=2026-02-26`);
+    });
+
+    afterAll(async () => {
+      await prisma.botInsight.deleteMany({ where: { siteId } });
     });
 
     it("shows the insight text", async () => {
