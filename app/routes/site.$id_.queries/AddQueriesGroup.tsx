@@ -6,7 +6,7 @@ import { Button } from "~/components/ui/Button";
 import { Input } from "~/components/ui/Input";
 import type { action } from "./route";
 
-export default function QueriesAddGroup() {
+export default function AddQueriesGroup() {
   const addGroupFetcher = useFetcher<typeof action>();
   const [isAddingGroup, setIsAddingGroup] = useState(false);
   const [newGroupName, setNewGroupName] = useState("");

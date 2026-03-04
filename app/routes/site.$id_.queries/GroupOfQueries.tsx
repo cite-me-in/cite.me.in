@@ -1,4 +1,4 @@
-import { AlertCircleIcon, PlusIcon, TrashIcon } from "lucide-react";
+import { AlertCircleIcon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useFetcher } from "react-router";
 import { Alert, AlertTitle } from "~/components/ui/Alert";
@@ -6,9 +6,19 @@ import { Button } from "~/components/ui/Button";
 import { Card, CardContent, CardFooter } from "~/components/ui/Card";
 import { Input } from "~/components/ui/Input";
 import SingleQuery from "./SingleQuery";
+import TrashButton from "./TrashButton";
 import type { action } from "./route";
 
-export default function QueriesGroup({
+/**
+ * A component that displays a group of queries, including a form to rename the
+ * group and a list of queries, each with a form to update the query and a button
+ * to delete the query.
+ *
+ * @param group - The name of the group, e.g. "discovery" or "active_search"
+ * @param queries - The queries in the group, each with an id, group, and query
+ * @returns A component that displays a group of queries
+ */
+export default function GroupOfQueries({
   group,
   queries,
 }: {
@@ -73,12 +83,8 @@ export default function QueriesGroup({
               );
             }}
           />
-          <Button
-            variant="ghost"
-            className="transition-all hover:border-red-600 hover:shadow-[3px_3px_0px_0px_red] focus-visible:border-red-600 focus-visible:shadow-[3px_3px_0px_0px_red]"
-            size="sm"
-            type="button"
-            aria-label="Delete group"
+          <TrashButton
+            ariaLabel="Delete group"
             onClick={() => {
               if (
                 confirm(
@@ -90,9 +96,7 @@ export default function QueriesGroup({
                   { method: "post" },
                 );
             }}
-          >
-            <TrashIcon className="h-4 w-4" />
-          </Button>
+          />
         </div>
 
         <ul className="space-y-0.5">

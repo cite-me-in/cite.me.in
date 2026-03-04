@@ -1,9 +1,9 @@
-import { AlertCircleIcon, TrashIcon } from "lucide-react";
+import { AlertCircleIcon } from "lucide-react";
 import { useState } from "react";
 import { useFetcher } from "react-router";
 import { Alert, AlertTitle } from "~/components/ui/Alert";
-import { Button } from "~/components/ui/Button";
 import { Input } from "~/components/ui/Input";
+import TrashButton from "./TrashButton";
 import type { action } from "./route";
 
 export default function SingleQuery({
@@ -70,12 +70,8 @@ export default function SingleQuery({
             }
           }}
         />
-        <Button
-          variant="ghost"
-          className="transition-all hover:border-red-600 hover:shadow-[3px_3px_0px_0px_red] focus-visible:border-red-600 focus-visible:shadow-[3px_3px_0px_0px_red]"
-          size="sm"
-          type="button"
-          aria-label="Delete query"
+        <TrashButton
+          ariaLabel="Delete query"
           onClick={() => {
             if (
               confirm(
@@ -87,9 +83,7 @@ export default function SingleQuery({
                 { method: "post" },
               );
           }}
-        >
-          <TrashIcon className="h-4 w-4" />
-        </Button>
+        />
       </div>
       {updateFetcher.data?.ok === false && (
         <Alert variant="outline">
