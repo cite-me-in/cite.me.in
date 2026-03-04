@@ -2,9 +2,10 @@
  * NOTE: Setup code to run only once before all tests.
  */
 
-import { exec, execFile } from "node:child_process";
+import { execFile } from "node:child_process";
 import { rm } from "node:fs/promises";
 import { promisify } from "node:util";
+import prisma from "~/lib/prisma.server";
 import { port } from "./launchBrowser";
 import { closeServer, launchServer } from "./launchServer";
 import { removeNewHTML } from "./toMatchInnerHTML";
@@ -27,11 +28,21 @@ export default async function setup() {
 
   // Launch server and start test env MSW handlers
   await launchServer(port);
+
+  // Cleanup database: we do this here for Playwright tests, and we do it in the
+  // setupTestSuite for the unit tests
+  await prisma.account.deleteMany();
 }
 
 export async function teardown() {
-  await promisify(exec)(
-    'terminal-notifier -sound default -title "Test Suite" -message "Done!"',
-  );
+  if (!process.env.CI)
+    await promisify(execFile)("terminal-notifier", [
+      "-sound",
+      "default",
+      "-title",
+      "Test Suite",
+      "-message",
+      "Done!",
+    ]);
   await closeServer();
 }

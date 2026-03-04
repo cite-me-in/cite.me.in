@@ -2,15 +2,10 @@ import test, { type Page, expect } from "@playwright/test";
 import prisma from "~/lib/prisma.server";
 import type { Site, User } from "~/prisma";
 import { goto } from "~/test/helpers/launchBrowser";
-import { teardown } from "../helpers/setupGlobal";
 
 let page: Page;
 let user: User | null;
 let site: Site | null;
-
-test.beforeAll(async () => {
-  await prisma.account.deleteMany();
-});
 
 // Integration test: Ensure Playwright loads homepage correctly, for smoke-checking infra
 test("loads homepage with Playwright", async () => {
@@ -92,8 +87,4 @@ test("verifies queries saved in DB", async () => {
   expect(queries[0].query).toBe("Query 1");
   expect(queries[3].group).toBe("2. active_search");
   expect(queries[3].query).toBe("Query 4");
-});
-
-test.afterAll(async () => {
-  await teardown();
 });
