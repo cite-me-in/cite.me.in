@@ -1,6 +1,6 @@
 import { resolve } from "node:path";
 import { defineConfig } from "prisma/config";
-import envVars from "~/lib/envVars";
+import envVars from "./app/lib/envVars";
 
 // @see https://www.prisma.io/docs/orm/overview/databases/supabase#specific-considerations
 export default defineConfig({
