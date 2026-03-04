@@ -16,18 +16,17 @@ import {
  *
  * @param site - The site to query.
  * @param queries - The queries to query.
- * @param repetitions - The number of times to repeat each query. If the last
- *   run is newer than this date, the queries will not be run again.
+ * @param repetitions - The number of times to repeat each query. Defaults to 1.
  * @returns The results of the queries.
  */
 export default async function queryAccount({
   site,
   queries,
-  repetitions,
+  repetitions = 1,
 }: {
   site: Site;
   queries: { query: string; category: string }[];
-  repetitions: number;
+  repetitions?: number;
 }) {
   const newerThan = Temporal.Now.instant()
     .subtract({ hours: 24 })

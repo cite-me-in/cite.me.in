@@ -133,14 +133,14 @@ async function singleQueryRepetition({
 
     await prisma.citationQuery.create({
       data: {
-        runId,
-        repetition: repetition,
-        query,
-        category: category,
-        text,
-        position: index >= 0 ? index : null,
+        category,
         citations,
         extraQueries,
+        position: index >= 0 ? index : null,
+        query,
+        repetition,
+        runId,
+        text,
       },
     });
   } catch (error) {
