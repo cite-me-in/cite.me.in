@@ -89,5 +89,7 @@ test("verifies queries saved in DB", async () => {
   });
   expect(queries.length).toBeGreaterThan(0);
   expect(queries[0].group).toBe("1. discovery");
-  expect(queries[0].query).toBe("what is example domain used for");
+  expect(queries[0].query).toBe("Query 1");
+  expect(queries[3].group).toBe("2. active_search");
+  expect(queries[3].query).toBe("Query 4");
 });

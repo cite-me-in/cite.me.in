@@ -1,4 +1,3 @@
-import debug from "debug";
 import dotenv from "dotenv";
 import env from "env-var";
 
@@ -26,12 +25,5 @@ const envVars = {
   RESEND_API_KEY: env.get("RESEND_API_KEY").required(false).asString(),
   SESSION_SECRET: env.get("SESSION_SECRET").required().asString(),
 };
-
-const logger = debug("server");
-
-logger(
-  "✅ envVars.ts loaded ANTHROPIC_API_KEY =",
-  envVars.ANTHROPIC_API_KEY?.substring(0, 10),
-);
 
 export default envVars;
