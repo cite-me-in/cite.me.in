@@ -10,6 +10,40 @@ const handlers = [
     HttpResponse.json({ id: crypto.randomUUID() }),
   ),
 
+  // Mock Anthropic API for LLM calls (query suggestions)
+  http.post("https://api.anthropic.com/v1/messages", ({ request }) => {
+    logger("Mocking LLM response for query suggestions");
+    return HttpResponse.json({
+      id: "msg_test_" + crypto.randomUUID(),
+      type: "message",
+      role: "assistant",
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify({
+            queries: [
+              { group: "1.discovery", query: "Query 1" },
+              { group: "1.discovery", query: "Query 2" },
+              { group: "1.discovery", query: "Query 3" },
+              { group: "2.active_search", query: "Query 4" },
+              { group: "2.active_search", query: "Query 5" },
+              { group: "2.active_search", query: "Query 6" },
+              { group: "3.comparison", query: "Query 7" },
+              { group: "3.comparison", query: "Query 8" },
+              { group: "3.comparison", query: "Query 9" },
+            ],
+          }),
+        },
+      ],
+      model: "claude-3-5-sonnet-20241022",
+      stop_reason: "end_turn",
+      usage: {
+        input_tokens: 1000,
+        output_tokens: 500,
+      },
+    });
+  }),
+
   // Allow all localhost requests to pass through (for dev server communication)
   http.all(
     ({ request }: { request: Request }) =>
