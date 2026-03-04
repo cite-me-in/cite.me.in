@@ -4,6 +4,17 @@ on:
   - push
   - workflow_dispatch
 
+env:
+  ANTHROPIC_API_KEY: "sk-ant-"
+  DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/citeup"
+  DEBUG: ""
+  GOOGLE_GENERATIVE_AI_API_KEY: "AIza"
+  NODE_OPTIONS: "--max-old-space-size=3096"
+  OPENAI_API_KEY: "sk-proj-"
+  PERPLEXITY_API_KEY: "pk-prod-"
+  SESSION_SECRET: "secret"
+  RESEND_API_KEY: "preq_test_..."
+
 jobs:
   deploy:
     name: Deploy
@@ -51,7 +62,6 @@ jobs:
           pnpm prisma db push
         env:
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/citeup"
-          NODE_ENV: "test"
 
       - name: Check secrets
         run: pnpm secretlint "**/*" --format stylish
@@ -73,28 +83,10 @@ jobs:
           NODE_OPTIONS: "--max-old-space-size=3096"
 
       - name: Run Tests
-        run: pnpm --expose-gc --max-old-space-size=4096 vitest run
-        env:
-          ANTHROPIC_API_KEY: "sk-ant-"
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/citeup"
-          DEBUG: ""
-          GOOGLE_GENERATIVE_AI_API_KEY: "AIza"
-          OPENAI_API_KEY: "sk-proj-"
-          PERPLEXITY_API_KEY: "pk-prod-"
-          SESSION_SECRET: "secret"
-          RESEND_API_KEY: "preq_test_..."
+        run: pnpm --expose-gc vitest run
 
       - name: Run Playwright Tests
-        run: pnpm --max-old-space-size=4096 playwright test
-        env:
-          ANTHROPIC_API_KEY: "sk-ant-"
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/citeup"
-          DEBUG: ""
-          GOOGLE_GENERATIVE_AI_API_KEY: "AIza"
-          OPENAI_API_KEY: "sk-proj-"
-          PERPLEXITY_API_KEY: "pk-prod-"
-          SESSION_SECRET: "secret"
-          RESEND_API_KEY: "preq_test_..."
+        run: pnpm playwright test
 
       - name: Upload Playwright Test Results
         uses: actions/upload-artifact@v4
