@@ -115,7 +115,7 @@ export default function SiteQueriesPage({ loaderData }: Route.ComponentProps) {
   const { site, groups } = loaderData;
 
   return (
-    <main className="mx-auto max-w-3xl space-y-6 px-6 py-12">
+    <main className="mx-auto w-full max-w-5xl space-y-6 px-6 py-12">
       <SitePageHeader
         site={site}
         title="Citation Queries"

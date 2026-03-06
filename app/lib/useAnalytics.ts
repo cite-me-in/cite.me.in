@@ -7,7 +7,8 @@ import GA4 from "react-ga4";
  */
 export function useGoogleAnalytics() {
   useEffect(() => {
-    if (import.meta.env.PROD) GA4.initialize("G-HLE5G8GC5Y");
+    const measurementId = import.meta.env.VITE_GA4_MEASUREMENT_ID;
+    if (measurementId) GA4.initialize(measurementId);
   }, []);
 }
 

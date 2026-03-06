@@ -81,7 +81,7 @@ function AllSuggestions({
   setDismissed: (dismissed: boolean) => void;
 }) {
   return (
-    <Card>
+    <Card variant="yellow">
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between">
           <p className="font-semibold text-base">Suggested queries</p>
@@ -90,7 +90,7 @@ function AllSuggestions({
             size="sm"
             type="button"
             onClick={() => setDismissed(true)}
-            aria-label="Dismiss suggestions"
+            title="Dismiss suggestions"
           >
             <XIcon className="h-4 w-4" />
           </Button>
@@ -142,6 +142,7 @@ function SingleSuggestion({
             { method: "post" },
           )
         }
+        title="Add this suggestion to your queries"
       >
         {added ? "Added" : <PlusIcon className="h-3 w-3" />}
       </Button>
@@ -164,6 +165,7 @@ function AskForSuggestionsButton({
         type="button"
         disabled={isLoading}
         onClick={suggestQueries}
+        title="Use AI to suggest queries for this site"
       >
         <SparklesIcon
           className={twMerge(isLoading ? "animate-spin" : "", "size-4")}

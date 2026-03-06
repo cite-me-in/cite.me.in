@@ -85,7 +85,6 @@ export default function GroupOfQueries({
             }}
           />
           <TrashButton
-            ariaLabel="Delete group"
             onClick={() => {
               if (
                 confirm(
@@ -97,6 +96,7 @@ export default function GroupOfQueries({
                   { method: "post" },
                 );
             }}
+            title="Delete this group of queries"
           />
         </div>
 
@@ -118,6 +118,7 @@ export default function GroupOfQueries({
               { method: "post" },
             );
           }}
+          title="Add a query to this group"
         >
           <PlusIcon className="h-4 w-4" />
           Add query

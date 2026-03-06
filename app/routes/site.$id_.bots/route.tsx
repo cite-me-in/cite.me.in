@@ -185,7 +185,7 @@ export default function SiteBotsPage({ loaderData }: Route.ComponentProps) {
   const isEmpty = totalVisits === 0;
 
   return (
-    <main className="mx-auto max-w-5xl space-y-6 px-6 py-12">
+    <main className="mx-auto w-full max-w-5xl space-y-6 px-6 py-12">
       <SitePageHeader site={site} title="Bot Traffic">
         <DateRangeSelector />
       </SitePageHeader>

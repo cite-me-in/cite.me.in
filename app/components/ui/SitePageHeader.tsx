@@ -27,6 +27,7 @@ export default function SitePageHeader({
         </p>
         <h1 className="font-heading text-3xl">{title}</h1>
       </div>
+      {children}
       {backTo && (
         <ActiveLink
           className="text-base text-foreground/60 hover:underline"
@@ -36,7 +37,6 @@ export default function SitePageHeader({
           <ArrowRightIcon className="size-4" />
         </ActiveLink>
       )}
-      {children}
     </div>
   );
 }

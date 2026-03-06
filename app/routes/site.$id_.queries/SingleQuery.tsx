@@ -71,7 +71,6 @@ export default function SingleQuery({
           }}
         />
         <TrashButton
-          ariaLabel="Delete query"
           onClick={() => {
             if (
               confirm(
@@ -83,6 +82,7 @@ export default function SingleQuery({
                 { method: "post" },
               );
           }}
+          title="Delete this query"
         />
       </div>
       {updateFetcher.data?.ok === false && (

@@ -45,25 +45,28 @@ export default function SiteCitationsPage({
   const run = runs.find((r) => r.platform === platform);
 
   return (
-    <main className="mx-auto max-w-5xl space-y-6 px-6 py-12">
+    <main className="mx-auto w-full max-w-5xl space-y-6 px-6 py-12">
       <SitePageHeader
         site={site}
         title="Citations"
         backTo={{ label: "Edit queries", path: `/site/${site.id}/queries` }}
       />
 
-      <Tabs
-        defaultValue={platform}
-        onValueChange={(platform) => setSearchParams({ platform })}
-      >
-        <TabsList>
-          {PLATFORMS.map((platform) => (
-            <TabsTrigger key={platform.name} value={platform.name}>
-              {platform.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
+      <div className="flex justify-center">
+        <Tabs
+          className="mx-auto"
+          defaultValue={platform}
+          onValueChange={(platform) => setSearchParams({ platform })}
+        >
+          <TabsList>
+            {PLATFORMS.map((platform) => (
+              <TabsTrigger key={platform.name} value={platform.name}>
+                {platform.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+      </div>
 
       {run ? (
         <>

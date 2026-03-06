@@ -1,6 +1,6 @@
 import { captureException } from "@sentry/react-router";
 import { groupBy, sortBy } from "es-toolkit";
-import { AlertCircleIcon, PlusIcon, TrashIcon } from "lucide-react";
+import { AlertCircleIcon, CoffeeIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
 import { redirect, useFetcher } from "react-router";
 import z from "zod";
@@ -21,6 +21,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const suggestions = await prisma.siteQuerySuggestion.findMany({
     where: { siteId: params.id },
   });
+  if (suggestions.length === 0) throw redirect(`/site/${params.id}/queries`);
   return { siteId: params.id, suggestions };
 }
 
@@ -110,7 +111,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
   }
 
   return (
-    <main className="mx-auto max-w-2xl space-y-6 px-6 py-12">
+    <main className="mx-auto w-full max-w-5xl space-y-6 px-6 py-12">
       <div>
         <h1 className="font-heading text-2xl">Review suggested queries</h1>
         <p className="mt-1 text-base text-foreground/60">
@@ -190,6 +191,20 @@ export default function Index({ loaderData }: Route.ComponentProps) {
           Skip
         </ActiveLink>
       </div>
+
+      {isProcessing && (
+        <p className="flex flex-row items-start gap-2 text-base text-foreground/60">
+          <span>
+            <CoffeeIcon className="size-6" />
+          </span>
+          <span>
+            Be patient, nothing will happen for a few seconds. We're going to
+            check these queries against the domain, asking Claude, OpenAI,
+            Google, and Perplexity to see if they return any citations. Keep
+            this page open to see the progress.
+          </span>
+        </p>
+      )}
     </main>
   );
 }

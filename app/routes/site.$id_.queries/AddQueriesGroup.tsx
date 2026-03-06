@@ -50,7 +50,7 @@ export default function AddQueriesGroup() {
           />
           <Button
             onClick={cancelAddingGroup}
-            title="Cancel"
+            title="Cancel adding a group of queries"
             type="button"
             variant="ghost"
           >
@@ -64,6 +64,7 @@ export default function AddQueriesGroup() {
             size="sm"
             type="button"
             onClick={() => setIsAddingGroup(true)}
+            title="Add a group of queries"
           >
             <PlusIcon className="h-4 w-4" />
             Add group
