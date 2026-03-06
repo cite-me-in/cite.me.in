@@ -21,8 +21,8 @@ export default function AuthForm({
         className={twMerge(
           "w-full max-w-md space-y-4",
           "bg-secondary-background text-secondary-foreground",
-          "fade-in-0 zoom-in-95 animate-in duration-300",
         )}
+        fadeIn={true}
       >
         <CardHeader>
           <CardTitle>{title}</CardTitle>

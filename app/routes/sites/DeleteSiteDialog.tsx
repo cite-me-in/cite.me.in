@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/components/ui/dialog";
+} from "~/components/ui/Dialog";
 import { Input } from "~/components/ui/Input";
 
 export default function DeleteSiteDialog({

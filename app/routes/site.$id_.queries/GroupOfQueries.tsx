@@ -68,6 +68,7 @@ export default function GroupOfQueries({
         <div className="flex items-center gap-2">
           <Input
             aria-label="Group name"
+            className="font-bold"
             variant="ghost"
             value={groupName}
             onChange={(e) => setGroupName(e.target.value)}

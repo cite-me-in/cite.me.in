@@ -2,7 +2,11 @@ export const handle = { siteNav: true };
 
 import { captureException } from "@sentry/react-router";
 import SitePageHeader from "~/components/ui/SitePageHeader";
-import addSiteQueries, { updateSiteQuery } from "~/lib/addSiteQueries";
+import addSiteQueries, {
+  addSiteQueryGroup,
+  renameSiteQueryGroup,
+  updateSiteQuery,
+} from "~/lib/addSiteQueries";
 import { requireUser } from "~/lib/auth.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import prisma from "~/lib/prisma.server";
@@ -51,23 +55,17 @@ export async function action({ request, params }: Route.ActionArgs) {
     case "add-group": {
       const group = data.get("group")?.toString().trim();
       if (!group) return { ok: false, error: "Group name is required" };
-      await prisma.siteQuery.create({
-        data: { siteId: site.id, group, query: "" },
-      });
+      await addSiteQueryGroup(site, group);
       return { ok: true };
     }
     case "rename-group": {
-      const oldGroup = data.get("oldGroup")?.toString().trim();
-      const newGroup = data.get("newGroup")?.toString().trim();
-      if (!newGroup || newGroup === oldGroup) return { ok: true };
-      await prisma.siteQuery.updateMany({
-        where: { siteId: site.id, group: oldGroup },
-        data: { group: newGroup },
-      });
+      const oldGroup = data.get("oldGroup")?.toString() ?? "";
+      const newGroup = data.get("newGroup")?.toString() ?? "";
+      await renameSiteQueryGroup({ site, oldGroup, newGroup });
       return { ok: true };
     }
     case "delete-group": {
-      const group = data.get("group")?.toString().trim();
+      const group = data.get("group")?.toString();
       await prisma.siteQuery.deleteMany({ where: { siteId: site.id, group } });
       return { ok: true };
     }
@@ -79,7 +77,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     }
     case "update-query": {
       const id = data.get("id")?.toString() ?? "";
-      const query = data.get("query")?.toString().trim() ?? "";
+      const query = data.get("query")?.toString() ?? "";
       const existing = await prisma.siteQuery.findFirst({
         where: { id, siteId: site.id },
       });

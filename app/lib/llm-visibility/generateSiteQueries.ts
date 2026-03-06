@@ -1,5 +1,6 @@
 import { Output, generateText } from "ai";
 import { z } from "zod";
+import prisma from "~/lib/prisma.server";
 import type { Site } from "~/prisma";
 import { fetchPageContent } from "../sites.server";
 import { haiku } from "./anthropic";
@@ -51,5 +52,13 @@ Rules:
       },
     ],
   });
-  return output;
+
+  const suggestions = await prisma.siteQuerySuggestion.createManyAndReturn({
+    data: output.map(({ group, query }) => ({
+      siteId: site.id,
+      group,
+      query,
+    })),
+  });
+  return suggestions;
 }

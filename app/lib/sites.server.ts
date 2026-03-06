@@ -1,6 +1,9 @@
+import { Temporal } from "@js-temporal/polyfill";
 import dns from "node:dns";
 import parseHTMLTree, { getBodyContent } from "~/lib/html/parseHTML";
 import type { Account, Site } from "~/prisma";
+import calculateCitationMetrics from "./llm-visibility/calculateCitationMetrics";
+import { getBotMetrics } from "./llm-visibility/getBotMetrics.server";
 import prisma from "./prisma.server";
 
 /**
@@ -97,4 +100,78 @@ export async function fetchPageContent(domain: string): Promise<string | null> {
   } catch {
     return null;
   }
+}
+
+/**
+ * Load sites with metrics for a given account. The metrics are calculated for
+ * the last 14 days.
+ *
+ * @param accountId - The account ID to load sites for.
+ * @returns An array of sites with metrics.
+ */
+export async function loadSitesWithMetrics(accountId: string): Promise<
+  {
+    avgScore: number;
+    site: Site;
+    totalBotVisits: number;
+    totalCitations: number;
+    uniqueBots: number;
+  }[]
+> {
+  const sites = await prisma.site.findMany({
+    where: { accountId },
+    orderBy: { domain: "asc" },
+  });
+
+  // Calculate metrics for each site
+  const sitesWithMetrics = await Promise.all(
+    sites.map(async (site) => {
+      // Get citation metrics
+      const gte = new Date(
+        Temporal.Now.plainDateISO().subtract({ days: 14 }).toJSON(),
+      );
+
+      const citationRuns = await prisma.citationQueryRun.findMany({
+        include: { queries: true },
+        where: { siteId: site.id, createdAt: { gte } },
+      });
+
+      const allQueries = citationRuns.flatMap((run) => run.queries);
+      const citationMetrics = calculateCitationMetrics(allQueries, site.domain);
+
+      // Get bot metrics
+      const botMetrics = await getBotMetrics(site.id, 14);
+
+      return {
+        site,
+        totalCitations: citationMetrics.totalCitations,
+        avgScore: citationMetrics.avgScore,
+        totalBotVisits: botMetrics.totalBotVisits,
+        uniqueBots: botMetrics.uniqueBots,
+      };
+    }),
+  );
+
+  return sitesWithMetrics;
+}
+
+/**
+ * Delete a site from an account.
+ *
+ * @param accountId - The account ID to delete the site from.
+ * @param siteId - The ID of the site to delete.
+ * @returns The deleted site.
+ */
+export async function deleteSite({
+  accountId,
+  siteId,
+}: {
+  accountId: string;
+  siteId: string;
+}): Promise<void> {
+  // Verify site exists and belongs to user
+  const site = await prisma.site.findFirst({
+    where: { id: siteId, accountId: accountId },
+  });
+  if (site) await prisma.site.delete({ where: { id: siteId } });
 }

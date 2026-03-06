@@ -9,22 +9,29 @@ const cardVariants = cva(
       variant: {
         default: "bg-secondary-background text-foreground",
         ghost: "bg-transparent border-transparent shadow-none text-foreground",
+        yellow: "bg-[hsl(47,100%,95%)]",
+      },
+      fadeIn: {
+        true: "fade-in-0 zoom-in-95 animate-in duration-300",
       },
     },
     defaultVariants: {
       variant: "default",
+      fadeIn: false,
     },
   },
 );
 
-type CardProps = React.ComponentProps<"div"> &
-  VariantProps<typeof cardVariants>;
-
-function Card({ className, variant, ...props }: CardProps) {
+function Card({
+  className,
+  variant,
+  fadeIn,
+  ...props
+}: React.ComponentProps<"div"> & VariantProps<typeof cardVariants>) {
   return (
     <div
       data-slot="card"
-      className={twMerge(cardVariants({ variant }), className)}
+      className={twMerge(cardVariants({ variant, fadeIn }), className)}
       {...props}
     />
   );

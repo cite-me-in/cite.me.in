@@ -1,25 +1,24 @@
-import { AlertCircleIcon } from "lucide-react";
-import { Link, useFetcher } from "react-router";
-import { Alert, AlertTitle } from "~/components/ui/Alert";
+import { Link, type useFetcher } from "react-router";
 import type { Site } from "~/prisma";
 import DeleteSiteDialog from "./DeleteSiteDialog";
 import type { action } from "./route";
 
 export default function SiteEntry({
+  fetcher,
   site,
   totalCitations,
   avgScore,
   totalBotVisits,
   uniqueBots,
 }: {
+  fetcher: ReturnType<typeof useFetcher<typeof action>>;
   site: Site;
   totalCitations: number;
   avgScore: number;
   totalBotVisits: number;
   uniqueBots: number;
 }) {
-  const deleteFetcher = useFetcher<typeof action>();
-  const isSubmitting = deleteFetcher.state === "submitting";
+  const isSubmitting = fetcher.state === "submitting";
 
   return (
     <div
@@ -38,7 +37,7 @@ export default function SiteEntry({
         <DeleteSiteDialog
           domain={site.domain}
           onConfirm={() => {
-            deleteFetcher.submit({ siteId: site.id }, { method: "DELETE" });
+            fetcher.submit({ siteId: site.id }, { method: "DELETE" });
           }}
           isSubmitting={isSubmitting}
         />
@@ -70,13 +69,6 @@ export default function SiteEntry({
           <p className="font-bold text-3xl">{uniqueBots.toLocaleString()}</p>
         </div>
       </Link>
-
-      {deleteFetcher.data?.error && (
-        <Alert variant="outline">
-          <AlertCircleIcon className="h-4 w-4" />
-          <AlertTitle>{deleteFetcher.data.error}</AlertTitle>
-        </Alert>
-      )}
     </div>
   );
 }
