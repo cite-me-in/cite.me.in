@@ -1,8 +1,9 @@
-import { expect } from "@playwright/test";
+import { type Page, expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vitest";
 import { hashPassword } from "~/lib/auth.server";
 import { removeElements } from "~/lib/html/parseHTML";
 import prisma from "~/lib/prisma.server";
+import type { Site, User } from "~/prisma";
 import { goto, port } from "../helpers/launchBrowser";
 import { signIn } from "../helpers/signIn";
 
@@ -20,9 +21,12 @@ describe("unauthenticated access", () => {
 });
 
 describe("sites route", () => {
+  let page: Page;
+  let user: User;
+
   beforeAll(async () => {
     await prisma.account.deleteMany();
-    const user = await prisma.user.create({
+    user = await prisma.user.create({
       data: {
         id: "user-sites-test",
         email: EMAIL,
@@ -31,30 +35,170 @@ describe("sites route", () => {
       },
     });
     await signIn(user.id);
+    page = await goto("/sites");
   });
 
   describe("empty state", () => {
-    let page: Awaited<ReturnType<typeof goto>>;
-
-    beforeAll(async () => {
-      page = await goto("/sites");
-    });
-
-    it("shows add site link", async () => {
+    it("shows add site form", async () => {
       await expect(
-        page.getByRole("link", { name: /add.*site/i }),
+        page.getByRole("button", { name: "Add Site" }),
       ).toBeVisible();
     });
 
-    it("HTML matches baseline", { timeout: 30_000 }, async () => {
+    it("shows URL input and descriptive text", async () => {
+      await expect(
+        page.getByRole("textbox", { name: "Website URL or domain" }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Add Site" }),
+      ).toBeVisible();
+      await expect(page.getByText("Enter a full URL")).toBeVisible();
+    });
+
+    it("HTML matches baseline", async () => {
       await expect(page.locator("main")).toMatchInnerHTML({
-        name: "sites-empty",
+        name: "sites.empty",
       });
     });
 
-    it("screenshot matches baseline", { timeout: 30_000 }, async () => {
+    it("screenshot matches baseline", async () => {
       await expect(page.locator("main")).toMatchScreenshot({
-        name: "sites-empty",
+        name: "sites.empty",
+      });
+    });
+
+    it("shows error for invalid URL", async () => {
+      await page
+        .getByRole("textbox", { name: "Website URL or domain" })
+        .fill("http://192.168.1.1");
+      await page.getByRole("button", { name: "Add Site" }).click();
+      await expect(
+        page.getByText("Enter a valid website URL or domain name"),
+      ).toBeVisible();
+    });
+
+    it("shows error for localhost", async () => {
+      await page
+        .getByRole("textbox", { name: "Website URL or domain" })
+        .fill("localhost");
+      await page.getByRole("button", { name: "Add Site" }).click();
+      await expect(
+        page.getByText("Enter a valid website URL or domain name"),
+      ).toBeVisible();
+    });
+
+    describe("DNS failure", () => {
+      it("shows DNS error for domain with no records", async () => {
+        await page
+          .getByRole("textbox", { name: "Website URL or domain" })
+          .fill("this-domain-does-not-exist.invalid");
+        await page.getByRole("button", { name: "Add Site" }).click();
+        await expect(
+          page.getByText("Enter a valid website URL or domain name"),
+        ).toBeVisible();
+      });
+    });
+
+    describe("duplicate domain", () => {
+      it("shows error when domain already exists", async () => {
+        const domain = "duplicate-test.com";
+        await prisma.site.create({
+          data: { id: "site-1", domain, accountId: user.accountId },
+        });
+
+        const token = crypto.randomUUID();
+        await prisma.session.create({
+          data: {
+            token,
+            userId: user.id,
+            ipAddress: "127.0.0.1",
+            userAgent: "test",
+          },
+        });
+
+        await page
+          .getByRole("textbox", { name: "Website URL or domain" })
+          .fill("duplicate-test.com");
+        await page.getByRole("button", { name: "Add Site" }).click();
+        await expect(
+          page.getByText("That domain is already added to your account"),
+        ).toBeVisible();
+      });
+    });
+
+    describe("successful save", () => {
+      let site: Site;
+
+      beforeAll(async () => {
+        await page
+          .getByRole("textbox", { name: "Website URL or domain" })
+          .fill("example.com");
+        await page.getByRole("button", { name: "Add Site" }).click();
+        await page.waitForURL(/\/site\/[^/]+\/suggestions/);
+        site = await prisma.site.findFirstOrThrow({
+          where: { domain: "example.com", accountId: user.accountId },
+        });
+      });
+
+      it("saves site and redirects to site page", async () => {
+        expect(site).not.toBeNull();
+      });
+
+      it("navigates to suggestions page", async () => {
+        expect(new URL(page.url()).pathname).toMatch(
+          `/site/${site.id}/suggestions`,
+        );
+      });
+
+      it("HTML matches baseline", async () => {
+        await expect(page.locator("main")).toMatchInnerHTML({
+          name: "sites.suggestions",
+        });
+      });
+
+      it("screenshot matches baseline", async () => {
+        await expect(page.locator("main")).toMatchScreenshot({
+          name: "sites.suggestions",
+        });
+      });
+
+      describe("skip button", () => {
+        beforeAll(async () => {
+          await page.getByRole("link", { name: "Skip" }).click();
+          await page.waitForURL(/\/site\/[^/]+\/citations/);
+        });
+
+        it("navigates to citations page", async () => {
+          expect(new URL(page.url()).pathname).toMatch(
+            `/site/${site.id}/citations`,
+          );
+        });
+      });
+
+      describe("save queries button", () => {
+        beforeAll(async () => {
+          await page.goto(`/site/${site.id}/suggestions`);
+          await page.getByRole("button", { name: "Save queries" }).click();
+          await page.waitForURL(/\/site\/[^/]+\/citations/);
+        });
+
+        it("navigates to citations page", async () => {
+          expect(new URL(page.url()).pathname).toMatch(
+            `/site/${site.id}/citations`,
+          );
+        });
+
+        it("HTML matches baseline", async () => {
+          await expect(page.locator("main")).toMatchInnerHTML({
+            name: "sites.citations",
+          });
+        });
+
+        it("screenshot matches baseline", async () => {
+          await expect(page.locator("main")).toMatchScreenshot({
+            name: "sites.citations",
+          });
+        });
       });
     });
   });
@@ -109,14 +253,9 @@ describe("sites route", () => {
       ).toBeVisible();
     });
 
-    it("shows Add Site button in list state", async () => {
-      const addBtn = page.getByRole("link", { name: "Add Site" });
-      await expect(addBtn).toBeVisible();
-    });
-
-    it("HTML matches baseline", { timeout: 30_000 }, async () => {
+    it("HTML matches baseline", async () => {
       await expect(page.locator("main")).toMatchInnerHTML({
-        name: "sites-list",
+        name: "sites.list",
         strip: (html) =>
           removeElements(html, (node) => {
             if (node.tag !== "a") return false;
@@ -126,9 +265,9 @@ describe("sites route", () => {
       });
     });
 
-    it("screenshot matches baseline", { timeout: 30_000 }, async () => {
+    it("screenshot matches baseline", async () => {
       await expect(page.locator("main")).toMatchScreenshot({
-        name: "sites-list",
+        name: "sites.list",
       });
     });
 
