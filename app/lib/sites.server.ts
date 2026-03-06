@@ -20,7 +20,6 @@ export async function addSiteToAccount(
   account: Account,
   url: string,
 ): Promise<Site> {
-  console.log("\n\n\nAdding site to account:", account.id, url);
   const domain = extractDomain(url);
   if (!domain) throw new Error("Enter a valid website URL or domain name");
 
