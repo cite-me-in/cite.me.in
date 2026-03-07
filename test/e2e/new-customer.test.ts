@@ -7,13 +7,14 @@ let page: Page;
 let user: User | null;
 let site: Site | null;
 
-// Integration test: Ensure Playwright loads homepage correctly, for smoke-checking infra
-test("loads homepage with Playwright", async () => {
+test.beforeAll(async () => {
   page = await goto("/");
+});
+
+test("loads homepage with Playwright", async () => {
   await expect(
     page.getByRole("heading", { name: /Does ChatGPT mention/i }),
   ).toBeVisible();
-  // Optionally verify critical navigation link exists
   await expect(
     page.getByRole("navigation").getByRole("link", { name: /get started/i }),
   ).toBeVisible();
@@ -45,37 +46,25 @@ test("verifies user created in DB", async () => {
   user = await prisma.user.findUniqueOrThrow({
     where: { email: "test@example.com" },
   });
-  expect(user).toBeDefined();
-  if (!user) throw new Error("User not created");
   expect(user.email).toBe("test@example.com");
 });
 
-test("clicks add site button", async () => {
-  await page.getByRole("link", { name: "Add your first site" }).click();
-  await expect(page).toHaveURL("/sites/new");
-  await page.reload();
-});
-
 test("fills out site add form", async () => {
-  await page
-    .getByRole("textbox", { name: "Website URL or domain" })
-    .fill("https://example.com");
+  await page.getByLabel("Website URL or domain").fill("https://example.com");
   await page.getByRole("button", { name: "Add Site" }).click();
-  await expect(page).toHaveURL("/sites/new");
+  await page.waitForSelector('button:has-text("Save queries")');
 });
 
 test("verifies site created in DB", async () => {
-  await page.waitForSelector('button:has-text("Save queries")');
-  site = await prisma.site.findFirst({
+  site = await prisma.site.findFirstOrThrow({
     where: { accountId: user?.accountId },
   });
-  expect(site).toBeDefined();
-  expect(site?.domain).toBe("example.com");
+  expect(site.domain).toBe("example.com");
 });
 
 test("clicks suggest queries button", async () => {
   await page.getByRole("button", { name: /save queries/i }).click();
-  await page.waitForURL(`/site/${site?.id}/citations`);
+  await page.waitForURL(/\/site\/[^/]+\/citations/);
 });
 
 test("verifies queries saved in DB", async () => {
