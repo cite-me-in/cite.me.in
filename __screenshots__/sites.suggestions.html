@@ -1,156 +1,29 @@
-<div>
-  <h1 class="font-heading text-2xl">
-    Review suggested queries
+<div class="flex flex-row items-center justify-between gap-4">
+  <h1 class="font-heading text-3xl">
+    Your Sites
   </h1>
-  <p class="mt-1 text-base text-foreground/60">
-    Edit, remove, or add queries before saving. These will be used to track your citation visibility across AI platforms.
-  </p>
 </div>
-<div class="space-y-4">
-  <div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
-    <div class="px-6 space-y-2" data-slot="card-content">
-      <p class="font-heading text-base">
-        User doesn't know your brand; looking for solutions in your space
-      </p>
-      <ul class="space-y-1">
-        <li class="flex items-center gap-2">
-          <input aria-label="1. discovery — query 1" class="flex h-12 w-full rounded-base border-2 font-medium text-black transition-all duration-100 file:border-0 file:bg-transparent file:font-medium file:text-black placeholder:text-gray-600 focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50 border-transparent bg-transparent px-2 py-1 text-base shadow-none hover:border-border focus-visible:translate-x-0 focus-visible:translate-y-0 focus-visible:border-border focus-visible:shadow-none flex-1" value="Query 1" />
-          <button aria-label="Remove query" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-transparent text-black hover:border-black hover:bg-white h-10 rounded-sm px-4 text-xs" type="button">
-            <svg aria-hidden="true" class="lucide lucide-trash h-4 w-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
-              <path d="M3 6h18"></path>
-              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
-          </button>
-        </li>
-        <li class="flex items-center gap-2">
-          <input aria-label="1. discovery — query 2" class="flex h-12 w-full rounded-base border-2 font-medium text-black transition-all duration-100 file:border-0 file:bg-transparent file:font-medium file:text-black placeholder:text-gray-600 focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50 border-transparent bg-transparent px-2 py-1 text-base shadow-none hover:border-border focus-visible:translate-x-0 focus-visible:translate-y-0 focus-visible:border-border focus-visible:shadow-none flex-1" value="Query 2" />
-          <button aria-label="Remove query" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-transparent text-black hover:border-black hover:bg-white h-10 rounded-sm px-4 text-xs" type="button">
-            <svg aria-hidden="true" class="lucide lucide-trash h-4 w-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
-              <path d="M3 6h18"></path>
-              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
-          </button>
-        </li>
-        <li class="flex items-center gap-2">
-          <input aria-label="1. discovery — query 3" class="flex h-12 w-full rounded-base border-2 font-medium text-black transition-all duration-100 file:border-0 file:bg-transparent file:font-medium file:text-black placeholder:text-gray-600 focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50 border-transparent bg-transparent px-2 py-1 text-base shadow-none hover:border-border focus-visible:translate-x-0 focus-visible:translate-y-0 focus-visible:border-border focus-visible:shadow-none flex-1" value="Query 3" />
-          <button aria-label="Remove query" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-transparent text-black hover:border-black hover:bg-white h-10 rounded-sm px-4 text-xs" type="button">
-            <svg aria-hidden="true" class="lucide lucide-trash h-4 w-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
-              <path d="M3 6h18"></path>
-              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
-          </button>
-        </li>
-      </ul>
-      <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-black bg-white text-black shadow-[3px_3px_0px_0px_black] hover:bg-[hsl(60,100%,99%)] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] h-10 rounded-sm px-4 text-xs" type="button">
-        <svg aria-hidden="true" class="lucide lucide-plus h-4 w-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M5 12h14"></path>
-          <path d="M12 5v14"></path>
-        </svg>
-        Add query
-      </button>
+<div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-[hsl(47,100%,95%)] fade-in-0 zoom-in-95 animate-in duration-300" data-slot="card">
+  <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
+    <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
+      Add a Site
     </div>
   </div>
-  <div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
-    <div class="px-6 space-y-2" data-slot="card-content">
-      <p class="font-heading text-base">
-        User is actively looking for a specific product/service you offer
+  <div class="px-6" data-slot="card-content">
+    <div class="space-y-4">
+      <div class="flex items-center gap-3">
+        <div class="size-6 animate-spin rounded-full border-2 border-foreground/20 border-t-foreground"></div>
+        Verifying domain and generating queries…
+      </div>
+      <p class="text-base text-foreground/60">
+        Be patient, nothing will happen for a few seconds. We're going to check the domain and generate queries to ask Claude, OpenAI, Google, and Perplexity to see if they return any citations.
       </p>
-      <ul class="space-y-1">
-        <li class="flex items-center gap-2">
-          <input aria-label="2. active_search — query 1" class="flex h-12 w-full rounded-base border-2 font-medium text-black transition-all duration-100 file:border-0 file:bg-transparent file:font-medium file:text-black placeholder:text-gray-600 focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50 border-transparent bg-transparent px-2 py-1 text-base shadow-none hover:border-border focus-visible:translate-x-0 focus-visible:translate-y-0 focus-visible:border-border focus-visible:shadow-none flex-1" value="Query 4" />
-          <button aria-label="Remove query" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-transparent text-black hover:border-black hover:bg-white h-10 rounded-sm px-4 text-xs" type="button">
-            <svg aria-hidden="true" class="lucide lucide-trash h-4 w-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
-              <path d="M3 6h18"></path>
-              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
-          </button>
-        </li>
-        <li class="flex items-center gap-2">
-          <input aria-label="2. active_search — query 2" class="flex h-12 w-full rounded-base border-2 font-medium text-black transition-all duration-100 file:border-0 file:bg-transparent file:font-medium file:text-black placeholder:text-gray-600 focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50 border-transparent bg-transparent px-2 py-1 text-base shadow-none hover:border-border focus-visible:translate-x-0 focus-visible:translate-y-0 focus-visible:border-border focus-visible:shadow-none flex-1" value="Query 5" />
-          <button aria-label="Remove query" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-transparent text-black hover:border-black hover:bg-white h-10 rounded-sm px-4 text-xs" type="button">
-            <svg aria-hidden="true" class="lucide lucide-trash h-4 w-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
-              <path d="M3 6h18"></path>
-              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
-          </button>
-        </li>
-        <li class="flex items-center gap-2">
-          <input aria-label="2. active_search — query 3" class="flex h-12 w-full rounded-base border-2 font-medium text-black transition-all duration-100 file:border-0 file:bg-transparent file:font-medium file:text-black placeholder:text-gray-600 focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50 border-transparent bg-transparent px-2 py-1 text-base shadow-none hover:border-border focus-visible:translate-x-0 focus-visible:translate-y-0 focus-visible:border-border focus-visible:shadow-none flex-1" value="Query 6" />
-          <button aria-label="Remove query" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-transparent text-black hover:border-black hover:bg-white h-10 rounded-sm px-4 text-xs" type="button">
-            <svg aria-hidden="true" class="lucide lucide-trash h-4 w-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
-              <path d="M3 6h18"></path>
-              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
-          </button>
-        </li>
-      </ul>
-      <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-black bg-white text-black shadow-[3px_3px_0px_0px_black] hover:bg-[hsl(60,100%,99%)] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] h-10 rounded-sm px-4 text-xs" type="button">
-        <svg aria-hidden="true" class="lucide lucide-plus h-4 w-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M5 12h14"></path>
-          <path d="M12 5v14"></path>
-        </svg>
-        Add query
-      </button>
+      <p class="text-base text-foreground/60">
+        The domain we're adding is
+        <code>
+          example.com
+        </code>
+      </p>
     </div>
   </div>
-  <div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
-    <div class="px-6 space-y-2" data-slot="card-content">
-      <p class="font-heading text-base">
-        User is comparing options; your site should appear as a credible choice
-      </p>
-      <ul class="space-y-1">
-        <li class="flex items-center gap-2">
-          <input aria-label="3. comparison — query 1" class="flex h-12 w-full rounded-base border-2 font-medium text-black transition-all duration-100 file:border-0 file:bg-transparent file:font-medium file:text-black placeholder:text-gray-600 focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50 border-transparent bg-transparent px-2 py-1 text-base shadow-none hover:border-border focus-visible:translate-x-0 focus-visible:translate-y-0 focus-visible:border-border focus-visible:shadow-none flex-1" value="Query 7" />
-          <button aria-label="Remove query" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-transparent text-black hover:border-black hover:bg-white h-10 rounded-sm px-4 text-xs" type="button">
-            <svg aria-hidden="true" class="lucide lucide-trash h-4 w-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
-              <path d="M3 6h18"></path>
-              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
-          </button>
-        </li>
-        <li class="flex items-center gap-2">
-          <input aria-label="3. comparison — query 2" class="flex h-12 w-full rounded-base border-2 font-medium text-black transition-all duration-100 file:border-0 file:bg-transparent file:font-medium file:text-black placeholder:text-gray-600 focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50 border-transparent bg-transparent px-2 py-1 text-base shadow-none hover:border-border focus-visible:translate-x-0 focus-visible:translate-y-0 focus-visible:border-border focus-visible:shadow-none flex-1" value="Query 8" />
-          <button aria-label="Remove query" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-transparent text-black hover:border-black hover:bg-white h-10 rounded-sm px-4 text-xs" type="button">
-            <svg aria-hidden="true" class="lucide lucide-trash h-4 w-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
-              <path d="M3 6h18"></path>
-              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
-          </button>
-        </li>
-        <li class="flex items-center gap-2">
-          <input aria-label="3. comparison — query 3" class="flex h-12 w-full rounded-base border-2 font-medium text-black transition-all duration-100 file:border-0 file:bg-transparent file:font-medium file:text-black placeholder:text-gray-600 focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50 border-transparent bg-transparent px-2 py-1 text-base shadow-none hover:border-border focus-visible:translate-x-0 focus-visible:translate-y-0 focus-visible:border-border focus-visible:shadow-none flex-1" value="Query 9" />
-          <button aria-label="Remove query" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-transparent text-black hover:border-black hover:bg-white h-10 rounded-sm px-4 text-xs" type="button">
-            <svg aria-hidden="true" class="lucide lucide-trash h-4 w-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
-              <path d="M3 6h18"></path>
-              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
-          </button>
-        </li>
-      </ul>
-      <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-black bg-white text-black shadow-[3px_3px_0px_0px_black] hover:bg-[hsl(60,100%,99%)] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] h-10 rounded-sm px-4 text-xs" type="button">
-        <svg aria-hidden="true" class="lucide lucide-plus h-4 w-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M5 12h14"></path>
-          <path d="M12 5v14"></path>
-        </svg>
-        Add query
-      </button>
-    </div>
-  </div>
-</div>
-<div class="flex items-center justify-between gap-4">
-  <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold text-base transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 cursor-pointer rounded-base border-2 border-black bg-[#F59E0B] text-black shadow-[3px_3px_0px_0px_black] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] active:shadow-[1px_1px_0px_0px_black] active:translate-x-[2px] active:translate-y-[2px] h-12 px-6 py-3" type="button">
-    Save queries
-  </button>
-  <a class="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 hover:underline underline-offset-4 !p-0 px-4 py-2 text-base text-foreground/60 underline" data-discover="true" href="/site/id" rel="noopener noreferrer">
-    Skip
-  </a>
 </div>
