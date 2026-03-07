@@ -9,8 +9,12 @@ const logger = debug("server");
  * Query new users created in the past 24 hours
  */
 async function queryNewUsers() {
-  const now = new Date();
-  const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const now = new Date(
+    Temporal.Now.instant().epochMilliseconds
+  );
+  const oneDayAgo = new Date(
+    Temporal.Now.instant().subtract({ hours: 24 }).epochMilliseconds
+  );
 
   logger("[reports:newUsers] Querying users from %s to %s", oneDayAgo, now);
 
@@ -32,8 +36,12 @@ async function queryNewUsers() {
  * Query new sites with account and user details (past 24 hours)
  */
 async function queryNewSites() {
-  const now = new Date();
-  const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const now = new Date(
+    Temporal.Now.instant().epochMilliseconds
+  );
+  const oneDayAgo = new Date(
+    Temporal.Now.instant().subtract({ hours: 24 }).epochMilliseconds
+  );
 
   logger("[reports:newSites] Querying sites from %s to %s", oneDayAgo, now);
 
@@ -62,8 +70,12 @@ async function queryNewSites() {
  * Query top 3 bot visits by count for a site (past 24 hours)
  */
 async function queryTopBotVisits(siteId: string) {
-  const now = new Date();
-  const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const now = new Date(
+    Temporal.Now.instant().epochMilliseconds
+  );
+  const oneDayAgo = new Date(
+    Temporal.Now.instant().subtract({ hours: 24 }).epochMilliseconds
+  );
 
   logger(
     "[reports:topBotVisits] Querying for site %s from %s to %s",
@@ -150,8 +162,12 @@ async function queryCitationScores(siteId: string) {
  * Query bot insights updated in past 24 hours
  */
 async function queryBotInsightsUpdated() {
-  const now = new Date();
-  const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const now = new Date(
+    Temporal.Now.instant().epochMilliseconds
+  );
+  const oneDayAgo = new Date(
+    Temporal.Now.instant().subtract({ hours: 24 }).epochMilliseconds
+  );
 
   logger(
     "[reports:botInsights] Querying insights updated from %s to %s",
