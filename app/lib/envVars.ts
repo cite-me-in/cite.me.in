@@ -22,6 +22,7 @@ const envVars = {
     .asString(),
   OPENAI_API_KEY: env.get("OPENAI_API_KEY").required(false).asString(),
   PERPLEXITY_API_KEY: env.get("PERPLEXITY_API_KEY").required(false).asString(),
+  REPORT_EMAIL: env.get("REPORT_EMAIL").required(false).asString(),
   RESEND_API_KEY: env.get("RESEND_API_KEY").required(false).asString(),
   SESSION_SECRET: env.get("SESSION_SECRET").required().asString(),
 };
