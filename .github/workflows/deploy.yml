@@ -108,15 +108,13 @@ jobs:
 
       - name: Read DIRECT_URL from Doppler
         id: doppler-direct-url
-        run: |
-          echo "DIRECT_URL=$(doppler --config prd secrets get DIRECT_URL --plain)" >> $GITHUB_ENV
+        run: echo "DIRECT_URL=$(doppler --config prd secrets get DIRECT_URL --plain)" >> $GITHUB_ENV
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
 
       - name: Update database
         if: github.ref == 'refs/heads/main'
-        run: |
-          pnpm prisma db push --url "${{ env.DIRECT_URL }}"
+        run: pnpm prisma db push --url "${{ env.DIRECT_URL }}"
         env:
           DATABASE_URL: "${{ env.DIRECT_URL }}"
 
@@ -131,7 +129,6 @@ jobs:
           project-id: "prj_Ipf1EVCJ9lIgoCIIbiizNp5W5O66"
           token: ${{ secrets.VERCEL_TOKEN }}
         env:
-          DATABASE_URL: "${{ env.DIRECT_URL }}"
           SENTRY_AUTH_TOKEN: "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"
           SENTRY_ORG: "labnotes"
           SENTRY_PROJECT: "citeup"
