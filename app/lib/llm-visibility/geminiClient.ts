@@ -30,21 +30,24 @@ references.`,
     ],
     maxOutputTokens: 2000,
     tools: {
-      web_search: google.tools.googleSearch({
-        mode: "MODE_DYNAMIC",
-        dynamicThreshold: 0.5,
-      }),
+      web_search: google.tools.googleSearch({}),
     },
     toolChoice: { type: "tool", toolName: "web_search" },
-    maxRetries: import.meta.env.PROD ? 2 : 0,
+    maxRetries: process.env.NODE_ENV === "production" ? 2 : 0,
   });
+
+  console.log("%o", providerMetadata?.google.groundingMetadata, text);
 
   const metadata = providerMetadata?.google.groundingMetadata as {
     webSearchQueries?: string[];
-    groundingChunks?: {
-      web: {
-        uri: string;
+    groundingChunks?: { web: { uri: string; title: string } }[];
+    groundingSupports?: {
+      segment: {
+        startIndex?: number;
+        endIndex: number;
+        text: string;
       };
+      groundingChunkIndices: number[];
     }[];
   };
 
