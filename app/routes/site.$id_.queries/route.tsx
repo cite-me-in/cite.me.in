@@ -1,6 +1,5 @@
 export const handle = { siteNav: true };
 
-import { captureException } from "@sentry/react-router";
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SitePageHeader";
 import addSiteQueries, {
@@ -9,6 +8,7 @@ import addSiteQueries, {
   updateSiteQuery,
 } from "~/lib/addSiteQueries";
 import { requireUser } from "~/lib/auth.server";
+import captureException from "~/lib/captureException.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";

@@ -1,5 +1,5 @@
 import { Logtail } from "@logtail/node";
-import { logger } from "@sentry/react-router";
+import { logger as sentry } from "@sentry/react-router";
 import { createWriteStream } from "node:fs";
 import { resolve } from "node:path";
 import { format, styleText } from "node:util";
@@ -23,14 +23,16 @@ const logtail =
   envVars.LOGTAIL_ENDPOINT &&
   new Logtail(envVars.LOGTAIL_TOKEN, {
     endpoint: envVars.LOGTAIL_ENDPOINT,
+    sendLogsToConsoleOutput: true,
+    sendLogsToBetterStack: true,
   });
 
 // @see https://no-color.org
 const isColorEnabled = !process.env.NO_COLOR;
 
 for (const level of ["debug", "error", "info", "log", "trace", "warn"]) {
-  const sentryFunction = Reflect.get(logger, level);
-  const logtailFunction = logtail ? Reflect.get(logtail, level) : () => {};
+  const sentryFunction = Reflect.get(sentry, level);
+  const logtailFunction = logtail && Reflect.get(logtail, level);
   const colorCode = colors[level as keyof typeof colors];
 
   Reflect.set(console, level, (message: string, ...metadata: unknown[]) => {
@@ -44,7 +46,7 @@ for (const level of ["debug", "error", "info", "log", "trace", "warn"]) {
 
     try {
       if (sentryFunction)
-        sentryFunction.call(logger, formattedMessage, ...metadata);
+        sentryFunction.call(sentry, formattedMessage, ...metadata);
       if (logtailFunction)
         logtailFunction.call(logtail, formattedMessage, ...metadata);
     } catch (error) {

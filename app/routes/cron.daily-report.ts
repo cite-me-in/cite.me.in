@@ -1,5 +1,5 @@
-import { captureException } from "@sentry/react-router";
 import debug from "debug";
+import captureException from "~/lib/captureException.server";
 import sendDailyReportEmail from "~/lib/emails/DailyReportEmail";
 import envVars from "~/lib/envVars";
 import type { Route } from "./+types/cron.daily-report";

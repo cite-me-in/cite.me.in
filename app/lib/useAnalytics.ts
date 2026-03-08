@@ -1,4 +1,4 @@
-import { captureException } from "@sentry/react-router";
+import { captureException as sentryCaptureException } from "@sentry/react-router";
 import { useEffect } from "react";
 import GA4 from "react-ga4";
 
@@ -41,6 +41,6 @@ export function trackEvent(
       transport: "beacon",
     });
   } catch (error) {
-    captureException(error, { extra: { action, params } });
+    sentryCaptureException(error, { extra: { action, params } });
   }
 }

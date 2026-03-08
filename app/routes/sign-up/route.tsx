@@ -1,4 +1,3 @@
-import { captureException } from "@sentry/react-router";
 import { Form, redirect } from "react-router";
 import { ActiveLink } from "~/components/ui/ActiveLink";
 import AuthForm from "~/components/ui/AuthForm";
@@ -16,6 +15,7 @@ import {
   createSession,
   hashPassword,
 } from "~/lib/auth.server";
+import captureException from "~/lib/captureException.server";
 import sendEmailVerificationEmail from "~/lib/emails/EmailVerification";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
@@ -59,8 +59,8 @@ export async function action({ request }: Route.ActionArgs) {
       to: user.email,
       url: new URL(`/verify-email/${verifyToken}`, request.url).toString(),
     });
-  } catch {
-    captureException(new Error("Failed to send verification email"));
+  } catch (error) {
+    captureException(error);
   }
 
   return redirect("/sites", { headers: { "Set-Cookie": setCookie } });

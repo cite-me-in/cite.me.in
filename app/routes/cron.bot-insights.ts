@@ -1,6 +1,6 @@
 import { Temporal } from "@js-temporal/polyfill";
-import { captureException } from "@sentry/react-router";
 import debug from "debug";
+import captureException from "~/lib/captureException.server";
 import envVars from "~/lib/envVars";
 import generateBotInsight from "~/lib/llm-visibility/generateBotInsight";
 import prisma from "~/lib/prisma.server";

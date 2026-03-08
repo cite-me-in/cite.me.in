@@ -1,5 +1,5 @@
-import { captureException } from "@sentry/react-router";
 import debug from "debug";
+import captureException from "~/lib/captureException.server";
 import envVars from "~/lib/envVars";
 import queryAccount from "~/lib/llm-visibility/queryAccount";
 import prisma from "~/lib/prisma.server";

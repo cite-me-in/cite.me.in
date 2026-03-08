@@ -1,7 +1,7 @@
-import { captureException } from "@sentry/react-router";
 import { Feed } from "feed";
 import { marked } from "marked";
 import { recentBlogPosts } from "~/lib/blogPosts.server";
+import captureException from "~/lib/captureException.server";
 
 export async function loader() {
   try {
@@ -56,8 +56,8 @@ export async function loader() {
         "Cache-Control": "public, max-age=3600",
       },
     });
-  } catch {
-    captureException(new Error("Error generating Atom feed"));
+  } catch (error) {
+    captureException(error);
     throw new Response("Internal Server Error", { status: 500 });
   }
 }

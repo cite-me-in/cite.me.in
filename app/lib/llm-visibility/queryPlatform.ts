@@ -1,6 +1,6 @@
 import type { Temporal } from "@js-temporal/polyfill";
-import { captureException } from "@sentry/react-router";
 import debug from "debug";
+import captureException from "~/lib/captureException.server";
 import prisma from "~/lib/prisma.server";
 import type { QueryFn } from "./llmVisibility";
 
@@ -75,7 +75,6 @@ export default async function queryPlatform({
       }
     }
   } catch (error) {
-    logger("[%s:%s] Error: %s", site.id, platform, error);
     captureException(error, {
       extra: { siteId: site.id, platform },
     });

@@ -8,6 +8,7 @@ import type {
 } from "react-router";
 import "~/lib/logger.server";
 import msw from "~/test/mocks/msw";
+import captureException from "./lib/captureException.server";
 
 // Only enable Sentry in production
 if (import.meta.env.PROD) {
@@ -103,7 +104,7 @@ export function handleError(
   { request }: LoaderFunctionArgs | ActionFunctionArgs,
 ) {
   if (!request.signal.aborted) {
-    Sentry.captureException(error, { extra: { request } });
+    captureException(error, { extra: { request } });
     logger("error: %s", error);
   }
 }

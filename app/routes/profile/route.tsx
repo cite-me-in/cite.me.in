@@ -1,9 +1,9 @@
-import { captureException } from "@sentry/react-router";
 import { useLoaderData } from "react-router";
 import * as zod from "zod";
 import AuthForm from "~/components/ui/AuthForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/Tabs";
 import { hashPassword, requireUser, verifyPassword } from "~/lib/auth.server";
+import captureException from "~/lib/captureException.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 import ProfileEmailForm from "./ProfileEmailForm";
@@ -55,7 +55,8 @@ async function updateEmail({
 
     await prisma.user.update({ where: { id: userId }, data: { email } });
     return { success: "Email updated successfully" };
-  } catch {
+  } catch (error) {
+    captureException(error);
     return { error: "That email address is already in use" };
   }
 }

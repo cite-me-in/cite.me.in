@@ -1,4 +1,3 @@
-import { captureException } from "@sentry/react-router";
 import { invariant } from "node_modules/es-toolkit/dist/util/invariant.mjs";
 import { useState } from "react";
 import { redirect, useFetcher } from "react-router";
@@ -6,6 +5,7 @@ import { Button } from "~/components/ui/Button";
 import { Card, CardContent } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
 import { requireUser } from "~/lib/auth.server";
+import captureException from "~/lib/captureException.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import {
   addSiteToAccount,

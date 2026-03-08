@@ -1,6 +1,6 @@
 import { Temporal } from "@js-temporal/polyfill";
-import { captureException } from "@sentry/react-router";
 import prisma from "~/lib/prisma.server";
+import captureException from "./captureException.server";
 
 /**
  * Known bot patterns for classification

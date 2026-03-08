@@ -1,4 +1,4 @@
-import { captureException } from "@sentry/react-router";
+import { captureException as sentryCaptureException } from "@sentry/react-router";
 import { mean } from "es-toolkit";
 import { Component } from "react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
@@ -25,7 +25,7 @@ class ChartErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error) {
-    captureException(error);
+    sentryCaptureException(error);
   }
 
   render() {

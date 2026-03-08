@@ -1,6 +1,6 @@
 import { Hr, Row, Section, Text } from "@react-email/components";
-import { captureException } from "@sentry/react-router";
 import debug from "debug";
+import captureException from "~/lib/captureException.server";
 import type { Account, BotInsight, BotVisit, Site, User } from "~/prisma";
 import {
   queryBotInsightsUpdated,

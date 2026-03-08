@@ -1,6 +1,6 @@
-import { captureException } from "@sentry/react-router";
 import { z } from "zod";
 import recordBotVisit from "~/lib/botTracking.server";
+import captureException from "~/lib/captureException.server";
 import type { Route } from "./+types/api.track";
 
 const BotTrackSchema = z.object({
@@ -34,8 +34,8 @@ export async function action({ request }: Route.ActionArgs) {
     const parsed = BotTrackSchema.safeParse(body);
     if (parsed.error) throw new Error(parsed.error.message);
     data = parsed.data;
-  } catch {
-    captureException(new Error("Invalid JSON"), { extra: { body } });
+  } catch (error) {
+    captureException(error, { extra: { body } });
     return Response.json(
       { tracked: false, reason: "Invalid JSON" },
       { status: 400, headers: CORS_HEADERS },

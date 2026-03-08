@@ -1,4 +1,3 @@
-import { captureException } from "@sentry/react-router";
 import { groupBy, sortBy } from "es-toolkit";
 import { AlertCircleIcon, CoffeeIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { Component, useState } from "react";
@@ -13,6 +12,7 @@ import Main from "~/components/ui/Main";
 import Spinner from "~/components/ui/Spinner";
 import addSiteQueries from "~/lib/addSiteQueries";
 import { requireUser } from "~/lib/auth.server";
+import captureException from "~/lib/captureException.server";
 import queryGroups from "~/lib/llm-visibility/queryGroups";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
