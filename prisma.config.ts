@@ -4,7 +4,7 @@ import { defineConfig, env } from "prisma/config";
 // @see https://www.prisma.io/docs/orm/overview/databases/supabase#specific-considerations
 export default defineConfig({
   datasource: {
-    url: env("DATABASE_URL"),
+    url: env("DIRECT_URL"),
   },
   migrations: {
     path: "prisma/migrations",
