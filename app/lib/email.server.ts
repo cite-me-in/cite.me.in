@@ -24,13 +24,3 @@ export async function sendEmailVerificationEmail(to: string, token: string) {
   });
   if (error) throw new Error(error.message);
 }
-
-export async function sendDailyReportEmail(to: string, html: string) {
-  const { error } = await resend.emails.send({
-    from: envVars.EMAIL_FROM,
-    to,
-    subject: "CiteUp Daily Report",
-    html,
-  });
-  if (error) throw new Error(error.message);
-}

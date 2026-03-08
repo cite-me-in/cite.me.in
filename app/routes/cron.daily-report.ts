@@ -1,8 +1,7 @@
 import { captureException } from "@sentry/react-router";
 import debug from "debug";
+import sendDailyReportEmail from "~/lib/emails/DailyReportEmail";
 import envVars from "~/lib/envVars";
-import { sendDailyReportEmail } from "~/lib/email.server";
-import { generateDailyReport } from "~/lib/reports.server";
 import type { Route } from "./+types/cron.daily-report";
 
 const logger = debug("server");
@@ -18,28 +17,12 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   try {
     logger("[cron:daily-report] Generating report");
-    const html = await generateDailyReport();
-
-    const reportEmail = envVars.REPORT_EMAIL;
-    if (!reportEmail) {
-      logger("[cron:daily-report] REPORT_EMAIL not configured");
-      return Response.json({
-        ok: false,
-        error: "REPORT_EMAIL not configured",
-      });
-    }
-
-    await sendDailyReportEmail(reportEmail, html);
-    logger("[cron:daily-report] Report sent to %s", reportEmail);
-
-    return Response.json({ ok: true, sentTo: reportEmail });
+    const id = await sendDailyReportEmail();
+    return Response.json({ ok: true, id });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     logger("[cron:daily-report] Failed: %s", message);
     captureException(error);
-    return Response.json(
-      { ok: false, error: message },
-      { status: 500 },
-    );
+    return Response.json({ ok: false, error: message }, { status: 500 });
   }
 }

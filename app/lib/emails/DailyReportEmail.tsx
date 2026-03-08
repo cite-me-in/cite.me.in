@@ -4,21 +4,73 @@ import {
   Head,
   Hr,
   Html,
-  Link,
   Preview,
   Row,
   Section,
+  Tailwind,
   Text,
 } from "@react-email/components";
-import type {
-  BotInsight,
-  BotVisit,
-  User,
-  Account,
-  Site,
-} from "~/prisma";
+import { captureException } from "@sentry/react-router";
+import debug from "debug";
+import type { Account, BotInsight, BotVisit, Site, User } from "~/prisma";
+import {
+  queryBotInsightsUpdated,
+  queryCitationScores,
+  queryNewSites,
+  queryNewUsers,
+  queryTopBotVisits,
+} from "./dailyReports.server";
+import { sendEmail } from "./sendEmails.server";
 
-interface DailyReportEmailProps {
+const logger = debug("email");
+
+export default async function sendDailyReportEmail(): Promise<string> {
+  logger("[reports:generate] Starting daily report generation");
+
+  try {
+    const newUsers = await queryNewUsers();
+    const newSites = await queryNewSites();
+    const botInsights = await queryBotInsightsUpdated();
+
+    // Get top bot visits for each new site
+    const newSitesWithMetrics = await Promise.all(
+      newSites.map(async (site) => {
+        const topBotVisits = await queryTopBotVisits(site.id);
+        const citationScores = await queryCitationScores(site.id);
+        return {
+          site,
+          topBotVisits,
+          citationScores,
+        };
+      }),
+    );
+
+    logger("[reports:generate] Report data collected successfully");
+
+    return await sendEmail({
+      render: () => (
+        <DailyReportEmail
+          newUsers={newUsers}
+          newSitesWithMetrics={newSitesWithMetrics}
+          botInsights={botInsights}
+          generatedAt={new Date()}
+        />
+      ),
+      subject: "CiteUp Daily Report",
+      to: "assaf@labnotes.org",
+    });
+  } catch (error) {
+    captureException(error);
+    throw error;
+  }
+}
+
+function DailyReportEmail({
+  newUsers,
+  newSitesWithMetrics,
+  botInsights,
+  generatedAt,
+}: {
   newUsers: User[];
   newSitesWithMetrics: Array<{
     site: Site & { account: Account & { users: User[] } };
@@ -27,97 +79,115 @@ interface DailyReportEmailProps {
   }>;
   botInsights: (BotInsight & { site: Site })[];
   generatedAt: Date;
-}
-
-export default function DailyReportEmail({
-  newUsers,
-  newSitesWithMetrics,
-  botInsights,
-  generatedAt,
-}: DailyReportEmailProps) {
+}) {
   const formattedDate = new Date(generatedAt).toLocaleString("en-US", {
     timeZone: "America/Los_Angeles",
   });
 
   const botInsightMap = new Map(
-    botInsights.map((insight) => [insight.siteId, insight])
+    botInsights.map((insight) => [insight.siteId, insight]),
   );
 
   return (
     <Html lang="en">
       <Head />
       <Preview>CiteUp Daily Report - {formattedDate}</Preview>
-      <Body style={main}>
-        <Container style={container}>
-          {/* Header */}
-          <Section style={header}>
-            <Text style={heading}>CiteUp Daily Report</Text>
-            <Text style={subheading}>Generated: {formattedDate}</Text>
-          </Section>
+      <Body className="bg-white font-sans">
+        <Tailwind>
+          <Container className="mx-auto max-w-[640px] py-5">
+            {/* Header */}
+            <Section className="pb-5 text-center">
+              <Text className="m-0 mb-2 border-[#0066cc] border-b-2 pb-2 font-bold text-[#1a1a1a] text-[32px]">
+                CiteUp Daily Report
+              </Text>
+              <Text className="m-0 mt-2 text-[#666] text-[14px]">
+                Generated: {formattedDate}
+              </Text>
+            </Section>
 
-          {/* New Users Section */}
-          {newUsers.length > 0 ? (
-            <Section style={section}>
-              <Text style={sectionHeading}>New Users (Past 24h)</Text>
-              <table style={table}>
-                <thead>
-                  <tr>
-                    <th style={tableTh}>Email</th>
-                    <th style={tableTh}>Account ID</th>
-                    <th style={tableTh}>Created</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {newUsers.map((user) => (
-                    <tr key={user.id}>
-                      <td style={tableTd}>{user.email}</td>
-                      <td style={tableTd}>{user.accountId}</td>
-                      <td style={tableTd}>
-                        {user.createdAt.toLocaleDateString()}
-                      </td>
+            {/* New Users Section */}
+            {newUsers.length > 0 ? (
+              <Section className="mb-8 pb-5">
+                <Text className="m-0 mb-[15px] font-semibold text-[#333] text-[20px]">
+                  New Users (Past 24h)
+                </Text>
+                <table className="my-[15px] w-full border-collapse">
+                  <thead>
+                    <tr>
+                      <th className="border-[#ddd] border-b bg-[#f5f5f5] p-[10px] text-left font-semibold text-[14px]">
+                        Email
+                      </th>
+                      <th className="border-[#ddd] border-b bg-[#f5f5f5] p-[10px] text-left font-semibold text-[14px]">
+                        Account ID
+                      </th>
+                      <th className="border-[#ddd] border-b bg-[#f5f5f5] p-[10px] text-left font-semibold text-[14px]">
+                        Created
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </Section>
-          ) : (
-            <Section style={section}>
-              <Text style={sectionHeading}>New Users (Past 24h)</Text>
-              <Text style={emptyText}>None in the past 24 hours.</Text>
-            </Section>
-          )}
+                  </thead>
+                  <tbody>
+                    {newUsers.map((user) => (
+                      <tr key={user.id}>
+                        <td className="border-[#ddd] border-b p-[10px] text-[14px]">
+                          {user.email}
+                        </td>
+                        <td className="border-[#ddd] border-b p-[10px] text-[14px]">
+                          {user.accountId}
+                        </td>
+                        <td className="border-[#ddd] border-b p-[10px] text-[14px]">
+                          {user.createdAt.toLocaleDateString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </Section>
+            ) : (
+              <Section className="mb-8 pb-5">
+                <Text className="m-0 mb-[15px] font-semibold text-[#333] text-[20px]">
+                  New Users (Past 24h)
+                </Text>
+                <Text className="text-[#999] text-[14px] italic">
+                  None in the past 24 hours.
+                </Text>
+              </Section>
+            )}
 
-          {/* New Sites Section */}
-          {newSitesWithMetrics.length > 0 ? (
-            <Section style={section}>
-              <Text style={sectionHeading}>New Sites (Past 24h)</Text>
-              {newSitesWithMetrics.map(
-                ({ site, topBotVisits, citationScores }) => {
+            {/* New Sites Section */}
+            {newSitesWithMetrics.length > 0 ? (
+              <Section className="mb-8 pb-5">
+                <Text className="m-0 mb-[15px] font-semibold text-[#333] text-[20px]">
+                  New Sites (Past 24h)
+                </Text>
+                {newSitesWithMetrics.map(({ site, topBotVisits }) => {
                   const insight = botInsightMap.get(site.id);
-                  const change = citationScores.current - citationScores.previous;
-                  const changePercent =
-                    citationScores.previous === 0
-                      ? citationScores.current > 0
-                        ? 100
-                        : 0
-                      : (change / citationScores.previous) * 100;
 
                   return (
-                    <Section key={site.id} style={siteCard}>
-                      <Text style={siteDomain}>{site.domain}</Text>
-                      <Text style={accountInfo}>
+                    <Section
+                      key={site.id}
+                      className="mb-[15px] rounded bg-[#f9f9f9] p-[15px]"
+                    >
+                      <Text className="m-0 mb-2 font-semibold text-[16px]">
+                        {site.domain}
+                      </Text>
+                      <Text className="m-0 mb-3 text-[#666] text-[12px]">
                         Account: {site.account.id} | Users:{" "}
-                        {site.account.users.map((u: User) => u.email).join(", ")}
+                        {site.account.users
+                          .map((u: User) => u.email)
+                          .join(", ")}
                       </Text>
 
                       {topBotVisits.length > 0 && (
                         <>
-                          <Text style={subSectionHeading}>
+                          <Text className="mt-3 mb-2 font-semibold text-[#333] text-[14px]">
                             Top Bot Visits
                           </Text>
-                          <ul style={botVisitsList}>
+                          <ul className="my-2 pl-5">
                             {topBotVisits.map((visit) => (
-                              <li key={visit.id} style={botVisitItem}>
+                              <li
+                                key={visit.id}
+                                className="my-1 text-[#555] text-[13px]"
+                              >
                                 {visit.botType}: {visit.count} visits
                               </li>
                             ))}
@@ -127,237 +197,89 @@ export default function DailyReportEmail({
 
                       {insight && (
                         <>
-                          <Text style={subSectionHeading}>
+                          <Text className="mt-3 mb-2 font-semibold text-[#333] text-[14px]">
                             Bot Insight (Updated today)
                           </Text>
-                          <Text style={insightText}>
+                          <Text className="my-2 text-[#555] text-[13px] leading-normal">
                             {insight.content.split("\n").slice(0, 2).join(" ")}
                           </Text>
                         </>
                       )}
 
-                      <Hr style={sectionDivider} />
+                      <Hr className="my-[15px] border-[#eee] border-t" />
                     </Section>
                   );
-                }
-              )}
+                })}
+              </Section>
+            ) : (
+              <Section className="mb-8 pb-5">
+                <Text className="m-0 mb-[15px] font-semibold text-[#333] text-[20px]">
+                  New Sites (Past 24h)
+                </Text>
+                <Text className="text-[#999] text-[14px] italic">
+                  None in the past 24 hours.
+                </Text>
+              </Section>
+            )}
+
+            {/* Account Metrics Section */}
+            <Section className="mb-8 pb-5">
+              <Text className="m-0 mb-[15px] font-semibold text-[#333] text-[20px]">
+                Account Metrics (Citation Query Score)
+              </Text>
+              {newSitesWithMetrics.map(({ site, citationScores }) => {
+                const change = citationScores.current - citationScores.previous;
+                const changePercent =
+                  citationScores.previous === 0
+                    ? citationScores.current > 0
+                      ? 100
+                      : 0
+                    : (change / citationScores.previous) * 100;
+                const changeColor =
+                  change > 0 ? "#28a745" : change < 0 ? "#dc3545" : "#6c757d";
+
+                return (
+                  <Section
+                    key={site.id}
+                    className="mb-[15px] rounded bg-[#f9f9f9] p-[15px]"
+                  >
+                    <Row>
+                      <Text className="m-0 font-semibold text-[#1a1a1a] text-[15px]">
+                        {site.account.hostname || site.account.id}
+                      </Text>
+                    </Row>
+                    <Row>
+                      <Text className="my-1 text-[#555] text-[13px]">
+                        Current: <strong>{citationScores.current}</strong> |
+                        Previous 24h: {citationScores.previous}
+                      </Text>
+                    </Row>
+                    <Row>
+                      <Text
+                        className="my-1 text-[13px]"
+                        style={{ color: changeColor }}
+                      >
+                        Change: {change > 0 ? "+" : ""}
+                        {change} ({changePercent > 0 ? "+" : ""}
+                        {changePercent.toFixed(2)}%)
+                      </Text>
+                    </Row>
+                  </Section>
+                );
+              })}
             </Section>
-          ) : (
-            <Section style={section}>
-              <Text style={sectionHeading}>New Sites (Past 24h)</Text>
-              <Text style={emptyText}>None in the past 24 hours.</Text>
+
+            {/* Footer */}
+            <Hr className="my-[30px] mb-[20px] border-[#eee] border-t" />
+            <Section className="text-center">
+              <Text className="m-0 text-[#999] text-[12px] italic">
+                This is an automated report sent daily at 6 AM Pacific. Do not
+                reply to this email.
+              </Text>
             </Section>
-          )}
-
-          {/* Account Metrics Section */}
-          <Section style={section}>
-            <Text style={sectionHeading}>
-              Account Metrics (Citation Query Score)
-            </Text>
-            {newSitesWithMetrics.map(({ site, citationScores }) => {
-              const change = citationScores.current - citationScores.previous;
-              const changePercent =
-                citationScores.previous === 0
-                  ? citationScores.current > 0
-                    ? 100
-                    : 0
-                  : (change / citationScores.previous) * 100;
-              const changeColor =
-                change > 0 ? "#28a745" : change < 0 ? "#dc3545" : "#6c757d";
-
-              return (
-                <Section key={site.id} style={metricCard}>
-                  <Row>
-                    <Text style={{ ...accountName, margin: 0 }}>
-                      {site.account.hostname || site.account.id}
-                    </Text>
-                  </Row>
-                  <Row>
-                    <Text style={metricText}>
-                      Current:{" "}
-                      <strong>{citationScores.current}</strong> | Previous 24h:{" "}
-                      {citationScores.previous}
-                    </Text>
-                  </Row>
-                  <Row>
-                    <Text style={{ ...metricText, color: changeColor }}>
-                      Change: {change > 0 ? "+" : ""}
-                      {change} ({changePercent > 0 ? "+" : ""}
-                      {changePercent.toFixed(2)}%)
-                    </Text>
-                  </Row>
-                </Section>
-              );
-            })}
-          </Section>
-
-          {/* Footer */}
-          <Hr style={footerDivider} />
-          <Section style={footer}>
-            <Text style={footerText}>
-              This is an automated report sent daily at 6 AM Pacific. Do not
-              reply to this email.
-            </Text>
-          </Section>
-        </Container>
+          </Container>
+        </Tailwind>
       </Body>
     </Html>
   );
 }
-
-/* Styles using TailwindCSS 4.0 utility values */
-const main = {
-  backgroundColor: "#ffffff",
-  fontFamily:
-    '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
-};
-
-const container = {
-  maxWidth: "640px",
-  margin: "0 auto",
-  padding: "20px 0",
-};
-
-const header = {
-  textAlign: "center" as const,
-  paddingBottom: "20px",
-};
-
-const heading = {
-  fontSize: "32px",
-  fontWeight: 700,
-  margin: "0 0 8px 0",
-  color: "#1a1a1a",
-  borderBottom: "2px solid #0066cc",
-  paddingBottom: "10px",
-};
-
-const subheading = {
-  fontSize: "14px",
-  color: "#666666",
-  margin: "8px 0 0 0",
-};
-
-const section = {
-  marginBottom: "30px",
-  paddingBottom: "20px",
-};
-
-const sectionHeading = {
-  fontSize: "20px",
-  fontWeight: 600,
-  color: "#333333",
-  marginBottom: "15px",
-  margin: "0 0 15px 0",
-};
-
-const table = {
-  width: "100%",
-  borderCollapse: "collapse" as const,
-  margin: "15px 0",
-};
-
-const tableTh = {
-  backgroundColor: "#f5f5f5",
-  fontWeight: 600,
-  textAlign: "left" as const,
-  padding: "10px",
-  borderBottom: "1px solid #dddddd",
-  fontSize: "14px",
-};
-
-const tableTd = {
-  padding: "10px",
-  borderBottom: "1px solid #dddddd",
-  fontSize: "14px",
-};
-
-const siteCard = {
-  backgroundColor: "#f9f9f9",
-  padding: "15px",
-  marginBottom: "15px",
-  borderRadius: "4px",
-};
-
-const siteDomain = {
-  fontSize: "16px",
-  fontWeight: 600,
-  margin: "0 0 8px 0",
-};
-
-const accountInfo = {
-  fontSize: "12px",
-  color: "#666666",
-  margin: "0 0 12px 0",
-};
-
-const subSectionHeading = {
-  fontSize: "14px",
-  fontWeight: 600,
-  color: "#333333",
-  margin: "12px 0 8px 0",
-};
-
-const botVisitsList = {
-  margin: "8px 0",
-  paddingLeft: "20px",
-};
-
-const botVisitItem = {
-  fontSize: "13px",
-  color: "#555555",
-  margin: "4px 0",
-};
-
-const insightText = {
-  fontSize: "13px",
-  color: "#555555",
-  margin: "8px 0",
-  lineHeight: "1.5",
-};
-
-const sectionDivider = {
-  borderTop: "1px solid #eeeeee",
-  margin: "15px 0",
-};
-
-const metricCard = {
-  backgroundColor: "#f9f9f9",
-  padding: "15px",
-  marginBottom: "15px",
-  borderRadius: "4px",
-};
-
-const accountName = {
-  fontSize: "15px",
-  fontWeight: 600,
-  color: "#1a1a1a",
-};
-
-const metricText = {
-  fontSize: "13px",
-  color: "#555555",
-  margin: "4px 0",
-};
-
-const footerDivider = {
-  borderTop: "1px solid #eeeeee",
-  margin: "30px 0 20px 0",
-};
-
-const footer = {
-  textAlign: "center" as const,
-};
-
-const footerText = {
-  fontSize: "12px",
-  color: "#999999",
-  fontStyle: "italic" as const,
-  margin: "0",
-};
-
-const emptyText = {
-  fontSize: "14px",
-  color: "#999999",
-  fontStyle: "italic" as const,
-};

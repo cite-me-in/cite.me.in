@@ -1,10 +1,6 @@
-import { render } from "@react-email/components";
 import { Temporal } from "@js-temporal/polyfill";
 import debug from "debug";
-import { captureException } from "@sentry/react-router";
-import type { Account, BotInsight, BotVisit, Site, User } from "~/prisma";
-import DailyReportEmail from "~/lib/emails/DailyReportEmail";
-import prisma from "./prisma.server";
+import prisma from "../prisma.server";
 
 const logger = debug("server");
 
@@ -12,11 +8,9 @@ const logger = debug("server");
  * Get a 24-hour window from now
  */
 function get24HourWindow() {
-  const now = new Date(
-    Temporal.Now.instant().epochMilliseconds
-  );
+  const now = new Date(Temporal.Now.instant().epochMilliseconds);
   const oneDayAgo = new Date(
-    Temporal.Now.instant().subtract({ hours: 24 }).epochMilliseconds
+    Temporal.Now.instant().subtract({ hours: 24 }).epochMilliseconds,
   );
   return { now, oneDayAgo };
 }
@@ -24,7 +18,7 @@ function get24HourWindow() {
 /**
  * Query new users created in the past 24 hours
  */
-async function queryNewUsers() {
+export async function queryNewUsers() {
   const { now, oneDayAgo } = get24HourWindow();
 
   logger("[reports:newUsers] Querying users from %s to %s", oneDayAgo, now);
@@ -46,7 +40,7 @@ async function queryNewUsers() {
 /**
  * Query new sites with account and user details (past 24 hours)
  */
-async function queryNewSites() {
+export async function queryNewSites() {
   const { now, oneDayAgo } = get24HourWindow();
 
   logger("[reports:newSites] Querying sites from %s to %s", oneDayAgo, now);
@@ -75,14 +69,14 @@ async function queryNewSites() {
 /**
  * Query top 3 bot visits by count for a site (past 24 hours)
  */
-async function queryTopBotVisits(siteId: string) {
+export async function queryTopBotVisits(siteId: string) {
   const { now, oneDayAgo } = get24HourWindow();
 
   logger(
     "[reports:topBotVisits] Querying for site %s from %s to %s",
     siteId,
     oneDayAgo,
-    now
+    now,
   );
 
   const botVisits = await prisma.botVisit.findMany({
@@ -104,7 +98,7 @@ async function queryTopBotVisits(siteId: string) {
 /**
  * Query citation query scores (current 24h vs previous 24h)
  */
-async function queryCitationScores(siteId: string) {
+export async function queryCitationScores(siteId: string) {
   const now = Temporal.Now.zonedDateTimeISO("UTC");
   const currentStart = now.startOfDay();
   const previousStart = currentStart.subtract({ days: 1 });
@@ -114,10 +108,7 @@ async function queryCitationScores(siteId: string) {
   const previousStartDate = new Date(previousStart.epochMilliseconds);
   const previousEndDate = new Date(previousEnd.epochMilliseconds);
 
-  logger(
-    "[reports:citationScores] Querying for site %s",
-    siteId
-  );
+  logger("[reports:citationScores] Querying for site %s", siteId);
 
   const currentPeriod = await prisma.citationQueryRun.findMany({
     where: {
@@ -150,7 +141,7 @@ async function queryCitationScores(siteId: string) {
   logger(
     "[reports:citationScores] Current: %d, Previous: %d",
     currentScore,
-    previousScore
+    previousScore,
   );
 
   return {
@@ -162,13 +153,13 @@ async function queryCitationScores(siteId: string) {
 /**
  * Query bot insights updated in past 24 hours
  */
-async function queryBotInsightsUpdated() {
+export async function queryBotInsightsUpdated() {
   const { now, oneDayAgo } = get24HourWindow();
 
   logger(
     "[reports:botInsights] Querying insights updated from %s to %s",
     oneDayAgo,
-    now
+    now,
   );
 
   const insights = await prisma.botInsight.findMany({
@@ -188,69 +179,24 @@ async function queryBotInsightsUpdated() {
   return insights;
 }
 
-interface CitationQueryRun {
-  queries: Array<{
-    citations?: string[];
-  }>;
-}
-
 /**
  * Calculate average citation score from citation query runs
  */
-function calculateAverageScore(runs: CitationQueryRun[]): number {
+function calculateAverageScore(
+  runs: {
+    queries: Array<{
+      citations?: string[];
+    }>;
+  }[],
+): number {
   if (runs.length === 0) return 0;
 
   const totalCitations = runs.reduce((sum, run) => {
     const citationCount = run.queries.filter(
-      (q) => q.citations && q.citations.length > 0
+      (q) => q.citations && q.citations.length > 0,
     ).length;
     return sum + citationCount;
   }, 0);
 
   return Math.round((totalCitations / runs.length) * 100) / 100;
-}
-
-/**
- * Generate daily report HTML with all metrics
- */
-export async function generateDailyReport(): Promise<string> {
-  logger("[reports:generate] Starting daily report generation");
-
-  try {
-    const newUsers = await queryNewUsers();
-    const newSites = await queryNewSites();
-    const botInsights = await queryBotInsightsUpdated();
-
-    // Get top bot visits for each new site
-    const newSitesWithMetrics = await Promise.all(
-      newSites.map(async (site) => {
-        const topBotVisits = await queryTopBotVisits(site.id);
-        const citationScores = await queryCitationScores(site.id);
-        return {
-          site,
-          topBotVisits,
-          citationScores,
-        };
-      })
-    );
-
-    logger("[reports:generate] Report data collected successfully");
-
-    const html = render(
-      <DailyReportEmail
-        newUsers={newUsers}
-        newSitesWithMetrics={newSitesWithMetrics}
-        botInsights={botInsights}
-        generatedAt={new Date()}
-      />,
-      { pretty: true }
-    );
-
-    logger("[reports:generate] Report HTML generated successfully");
-    return html;
-  } catch (error) {
-    captureException(error);
-    logger("[reports:generate] Error generating report: %o", error);
-    throw error;
-  }
 }
