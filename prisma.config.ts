@@ -1,11 +1,10 @@
 import { resolve } from "node:path";
-import { defineConfig } from "prisma/config";
-import envVars from "./app/lib/envVars";
+import { defineConfig, env } from "prisma/config";
 
 // @see https://www.prisma.io/docs/orm/overview/databases/supabase#specific-considerations
 export default defineConfig({
   datasource: {
-    url: new URL(envVars.DATABASE_URL).toString(),
+    url: env("DATABASE_URL"),
   },
   migrations: {
     path: "prisma/migrations",
