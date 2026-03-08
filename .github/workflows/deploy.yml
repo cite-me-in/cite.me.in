@@ -127,11 +127,10 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           org-id: "team_bjyg9pgn8TQQVP2NLMPnSYSN"
           prebuilt: false
-          production: true
+          production: false
           project-id: "prj_Ipf1EVCJ9lIgoCIIbiizNp5W5O66"
           token: ${{ secrets.VERCEL_TOKEN }}
         env:
-          DATABASE_URL: "${{ env.DIRECT_URL }}"
           SENTRY_AUTH_TOKEN: "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"
           SENTRY_ORG: "labnotes"
           SENTRY_PROJECT: "citeup"
