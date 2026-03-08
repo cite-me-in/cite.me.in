@@ -13,6 +13,7 @@ export type LastEmail = {
 };
 
 export let lastEmailSent: LastEmail | undefined = undefined;
+
 const resend = new Resend(envVars.RESEND_API_KEY);
 const logger = debug("email");
 
@@ -36,7 +37,8 @@ export async function sendEmail({
 }): Promise<string> {
   lastEmailSent = undefined;
   const html = await pretty(await render(await renderFn({ subject })));
-  await captureLastEmail({ html, to: to, subject });
+  if (process.env.NODE_ENV === "test")
+    await captureLastEmail({ html, to: to, subject });
 
   // In tests, we don't want to actually send emails, we just want to render them
   if (process.env.NODE_ENV === "test") {
@@ -58,18 +60,15 @@ export async function sendEmail({
  * We use different processes for sending emails (Vite worker) and for checking
  * on them (test process), so we use Redis to communicate between the two.
  */
-let subscriber: Redis | null = null;
-let publisher: Redis | null = null;
+const subscriber = new Redis(envVars.REDIS_URL);
+const publisher = new Redis(envVars.REDIS_URL);
 let redisInitialized = false;
 
 function initRedis() {
+  if (process.env.NODE_ENV !== "test") return;
   if (redisInitialized) return;
-  redisInitialized = true;
 
   try {
-    subscriber = new Redis(envVars.REDIS_URL);
-    publisher = new Redis(envVars.REDIS_URL);
-
     subscriber.on("message", (channel: string, message: unknown) => {
       if (channel === "email:last")
         lastEmailSent = message
@@ -80,6 +79,7 @@ function initRedis() {
   } catch (error) {
     logger("Failed to initialize Redis: %O", error);
   }
+  redisInitialized = true;
 }
 
 /**
@@ -108,7 +108,8 @@ export async function getLastEmailSent(): Promise<LastEmail> {
  * @param subject - The subject of the email.
  * @param to - The email address of the recipient.
  */
-export async function captureLastEmail(lastEmail: LastEmail) {
+async function captureLastEmail(lastEmail: LastEmail) {
   initRedis();
-  if (publisher) await publisher.publish("email:last", JSON.stringify(lastEmail));
+  if (publisher)
+    await publisher.publish("email:last", JSON.stringify(lastEmail));
 }
