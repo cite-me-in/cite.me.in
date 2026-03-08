@@ -7,7 +7,7 @@ dotenv.configDotenv({ quiet: true });
 // @see https://www.prisma.io/docs/orm/overview/databases/supabase#specific-considerations
 export default defineConfig({
   datasource: {
-    url: env("DIRECT_URL"),
+    url: env("DATABASE_URL"),
   },
   migrations: {
     path: "prisma/migrations",

@@ -12,8 +12,6 @@ import {
   Text,
   pixelBasedPreset,
 } from "@react-email/components";
-import * as styles from "./styles";
-import { colors } from "./styles";
 
 /**
  * EmailLayout is a component that wraps the email content and provides a consistent layout.
@@ -46,7 +44,15 @@ export default function EmailLayout({
           theme: {
             extend: {
               colors: {
-                primary: colors.primary,
+                primary: "#4f46e5",
+                text: "#374151",
+                dark: "#1f2937",
+                light: "#6b7280",
+                background: "#f6f9fc",
+                white: "#ffffff",
+                highlightBg: "#f3f4f6",
+                border: "#e5e7eb",
+                borderLight: "#f0f0f0",
               },
             },
           },
@@ -88,12 +94,15 @@ function Footer({ isCustomer = true }: { isCustomer: boolean }) {
       {isCustomer && (
         <Text className="mb-4 text-center text-gray-500 text-sm leading-relaxed">
           You're receiving this email because you signed up for an account at{" "}
-          <Link href="https://citeup.vercel.app" style={styles.footerLink}>
+          <Link
+            href="https://citeup.vercel.app"
+            className="text-light underline"
+          >
             rentail.space
           </Link>
         </Text>
       )}
-      <Text style={styles.footerText}>
+      <Text className="my-2 text-center text-light text-sm leading-relaxed">
         <Link
           href="https://citeup.vercel.app/privacy"
           className="text-primary underline"

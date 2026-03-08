@@ -1,7 +1,6 @@
 import { Button, CodeInline, Section, Text } from "@react-email/components";
 import EmailLayout from "./EmailLayout";
 import { sendEmail } from "./sendEmails.server";
-import * as styles from "./styles";
 
 export default async function sendPasswordRecoveryEmail({
   to,
@@ -26,31 +25,38 @@ function PasswordRecovery({
 }) {
   return (
     <EmailLayout subject={subject}>
-      <Text style={styles.text}>Hello there,</Text>
+      <Text className="my-4 text-base text-text leading-relaxed">
+        Hello there,
+      </Text>
 
-      <Text style={styles.text}>
+      <Text className="my-4 text-base text-text leading-relaxed">
         You recently requested to reset your CiteUp password. To complete this
         request, please click the button below.
       </Text>
 
-      <Section style={styles.buttonContainer}>
-        <Button href={resetPasswordUrl} style={styles.button}>
+      <Section className="my-8 text-center">
+        <Button
+          href={resetPasswordUrl}
+          className="rounded-md bg-primary px-4 py-2 text-white hover:bg-primary-hover"
+        >
           Reset Password
         </Button>
       </Section>
 
-      <Text style={styles.text}>
+      <Text className="my-4 text-base text-text leading-relaxed">
         Or copy and paste this link into your browser:
       </Text>
 
-      <CodeInline style={styles.code}>{resetPasswordUrl}</CodeInline>
+      <CodeInline className="line-height-1.5 break-all rounded-md bg-highlightBg p-2 font-mono text-dark text-sm">
+        {resetPasswordUrl}
+      </CodeInline>
 
-      <Text style={styles.text}>
+      <Text className="my-4 text-base text-text leading-relaxed">
         This link will expire in 30 minutes. If you didn't request this change,
         you can safely ignore this email.
       </Text>
 
-      <Text style={styles.text}>
+      <Text className="my-4 text-base text-text leading-relaxed">
         Best regards,
         <br />
         The CiteUp Team
