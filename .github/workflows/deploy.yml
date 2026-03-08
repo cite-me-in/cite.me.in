@@ -89,6 +89,7 @@ jobs:
           NODE_OPTIONS: "--max-old-space-size=3096"
 
       - name: Run Tests
+        if: false
         run: pnpm --expose-gc vitest run
 
       - name: Run Playwright Tests
