@@ -1,13 +1,12 @@
 import { z } from "zod";
 import recordBotVisit from "~/lib/botTracking.server";
-import captureException from "~/lib/captureException.server";
 import type { Route } from "./+types/api.track";
 
 const BotTrackSchema = z.object({
   url: z.url(),
-  userAgent: z.string(),
-  accept: z.string(),
-  ip: z.string(),
+  userAgent: z.string().nullable().optional(),
+  accept: z.string().nullable().optional(),
+  ip: z.string().nullable().optional(),
   referer: z.string().nullable().optional(),
 });
 
@@ -34,8 +33,7 @@ export async function action({ request }: Route.ActionArgs) {
     const parsed = BotTrackSchema.safeParse(body);
     if (parsed.error) throw new Error(parsed.error.message);
     data = parsed.data;
-  } catch (error) {
-    captureException(error, { extra: { body } });
+  } catch {
     return Response.json(
       { tracked: false, reason: "Invalid JSON" },
       { status: 400, headers: CORS_HEADERS },
@@ -45,9 +43,9 @@ export async function action({ request }: Route.ActionArgs) {
   const { url: rawUrl, userAgent, accept, ip, referer } = data;
   const { tracked, reason } = await recordBotVisit({
     url: rawUrl,
-    userAgent,
-    accept,
-    ip,
+    userAgent: userAgent || null,
+    accept: accept || null,
+    ip: ip || null,
     referer: referer || null,
   });
   return Response.json({ tracked, reason }, { headers: CORS_HEADERS });

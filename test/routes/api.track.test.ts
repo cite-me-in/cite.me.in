@@ -4,8 +4,8 @@ import { port } from "~/test/helpers/launchBrowser";
 
 const BASE_URL = `http://localhost:${port}/api/track`;
 
-function post(body: unknown) {
-  return fetch(BASE_URL, {
+async function post(body: unknown) {
+  return await fetch(BASE_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -53,16 +53,7 @@ describe("api.track", () => {
     it("returns 400 when url is missing", async () => {
       const res = await post({
         userAgent: "Googlebot/2.1",
-        accept: [],
-        ip: "1.2.3.4",
-      });
-      expect(res.status).toBe(400);
-    });
-
-    it("returns 400 when userAgent is missing", async () => {
-      const res = await post({
-        url: "https://apitrack.example.com/",
-        accept: [],
+        accept: "text/html",
         ip: "1.2.3.4",
       });
       expect(res.status).toBe(400);
@@ -74,7 +65,7 @@ describe("api.track", () => {
       const res = await post({
         url: "https://apitrack.example.com/",
         userAgent: "GPTBot/1.0",
-        accept: [],
+        accept: "text/html",
         ip: "1.2.3.4",
       });
       expect(res.headers.get("access-control-allow-origin")).toBe("*");

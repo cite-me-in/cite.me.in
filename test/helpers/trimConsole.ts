@@ -14,6 +14,10 @@ const ignore = [
   // Browser network errors
   "Failed to load resource",
   "blocking stylesheet: fonts.googleapis.com",
+  // Recharts warning when chart container has no computed size in headless browser
+  "The width(-1) and height(-1) of chart should be greater than 0",
+  "[vite] connecting...",
+  "[vite] connected.",
 ];
 
 /**
