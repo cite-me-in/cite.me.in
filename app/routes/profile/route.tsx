@@ -55,8 +55,7 @@ async function updateEmail({
 
     await prisma.user.update({ where: { id: userId }, data: { email } });
     return { success: "Email updated successfully" };
-  } catch (error) {
-    captureException(error);
+  } catch {
     return { error: "That email address is already in use" };
   }
 }
