@@ -108,15 +108,6 @@ export default function Index({ loaderData }: Route.ComponentProps) {
   const fetcher = useFetcher<typeof action>();
   const isProcessing = fetcher.state !== "idle";
 
-  // We want to show progress for 120 seconds and increment every 300ms,
-  // so we need to increment by X percentage every 300ms.
-  const [progress, setProgress] = useState(0);
-  const increment = (300 * 100) / 120_000;
-  useInterval(() => {
-    if (fetcher.state === "submitting")
-      setProgress((progress) => (progress >= 100 ? 100 : progress + increment));
-  }, 100);
-
   function addQuery(group: string) {
     const id = crypto.randomUUID();
     setSuggestions((prev) => [...prev, { id, group, query: "" }]);
@@ -219,7 +210,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
             {isProcessing ? "Saving…" : "Save queries"}
           </Button>
 
-          {isProcessing && <ProgressIndicator value={progress} />}
+          {isProcessing && <GradualProgress />}
 
           <ActiveLink
             to={`/site/${loaderData.siteId}`}
@@ -244,5 +235,18 @@ export default function Index({ loaderData }: Route.ComponentProps) {
         )}
       </Main>
     </SuggestionsErrorBoundary>
+  );
+}
+
+function GradualProgress({ totalTime = 120_000 }: { totalTime?: number }) {
+  const [progress, setProgress] = useState(0);
+  const increment = (300 * 100) / totalTime;
+  useInterval(() => {
+    setProgress((progress) => (progress >= 100 ? 100 : progress + increment));
+  }, 100);
+
+  return (
+    import.meta.env.PROD ||
+    (import.meta.env.DEV && <ProgressIndicator value={progress} />)
   );
 }
