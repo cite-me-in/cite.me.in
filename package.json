@@ -103,6 +103,10 @@
 		"vite-tsconfig-paths": "^6.1.1",
 		"vitest": "^4.0.18"
 	},
+	"optionalDependencies": {
+		"pg-native": "^3.0.1",
+		"cloudflare:sockets": "*"
+	},
 	"engines": {
 		"node": ">=24.10.1"
 	},

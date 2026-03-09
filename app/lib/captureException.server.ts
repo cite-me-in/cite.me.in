@@ -4,7 +4,6 @@ import { createWriteStream } from "node:fs";
 import { resolve } from "node:path";
 import { format } from "node:util";
 import type { Primitive } from "node_modules/zod/v3/helpers/typeAliases.cjs";
-import "server-only";
 import envVars from "./envVars";
 
 const logFile =
