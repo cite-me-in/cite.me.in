@@ -155,7 +155,9 @@ describe("sites route", () => {
       await page.getByRole("button", { name: "Add Site" }).click();
       await page.waitForURL(/\/site\/[^/]+\/suggestions/);
       // Wait for suggestions to finish loading
-      await page.waitForSelector('button:text("Save queries")', { timeout: 30000 });
+      await page.waitForSelector('button:text("Save queries")', {
+        timeout: 30000,
+      });
 
       site = await prisma.site.findFirstOrThrow({
         where: { domain: "example.com", accountId: user.accountId },
@@ -196,6 +198,10 @@ describe("sites route", () => {
         expect(page.url()).toMatch(/\/site\/[^/]+\/suggestions/);
         await page.getByRole("button", { name: "Save queries" }).click();
         await page.waitForURL(/\/site\/[^/]+\/citations/);
+
+        await page
+          .locator('text="Most Recent Run"')
+          .waitFor({ state: "visible" });
       });
 
       it("should navigate to citations page", async () => {
