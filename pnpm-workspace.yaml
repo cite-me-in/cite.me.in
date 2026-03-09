@@ -16,3 +16,4 @@ onlyBuiltDependencies:
   - msw
   - prisma
   - sharp
+  - libpq

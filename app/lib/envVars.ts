@@ -14,7 +14,7 @@ const envVars = {
     .get("APP_URL")
     .default("https://citeup.vercel.app")
     .asUrlString(),
-  DATABASE_URL: env.get("DATABASE_URL").required().asUrlString(),
+  DATABASE_URL: env.get("DATABASE_URL").required(false).asUrlString(),
   EMAIL_FROM: env.get("EMAIL_FROM").default("noreply@citeup.com").asString(),
   GOOGLE_GENERATIVE_AI_API_KEY: env
     .get("GOOGLE_GENERATIVE_AI_API_KEY")
@@ -24,9 +24,9 @@ const envVars = {
   LOGTAIL_TOKEN: env.get("LOGTAIL_TOKEN").required(false).asString(),
   OPENAI_API_KEY: env.get("OPENAI_API_KEY").required(false).asString(),
   PERPLEXITY_API_KEY: env.get("PERPLEXITY_API_KEY").required(false).asString(),
-  REDIS_URL: env.get("REDIS_URL").required().asString(),
-  RESEND_API_KEY: env.get("RESEND_API_KEY").required().asString(),
-  SESSION_SECRET: env.get("SESSION_SECRET").required().asString(),
+  REDIS_URL: env.get("REDIS_URL").required(false).asString(),
+  RESEND_API_KEY: env.get("RESEND_API_KEY").required(false).asString(),
+  SESSION_SECRET: env.get("SESSION_SECRET").required(false).asString(),
 };
 
 export default envVars;
