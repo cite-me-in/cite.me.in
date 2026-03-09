@@ -29,11 +29,12 @@ export default function captureException(
     };
   },
 ) {
-  const formattedMessage = format(
-    error instanceof Error ? error.message : String(error),
-    hints,
-  );
-  console.error(formattedMessage, hints);
+  const message = error instanceof Error ? error.message : String(error);
+  const formattedMessage =
+    hints?.extra || hints?.tags || hints?.user
+      ? format("%s\n%o", message, hints)
+      : format("%s", message);
+  console.error(formattedMessage);
   if (logFile) logFile.write(`${formattedMessage}\n`);
   sentryCaptureException(formattedMessage, hints);
   if (logtail) logtail.error(formattedMessage, hints);
