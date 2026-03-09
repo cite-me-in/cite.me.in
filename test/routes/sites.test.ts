@@ -2,7 +2,7 @@ import { type Locator, type Page, expect } from "@playwright/test";
 import { afterAll, beforeAll, describe, it } from "vitest";
 import { hashPassword } from "~/lib/auth.server";
 import type { HTMLNode } from "~/lib/html/HTMLNode";
-import { modifyElements } from "~/lib/html/parseHTML";
+import { modifyElements, removeElements } from "~/lib/html/parseHTML";
 import prisma from "~/lib/prisma.server";
 import type { Site, User } from "~/prisma";
 import { goto } from "../helpers/launchBrowser";
@@ -305,6 +305,7 @@ describe("sites route", () => {
 });
 
 function fixBaseline(html: HTMLNode[]) {
+  // Ignore the varying href attribute on site links
   modifyElements(
     html,
     (node) =>
@@ -314,6 +315,8 @@ function fixBaseline(html: HTMLNode[]) {
       attributes: { ...node.attributes, href: "/site/id" },
     }),
   );
+
+  // Ignore the varying style attribute on input elements
   modifyElements(
     html,
     (node) => node.tag === "input",
@@ -322,5 +325,13 @@ function fixBaseline(html: HTMLNode[]) {
       attributes: { ...node.attributes, id: "_r_0_", style: null },
     }),
   );
+
+  // Don't test Recharts charts
+  removeElements(
+    html,
+    (node) =>
+      !!node.attributes.class?.includes("recharts-responsive-container"),
+  );
+
   return html;
 }
