@@ -5,9 +5,9 @@
  * cleanly when the test is done.
  */
 
-import { invariant } from "es-toolkit";
 import { rm } from "node:fs/promises";
 import { resolve } from "node:path";
+import { invariant } from "es-toolkit";
 import * as vite from "vite";
 
 // Import and start the server
@@ -42,14 +42,22 @@ async function startServer() {
       logLevel: "warn", // Reduced log level to avoid noise
       root: process.cwd(),
       optimizeDeps: {
-        noDiscovery: false,
-        force: true, // Force re-optimization in test mode
+        // List all hook-using packages here so Vite pre-bundles them in the
+        // first pass and never does mid-session re-optimization. With HMR
+        // disabled, a mid-session re-optimization assigns new chunk hashes but
+        // cannot signal the browser to reload already-loaded chunks, resulting
+        // in two React instances: the old one (held by react-dom) and the new
+        // one (held by the newly discovered dep). This causes
+        // ReactCurrentDispatcher.current to be null when the new dep tries to
+        // call a hook.
+        force: true,
         include: [
           "react",
           "react-dom",
           "react-router",
+          "recharts",
+          "usehooks-ts",
           "lucide-react",
-          "tailwindcss",
         ],
       },
       server: {
