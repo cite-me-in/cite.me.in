@@ -51,7 +51,7 @@ export default Sentry.wrapSentryHandleRequest(
     // biome-ignore lint/suspicious/noExplicitAny: Sentry wrapper requires flexible type
     loadContext?: any,
   ) => {
-    tracker?.track(request); // fire-and-forget, production only
+    if (import.meta.env.PROD) tracker.track(request); // fire-and-forget, production only
     const start = Date.now();
     logger("%s %s", request.method, request.url);
 

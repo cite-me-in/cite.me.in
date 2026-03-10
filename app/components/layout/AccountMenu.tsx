@@ -1,6 +1,7 @@
 import {
   CornerDownRightIcon,
   LayoutDashboardIcon,
+  SettingsIcon,
   UnlockIcon,
   UserIcon,
 } from "lucide-react";
@@ -87,39 +88,37 @@ function DropdownMenu({
           </li>
 
           <li>
-            <Link
+            <AccountMenuItem
               to="/sites"
-              className="block w-full px-4 py-2 text-left font-medium text-black transition-colors hover:bg-[hsl(47,100%,95%)] hover:text-[#F59E0B]"
-              onClick={() => setIsOpen(false)}
-            >
-              <LayoutDashboardIcon className="mr-2 inline-block h-4 w-4" />
-              Dashboard
-            </Link>
+              icon={<LayoutDashboardIcon className="mr-2 size-4" />}
+              label="Dashboard"
+            />
           </li>
 
           {sites.map((site) => (
             <li key={site.id}>
-              <Link
+              <AccountMenuItem
                 to={`/site/${site.id}`}
-                className="block w-full truncate py-1.5 pr-4 pl-8 text-left text-foreground/60 transition-colors hover:bg-[hsl(47,100%,95%)] hover:text-[#F59E0B]"
-                onClick={() => setIsOpen(false)}
-                title={site.domain}
-              >
-                <CornerDownRightIcon className="mr-2 inline-block h-4 w-4" />
-                {site.domain}
-              </Link>
+                icon={<CornerDownRightIcon className="mr-2 size-4" />}
+                label={site.domain}
+              />
             </li>
           ))}
 
           <li>
-            <Link
+            <AccountMenuItem
               to="/profile"
-              className="block w-full px-4 py-2 text-left font-medium text-black transition-colors hover:bg-[hsl(47,100%,95%)] hover:text-[#F59E0B]"
-              onClick={() => setIsOpen(false)}
-            >
-              <UserIcon className="mr-2 inline-block h-4 w-4" />
-              Profile Settings
-            </Link>
+              icon={<UserIcon className="mr-2 size-4" />}
+              label="Profile Settings"
+            />
+          </li>
+
+          <li>
+            <AccountMenuItem
+              to="/account"
+              icon={<SettingsIcon className="mr-2 size-4" />}
+              label="Account"
+            />
           </li>
 
           <li>
@@ -138,5 +137,27 @@ function DropdownMenu({
         </menu>
       )}
     </div>
+  );
+}
+
+function AccountMenuItem({
+  to,
+  icon,
+  label,
+}: {
+  to: string;
+  icon: React.ReactNode;
+  label: string;
+}) {
+  return (
+    <li>
+      <Link
+        to={to}
+        className="flex w-full items-center px-4 py-2 text-left font-medium text-black transition-colors hover:bg-[hsl(47,100%,95%)] hover:text-[#F59E0B]"
+      >
+        {icon}
+        {label}
+      </Link>
+    </li>
   );
 }

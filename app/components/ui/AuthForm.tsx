@@ -2,10 +2,12 @@ import { twMerge } from "tailwind-merge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./Card";
 
 export default function AuthForm({
+  className,
   title,
   form,
   footer,
 }: {
+  className?: string;
   title: string;
   form: React.ReactNode;
   footer?: React.ReactNode;
@@ -21,6 +23,7 @@ export default function AuthForm({
         className={twMerge(
           "w-full max-w-md space-y-4",
           "bg-secondary-background text-secondary-foreground",
+          className,
         )}
         fadeIn={true}
       >
