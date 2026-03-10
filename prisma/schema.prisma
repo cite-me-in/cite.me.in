@@ -17,6 +17,7 @@ datasource db {
 model Account {
   id          String                          @id @default(cuid())
   createdAt   DateTime     @map("created_at") @default(now())
+  apiKey      String       @unique @default(cuid()) @map("api_key")
   hostname    String?      @map("hostname")
   users       User[]
   sites       Site[]
