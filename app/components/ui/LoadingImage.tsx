@@ -45,7 +45,10 @@ export default function LoadingImage({
     >
       <img
         alt={alt}
-        className="h-full w-full object-cover object-center opacity-0"
+        className={twMerge(
+          "h-full w-full object-cover object-center",
+          !import.meta.env.VITE_TEST_MODE && "opacity-0",
+        )}
         onError={(e) => {
           e.currentTarget.remove();
         }}
