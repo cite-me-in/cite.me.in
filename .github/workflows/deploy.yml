@@ -6,6 +6,9 @@ on:
 
 env:
   ANTHROPIC_API_KEY: "sk-ant-"
+  APP_URL: "http://localhost:9222"
+  BOT_TRACKER_API_KEY: "bot-tracker-api-key"
+  BOT_TRACKER_URL: "http://localhost:9222/api/track"
   DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/citeup"
   DIRECT_URL: "postgresql://postgres:postgres@localhost:5432/citeup"
   DEBUG: ""
