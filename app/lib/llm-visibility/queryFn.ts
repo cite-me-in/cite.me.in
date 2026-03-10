@@ -18,5 +18,8 @@ export type QueryFn = (query: string) => Promise<{
   // The response from the LLM to the query.
   text: string;
   // Token usage for the query.
-  usage: { inputTokens: number | undefined; outputTokens: number | undefined };
+  usage: {
+    inputTokens?: number;
+    outputTokens?: number;
+  };
 }>;

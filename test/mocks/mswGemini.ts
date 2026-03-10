@@ -15,5 +15,9 @@ export default http.post(
           finishReason: "STOP",
         },
       ],
+      usage: {
+        inputTokens: 5,
+        outputTokens: 10,
+      },
     }),
 );

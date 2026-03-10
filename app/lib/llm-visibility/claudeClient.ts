@@ -1,7 +1,7 @@
 import { anthropic } from "@ai-sdk/anthropic";
 import { generateText } from "ai";
 import { haiku } from "./anthropic";
-import type { QueryFn } from "./llmVisibility";
+import type { QueryFn } from "./queryFn";
 
 export default async function queryClaude(query: string): ReturnType<QueryFn> {
   const { sources, text, usage } = await generateText({

@@ -6,7 +6,7 @@ import {
   checkUsageLimits,
   recordUsageEvent,
 } from "~/lib/usage/usageLimit.server";
-import type { QueryFn } from "./llmVisibility";
+import type { QueryFn } from "./queryFn";
 
 const logger = debug("server");
 

@@ -2,7 +2,7 @@ import { createPerplexity } from "@ai-sdk/perplexity";
 import { generateText } from "ai";
 import { invariant } from "es-toolkit";
 import envVars from "~/lib/envVars";
-import type { QueryFn } from "./llmVisibility";
+import type { QueryFn } from "./queryFn";
 
 const MODEL_ID = "sonar";
 

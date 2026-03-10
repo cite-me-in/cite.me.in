@@ -37,8 +37,8 @@ export default http.post(
         model: "claude-3-5-sonnet-20241022",
         stop_reason: "end_turn",
         usage: {
-          input_tokens: 1000,
-          output_tokens: 500,
+          inputTokens: 1000,
+          outputTokens: 500,
         },
       });
     } else {
