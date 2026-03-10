@@ -1,0 +1,287 @@
+<div class="flex items-center justify-between gap-4">
+  <div>
+    <p>
+      <a class="block max-w-md truncate font-mono text-foreground/60 hover:underline" data-discover="true" href="/site/id" title="example.com">
+        example.com
+      </a>
+    </p>
+    <h1 class="font-heading text-3xl">
+      Citations
+    </h1>
+  </div>
+  <a class="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 underline-offset-4 !p-0 px-4 py-2 text-base text-foreground/60 hover:underline" data-discover="true" href="/site/id" rel="noopener noreferrer">
+    Edit queries
+    <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 12h14"></path>
+      <path d="m12 5 7 7-7 7"></path>
+    </svg>
+  </a>
+</div>
+<div class="flex justify-center">
+  <div class="mx-auto" data-activation-direction="none" data-orientation="horizontal">
+    <div class="inline-flex items-center justify-center gap-2 rounded-base border-2 border-black bg-[hsl(60,100%,99%)] p-2 shadow-[2px_2px_0px_0px_black]" data-activation-direction="none" data-orientation="horizontal" role="tablist">
+      <button aria-disabled="false" aria-selected="true" class="inline-flex items-center justify-center whitespace-nowrap rounded-base border-2 border-transparent px-4 py-2 font-bold text-base text-black transition-all duration-100 hover:border-black hover:bg-white data-active:border-black data-active:bg-[#F59E0B] data-active:shadow-[2px_2px_0px_0px_black]" data-orientation="horizontal" role="tab" tabindex="0" type="button">
+        ChatGPT
+      </button>
+      <button aria-disabled="false" aria-selected="false" class="inline-flex items-center justify-center whitespace-nowrap rounded-base border-2 border-transparent px-4 py-2 font-bold text-base text-black transition-all duration-100 hover:border-black hover:bg-white data-active:border-black data-active:bg-[#F59E0B] data-active:shadow-[2px_2px_0px_0px_black]" data-orientation="horizontal" role="tab" tabindex="-1" type="button">
+        Perplexity
+      </button>
+      <button aria-disabled="false" aria-selected="false" class="inline-flex items-center justify-center whitespace-nowrap rounded-base border-2 border-transparent px-4 py-2 font-bold text-base text-black transition-all duration-100 hover:border-black hover:bg-white data-active:border-black data-active:bg-[#F59E0B] data-active:shadow-[2px_2px_0px_0px_black]" data-orientation="horizontal" role="tab" tabindex="-1" type="button">
+        Anthropic
+      </button>
+      <button aria-disabled="false" aria-selected="false" class="inline-flex items-center justify-center whitespace-nowrap rounded-base border-2 border-transparent px-4 py-2 font-bold text-base text-black transition-all duration-100 hover:border-black hover:bg-white data-active:border-black data-active:bg-[#F59E0B] data-active:shadow-[2px_2px_0px_0px_black]" data-orientation="horizontal" role="tab" tabindex="-1" type="button">
+        Gemini
+      </button>
+    </div>
+  </div>
+</div>
+<div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
+  <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
+    <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
+      Most Recent Run
+    </div>
+    <div class="font-base text-base" data-slot="card-description">
+      3/9/2026 · gpt-5-chat-latest · 9 checks
+    </div>
+  </div>
+  <div class="px-6" data-slot="card-content">
+    <div class="relative w-full overflow-auto">
+      <table class="w-full caption-bottom text-base">
+        <thead class="[&amp;_tr]:border-b">
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <th class="h-10 px-2 text-left align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] font-bold text-foreground">
+              Query
+            </th>
+            <th class="h-10 px-2 text-left align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] font-bold text-foreground">
+              Group
+            </th>
+            <th class="h-10 px-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right font-bold text-foreground">
+              Visibility
+            </th>
+            <th class="h-10 px-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right font-bold text-foreground">
+              Avg Citations
+            </th>
+            <th class="h-10 px-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right font-bold text-foreground">
+              Score
+            </th>
+          </tr>
+        </thead>
+        <tbody class="[&amp;_tr:last-child]:border-0">
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] max-w-xs truncate">
+              Query 1
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-xs">
+              1. discovery
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0%
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0.0
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0.0
+            </td>
+          </tr>
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] max-w-xs truncate">
+              Query 2
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-xs">
+              1. discovery
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0%
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0.0
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0.0
+            </td>
+          </tr>
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] max-w-xs truncate">
+              Query 3
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-xs">
+              1. discovery
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0%
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0.0
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0.0
+            </td>
+          </tr>
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] max-w-xs truncate">
+              Query 4
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-xs">
+              2. active_search
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0%
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0.0
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0.0
+            </td>
+          </tr>
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] max-w-xs truncate">
+              Query 5
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-xs">
+              2. active_search
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0%
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0.0
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0.0
+            </td>
+          </tr>
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] max-w-xs truncate">
+              Query 6
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-xs">
+              2. active_search
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0%
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0.0
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0.0
+            </td>
+          </tr>
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] max-w-xs truncate">
+              Query 7
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-xs">
+              3. comparison
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0%
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0.0
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0.0
+            </td>
+          </tr>
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] max-w-xs truncate">
+              Query 8
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-xs">
+              3. comparison
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0%
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0.0
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0.0
+            </td>
+          </tr>
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] max-w-xs truncate">
+              Query 9
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-xs">
+              3. comparison
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0%
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0.0
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              0.0
+            </td>
+          </tr>
+        </tbody>
+        <tfoot class="border-t bg-muted/50 font-medium [&amp;&gt;tr]:last:border-b-0">
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] font-bold" colspan="2">
+              Average
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right font-bold">
+              0%
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right font-bold">
+              0.0
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right font-bold">
+              0.0
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="grid gap-4 md:grid-cols-3">
+  <div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
+    <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
+      <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
+        Visibility %
+      </div>
+    </div>
+    <div class="px-6" data-slot="card-content">
+      <div class="flex justify-center text-xs [&amp;_.recharts-cartesian-axis-tick_text]:fill-foreground [&amp;_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-[#80808080] [&amp;_.recharts-curve.recharts-tooltip-cursor]:stroke-[#80808080] [&amp;_.recharts-dot[stroke='#fff']]:stroke-transparent [&amp;_.recharts-polar-grid_[stroke='#ccc']]:stroke-black [&amp;_.recharts-polar-grid_[stroke='#ccc']]:dark:stroke-white [&amp;_.recharts-reference-line_[stroke='#ccc']]:stroke-black [&amp;_.recharts-reference-line_[stroke='#ccc']]:dark:stroke-white [&amp;_.recharts-sector[stroke='#fff']]:stroke-border [&amp;_.recharts-sector]:outline-hidden [&amp;_.recharts-surface]:outline-hidden [&amp;_.recharts-layer_path]:stroke-2 [&amp;_.recharts-layer_path]:[fill-opacity:1] [&amp;_.recharts-layer_path]:[stroke:var(--color-border)] h-36 w-full" data-chart="chart-_r_5_" data-slot="chart">
+        <style>
+          [data-chart=chart-_r_5_] { --color-visibilityPct: var(--chart-1); --color-citationRatio: var(--chart-3); --color-score: var(--chart-4); } .dark [data-chart=chart-_r_5_] { --color-visibilityPct: var(--chart-1); --color-citationRatio: var(--chart-3); --color-score: var(--chart-4); }
+        </style>
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
+    <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
+      <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
+        Citation Ratio %
+      </div>
+    </div>
+    <div class="px-6" data-slot="card-content">
+      <div class="flex justify-center text-xs [&amp;_.recharts-cartesian-axis-tick_text]:fill-foreground [&amp;_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-[#80808080] [&amp;_.recharts-curve.recharts-tooltip-cursor]:stroke-[#80808080] [&amp;_.recharts-dot[stroke='#fff']]:stroke-transparent [&amp;_.recharts-polar-grid_[stroke='#ccc']]:stroke-black [&amp;_.recharts-polar-grid_[stroke='#ccc']]:dark:stroke-white [&amp;_.recharts-reference-line_[stroke='#ccc']]:stroke-black [&amp;_.recharts-reference-line_[stroke='#ccc']]:dark:stroke-white [&amp;_.recharts-sector[stroke='#fff']]:stroke-border [&amp;_.recharts-sector]:outline-hidden [&amp;_.recharts-surface]:outline-hidden [&amp;_.recharts-layer_path]:stroke-2 [&amp;_.recharts-layer_path]:[fill-opacity:1] [&amp;_.recharts-layer_path]:[stroke:var(--color-border)] h-36 w-full" data-chart="chart-_r_6_" data-slot="chart">
+        <style>
+          [data-chart=chart-_r_6_] { --color-visibilityPct: var(--chart-1); --color-citationRatio: var(--chart-3); --color-score: var(--chart-4); } .dark [data-chart=chart-_r_6_] { --color-visibilityPct: var(--chart-1); --color-citationRatio: var(--chart-3); --color-score: var(--chart-4); }
+        </style>
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
+    <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
+      <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
+        Score
+      </div>
+    </div>
+    <div class="px-6" data-slot="card-content">
+      <div class="flex justify-center text-xs [&amp;_.recharts-cartesian-axis-tick_text]:fill-foreground [&amp;_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-[#80808080] [&amp;_.recharts-curve.recharts-tooltip-cursor]:stroke-[#80808080] [&amp;_.recharts-dot[stroke='#fff']]:stroke-transparent [&amp;_.recharts-polar-grid_[stroke='#ccc']]:stroke-black [&amp;_.recharts-polar-grid_[stroke='#ccc']]:dark:stroke-white [&amp;_.recharts-reference-line_[stroke='#ccc']]:stroke-black [&amp;_.recharts-reference-line_[stroke='#ccc']]:dark:stroke-white [&amp;_.recharts-sector[stroke='#fff']]:stroke-border [&amp;_.recharts-sector]:outline-hidden [&amp;_.recharts-surface]:outline-hidden [&amp;_.recharts-layer_path]:stroke-2 [&amp;_.recharts-layer_path]:[fill-opacity:1] [&amp;_.recharts-layer_path]:[stroke:var(--color-border)] h-36 w-full" data-chart="chart-_r_7_" data-slot="chart">
+        <style>
+          [data-chart=chart-_r_7_] { --color-visibilityPct: var(--chart-1); --color-citationRatio: var(--chart-3); --color-score: var(--chart-4); } .dark [data-chart=chart-_r_7_] { --color-visibilityPct: var(--chart-1); --color-citationRatio: var(--chart-3); --color-score: var(--chart-4); }
+        </style>
+      </div>
+    </div>
+  </div>
+</div>

@@ -2,7 +2,6 @@ import { Logtail } from "@logtail/node";
 import { captureException as sentryCaptureException } from "@sentry/react-router";
 import { createWriteStream } from "node:fs";
 import { resolve } from "node:path";
-import { format } from "node:util";
 import type { Primitive } from "node_modules/zod/v3/helpers/typeAliases.cjs";
 import envVars from "./envVars";
 
@@ -29,13 +28,19 @@ export default function captureException(
     };
   },
 ) {
-  const message = error instanceof Error ? error.message : String(error);
-  const formattedMessage =
-    hints?.extra || hints?.tags || hints?.user
-      ? format("%s\n%o", message, hints)
-      : format("%s", message);
-  console.error(formattedMessage);
-  if (logFile) logFile.write(`${formattedMessage}\n`);
-  sentryCaptureException(formattedMessage, hints);
-  if (logtail) logtail.error(formattedMessage, hints);
+  if (error instanceof Error) {
+    console.error(error.stack);
+    if (logFile) logFile.write(`${error.stack}\n`);
+  } else {
+    console.error(error);
+    if (logFile) logFile.write(`${error}\n`);
+  }
+
+  sentryCaptureException(error, hints);
+
+  if (logtail)
+    logtail.error(
+      error instanceof Error ? error.message : String(error),
+      hints,
+    );
 }

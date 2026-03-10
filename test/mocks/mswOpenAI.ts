@@ -22,8 +22,9 @@ export default http.post("https://api.openai.com/v1/responses", () =>
       },
     ],
     usage: {
-      inputTokens: 5,
-      outputTokens: 10,
+      input_tokens: 5,
+      output_tokens: 10,
+      total_tokens: 15,
     },
   }),
 );

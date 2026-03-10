@@ -15,8 +15,9 @@ export default http.post("https://api.perplexity.ai/chat/completions", () =>
       },
     ],
     usage: {
-      inputTokens: 1000,
-      outputTokens: 500,
+      prompt_tokens: 12,
+      completion_tokens: 315,
+      total_tokens: 327,
     },
   }),
 );

@@ -45,7 +45,11 @@ describe("queryGemini", () => {
         .mockResolvedValueOnce({ url: "https://example.com/final-2" }),
     );
 
-    const result = await queryGemini("What is the capital of France?");
+    const result = await queryGemini({
+      maxRetries: 0,
+      timeout: 0,
+      query: "What is the capital of France?",
+    });
 
     expect(result.citations).toEqual([
       "https://example.com/final-1",
@@ -73,7 +77,11 @@ describe("queryGemini", () => {
       text: "Response",
     } as never);
 
-    await queryGemini("query");
+    await queryGemini({
+      maxRetries: 0,
+      timeout: 0,
+      query: "query",
+    });
 
     expect(fetchMock).toHaveBeenCalledWith("https://redirect.example.com", {
       redirect: "follow",
@@ -87,7 +95,11 @@ describe("queryGemini", () => {
       text: "I don't know.",
     } as never);
 
-    const result = await queryGemini("query");
+    const result = await queryGemini({
+      maxRetries: 0,
+      timeout: 0,
+      query: "query",
+    });
 
     expect(result.citations).toEqual([]);
     expect(result.extraQueries).toEqual([]);

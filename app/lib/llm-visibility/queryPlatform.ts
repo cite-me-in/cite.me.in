@@ -146,6 +146,7 @@ async function singleQueryRepetition({
       },
     });
   } catch (error) {
+    console.error(error);
     captureException(error, {
       extra: {
         siteId: site.id,

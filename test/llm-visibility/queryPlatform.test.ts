@@ -93,7 +93,7 @@ describe("queryPlatform", () => {
       const run = await prisma.citationQueryRun.findFirst({
         where: { siteId: site.id, platform: "claude" },
         include: {
-          queries: { orderBy: [{ query: "asc" }, { repetition: "asc" }] },
+          queries: { orderBy: [{ query: "asc" }] },
         },
       });
 
@@ -142,7 +142,7 @@ describe("queryPlatform", () => {
       const runs = await prisma.citationQueryRun.findMany({
         where: { siteId: site.id },
         include: {
-          queries: { orderBy: [{ query: "asc" }, { repetition: "asc" }] },
+          queries: { orderBy: [{ query: "asc" }] },
         },
       });
 

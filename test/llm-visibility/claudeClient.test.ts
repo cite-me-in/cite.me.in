@@ -34,7 +34,11 @@ describe("queryClaude", () => {
       text: "Paris is the capital of France.",
     } as never);
 
-    const result = await queryClaude("What is the capital of France?");
+    const result = await queryClaude({
+      maxRetries: 0,
+      timeout: 0,
+      query: "What is the capital of France?",
+    });
 
     expect(result.citations).toEqual([
       "https://example.com",
@@ -53,7 +57,11 @@ describe("queryClaude", () => {
       text: "Response",
     } as never);
 
-    const result = await queryClaude("query");
+    const result = await queryClaude({
+      maxRetries: 0,
+      timeout: 0,
+      query: "query",
+    });
 
     expect(result.citations).toEqual(["https://example.com"]);
   });
@@ -64,7 +72,11 @@ describe("queryClaude", () => {
       text: "I don't know.",
     } as never);
 
-    const result = await queryClaude("query");
+    const result = await queryClaude({
+      maxRetries: 0,
+      timeout: 0,
+      query: "query",
+    });
 
     expect(result.citations).toEqual([]);
   });

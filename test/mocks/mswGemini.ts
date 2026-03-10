@@ -16,8 +16,8 @@ export default http.post(
         },
       ],
       usage: {
-        inputTokens: 5,
-        outputTokens: 10,
+        input_tokens: 5,
+        output_tokens: 10,
       },
     }),
 );

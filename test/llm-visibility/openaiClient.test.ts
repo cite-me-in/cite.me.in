@@ -30,7 +30,11 @@ describe("openaiClient", () => {
       text: "Paris is the capital of France.",
     } as never);
 
-    const result = await openaiClient("What is the capital of France?");
+    const result = await openaiClient({
+      maxRetries: 0,
+      timeout: 0,
+      query: "What is the capital of France?",
+    });
 
     expect(result.citations).toEqual([
       "https://example.com",
@@ -49,7 +53,11 @@ describe("openaiClient", () => {
       text: "Response",
     } as never);
 
-    const result = await openaiClient("query");
+    const result = await openaiClient({
+      maxRetries: 0,
+      timeout: 0,
+      query: "query",
+    });
 
     expect(result.citations).toEqual(["https://example.com"]);
   });
@@ -60,7 +68,11 @@ describe("openaiClient", () => {
       text: "I don't know.",
     } as never);
 
-    const result = await openaiClient("query");
+    const result = await openaiClient({
+      maxRetries: 0,
+      timeout: 0,
+      query: "query",
+    });
 
     expect(result.citations).toEqual([]);
   });

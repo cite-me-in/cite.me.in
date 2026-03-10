@@ -63,7 +63,7 @@ export async function action({ params, request }: Route.ActionArgs) {
           .array(z.object({ group: z.string(), query: z.string() }))
           .parse(raw);
         await addSiteQueries(site, queries);
-        return { ok: true };
+        return redirect(`/site/${params.id}/citations`);
       }
     }
   } catch (error) {
