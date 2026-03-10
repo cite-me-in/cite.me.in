@@ -102,7 +102,8 @@ export default async function recordBotVisit({
 
   const { hostname, pathname } = new URL(url);
   const domain = hostname.toLowerCase();
-  const site = resolvedSite ?? await prisma.site.findFirst({ where: { domain } });
+  const site =
+    resolvedSite ?? (await prisma.site.findFirst({ where: { domain } }));
   if (!site) return { tracked: false, reason: "site not found" };
 
   const date = new Date(

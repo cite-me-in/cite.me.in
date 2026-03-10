@@ -113,7 +113,7 @@ describe("api.track", () => {
       expect(body.reason).toBe("not a bot");
     });
 
-    it("returns tracked:false when domain is unknown", async () => {
+    it("returns 403 when domain is not in the account", async () => {
       const res = await post(
         {
           url: "https://unknown-domain-xyz.example.com/",
@@ -123,10 +123,7 @@ describe("api.track", () => {
         },
         authHeader(),
       );
-      expect(res.status).toBe(200);
-      const body = await res.json();
-      expect(body.tracked).toBe(false);
-      expect(body.reason).toBe("site not found");
+      expect(res.status).toBe(403);
     });
 
     it("tracks a bot visit for a known domain", async () => {

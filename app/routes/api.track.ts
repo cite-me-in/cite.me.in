@@ -53,18 +53,6 @@ export async function action({ request }: Route.ActionArgs) {
   const apiKey = authHeader.slice(7);
 
   const hostname = new URL(data.url).hostname.toLowerCase();
-
-  // Check if the site exists at all first
-  const siteExists = await prisma.site.findFirst({
-    where: { domain: hostname },
-  });
-  if (!siteExists)
-    return Response.json(
-      { tracked: false, reason: "site not found" },
-      { headers: CORS_HEADERS },
-    );
-
-  // Verify the API key matches the account that owns this site
   const site = await prisma.site.findFirst({
     where: { domain: hostname, account: { apiKey } },
   });
