@@ -21,14 +21,17 @@ import prisma from "./prisma.server";
 export async function addSiteToAccount(
   account: Account,
   url: string,
-): Promise<Site> {
+): Promise<{
+  site: Site;
+  existing: boolean;
+}> {
   const domain = extractDomain(url);
   if (!domain) throw new Error("Enter a valid website URL or domain name");
 
   const existing = await prisma.site.findFirst({
     where: { accountId: account.id, domain },
   });
-  if (existing) return existing;
+  if (existing) return { site: existing, existing: true };
 
   const content = await fetchPageContent(domain);
   const site = await prisma.site.create({
@@ -38,7 +41,7 @@ export async function addSiteToAccount(
       domain,
     },
   });
-  return site;
+  return { site, existing: false };
 }
 
 /**

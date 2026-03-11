@@ -37,9 +37,13 @@ export async function action({ request }: Route.ActionArgs) {
       // Add a new site to the account
       const url = formData.get("url")?.toString() ?? "";
       try {
-        const site = await addSiteToAccount(user.account, url);
-        await generateSiteQueries(site);
-        return redirect(`/site/${site.id}/suggestions`);
+        const { site, existing } = await addSiteToAccount(user.account, url);
+        if (existing) {
+          return redirect(`/site/${site.id}/citations`);
+        } else {
+          await generateSiteQueries(site);
+          return redirect(`/site/${site.id}/suggestions`);
+        }
       } catch (error) {
         captureException(error, { extra: { url } });
         return {
