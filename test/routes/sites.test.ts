@@ -111,7 +111,7 @@ describe("sites route", () => {
     });
 
     it("should redirect to site page", async () => {
-      await expect(page).toHaveURL("/site/site-1/suggestions");
+      await expect(page).toHaveURL("/site/site-1/citations");
     });
 
     afterAll(async () => {
