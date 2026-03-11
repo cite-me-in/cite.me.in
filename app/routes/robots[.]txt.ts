@@ -1,5 +1,4 @@
 import { generateRobotsTxt } from "@forge42/seo-tools/robots";
-import envVars from "~/lib/envVars";
 
 export async function loader() {
   const robotsTxt = generateRobotsTxt([
@@ -8,7 +7,9 @@ export async function loader() {
       userAgent: "*",
       allow: ["/"],
       disallow: ["/error"],
-      sitemap: [`${envVars.APP_URL}/sitemap.xml`],
+      sitemap: [
+        new URL("/sitemap.xml", import.meta.env.VITE_APP_URL).toString(),
+      ],
     },
     { userAgent: "GPTBot", allow: ["/"] },
     { userAgent: "ChatGPT-User", allow: ["/"] },

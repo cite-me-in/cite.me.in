@@ -1,5 +1,3 @@
-import envVars from "~/lib/envVars";
-
 export default [
   {
     category: "Getting Started",
@@ -91,7 +89,7 @@ export default [
       },
       {
         question: "How do I contact support?",
-        answer: `Email us at ${envVars.EMAIL_FROM.replace("noreply@", "hello@")}. We respond within 24 hours on business days.`,
+        answer: `Email us at ${import.meta.env.VITE_EMAIL_FROM}. We respond within 24 hours on business days.`,
       },
     ],
   },

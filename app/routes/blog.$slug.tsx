@@ -4,7 +4,6 @@ import { Streamdown } from "streamdown";
 import { ActiveLink } from "~/components/ui/ActiveLink";
 import LoadingImage from "~/components/ui/LoadingImage";
 import { type BlogPost, loadBlogPost } from "~/lib/blogPosts.server";
-import envVars from "~/lib/envVars";
 import externalLink from "~/lib/externalLink";
 import { formatDateMed } from "~/lib/temporal";
 import type { Route } from "./+types/blog.$slug";
@@ -26,10 +25,19 @@ export function meta({ loaderData }: Route.MetaArgs): Route.MetaDescriptors {
     { property: "og:title", content: title },
     { property: "og:description", content: summary },
     { property: "og:type", content: "article" },
-    { property: "og:url", content: `${envVars.APP_URL}/blog/${slug}` },
+    {
+      property: "og:url",
+      content: new URL(
+        `/blog/${slug}`,
+        import.meta.env.VITE_APP_URL,
+      ).toString(),
+    },
     {
       property: "og:image",
-      content: `${envVars.APP_URL}/blog/${loaderData.image}`,
+      content: new URL(
+        `/blog/${loaderData.image}`,
+        import.meta.env.VITE_APP_URL,
+      ).toString(),
     },
     { property: "og:published_time", content: published },
     { name: "robots", content: "index, follow" },
@@ -39,7 +47,7 @@ export function meta({ loaderData }: Route.MetaArgs): Route.MetaDescriptors {
 export default function Post({ loaderData }: { loaderData: BlogPost }) {
   const { alt, body, image, slug, published, summary, title } = loaderData;
   const faqItems = parseFAQ(body);
-  const url = `${envVars.APP_URL}/blog/${slug}`;
+  const url = new URL(`/blog/${slug}`, import.meta.env.VITE_APP_URL).toString();
   return (
     <main
       className="min-h-screen bg-[hsl(60,100%,99%)] px-4 py-12"
@@ -52,7 +60,10 @@ export default function Post({ loaderData }: { loaderData: BlogPost }) {
           alt={alt}
           minHeight={300}
           maxHeight={600}
-          src={`/blog/${image}`}
+          src={new URL(
+            `/blog/${image}`,
+            import.meta.env.VITE_APP_URL,
+          ).toString()}
         />
 
         <p className="prose prose-lg mx-auto text-gray-400 text-md italic">
@@ -82,7 +93,7 @@ export default function Post({ loaderData }: { loaderData: BlogPost }) {
           <HeartIcon className="h-4 w-4 text-red-500" fill="currentColor" />
           <span>
             Brought to you by{" "}
-            <ActiveLink variant="silent" to={envVars.APP_URL}>
+            <ActiveLink variant="silent" to={import.meta.env.VITE_APP_URL}>
               Cite.me.in
             </ActiveLink>{" "}
             on {formatDateMed(published)}
@@ -99,7 +110,7 @@ export default function Post({ loaderData }: { loaderData: BlogPost }) {
                 author: {
                   "@type": "Organization",
                   name: "Cite.me.in",
-                  url: envVars.APP_URL,
+                  url: import.meta.env.VITE_APP_URL,
                 },
                 datePublished: published,
                 dateModified: published,
@@ -107,10 +118,16 @@ export default function Post({ loaderData }: { loaderData: BlogPost }) {
                 name: title,
                 primaryImageOfPage: image
                   ? {
-                      "@id": `${envVars.APP_URL}/blog/${image}`,
+                      "@id": new URL(
+                        `/blog/${image}`,
+                        import.meta.env.VITE_APP_URL,
+                      ).toString(),
                       "@type": "ImageObject",
                       caption: alt,
-                      contentUrl: `${envVars.APP_URL}/blog/${image}`,
+                      contentUrl: new URL(
+                        `/blog/${image}`,
+                        import.meta.env.VITE_APP_URL,
+                      ).toString(),
                     }
                   : undefined,
               },
@@ -121,13 +138,16 @@ export default function Post({ loaderData }: { loaderData: BlogPost }) {
                     "@type": "ListItem",
                     position: 1,
                     name: "Home",
-                    item: envVars.APP_URL,
+                    item: import.meta.env.VITE_APP_URL,
                   },
                   {
                     "@type": "ListItem",
                     position: 2,
                     name: "Blog",
-                    item: `${envVars.APP_URL}/blog`,
+                    item: new URL(
+                      "/blog",
+                      import.meta.env.VITE_APP_URL,
+                    ).toString(),
                   },
                   {
                     "@type": "ListItem",

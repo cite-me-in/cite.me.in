@@ -1,5 +1,4 @@
 import { recentBlogPosts } from "~/lib/blogPosts.server";
-import envVars from "~/lib/envVars";
 
 export async function loader() {
   const blogPosts = await recentBlogPosts();
@@ -13,7 +12,7 @@ This is a sitemap of all blog posts in markdown format for AI agents. It is used
 ${blogPosts
   .map(
     (blogPost) =>
-      `- [${blogPost.title}](${envVars.APP_URL}/blog/${blogPost.slug}) - ${blogPost.published.toString().slice(0, 10)}`,
+      `- [${blogPost.title}](${new URL(`/blog/${blogPost.slug}`, import.meta.env.VITE_APP_URL).toString()}) - ${blogPost.published.toString().slice(0, 10)}`,
   )
   .join("\n")}
 
@@ -26,7 +25,7 @@ ${blogPosts
   return new Response(markdown, {
     headers: {
       "Content-Type": "text/markdown",
-      Link: `<${new URL("/blog", envVars.APP_URL).toString()}>; rel="alternate"; type="text/html"`,
+      Link: `<${new URL("/blog", import.meta.env.VITE_APP_URL).toString()}>; rel="alternate"; type="text/html"`,
     },
   });
 }

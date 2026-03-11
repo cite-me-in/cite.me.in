@@ -2,21 +2,25 @@ import { Feed } from "feed";
 import { marked } from "marked";
 import { recentBlogPosts } from "~/lib/blogPosts.server";
 import captureException from "~/lib/captureException.server";
-import envVars from "~/lib/envVars";
 
 export async function loader() {
   try {
     const feed = new Feed({
-      author: { email: "hello@cite.me.in", name: "Cite.me.in" },
+      author: {
+        email: import.meta.env.VITE_EMAIL_FROM,
+        name: "Cite.me.in",
+      },
       copyright: "Copyright 2026 Cite.me.in",
       description:
         "Insights and guides on LLM citation visibility, AI search optimization, and monitoring your brand's presence in AI-generated responses.",
-      favicon: `${envVars.APP_URL}/favicon.ico`,
-      feedLinks: { atom: `${envVars.APP_URL}/blog/feed` },
-      id: envVars.APP_URL,
-      image: `${envVars.APP_URL}/og-image.png`,
+      favicon: new URL("/favicon.ico", import.meta.env.VITE_APP_URL).toString(),
+      feedLinks: {
+        atom: new URL("/blog/feed", import.meta.env.VITE_APP_URL).toString(),
+      },
+      id: import.meta.env.VITE_APP_URL,
+      image: new URL("/og-image.png", import.meta.env.VITE_APP_URL).toString(),
       language: "en-US",
-      link: `${envVars.APP_URL}/blog/feed`,
+      link: new URL("/blog/feed", import.meta.env.VITE_APP_URL).toString(),
       title: "The Cite.me.in Blog",
       updated: new Date(),
     });
@@ -34,7 +38,10 @@ export async function loader() {
       image,
       alt,
     } of recent) {
-      const imageURL = `${envVars.APP_URL}/blog/${image}`;
+      const imageURL = new URL(
+        `/blog/${image}`,
+        import.meta.env.VITE_APP_URL,
+      ).toString();
       const content =
         `<img src="${imageURL}" alt="${alt}" />` +
         (await marked.parse(body, { gfm: true }));
@@ -43,9 +50,9 @@ export async function loader() {
         content,
         date: publishedDate,
         description: summary,
-        id: `${envVars.APP_URL}:${slug}`,
+        id: new URL(`/blog/${slug}`, import.meta.env.VITE_APP_URL).toString(),
         image: imageURL,
-        link: `${envVars.APP_URL}/blog/${slug}`,
+        link: new URL(`/blog/${slug}`, import.meta.env.VITE_APP_URL).toString(),
         published: publishedDate,
         title: title,
       });

@@ -2,7 +2,6 @@ import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { ActiveLink } from "~/components/ui/ActiveLink";
-import envVars from "~/lib/envVars";
 import type { Route } from "./+types/route";
 import faq from "./faq";
 
@@ -54,7 +53,7 @@ export default function FAQ() {
         <ActiveLink
           bg="yellow"
           size="xl"
-          to={`mailto:${envVars.EMAIL_FROM.replace("noreply@", "hello@")}?subject=${encodeURIComponent("I have questions")}`}
+          to={`mailto:${import.meta.env.VITE_EMAIL_FROM}?subject=${encodeURIComponent("I have questions")}`}
           variant="button"
         >
           Contact Support

@@ -1,6 +1,4 @@
-import envVars from "./envVars";
-
-const { hostname } = new URL(envVars.APP_URL);
+const { hostname } = new URL(import.meta.env.VITE_APP_URL);
 
 export default function externalLink(url: string): string {
   try {

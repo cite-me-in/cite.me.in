@@ -11,7 +11,6 @@ import type { Route } from "./+types/root";
 import PageLayout from "./components/layout/PageLayout";
 import Main from "./components/ui/Main";
 import "./global.css";
-import envVars from "./lib/envVars";
 
 export async function loader({ request }: Route.LoaderArgs) {
   recordBotVisit({
@@ -70,12 +69,12 @@ export const links: Route.LinksFunction = () => [
     rel: "alternate",
     type: "application/atom+xml",
     title: "The Cite.me.in Blog",
-    href: `${envVars.APP_URL}/blog/feed`,
+    href: new URL("/blog/feed", import.meta.env.VITE_APP_URL).toString(),
   },
   {
     rel: "sitemap",
     type: "application/xml",
-    href: `${envVars.APP_URL}/sitemap.xml`,
+    href: new URL("/sitemap.xml", import.meta.env.VITE_APP_URL).toString(),
   },
   { rel: "icon", href: "/icon-192.png", type: "image/png", sizes: "192x192" },
   { rel: "icon", href: "/icon-512.png", type: "image/png", sizes: "512x512" },

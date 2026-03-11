@@ -1,4 +1,3 @@
-import envVars from "~/lib/envVars";
 import type { Route } from "./+types/route";
 import AboutCTA from "./AboutCTA";
 import AboutHeader from "./AboutHeader";
@@ -45,21 +44,21 @@ function schemaData() {
     name: "About Cite.me.in",
     description:
       "Learn about Cite.me.in, the platform that monitors LLM citation visibility for brands and content creators.",
-    url: new URL("/about", envVars.APP_URL).toString(),
+    url: new URL("/about", import.meta.env.VITE_APP_URL).toString(),
     mainEntity: {
       "@type": "Organization",
-      "@id": new URL("#organization", envVars.APP_URL).toString(),
+      "@id": new URL("#organization", import.meta.env.VITE_APP_URL).toString(),
       name: "Cite.me.in",
       description:
         "Platform for monitoring LLM citation visibility across AI platforms",
-      url: new URL("/about", envVars.APP_URL).toString(),
+      url: new URL("/about", import.meta.env.VITE_APP_URL).toString(),
       foundingDate: "2026",
       founder: {
         "@type": "Person",
         name: "Assaf Arkin",
         jobTitle: "CEO",
       },
-      email: envVars.EMAIL_FROM.replace("noreply@", "hello@"),
+      email: import.meta.env.VITE_EMAIL_FROM,
       sameAs: ["https://github.com/cite-me-in/cite.me.in"],
       knowsAbout: [
         "LLM Citation Visibility",

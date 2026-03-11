@@ -6,19 +6,20 @@ on:
 
 env:
   ANTHROPIC_API_KEY: "sk-ant-"
-  APP_URL: "http://localhost:9222"
   BOT_TRACKER_API_KEY: "bot-tracker-api-key"
   BOT_TRACKER_URL: "http://localhost:9222/api/track"
   DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/citeup"
-  DIRECT_URL: "postgresql://postgres:postgres@localhost:5432/citeup"
   DEBUG: ""
+  DIRECT_URL: "postgresql://postgres:postgres@localhost:5432/citeup"
   GOOGLE_GENERATIVE_AI_API_KEY: "AIza"
   NODE_OPTIONS: "--max-old-space-size=3096"
   OPENAI_API_KEY: "sk-proj-"
   PERPLEXITY_API_KEY: "pk-prod-"
-  SESSION_SECRET: "secret"
   REDIS_URL: "redis://localhost:6379"
   RESEND_API_KEY: "preq_test_..."
+  SESSION_SECRET: "secret"
+  VITE_APP_URL: "http://localhost:9222"
+  VITE_EMAIL_FROM: "hello@cite.me.in"
 
 jobs:
   deploy:

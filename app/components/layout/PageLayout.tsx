@@ -5,7 +5,6 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Links, Meta, Scripts, ScrollRestoration } from "react-router";
 import PageLoadingBouncer from "~/components/ui/PageLoadingBouncer";
 import "~/global.css";
-import envVars from "~/lib/envVars";
 import { useGoogleAnalytics } from "~/lib/useAnalytics";
 import PageFooter from "./PageFooter";
 import PageHeader from "./PageHeader";
@@ -99,34 +98,46 @@ const schema = {
       "@type": "Organization",
       name: "Cite.me.in",
       description: "Monitor AI citation visibility for your brand.",
-      email: envVars.EMAIL_FROM.replace("noreply@", "hello@"),
-      url: envVars.APP_URL,
-      logo: `${envVars.APP_URL}/icon-192.png`,
-      image: `${envVars.APP_URL}/images/og-image.png`,
+      email: import.meta.env.VITE_EMAIL_FROM,
+      url: import.meta.env.VITE_APP_URL,
+      logo: new URL("/icon-192.png", import.meta.env.VITE_APP_URL).toString(),
+      image: new URL(
+        "/images/og-image.png",
+        import.meta.env.VITE_APP_URL,
+      ).toString(),
       contactPoint: {
         "@type": "ContactPoint",
-        email: envVars.EMAIL_FROM.replace("noreply@", "hello@"),
+        email: import.meta.env.VITE_EMAIL_FROM,
         contactType: "Customer Service",
       },
       slogan: "Monitor AI citation visibility for your brand.",
     },
     {
-      "@id": envVars.APP_URL,
+      "@id": import.meta.env.VITE_APP_URL,
       "@type": "WebSite",
       name: "Cite.me.in",
       description: "Monitor AI citation visibility for your brand.",
       inLanguage: "en",
-      url: envVars.APP_URL,
+      url: import.meta.env.VITE_APP_URL,
       keywords:
         "AI citation visibility, AI citation monitoring, AI citation tracking, AI citation analysis, AI citation optimization, AI citation improvement",
     },
     {
-      "@id": `${envVars.APP_URL}/images/og-image.png`,
+      "@id": new URL(
+        "/images/og-image.png",
+        import.meta.env.VITE_APP_URL,
+      ).toString(),
       "@type": "ImageObject",
       name: "OG Image",
       caption: "Monitor AI citation visibility for your brand.",
-      contentUrl: `${envVars.APP_URL}/images/og-image.png`,
-      url: `${envVars.APP_URL}/images/og-image.png`,
+      contentUrl: new URL(
+        "/images/og-image.png",
+        import.meta.env.VITE_APP_URL,
+      ).toString(),
+      url: new URL(
+        "/images/og-image.png",
+        import.meta.env.VITE_APP_URL,
+      ).toString(),
       height: 1024,
       width: 1024,
     },

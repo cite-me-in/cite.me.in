@@ -45,7 +45,7 @@ export async function sendEmail({
     return "test-email-id";
   } else {
     const { error, data } = await resend.emails.send({
-      from: "Rentail.space <hello@rentail.space>",
+      from: `Cite.me.in <${import.meta.env.VITE_EMAIL_FROM}>`,
       html,
       subject,
       to: [to],

@@ -1,6 +1,5 @@
 import { HeartIcon } from "lucide-react";
 import { Link, NavLink } from "react-router";
-import envVars from "~/lib/envVars";
 import CiteMeInLogo from "./CiteMeInLogo";
 
 const links = [
@@ -14,7 +13,7 @@ const links = [
       { to: "/about", label: "About" },
       { to: "/blog", label: "Blog" },
       {
-        to: `mailto:${envVars.EMAIL_FROM.replace("noreply@", "hello@")}`,
+        to: `mailto:${import.meta.env.VITE_EMAIL_FROM}`,
         label: "Contact",
       },
     ],

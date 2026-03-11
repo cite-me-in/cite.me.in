@@ -1,7 +1,6 @@
 import BlogPostsGrid from "~/components/ui/BlogPostsGrid";
 import type { BlogPost } from "~/lib/blogPosts.server";
 import { recentBlogPosts } from "~/lib/blogPosts.server";
-import envVars from "~/lib/envVars";
 import type { Route } from "./+types/blog._index";
 
 export function meta(): Route.MetaDescriptors {
@@ -40,7 +39,7 @@ export default function Blog({
             name: "Cite.me.in Blog",
             description:
               "Insights and guides on LLM citation visibility and AI search optimization",
-            url: `${envVars.APP_URL}/blog`,
+            url: new URL("/blog", import.meta.env.VITE_APP_URL).toString(),
             mainEntity: {
               "@type": "ItemList",
               itemListElement: loaderData.posts.map((post, index) => ({
@@ -48,18 +47,27 @@ export default function Blog({
                 position: index + 1,
                 item: {
                   "@type": "BlogPosting",
-                  "@id": `${envVars.APP_URL}/blog/${post.slug}`,
+                  "@id": new URL(
+                    `/blog/${post.slug}`,
+                    import.meta.env.VITE_APP_URL,
+                  ).toString(),
                   headline: post.title,
                   description: post.summary,
                   datePublished: post.published,
-                  url: `${envVars.APP_URL}/blog/${post.slug}`,
+                  url: new URL(
+                    `/blog/${post.slug}`,
+                    import.meta.env.VITE_APP_URL,
+                  ).toString(),
                   image: post.image
-                    ? `${envVars.APP_URL}/blog/${post.image}`
+                    ? new URL(
+                        `/blog/${post.image}`,
+                        import.meta.env.VITE_APP_URL,
+                      ).toString()
                     : undefined,
                   author: {
                     "@type": "Organization",
                     name: "Cite.me.in",
-                    url: envVars.APP_URL,
+                    url: import.meta.env.VITE_APP_URL,
                   },
                 },
               })),

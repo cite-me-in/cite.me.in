@@ -5,14 +5,14 @@ dotenv.config({ quiet: true });
 
 const envVars = {
   ANTHROPIC_API_KEY: env.get("ANTHROPIC_API_KEY").required().asString(),
+  BOT_TRACKER_API_KEY: env.get("BOT_TRACKER_API_KEY").required().asString(),
+  BOT_TRACKER_URL: env.get("BOT_TRACKER_URL").required().asUrlString(),
   CRON_SECRET: env.get("CRON_SECRET").required(false).asString(),
-  APP_URL: env.get("APP_URL").required().asUrlString(),
   DATABASE_URL: env
     .get("DATABASE_URL")
     // secretlint-disable-next-line
     .default("postgresql://dummy:dummy@localhost/dummy")
     .asUrlString(),
-  EMAIL_FROM: env.get("EMAIL_FROM").default("noreply@cite.me.in").asString(),
   GOOGLE_GENERATIVE_AI_API_KEY: env
     .get("GOOGLE_GENERATIVE_AI_API_KEY")
     .required(false)
@@ -24,9 +24,8 @@ const envVars = {
   REDIS_URL: env.get("REDIS_URL").required().asString(),
   RESEND_API_KEY: env.get("RESEND_API_KEY").required().asString(),
   SESSION_SECRET: env.get("SESSION_SECRET").required().asString(),
-
-  BOT_TRACKER_API_KEY: env.get("BOT_TRACKER_API_KEY").required().asString(),
-  BOT_TRACKER_URL: env.get("BOT_TRACKER_URL").required().asUrlString(),
+  VITE_APP_URL: env.get("VITE_APP_URL").required().asUrlString(),
+  VITE_EMAIL_FROM: env.get("VITE_EMAIL_FROM").required().asString(),
 };
 
 export default envVars;
