@@ -1,11 +1,12 @@
 import BlogPostsGrid from "~/components/ui/BlogPostsGrid";
 import type { BlogPost } from "~/lib/blogPosts.server";
 import { recentBlogPosts } from "~/lib/blogPosts.server";
+import envVars from "~/lib/envVars";
 import type { Route } from "./+types/blog._index";
 
 export function meta(): Route.MetaDescriptors {
   return [
-    { title: "Blog | CiteUp" },
+    { title: "Blog | Cite.me.in" },
     {
       name: "description",
       content:
@@ -36,10 +37,10 @@ export default function Blog({
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "CollectionPage",
-            name: "CiteUp Blog",
+            name: "Cite.me.in Blog",
             description:
               "Insights and guides on LLM citation visibility and AI search optimization",
-            url: "https://citeup.com/blog",
+            url: `${envVars.APP_URL}/blog`,
             mainEntity: {
               "@type": "ItemList",
               itemListElement: loaderData.posts.map((post, index) => ({
@@ -47,18 +48,18 @@ export default function Blog({
                 position: index + 1,
                 item: {
                   "@type": "BlogPosting",
-                  "@id": `https://citeup.com/blog/${post.slug}`,
+                  "@id": `${envVars.APP_URL}/blog/${post.slug}`,
                   headline: post.title,
                   description: post.summary,
                   datePublished: post.published,
-                  url: `https://citeup.com/blog/${post.slug}`,
+                  url: `${envVars.APP_URL}/blog/${post.slug}`,
                   image: post.image
-                    ? `https://citeup.com/blog/${post.image}`
+                    ? `${envVars.APP_URL}/blog/${post.image}`
                     : undefined,
                   author: {
                     "@type": "Organization",
-                    name: "CiteUp",
-                    url: "https://citeup.com",
+                    name: "Cite.me.in",
+                    url: envVars.APP_URL,
                   },
                 },
               })),

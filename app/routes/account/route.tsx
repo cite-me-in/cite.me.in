@@ -8,7 +8,7 @@ import type { Route } from "./+types/route";
 
 export function meta(): Route.MetaDescriptors {
   return [
-    { title: "Your Account | CiteUp" },
+    { title: "Your Account | Cite.me.in" },
     { name: "description", content: "Manage your account settings." },
   ];
 }

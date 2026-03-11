@@ -17,7 +17,7 @@ import AddSiteForm from "./AddSiteForm";
 import SiteEntry from "./SiteEntry";
 
 export function meta(): Route.MetaDescriptors {
-  return [{ title: "Your Sites | CiteUp" }];
+  return [{ title: "Your Sites | Cite.me.in" }];
 }
 
 export async function loader({ request }: Route.LoaderArgs) {

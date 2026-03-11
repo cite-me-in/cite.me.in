@@ -2,13 +2,13 @@
 
 ## 1. Acceptance of Terms
 
-By accessing and using CiteUp (the "Service"), you accept and agree to be
+By accessing and using Cite.me.in (the "Service"), you accept and agree to be
 bound by the terms and provision of this agreement. If you do not agree to these
 Terms of Service, please do not use the Service.
 
 ## 2. Description of Service
 
-CiteUp is a platform that monitors LLM citation visibility for your brand.
+Cite.me.in is a platform that monitors LLM citation visibility for your brand.
 The Service queries AI platforms with predefined search queries and records which
 URLs appear in responses, so you can track whether your domain gets cited.
 
@@ -38,13 +38,13 @@ You agree not to:
 ## 5. Intellectual Property
 
 The Service and its original content, features, and functionality are owned by
-CiteUp and are protected by international copyright, trademark, patent,
+Cite.me.in and are protected by international copyright, trademark, patent,
 trade secret, and other intellectual property or proprietary rights laws.
 
 ## 6. Third-Party Links
 
 The Service may contain links to third-party websites or services that are not
-owned or controlled by CiteUp. We have no control over, and assume no
+owned or controlled by Cite.me.in. We have no control over, and assume no
 responsibility for, the content, privacy policies, or practices of any
 third-party websites or services.
 
@@ -56,7 +56,7 @@ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
 
 ## 8. Limitation of Liability
 
-IN NO EVENT SHALL CITEUP, ITS DIRECTORS, EMPLOYEES, PARTNERS, AGENTS,
+IN NO EVENT SHALL CITE.ME.IN, ITS DIRECTORS, EMPLOYEES, PARTNERS, AGENTS,
 SUPPLIERS, OR AFFILIATES BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL,
 CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING WITHOUT LIMITATION, LOSS OF
 PROFITS, DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES, RESULTING FROM YOUR
@@ -64,7 +64,7 @@ ACCESS TO OR USE OF OR INABILITY TO ACCESS OR USE THE SERVICE.
 
 ## 9. Indemnification
 
-You agree to defend, indemnify, and hold harmless CiteUp and its licensee
+You agree to defend, indemnify, and hold harmless Cite.me.in and its licensee
 and licensors, and their employees, contractors, agents, officers, and
 directors, from and against any and all claims, damages, obligations, losses,
 liabilities, costs or debt, and expenses arising from your use of and access to
@@ -80,7 +80,7 @@ breach of the Terms.
 ## 11. Governing Law
 
 These Terms shall be governed and construed in accordance with the laws of the
-jurisdiction in which CiteUp operates, without regard to its conflict of
+jurisdiction in which Cite.me.in operates, without regard to its conflict of
 law provisions.
 
 ## 12. Changes to Terms
@@ -94,7 +94,7 @@ determined at our sole discretion.
 
 If you have any questions about these Terms, please contact us at:
 
-Email: [legal@citeup.com](mailto:legal@citeup.com)
+Email: [legal@cite.me.in](mailto:legal@cite.me.in)
 
-By using CiteUp, you acknowledge that you have read, understood, and
+By using Cite.me.in, you acknowledge that you have read, understood, and
 agree to be bound by these Terms of Service.

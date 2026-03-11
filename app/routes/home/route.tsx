@@ -7,7 +7,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { Link } from "react-router";
-import CiteUpLogo from "~/components/layout/CiteUpLogo";
+import CiteMeInLogo from "~/components/layout/CiteMeInLogo";
 import { ActiveLink } from "~/components/ui/ActiveLink";
 import BlogPostsGrid from "~/components/ui/BlogPostsGrid";
 import Main from "~/components/ui/Main";
@@ -27,11 +27,11 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export function meta(): Route.MetaDescriptors {
   return [
-    { title: "CiteUp — Monitor LLM Citation Visibility" },
+    { title: "Cite.me.in — Monitor LLM Citation Visibility" },
     {
       name: "description",
       content:
-        "Track when ChatGPT, Claude, Gemini, and Perplexity cite your brand. CiteUp is the Search Console for AI platforms.",
+        "Track when ChatGPT, Claude, Gemini, and Perplexity cite your brand. Cite.me.in is the Search Console for AI platforms.",
     },
   ];
 }
@@ -61,7 +61,7 @@ export default function HomePage({
 function LandingNav({ isSignedIn }: { isSignedIn: boolean }) {
   return (
     <nav className="flex items-center justify-between border-black border-b-2 bg-[hsl(60,100%,99%)] px-6 py-3">
-      <CiteUpLogo />
+      <CiteMeInLogo />
       <div className="flex items-center gap-3">
         {isSignedIn ? (
           <ActiveLink variant="button" to="/sites" size="sm" bg="yellow">
@@ -99,7 +99,7 @@ function HeroSection({ isSignedIn }: { isSignedIn: boolean }) {
           your brand?
         </h1>
         <p className="mb-10 max-w-2xl font-medium text-black text-xl leading-relaxed md:text-2xl">
-          CiteUp runs your queries across ChatGPT, Claude, Gemini, and
+          Cite.me.in runs your queries across ChatGPT, Claude, Gemini, and
           Perplexity — and records every time they cite your website. See
           what&rsquo;s working. Fix what&rsquo;s not.
         </p>

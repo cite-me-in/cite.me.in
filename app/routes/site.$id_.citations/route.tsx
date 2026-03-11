@@ -18,7 +18,7 @@ const PLATFORMS = [
 ] as const;
 
 export function meta({ loaderData }: Route.MetaArgs) {
-  return [{ title: `Citations — ${loaderData?.site.domain} | CiteUp` }];
+  return [{ title: `Citations — ${loaderData?.site.domain} | Cite.me.in` }];
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {

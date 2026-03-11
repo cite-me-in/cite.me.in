@@ -34,7 +34,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 }
 
 export function meta(): Route.MetaDescriptors {
-  return [{ title: "Add a Site | CiteUp" }];
+  return [{ title: "Add a Site | Cite.me.in" }];
 }
 
 export async function action({ params, request }: Route.ActionArgs) {

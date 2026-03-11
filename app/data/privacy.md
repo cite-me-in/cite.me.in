@@ -2,8 +2,8 @@
 
 ## 1. Introduction
 
-CiteUp ("we," "our," or "us") is committed to protecting your privacy.
-This Privacy Policy explains how we collect, use, disclose, and safeguard your
+Cite.me.in ("we," "our," or "us") is committed to protecting your privacy.  This
+Privacy Policy explains how we collect, use, disclose, and safeguard your
 information when you use our service.
 
 ## 2. Information We Collect
@@ -76,7 +76,7 @@ Depending on your location, you may have the following rights:
 - Object: Object to certain processing of your data
 
 To exercise these rights, please contact us at
-[privacy@citeup.com](mailto:privacy@citeup.com)
+[privacy@cite.me.in](mailto:privacy@cite.me.in)
 
 ## 9. Data Retention
 
@@ -109,7 +109,7 @@ for any changes.
 
 If you have any questions about this Privacy Policy, please contact us at:
 
-Email: [privacy@citeup.com](mailto:privacy@citeup.com)
+Email: [privacy@cite.me.in](mailto:privacy@cite.me.in)
 
-By using CiteUp, you acknowledge that you have read, understood, and
+By using Cite.me.in, you acknowledge that you have read, understood, and
 agree to this Privacy Policy.

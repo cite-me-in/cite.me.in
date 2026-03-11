@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import { twMerge } from "tailwind-merge";
 
-export default function CiteUpLogo({ className }: { className?: string }) {
+export default function CiteMeInLogo({ className }: { className?: string }) {
   return (
     <Link
       to="/"
@@ -13,8 +13,8 @@ export default function CiteUpLogo({ className }: { className?: string }) {
       )}
       aria-label="Go to home page"
     >
-      <img alt="CiteUp" height={42} src="/icon-192.png" width={42} />
-      <span className="text-[#F59E0B]">CiteUp</span>
+      <img alt="Cite.me.in" height={42} src="/icon-192.png" width={42} />
+      <span className="text-[#F59E0B]">Cite.me.in</span>
     </Link>
   );
 }

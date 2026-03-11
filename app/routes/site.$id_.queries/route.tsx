@@ -17,7 +17,9 @@ import GroupOfQueries from "./GroupOfQueries";
 import SuggestedQueries from "./SuggestedQueries";
 
 export function meta({ loaderData }: Route.MetaArgs) {
-  return [{ title: `Citation Queries — ${loaderData?.site.domain} | CiteUp` }];
+  return [
+    { title: `Citation Queries — ${loaderData?.site.domain} | Cite.me.in` },
+  ];
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {

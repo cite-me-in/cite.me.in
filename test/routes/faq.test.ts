@@ -69,7 +69,7 @@ describe("FAQ page", () => {
   it("should have proper meta title", async () => {
     const title = await page.title();
     expect(title).toContain("FAQ");
-    expect(title).toContain("CiteUp");
+    expect(title).toContain("Cite.me.in");
   });
 
   it("should have meta description about LLM citation visibility", async () => {

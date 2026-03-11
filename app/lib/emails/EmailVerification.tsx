@@ -60,7 +60,7 @@ function EmailVerification({
       <Text className="my-4 text-base text-text leading-relaxed">
         Best regards,
         <br />
-        The CiteUp Team
+        The Cite.me.in Team
       </Text>
     </EmailLayout>
   );

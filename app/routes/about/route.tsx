@@ -6,11 +6,11 @@ import AboutStory from "./AboutStory";
 
 export function meta(): Route.MetaDescriptors {
   return [
-    { title: "About | CiteUp" },
+    { title: "About | Cite.me.in" },
     {
       name: "description",
       content:
-        "CiteUp monitors LLM citation visibility so brands know exactly when and where AI platforms cite them.",
+        "Cite.me.in monitors LLM citation visibility so brands know exactly when and where AI platforms cite them.",
     },
   ];
 }
@@ -42,14 +42,14 @@ function schemaData() {
   return {
     "@context": "https://schema.org",
     "@type": "AboutPage",
-    name: "About CiteUp",
+    name: "About Cite.me.in",
     description:
-      "Learn about CiteUp, the platform that monitors LLM citation visibility for brands and content creators.",
+      "Learn about Cite.me.in, the platform that monitors LLM citation visibility for brands and content creators.",
     url: new URL("/about", envVars.APP_URL).toString(),
     mainEntity: {
       "@type": "Organization",
       "@id": new URL("#organization", envVars.APP_URL).toString(),
-      name: "CiteUp",
+      name: "Cite.me.in",
       description:
         "Platform for monitoring LLM citation visibility across AI platforms",
       url: new URL("/about", envVars.APP_URL).toString(),
@@ -59,13 +59,8 @@ function schemaData() {
         name: "Assaf Arkin",
         jobTitle: "CEO",
       },
-      email: "hello@citeup.com",
-      sameAs: [
-        new URL(
-          "https://github.com/citeup-app/citeup",
-          envVars.APP_URL,
-        ).toString(),
-      ],
+      email: envVars.EMAIL_FROM.replace("noreply@", "hello@"),
+      sameAs: ["https://github.com/cite-me-in/cite.me.in"],
       knowsAbout: [
         "LLM Citation Visibility",
         "AI Search Optimization",

@@ -5,7 +5,7 @@ export default function AboutHeader() {
         Know when AI is citing your brand
       </h1>
       <p className="font-medium text-black text-xl leading-relaxed md:text-2xl">
-        We built CiteUp because we needed it ourselves — a clear answer to
+        We built Cite.me.in because we needed it ourselves — a clear answer to
         "does AI actually mention us?"
       </p>
     </section>

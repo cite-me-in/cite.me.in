@@ -48,7 +48,7 @@ export async function action({ request }: Route.ActionArgs) {
   const user = await prisma.$transaction(async (tx) => {
     const account = await tx.account.create({
       data: {
-        apiKey: `citeup_${generateApiKey(16)}`,
+        apiKey: `cite.me.in_${generateApiKey(16)}`,
       },
     });
     return tx.user.create({

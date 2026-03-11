@@ -108,8 +108,8 @@ async function githubWorkflows() {
   );
 
   const { data } = await octokit.rest.actions.listWorkflowRuns({
-    owner: "citeup-app",
-    repo: "citeup",
+    owner: "cite-me-in",
+    repo: "cite.me.in",
     workflow_id: "deploy.yml",
   });
   for (const workflow of data.workflow_runs.slice(0, 5)) {
@@ -279,19 +279,16 @@ async function interactive() {
     }
   }
 
-  await promisify(execFile)("open", [
-    "--background",
-    "https://citeup.vercel.app",
-  ]);
+  await promisify(execFile)("open", ["--background", "https://cite.me.in"]);
   await promisify(execFile)("terminal-notifier", [
     "-message",
-    "Browser opened to citeup.vercel.app",
+    "Browser opened to cite.me.in",
     "-title",
     "Promoted to Production",
     "-open",
-    "https://citeup.vercel.app",
+    "https://cite.me.in",
     "-contentImage",
-    "https://citeup.vercel.app/icon-192.png",
+    "https://cite.me.in/icon-192.png",
   ]);
   process.exit(0);
 }

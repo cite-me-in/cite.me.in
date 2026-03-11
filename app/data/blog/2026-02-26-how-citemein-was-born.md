@@ -1,11 +1,11 @@
 ---
-title: "How CiteUp Was Born: From Rentail to LLM Citation Monitoring"
-image: "2026-02-26-how-citeup-was-born.png"
+title: "How Cite.me.in Was Born: From Rentail to LLM Citation Monitoring"
+image: "2026-02-26-how-citemein-was-born.png"
 alt: "Graph showing LLM citation visibility metrics rising over time, representing a brand's growing presence in AI-generated search results"
-summary: "CiteUp started as a side question while building Rentail: are AI platforms actually citing us? That question exposed a gap nobody had filled—real-time monitoring of LLM citation visibility."
+summary: "Cite.me.in started as a side question while building Rentail: are AI platforms actually citing us? That question exposed a gap nobody had filled—real-time monitoring of LLM citation visibility."
 ---
 
-CiteUp started with a simple, nagging question: is ChatGPT citing Rentail?
+Cite.me.in started with a simple, nagging question: is ChatGPT citing Rentail?
 
 I'm building [Rentail](https://rentail.space)—a platform that helps specialty retailers find temporary space in shopping centers. The SEO was solid. Google ranked us well. But something felt off. More and more users were saying they found us through ChatGPT or Perplexity. And I had no idea whether that was accurate, consistent, or growing.
 
@@ -34,11 +34,11 @@ I ran that script for a few weeks and realized two things:
 
 LLMs are now a primary research tool for millions of people. When someone asks ChatGPT to recommend a product, a service, or an expert—those citations are referrals. They drive real traffic and real conversions. But unlike Google, there's no Search Console for AI.
 
-CiteUp is that Search Console.
+Cite.me.in is that Search Console.
 
 ## What It Tracks
 
-CiteUp queries the major AI platforms on a regular schedule with a set of search queries relevant to your domain. It records every citation—every time an AI platform links to or mentions your site in a response. Over time, you see:
+Cite.me.in queries the major AI platforms on a regular schedule with a set of search queries relevant to your domain. It records every citation—every time an AI platform links to or mentions your site in a response. Over time, you see:
 
 - Which platforms cite you most
 - Which queries trigger citations
@@ -49,7 +49,7 @@ The goal isn't to game the LLMs. It's to understand them. To make informed decis
 
 ## From Side Project to Standalone Tool
 
-Moving CiteUp from a Rentail debugging script into its own product was mostly about making it reliable and reusable. The core insight—query AI platforms with forced web search, extract citations, store them—stayed the same. What changed was wrapping it in proper infrastructure: scheduled runs, a database, a dashboard, and support for multiple domains and multiple users.
+Moving Cite.me.in from a Rentail debugging script into its own product was mostly about making it reliable and reusable. The core insight—query AI platforms with forced web search, extract citations, store them—stayed the same. What changed was wrapping it in proper infrastructure: scheduled runs, a database, a dashboard, and support for multiple domains and multiple users.
 
 The tech stack is intentionally boring: React Router, Postgres, Prisma, and the Vercel AI SDK to talk to the LLMs. Reliability matters more than novelty here.
 
@@ -59,16 +59,16 @@ If you're building a brand online and you're not tracking your LLM citation visi
 
 ### What is LLM citation visibility?
 
-LLM citation visibility measures how often and where AI platforms like ChatGPT, Claude, Gemini, and Perplexity cite or reference your website in their responses. When an AI cites you, it's effectively a referral—and CiteUp tracks those referrals automatically.
+LLM citation visibility measures how often and where AI platforms like ChatGPT, Claude, Gemini, and Perplexity cite or reference your website in their responses. When an AI cites you, it's effectively a referral—and Cite.me.in tracks those referrals automatically.
 
 ### How is this different from SEO?
 
-Traditional SEO tracks your ranking in search engine results pages (SERPs). LLM citation visibility tracks whether AI platforms mention you when answering questions. The mechanisms are different, the signals are different, and the tools needed are different. CiteUp focuses on the AI side.
+Traditional SEO tracks your ranking in search engine results pages (SERPs). LLM citation visibility tracks whether AI platforms mention you when answering questions. The mechanisms are different, the signals are different, and the tools needed are different. Cite.me.in focuses on the AI side.
 
-### Which AI platforms does CiteUp monitor?
+### Which AI platforms does Cite.me.in monitor?
 
-CiteUp monitors ChatGPT (OpenAI), Claude (Anthropic), Gemini (Google), and Perplexity. All queries use web search mode to ensure citations reflect current web content.
+Cite.me.in monitors ChatGPT (OpenAI), Claude (Anthropic), Gemini (Google), and Perplexity. All queries use web search mode to ensure citations reflect current web content.
 
-### How often does CiteUp check for citations?
+### How often does Cite.me.in check for citations?
 
-CiteUp runs queries daily, with idempotent checks that skip re-running if results already exist for that time window. This gives you a consistent, comparable dataset over time.
+Cite.me.in runs queries daily, with idempotent checks that skip re-running if results already exist for that time window. This gives you a consistent, comparable dataset over time.

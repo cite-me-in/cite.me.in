@@ -1,11 +1,13 @@
+import envVars from "~/lib/envVars";
+
 export default [
   {
     category: "Getting Started",
     questions: [
       {
-        question: "What is CiteUp?",
+        question: "What is Cite.me.in?",
         answer:
-          "CiteUp monitors whether AI platforms cite your domain. We run your search queries across Claude, ChatGPT, Gemini, and Perplexity, record which URLs appear in responses, and show you the trend over time.",
+          "Cite.me.in monitors whether AI platforms cite your domain. We run your search queries across Claude, ChatGPT, Gemini, and Perplexity, record which URLs appear in responses, and show you the trend over time.",
       },
       {
         question: "What is LLM citation visibility?",
@@ -15,7 +17,7 @@ export default [
       {
         question: "Why does LLM citation visibility matter?",
         answer:
-          "AI platforms are increasingly how people discover products, services, and information. If you're not being cited, you're invisible to a growing share of search traffic. CiteUp tells you where you stand.",
+          "AI platforms are increasingly how people discover products, services, and information. If you're not being cited, you're invisible to a growing share of search traffic. Cite.me.in tells you where you stand.",
       },
       {
         question: "How do I get started?",
@@ -28,7 +30,7 @@ export default [
     category: "How It Works",
     questions: [
       {
-        question: "How does CiteUp run queries?",
+        question: "How does Cite.me.in run queries?",
         answer:
           "We use the official APIs for each AI platform with web search enabled — the same experience your potential customers have. We don't simulate or proxy responses.",
       },
@@ -45,7 +47,7 @@ export default [
       {
         question: "Do I have to write my own queries?",
         answer:
-          "No. When you add a site, CiteUp reads your page content and automatically suggests 9 queries across three intent categories: discovery (users who don't know your brand yet), active search (users looking for exactly what you offer), and comparison (users evaluating their options). You can use them as-is, edit them, or add your own.",
+          "No. When you add a site, Cite.me.in reads your page content and automatically suggests 9 queries across three intent categories: discovery (users who don't know your brand yet), active search (users looking for exactly what you offer), and comparison (users evaluating their options). You can use them as-is, edit them, or add your own.",
       },
       {
         question: "Can I customize the search queries?",
@@ -58,7 +60,7 @@ export default [
     category: "Platforms & Data",
     questions: [
       {
-        question: "Which AI platforms does CiteUp monitor?",
+        question: "Which AI platforms does Cite.me.in monitor?",
         answer:
           "We currently monitor Claude (Anthropic), ChatGPT (OpenAI), Gemini (Google), and Perplexity. All four are queried in parallel for each monitoring run.",
       },
@@ -89,8 +91,7 @@ export default [
       },
       {
         question: "How do I contact support?",
-        answer:
-          "Email us at hello@citeup.com. We respond within 24 hours on business days.",
+        answer: `Email us at ${envVars.EMAIL_FROM.replace("noreply@", "hello@")}. We respond within 24 hours on business days.`,
       },
     ],
   },

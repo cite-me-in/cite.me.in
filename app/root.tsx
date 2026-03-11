@@ -11,6 +11,7 @@ import type { Route } from "./+types/root";
 import PageLayout from "./components/layout/PageLayout";
 import Main from "./components/ui/Main";
 import "./global.css";
+import envVars from "./lib/envVars";
 
 export async function loader({ request }: Route.LoaderArgs) {
   recordBotVisit({
@@ -37,12 +38,12 @@ export function meta({ loaderData }: Route.MetaArgs): Route.MetaDescriptors {
     ? `${loaderData.baseUrl}/og-image.png`
     : "/og-image.png";
   return [
-    { title: "CiteUp — Monitor LLM citation visibility" },
+    { title: "Cite.me.in — Monitor LLM citation visibility" },
     {
       name: "description",
       content: "Monitor LLM citation visibility for your brand.",
     },
-    { property: "og:title", content: "CiteUp" },
+    { property: "og:title", content: "Cite.me.in" },
     {
       property: "og:description",
       content: "Monitor LLM citation visibility for your brand.",
@@ -50,7 +51,7 @@ export function meta({ loaderData }: Route.MetaArgs): Route.MetaDescriptors {
     { property: "og:image", content: ogImage },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary_large_image" },
-    { name: "twitter:title", content: "CiteUp" },
+    { name: "twitter:title", content: "Cite.me.in" },
     {
       name: "twitter:description",
       content: "Monitor LLM citation visibility for your brand.",
@@ -68,13 +69,13 @@ export const links: Route.LinksFunction = () => [
   {
     rel: "alternate",
     type: "application/atom+xml",
-    title: "The CiteUp Blog",
-    href: "https://citeup.com/blog/feed",
+    title: "The Cite.me.in Blog",
+    href: `${envVars.APP_URL}/blog/feed`,
   },
   {
     rel: "sitemap",
     type: "application/xml",
-    href: "https://citeup.com/sitemap.xml",
+    href: `${envVars.APP_URL}/sitemap.xml`,
   },
   { rel: "icon", href: "/icon-192.png", type: "image/png", sizes: "192x192" },
   { rel: "icon", href: "/icon-512.png", type: "image/png", sizes: "512x512" },

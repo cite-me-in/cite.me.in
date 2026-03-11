@@ -5,12 +5,13 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Links, Meta, Scripts, ScrollRestoration } from "react-router";
 import PageLoadingBouncer from "~/components/ui/PageLoadingBouncer";
 import "~/global.css";
+import envVars from "~/lib/envVars";
 import { useGoogleAnalytics } from "~/lib/useAnalytics";
 import PageFooter from "./PageFooter";
 import PageHeader from "./PageHeader";
 
-const title = "CiteUp — Monitor AI citation visibility";
-const url = "https://citeup.com/";
+const title = "Cite.me.in — Monitor AI citation visibility";
+const url = "https://cite.me.in/";
 
 export type HeaderLink = {
   label: string;
@@ -31,15 +32,15 @@ export default function PageLayout({
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="author" content="CiteUp" />
+        <meta name="author" content="Cite.me.in" />
         <meta name="theme-color" content="#2563eb" />
         <meta
           name="robots"
           content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
         />
         {/* Touch web app title */}
-        <meta name="application-name" content="CiteUp" />
-        <meta name="apple-mobile-web-app-title" content="CiteUp" />
+        <meta name="application-name" content="Cite.me.in" />
+        <meta name="apple-mobile-web-app-title" content="Cite.me.in" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
 
@@ -96,36 +97,36 @@ const schema = {
   "@graph": [
     {
       "@type": "Organization",
-      name: "CiteUp",
+      name: "Cite.me.in",
       description: "Monitor AI citation visibility for your brand.",
-      email: "hello@citeup.com",
-      url: "https://citeup.com",
-      logo: "https://citeup.com/icon-192.png",
-      image: "https://citeup.com/images/og-image.png",
+      email: envVars.EMAIL_FROM.replace("noreply@", "hello@"),
+      url: envVars.APP_URL,
+      logo: `${envVars.APP_URL}/icon-192.png`,
+      image: `${envVars.APP_URL}/images/og-image.png`,
       contactPoint: {
         "@type": "ContactPoint",
-        email: "hello@citeup.com",
+        email: envVars.EMAIL_FROM.replace("noreply@", "hello@"),
         contactType: "Customer Service",
       },
       slogan: "Monitor AI citation visibility for your brand.",
     },
     {
-      "@id": "https://citeup.com",
+      "@id": envVars.APP_URL,
       "@type": "WebSite",
-      name: "CiteUp",
+      name: "Cite.me.in",
       description: "Monitor AI citation visibility for your brand.",
       inLanguage: "en",
-      url: "https://citeup.com",
+      url: envVars.APP_URL,
       keywords:
         "AI citation visibility, AI citation monitoring, AI citation tracking, AI citation analysis, AI citation optimization, AI citation improvement",
     },
     {
-      "@id": "https://citeup.com/images/og-image.png",
+      "@id": `${envVars.APP_URL}/images/og-image.png`,
       "@type": "ImageObject",
       name: "OG Image",
       caption: "Monitor AI citation visibility for your brand.",
-      contentUrl: "https://citeup.com/images/og-image.png",
-      url: "https://citeup.com/images/og-image.png",
+      contentUrl: `${envVars.APP_URL}/images/og-image.png`,
+      url: `${envVars.APP_URL}/images/og-image.png`,
       height: 1024,
       width: 1024,
     },

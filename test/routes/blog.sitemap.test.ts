@@ -26,11 +26,11 @@ describe("blog/sitemap.xml", () => {
     expect(xml.urlset).toHaveProperty("url");
   });
 
-  it("should include blog post URLs under citeup.com/blog/", () => {
+  it("should include blog post URLs under cite.me.in/blog/", () => {
     const urls = Array.isArray(xml.urlset.url)
       ? xml.urlset.url
       : [xml.urlset.url];
-    expect(urls.some((u) => u.loc.startsWith("https://citeup.com/blog/"))).toBe(
+    expect(urls.some((u) => u.loc.startsWith("https://cite.me.in/blog/"))).toBe(
       true,
     );
   });
@@ -41,7 +41,7 @@ describe("blog/sitemap.xml", () => {
       : [xml.urlset.url];
     expect(urls).toContainEqual(
       expect.objectContaining({
-        loc: "https://citeup.com/blog/2026-02-26-how-citeup-was-born",
+        loc: "https://cite.me.in/blog/2026-02-26-how-citemein-was-born",
       }),
     );
   });

@@ -1,4 +1,5 @@
 import { recentBlogPosts } from "~/lib/blogPosts.server";
+import envVars from "~/lib/envVars";
 
 export async function loader() {
   const posts = await recentBlogPosts();
@@ -7,7 +8,7 @@ export async function loader() {
     .map(
       ({ slug, published }) => `
   <url>
-    <loc>https://citeup.com/blog/${slug}</loc>
+    <loc>${envVars.APP_URL}/blog/${slug}</loc>
     <lastmod>${published.toISOString().split("T")[0]}</lastmod>
   </url>`,
     )

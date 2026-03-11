@@ -12,7 +12,7 @@ const envVars = {
     // secretlint-disable-next-line
     .default("postgresql://dummy:dummy@localhost/dummy")
     .asUrlString(),
-  EMAIL_FROM: env.get("EMAIL_FROM").default("noreply@citeup.com").asString(),
+  EMAIL_FROM: env.get("EMAIL_FROM").default("noreply@cite.me.in").asString(),
   GOOGLE_GENERATIVE_AI_API_KEY: env
     .get("GOOGLE_GENERATIVE_AI_API_KEY")
     .required(false)

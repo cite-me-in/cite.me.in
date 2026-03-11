@@ -27,12 +27,12 @@ describe("blog/feed", () => {
     expect(content).toContain("</feed>");
   });
 
-  it("should have CiteUp as feed title", () => {
-    expect(content).toContain("<title>The CiteUp Blog</title>");
+  it("should have Cite.me.in as feed title", () => {
+    expect(content).toContain("<title>The Cite.me.in Blog</title>");
   });
 
-  it("should link to citeup.com", () => {
-    expect(content).toContain("citeup.com");
+  it("should link to cite.me.in", () => {
+    expect(content).toContain("cite.me.in");
   });
 
   it("should include at least one entry", () => {
@@ -40,9 +40,9 @@ describe("blog/feed", () => {
   });
 
   it("should include the first blog post", () => {
-    expect(content).toContain("2026-02-26-how-citeup-was-born");
+    expect(content).toContain("2026-02-26-how-citemein-was-born");
     expect(content).toContain(
-      "How CiteUp Was Born: From Rentail to LLM Citation Monitoring",
+      "How Cite.me.in Was Born: From Rentail to LLM Citation Monitoring",
     );
   });
 });

@@ -4,6 +4,7 @@ import { Streamdown } from "streamdown";
 import { ActiveLink } from "~/components/ui/ActiveLink";
 import LoadingImage from "~/components/ui/LoadingImage";
 import { type BlogPost, loadBlogPost } from "~/lib/blogPosts.server";
+import envVars from "~/lib/envVars";
 import externalLink from "~/lib/externalLink";
 import { formatDateMed } from "~/lib/temporal";
 import type { Route } from "./+types/blog.$slug";
@@ -20,15 +21,15 @@ export function meta({ loaderData }: Route.MetaArgs): Route.MetaDescriptors {
   if (!loaderData) return [];
   const { slug, published, summary, title } = loaderData;
   return [
-    { title: `${title} | CiteUp` },
+    { title: `${title} | Cite.me.in` },
     { name: "description", content: summary },
     { property: "og:title", content: title },
     { property: "og:description", content: summary },
     { property: "og:type", content: "article" },
-    { property: "og:url", content: `https://citeup.com/blog/${slug}` },
+    { property: "og:url", content: `${envVars.APP_URL}/blog/${slug}` },
     {
       property: "og:image",
-      content: `https://citeup.com/blog/${loaderData.image}`,
+      content: `${envVars.APP_URL}/blog/${loaderData.image}`,
     },
     { property: "og:published_time", content: published },
     { name: "robots", content: "index, follow" },
@@ -38,7 +39,7 @@ export function meta({ loaderData }: Route.MetaArgs): Route.MetaDescriptors {
 export default function Post({ loaderData }: { loaderData: BlogPost }) {
   const { alt, body, image, slug, published, summary, title } = loaderData;
   const faqItems = parseFAQ(body);
-  const url = `https://citeup.com/blog/${slug}`;
+  const url = `${envVars.APP_URL}/blog/${slug}`;
   return (
     <main
       className="min-h-screen bg-[hsl(60,100%,99%)] px-4 py-12"
@@ -81,8 +82,8 @@ export default function Post({ loaderData }: { loaderData: BlogPost }) {
           <HeartIcon className="h-4 w-4 text-red-500" fill="currentColor" />
           <span>
             Brought to you by{" "}
-            <ActiveLink variant="silent" to="https://citeup.com">
-              CiteUp
+            <ActiveLink variant="silent" to={envVars.APP_URL}>
+              Cite.me.in
             </ActiveLink>{" "}
             on {formatDateMed(published)}
           </span>
@@ -97,8 +98,8 @@ export default function Post({ loaderData }: { loaderData: BlogPost }) {
                 "@id": url,
                 author: {
                   "@type": "Organization",
-                  name: "CiteUp",
-                  url: "https://citeup.com",
+                  name: "Cite.me.in",
+                  url: envVars.APP_URL,
                 },
                 datePublished: published,
                 dateModified: published,
@@ -106,10 +107,10 @@ export default function Post({ loaderData }: { loaderData: BlogPost }) {
                 name: title,
                 primaryImageOfPage: image
                   ? {
-                      "@id": `https://citeup.com/blog/${image}`,
+                      "@id": `${envVars.APP_URL}/blog/${image}`,
                       "@type": "ImageObject",
                       caption: alt,
-                      contentUrl: `https://citeup.com/blog/${image}`,
+                      contentUrl: `${envVars.APP_URL}/blog/${image}`,
                     }
                   : undefined,
               },
@@ -120,13 +121,13 @@ export default function Post({ loaderData }: { loaderData: BlogPost }) {
                     "@type": "ListItem",
                     position: 1,
                     name: "Home",
-                    item: "https://citeup.com",
+                    item: envVars.APP_URL,
                   },
                   {
                     "@type": "ListItem",
                     position: 2,
                     name: "Blog",
-                    item: "https://citeup.com/blog",
+                    item: `${envVars.APP_URL}/blog`,
                   },
                   {
                     "@type": "ListItem",

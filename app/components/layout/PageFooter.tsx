@@ -1,6 +1,7 @@
 import { HeartIcon } from "lucide-react";
 import { Link, NavLink } from "react-router";
-import CiteUpIcon from "./CiteUpLogo";
+import envVars from "~/lib/envVars";
+import CiteMeInLogo from "./CiteMeInLogo";
 
 const links = [
   {
@@ -12,7 +13,10 @@ const links = [
     links: [
       { to: "/about", label: "About" },
       { to: "/blog", label: "Blog" },
-      { to: "mailto:hello@citeup.com", label: "Contact" },
+      {
+        to: `mailto:${envVars.EMAIL_FROM.replace("noreply@", "hello@")}`,
+        label: "Contact",
+      },
     ],
   },
   {
@@ -28,14 +32,14 @@ export default function PageFooter() {
   return (
     <footer className="flex flex-col gap-8 border-black border-t-2 bg-[hsl(60,100%,99%)] px-6 py-12 text-base text-black sm:flex-row sm:justify-between print:hidden">
       <aside className="flex flex-col gap-4">
-        <CiteUpIcon />
+        <CiteMeInLogo />
         <div className="flex flex-col gap-2">
           <p className="font-medium">
             Monitor AI citation visibility for your brand. Built for small
             businesses and seasonal sellers. AI powered.
           </p>
           <p className="flex flex-row items-center gap-1 font-medium">
-            © {new Date().getFullYear()} citeup.com
+            © {new Date().getFullYear()} cite.me.in
             <HeartIcon className="h-4 w-4 text-red-500" fill="currentColor" />
             Made in Los Angeles, CA.
           </p>
@@ -71,7 +75,7 @@ function SocialLinks() {
         className="inline-flex items-center gap-1 font-medium transition-colors hover:text-[#F59E0B]"
         rel="noopener noreferrer"
         target="_blank"
-        to="https://github.com/citeup-app/citeup"
+        to="https://github.com/cite-me-in/cite.me.in"
       >
         <svg
           className="size-4"

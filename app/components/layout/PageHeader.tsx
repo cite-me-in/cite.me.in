@@ -5,7 +5,7 @@ import { Link, NavLink, type UIMatch, useMatches } from "react-router";
 import { twMerge } from "tailwind-merge";
 import { Button } from "~/components/ui/Button";
 import AccountMenu from "./AccountMenu";
-import CiteUpIcon from "./CiteUpLogo";
+import CiteMeInLogo from "./CiteMeInLogo";
 import type { HeaderLink } from "./PageLayout";
 
 export default function PageHeader() {
@@ -47,7 +47,7 @@ export default function PageHeader() {
 
   return (
     <header className="z-10 flex min-h-16 w-full items-center border-black border-b-2 bg-[hsl(60,100%,99%)] p-2 print:hidden">
-      <CiteUpIcon className="w-1/2" />
+      <CiteMeInLogo className="w-1/2" />
 
       {navLinks && <HeaderLinks links={navLinks} />}
       {dropdownLinks && <DropdownMenu links={dropdownLinks} />}

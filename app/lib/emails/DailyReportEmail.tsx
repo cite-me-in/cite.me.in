@@ -45,7 +45,7 @@ export default async function sendDailyReportEmail(): Promise<string> {
           botInsights={botInsights}
         />
       ),
-      subject: "CiteUp Daily Report",
+      subject: "Cite.me.in Daily Report",
       to: "assaf@labnotes.org",
     });
   } catch (error) {
@@ -72,7 +72,7 @@ function DailyReportEmail({
   );
 
   return (
-    <EmailLayout subject="CiteUp Daily Report">
+    <EmailLayout subject="Cite.me.in Daily Report">
       {/* New Users Section */}
       {newUsers.length > 0 ? (
         <Section className="mb-8 pb-5">

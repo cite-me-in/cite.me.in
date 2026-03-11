@@ -1,5 +1,6 @@
 import { TrendingUp } from "lucide-react";
 import { ActiveLink } from "~/components/ui/ActiveLink";
+import envVars from "~/lib/envVars";
 
 export default function AboutCTA() {
   return (
@@ -24,7 +25,7 @@ export default function AboutCTA() {
           <ActiveLink
             className="px-8"
             size="xl"
-            to="mailto:hello@citeup.com"
+            to={`mailto:${envVars.EMAIL_FROM.replace("noreply@", "hello@")}`}
             variant="button"
           >
             Get in Touch

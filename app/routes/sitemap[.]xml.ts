@@ -1,9 +1,10 @@
 import { generateRemixSitemap } from "@forge42/seo-tools/remix/sitemap";
 import { recentBlogPosts } from "~/lib/blogPosts.server";
+import envVars from "~/lib/envVars";
 
 export async function loader() {
   const sitemap = await generateRemixSitemap({
-    domain: "https://citeup.com",
+    domain: envVars.APP_URL,
     ignore: ["*/\\*", "/error", "/.well-known/*"],
     routes: { ...routes, ...(await blogRoutes()), ...(await allOtherRoutes()) },
   });

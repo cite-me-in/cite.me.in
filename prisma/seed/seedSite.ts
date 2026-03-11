@@ -9,7 +9,7 @@ export default async function seedSite(): Promise<Site> {
 }
 
 async function seedAccount(): Promise<User> {
-  const apiKey = "citeup_21945ffb0342eb204b60aaf28c7bdca9";
+  const apiKey = "cite.me.in_21945ffb0342eb204b60aaf28c7bdca9";
   const account = await prisma.account.upsert({
     where: { id: "cmm4h5qam000004l75z7mobty" },
     update: { apiKey },
@@ -46,7 +46,7 @@ async function seedSites(user: User): Promise<Site> {
     },
   });
 
-  const citeUp = await prisma.site.upsert({
+  const citeMeIn = await prisma.site.upsert({
     where: {
       id: "cmm6jgk1u0000f5rcxmtgpwga",
     },
@@ -55,10 +55,10 @@ async function seedSites(user: User): Promise<Site> {
       id: "cmm6jgk1u0000f5rcxmtgpwga",
       accountId: user.accountId,
       content:
-        "CiteUp Sign in Get started The Search Console for AI Does ChatGPT mention  your brand? CiteUp runs your queries across ChatGPT, Claude, Gemini, and Perplexity — and records every time they cite your website.",
+        "Cite.me.in Sign in Get started The Search Console for AI Does ChatGPT mention  your brand? Cite.me.in runs your queries across ChatGPT, Claude, Gemini, and Perplexity — and records every time they cite your website.",
       domain: envVars.APP_URL,
     },
   });
-  console.info("✅ Sites: %s, %s", rentail.id, citeUp.id);
+  console.info("✅ Sites: %s, %s", rentail.id, citeMeIn.id);
   return rentail;
 }

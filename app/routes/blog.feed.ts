@@ -2,21 +2,22 @@ import { Feed } from "feed";
 import { marked } from "marked";
 import { recentBlogPosts } from "~/lib/blogPosts.server";
 import captureException from "~/lib/captureException.server";
+import envVars from "~/lib/envVars";
 
 export async function loader() {
   try {
     const feed = new Feed({
-      author: { email: "hello@citeup.com", name: "CiteUp" },
-      copyright: "Copyright 2026 CiteUp",
+      author: { email: "hello@cite.me.in", name: "Cite.me.in" },
+      copyright: "Copyright 2026 Cite.me.in",
       description:
         "Insights and guides on LLM citation visibility, AI search optimization, and monitoring your brand's presence in AI-generated responses.",
-      favicon: "https://citeup.com/favicon.ico",
-      feedLinks: { atom: "https://citeup.com/blog/feed" },
-      id: "citeup.com",
-      image: "https://citeup.com/og-image.png",
+      favicon: `${envVars.APP_URL}/favicon.ico`,
+      feedLinks: { atom: `${envVars.APP_URL}/blog/feed` },
+      id: envVars.APP_URL,
+      image: `${envVars.APP_URL}/og-image.png`,
       language: "en-US",
-      link: "https://citeup.com/blog/feed",
-      title: "The CiteUp Blog",
+      link: `${envVars.APP_URL}/blog/feed`,
+      title: "The Cite.me.in Blog",
       updated: new Date(),
     });
 
@@ -33,7 +34,7 @@ export async function loader() {
       image,
       alt,
     } of recent) {
-      const imageURL = `https://citeup.com/blog/${image}`;
+      const imageURL = `${envVars.APP_URL}/blog/${image}`;
       const content =
         `<img src="${imageURL}" alt="${alt}" />` +
         (await marked.parse(body, { gfm: true }));
@@ -42,9 +43,9 @@ export async function loader() {
         content,
         date: publishedDate,
         description: summary,
-        id: `citeup.com:${slug}`,
+        id: `${envVars.APP_URL}:${slug}`,
         image: imageURL,
-        link: `https://citeup.com/blog/${slug}`,
+        link: `${envVars.APP_URL}/blog/${slug}`,
         published: publishedDate,
         title: title,
       });

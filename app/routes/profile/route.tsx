@@ -11,7 +11,7 @@ import ProfilePasswordForm from "./ProfilePasswordForm";
 
 export function meta(): Route.MetaDescriptors {
   return [
-    { title: "Profile Settings | CiteUp" },
+    { title: "Profile Settings | Cite.me.in" },
     { name: "description", content: "Manage your account email and password." },
   ];
 }

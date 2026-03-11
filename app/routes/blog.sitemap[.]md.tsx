@@ -4,7 +4,7 @@ import envVars from "~/lib/envVars";
 export async function loader() {
   const blogPosts = await recentBlogPosts();
   const markdown = `
-# CiteUp Blog Sitemap
+# Cite.me.in Blog Sitemap
 
 This is a sitemap of all blog posts in markdown format for AI agents. It is used to help AI agents index the blog posts.
 
@@ -13,7 +13,7 @@ This is a sitemap of all blog posts in markdown format for AI agents. It is used
 ${blogPosts
   .map(
     (blogPost) =>
-      `- [${blogPost.title}](https://citeup.com/blog/${blogPost.slug}) - ${blogPost.published.toString().slice(0, 10)}`,
+      `- [${blogPost.title}](${envVars.APP_URL}/blog/${blogPost.slug}) - ${blogPost.published.toString().slice(0, 10)}`,
   )
   .join("\n")}
 

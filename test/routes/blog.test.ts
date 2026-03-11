@@ -47,7 +47,7 @@ describe("Blog Listing", () => {
   it("should have proper meta title", async () => {
     const title = await page.title();
     expect(title).toContain("Blog");
-    expect(title).toContain("CiteUp");
+    expect(title).toContain("Cite.me.in");
   });
 
   it("should match visually", async () => {
@@ -59,13 +59,13 @@ describe("Blog Listing", () => {
   describe("navigates to first blog post", () => {
     beforeAll(async () => {
       await page
-        .locator('a[href^="/blog/2026-02-26-how-citeup-was-born"]')
+        .locator('a[href^="/blog/2026-02-26-how-citemein-was-born"]')
         .click();
       await page.waitForURL(/.*\/blog\/.*/);
     });
 
     it("should navigate to the blog post", async () => {
-      expect(page.url()).toContain("/blog/2026-02-26-how-citeup-was-born");
+      expect(page.url()).toContain("/blog/2026-02-26-how-citemein-was-born");
     });
 
     it("should display the blog post content", async () => {
@@ -75,7 +75,7 @@ describe("Blog Listing", () => {
       const h1 = page.locator("h1").first();
       await expect(h1).toBeVisible();
       await expect(h1).toHaveText(
-        "How CiteUp Was Born: From Rentail to LLM Citation Monitoring",
+        "How Cite.me.in Was Born: From Rentail to LLM Citation Monitoring",
       );
     });
   });

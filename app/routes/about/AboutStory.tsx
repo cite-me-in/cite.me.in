@@ -14,11 +14,11 @@ export default function AboutStory() {
             </h2>
             <div className="flex flex-col gap-4 font-medium text-black text-lg leading-relaxed">
               <p>
-                CiteUp started with a question we couldn't answer: when someone
-                asks Claude or ChatGPT about our space, do they mention us? The
-                answer mattered — AI platforms are increasingly where people
-                discover products and services — but there was no easy way to
-                find out.
+                Cite.me.in started with a question we couldn't answer: when
+                someone asks Claude or ChatGPT about our space, do they mention
+                us? The answer mattered — AI platforms are increasingly where
+                people discover products and services — but there was no easy
+                way to find out.
               </p>
               <p>
                 In 2026, we built the tool we needed: run your search queries

@@ -2,16 +2,17 @@ import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { ActiveLink } from "~/components/ui/ActiveLink";
+import envVars from "~/lib/envVars";
 import type { Route } from "./+types/route";
 import faq from "./faq";
 
 export function meta(): Route.MetaDescriptors {
   return [
-    { title: "FAQ | CiteUp" },
+    { title: "FAQ | Cite.me.in" },
     {
       name: "description",
       content:
-        "Frequently asked questions about CiteUp: how LLM citation visibility monitoring works, which AI platforms we track, and how to get started.",
+        "Frequently asked questions about Cite.me.in: how LLM citation visibility monitoring works, which AI platforms we track, and how to get started.",
     },
   ];
 }
@@ -53,7 +54,7 @@ export default function FAQ() {
         <ActiveLink
           bg="yellow"
           size="xl"
-          to={`mailto:hello@citeup.com?subject=${encodeURIComponent("I have questions")}`}
+          to={`mailto:${envVars.EMAIL_FROM.replace("noreply@", "hello@")}?subject=${encodeURIComponent("I have questions")}`}
           variant="button"
         >
           Contact Support

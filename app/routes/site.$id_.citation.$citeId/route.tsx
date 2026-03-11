@@ -17,7 +17,9 @@ export const handle = { siteNav: true };
 
 export function meta({ loaderData }: Route.MetaArgs) {
   return [
-    { title: `Citations — ${loaderData?.citation.run.site.domain} | CiteUp` },
+    {
+      title: `Citations — ${loaderData?.citation.run.site.domain} | Cite.me.in`,
+    },
   ];
 }
 

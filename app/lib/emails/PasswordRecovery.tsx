@@ -11,7 +11,7 @@ export default async function sendPasswordRecoveryEmail({
 }) {
   await sendEmail({
     to,
-    subject: "Reset your CiteUp password",
+    subject: "Reset your Cite.me.in password",
     render: ({ subject }) => <PasswordRecovery subject={subject} url={url} />,
   });
 }
@@ -30,8 +30,8 @@ function PasswordRecovery({
       </Text>
 
       <Text className="my-4 text-base text-text leading-relaxed">
-        You recently requested to reset your CiteUp password. To complete this
-        request, please click the button below.
+        You recently requested to reset your Cite.me.in password. To complete
+        this request, please click the button below.
       </Text>
 
       <Section className="my-8 text-center">
@@ -59,7 +59,7 @@ function PasswordRecovery({
       <Text className="my-4 text-base text-text leading-relaxed">
         Best regards,
         <br />
-        The CiteUp Team
+        The Cite.me.in Team
       </Text>
     </EmailLayout>
   );
