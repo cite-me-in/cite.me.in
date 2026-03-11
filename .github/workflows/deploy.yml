@@ -96,7 +96,6 @@ jobs:
         run: pnpm --expose-gc vitest run
 
       - name: Run Playwright Tests
-        if: false
         run: pnpm playwright test
 
       - name: Upload Playwright Test Results
