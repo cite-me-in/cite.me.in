@@ -8,11 +8,7 @@ const envVars = {
   BOT_TRACKER_API_KEY: env.get("BOT_TRACKER_API_KEY").required().asString(),
   BOT_TRACKER_URL: env.get("BOT_TRACKER_URL").required().asUrlString(),
   CRON_SECRET: env.get("CRON_SECRET").required(false).asString(),
-  DATABASE_URL: env
-    .get("DATABASE_URL")
-    // secretlint-disable-next-line
-    .default("postgresql://dummy:dummy@localhost/dummy")
-    .asUrlString(),
+  POSTGRES_PRISMA_URL: env.get("POSTGRES_PRISMA_URL").required().asUrlString(),
   GOOGLE_GENERATIVE_AI_API_KEY: env
     .get("GOOGLE_GENERATIVE_AI_API_KEY")
     .required(false)

@@ -8,9 +8,8 @@ env:
   ANTHROPIC_API_KEY: "sk-ant-"
   BOT_TRACKER_API_KEY: "bot-tracker-api-key"
   BOT_TRACKER_URL: "http://localhost:9222/api/track"
-  DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/citeup"
+  POSTGRES_PRISMA_URL: "postgresql://postgres:postgres@localhost:5432/citeup"
   DEBUG: ""
-  DIRECT_URL: "postgresql://postgres:postgres@localhost:5432/citeup"
   GOOGLE_GENERATIVE_AI_API_KEY: "AIza"
   NODE_OPTIONS: "--max-old-space-size=3096"
   OPENAI_API_KEY: "sk-proj-"
@@ -108,18 +107,17 @@ jobs:
       - name: Install Doppler CLI
         uses: dopplerhq/cli-action@v3
 
-      - name: Read DIRECT_URL from Doppler
-        id: doppler-direct-url
-        run: echo "DIRECT_URL=$(doppler --config prd secrets get DIRECT_URL --plain)" >> $GITHUB_ENV
+      - name: Read POSTGRES_PRISMA_URL from Doppler
+        id: doppler-postgres-prisma-url
+        run: echo "POSTGRES_PRISMA_URL=$(doppler --config prd secrets get POSTGRES_PRISMA_URL --plain)" >> $GITHUB_ENV
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
 
       - name: Update database
         if: github.ref == 'refs/heads/main'
-        run: pnpm prisma db push --url "${{ env.DIRECT_URL }}"
+        run: pnpm prisma db push --url "${{ env.POSTGRES_PRISMA_URL }}"
         env:
-          DIRECT_URL: "${{ env.DIRECT_URL }}"
-          DATABASE_URL: "${{ env.DIRECT_URL }}"
+          POSTGRES_PRISMA_URL: "${{ env.POSTGRES_PRISMA_URL }}"
 
       - name: Deploy to Vercel
         uses: nexterias/actions-vercel@v1

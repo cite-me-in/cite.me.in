@@ -55,7 +55,7 @@ async function seedSites(user: User): Promise<Site> {
       accountId: user.accountId,
       content:
         "Cite.me.in Sign in Get started The Search Console for AI Does ChatGPT mention  your brand? Cite.me.in runs your queries across ChatGPT, Claude, Gemini, and Perplexity — and records every time they cite your website.",
-      domain: import.meta.env.VITE_APP_URL,
+      domain: process.env.VITE_APP_URL ?? "",
     },
   });
   console.info("✅ Sites: %s, %s", rentail.id, citeMeIn.id);

@@ -119,7 +119,7 @@ async function singleQueryRepetition({
   try {
     await checkUsageLimits(accountId);
     const { citations, extraQueries, text, usage } = await queryFn({
-      maxRetries: import.meta.env.PROD ? 2 : 0,
+      maxRetries: 0,
       timeout: ms("10s"),
       query,
     });
