@@ -125,16 +125,12 @@ jobs:
           name: playwright-test-results
           path: __screenshots__
 
-      - name: Vercel Link
-        run: |
-          pnpm dlx vercel link --yes --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ env.VERCEL_TEAM }} --project ${{ env.VERCEL_PROJECT }}
-          pnpm dlx vercel env pull --environment production --token ${{ secrets.VERCEL_TOKEN }}
-
       - name: Update database
         if: github.ref == 'refs/heads/main'
         run: |
-          export $(cat .env.local | grep -v '^#' | xargs)
           pnpm prisma db push
+        env:
+          POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING }}
 
       - name: Deploy to Vercel
         uses: nexterias/actions-vercel@v1
