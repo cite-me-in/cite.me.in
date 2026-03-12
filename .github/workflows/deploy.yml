@@ -6,6 +6,8 @@ on:
 
 env:
   ANTHROPIC_API_KEY: "sk-ant-"
+  VERCEL_PROJECT: "prj_Ipf1EVCJ9lIgoCIIbiizNp5W5O66"
+  VERCEL_TEAM: "team_bjyg9pgn8TQQVP2NLMPnSYSN"
   BOT_TRACKER_API_KEY: "bot-tracker-api-key"
   BOT_TRACKER_URL: "http://localhost:9222/api/track"
   POSTGRES_PRISMA_URL: "postgresql://postgres:postgres@localhost:5432/citeup"
