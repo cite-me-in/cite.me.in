@@ -126,7 +126,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: |
           pnpm install --global vercel@latest
-          vercel link --token ${{ secrets.VERCEL_TOKEN }} --team "team_bjyg9pgn8TQQVP2NLMPnSYSN" --project-id "prj_Ipf1EVCJ9lIgoCIIbiizNp5W5O66"
+          vercel link --token ${{ secrets.VERCEL_TOKEN }} --team "team_bjyg9pgn8TQQVP2NLMPnSYSN" --project "prj_Ipf1EVCJ9lIgoCIIbiizNp5W5O66"
           vercel env run --token ${{ secrets.VERCEL_TOKEN }} -- pnpm prisma db push
 
       - name: Deploy to Vercel
