@@ -125,10 +125,15 @@ jobs:
           name: playwright-test-results
           path: __screenshots__
 
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+
       - name: Update database
         if: github.ref == 'refs/heads/main'
         run: |
           doppler --config prd run -- pnpm prisma db push
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
 
       - name: Deploy to Vercel
         uses: nexterias/actions-vercel@v1
