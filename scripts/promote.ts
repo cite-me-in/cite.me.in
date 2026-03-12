@@ -17,7 +17,7 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { Octokit } from "octokit";
 import ora from "ora";
-import { timeago } from "~/lib/relativeTime";
+import { timeago } from "../app/lib/relativeTime";
 
 dotenv.config({ quiet: true });
 
@@ -280,6 +280,14 @@ async function interactive() {
         );
         process.exit(1);
       }
+    } else {
+      console.error(
+        colorize(
+          "red",
+          "\n✘ Deployment is not ready. Please wait for it to be ready before promoting.",
+        ),
+      );
+      process.exit(1);
     }
   }
 
