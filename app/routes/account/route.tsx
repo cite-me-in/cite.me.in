@@ -18,15 +18,30 @@ export const handle = { siteNav: true };
 export async function loader({ request }: Route.LoaderArgs) {
   const user = await requireUser(request);
   const script = `
-const tracker = createBotTracker({
-  apiKey: "${user.account.apiKey}",
-  endpoint: "${envVars.BOT_TRACKER_URL.toString()}",
-});
-
+// Use this where you're handling HTTP requests:
 function requestHandler(request) {
   // fire-and-forget, production only
-  if (import.meta.env.PROD) tracker.track(request);
+  if (import.meta.env.PROD) trackBotVisit(request);
   …
+}
+
+function trackBotVisit(request: Request) {
+  const apiKey = "${user.account.apiKey}";
+  const endpoint = "${envVars.BOT_TRACKER_URL}";
+  fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer \${apiKey}",
+    },
+    body: JSON.stringify({
+      accept: request.headers.get("accept"),
+      ip: request.headers.get("x-forwarded-for"),
+      referer: request.headers.get("referer"),
+      url: request.url.toString(),
+      userAgent: request.headers.get("user-agent"),
+    }),
+  }).catch(() => {});
 }
   `.trim();
   return { script, apiKey: user.account.apiKey };

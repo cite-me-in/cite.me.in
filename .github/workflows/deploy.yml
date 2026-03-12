@@ -127,7 +127,7 @@ jobs:
       - name: Vercel Link
         run: |
           pnpm dlx vercel link --yes --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ env.VERCEL_TEAM }} --project ${{ env.VERCEL_PROJECT }}
-          pnpm dlx vercel env pull --environment production
+          pnpm dlx vercel env pull --environment production --token ${{ secrets.VERCEL_TOKEN }}
 
       - name: Update database
         if: github.ref == 'refs/heads/main'
