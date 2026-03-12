@@ -11,8 +11,6 @@ import pg from "pg";
 import { PrismaClient } from "prisma/generated/client";
 import envVars from "./envVars";
 
-const isLocal = new URL(envVars.POSTGRES_URL).hostname === "localhost";
-
 // Configure pg Pool for Supabase pooler (SSL configured via POSTGRES_URL)
 const pool = new pg.Pool({
   connectionString: envVars.POSTGRES_URL,
@@ -20,12 +18,10 @@ const pool = new pg.Pool({
   idleTimeoutMillis: 0,
   connectionTimeoutMillis: 0,
   allowExitOnIdle: true,
-  ssl: isLocal
-    ? false
-    : {
-        cert: readFileSync(resolve("prisma/prod-ca-2021.crt")),
-        rejectUnauthorized: false,
-      },
+  ssl: process.env.NODE_ENV === "production" && {
+    cert: readFileSync(resolve("prisma/prod-ca-2021.crt")),
+    rejectUnauthorized: false,
+  },
 });
 
 export default new PrismaClient({
