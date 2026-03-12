@@ -128,9 +128,6 @@ jobs:
         run: |
           pnpm dlx vercel link --yes --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ env.VERCEL_TEAM }} --project ${{ env.VERCEL_PROJECT }}
           pnpm dlx vercel env pull --environment production
-        env:
-          VERCEL_TEAM: ${{ env.VERCEL_TEAM }}
-          VERCEL_PROJECT: ${{ env.VERCEL_PROJECT }}
 
       - name: Update database
         if: github.ref == 'refs/heads/main'
@@ -152,5 +149,3 @@ jobs:
           SENTRY_AUTH_TOKEN: "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"
           SENTRY_ORG: "labnotes"
           SENTRY_PROJECT: "citeup"
-          VERCEL_PROJECT: "prj_Ipf1EVCJ9lIgoCIIbiizNp5W5O66"
-          VERCEL_TEAM: "team_bjyg9pgn8TQQVP2NLMPnSYSN"
