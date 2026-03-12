@@ -118,6 +118,8 @@ export async function fetchPageContent(domain: string): Promise<string | null> {
 export async function loadSitesWithMetrics(accountId: string): Promise<
   {
     citationsToDomain: number;
+    previousCitationsToDomain: number | null;
+    previousScore: number | null;
     score: number;
     totalCitations: number;
     uniqueBots: number;
@@ -136,7 +138,8 @@ export async function loadSitesWithMetrics(accountId: string): Promise<
             select: { citations: true },
           },
         },
-        where: { createdAt: { gte } },
+        orderBy: { createdAt: "desc" },
+        take: 2,
       },
       botVisits: {
         select: { count: true, botType: true },
@@ -147,19 +150,25 @@ export async function loadSitesWithMetrics(accountId: string): Promise<
     where: { accountId },
   });
   return sites.map((site) => {
-    // Get citation metrics
-    const { citationsToDomain, score, totalCitations } =
-      calculateCitationMetrics({
-        domain: site.domain,
-        queries: site.citationRuns[0]?.queries ?? [],
-      });
+    const current = calculateCitationMetrics({
+      domain: site.domain,
+      queries: site.citationRuns[0]?.queries ?? [],
+    });
+    const previous = site.citationRuns[1]
+      ? calculateCitationMetrics({
+          domain: site.domain,
+          queries: site.citationRuns[1].queries,
+        })
+      : null;
 
     return {
-      citationsToDomain,
-      score,
+      citationsToDomain: current.citationsToDomain,
+      previousCitationsToDomain: previous?.citationsToDomain ?? null,
+      previousScore: previous?.score ?? null,
+      score: current.score,
       site,
       totalBotVisits: sumBy(site.botVisits, (v) => v.count),
-      totalCitations,
+      totalCitations: current.totalCitations,
       uniqueBots: uniqBy(site.botVisits, (v) => v.botType).length,
     };
   });
