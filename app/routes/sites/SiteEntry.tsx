@@ -5,17 +5,26 @@ import type { Site } from "~/prisma";
 import DeleteSiteDialog from "./DeleteSiteDialog";
 import type { action } from "./route";
 
-function Delta({ current, previous }: { current: number; previous: number | null }) {
+function Delta({
+  current,
+  previous,
+}: {
+  current: number;
+  previous: number | null;
+}) {
   if (previous === null) return null;
   if (previous === 0 && current === 0) return null;
   if (previous === 0)
-    return <span className="text-sm font-medium text-green-700">new</span>;
+    return <span className="font-medium text-green-700 text-sm">new</span>;
 
   const pct = Math.round(((current - previous) / previous) * 100);
   const positive = pct >= 0;
   return (
-    <span className={`text-sm font-medium ${positive ? "text-green-700" : "text-red-600"}`}>
-      {positive ? "+" : ""}{pct}%
+    <span
+      className={`font-medium text-sm ${positive ? "text-green-700" : "text-red-600"}`}
+    >
+      {positive ? "+" : ""}
+      {pct}%
     </span>
   );
 }
@@ -69,18 +78,24 @@ export default function SiteEntry({
       >
         <div>
           <p className="font-light">Citations</p>
-          <p className="font-bold text-3xl">{citationsToDmain.toLocaleString()}</p>
-          <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground">
-            <Delta current={citationsToDmain} previous={previousCitationsToDomain} />
-            {previousCitationsToDomain !== null && previousCitationsToDomain !== 0 && (
-              <span>{previousCitationsToDomain.toLocaleString()}</span>
-            )}
+          <p className="font-bold text-3xl">
+            {citationsToDmain.toLocaleString()}
+          </p>
+          <div className="flex items-center justify-center gap-1 text-muted-foreground text-sm">
+            <Delta
+              current={citationsToDmain}
+              previous={previousCitationsToDomain}
+            />
+            {previousCitationsToDomain !== null &&
+              previousCitationsToDomain !== 0 && (
+                <span>{previousCitationsToDomain.toLocaleString()}</span>
+              )}
           </div>
         </div>
         <div>
           <p className="font-light">Score</p>
           <p className="font-bold text-3xl">{score.toFixed(1)}</p>
-          <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground">
+          <div className="flex items-center justify-center gap-1 text-muted-foreground text-sm">
             <Delta current={score} previous={previousScore} />
             {previousScore !== null && previousScore !== 0 && (
               <span>{previousScore.toFixed(1)}</span>

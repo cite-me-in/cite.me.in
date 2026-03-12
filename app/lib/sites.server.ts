@@ -121,10 +121,10 @@ export async function loadSitesWithMetrics(accountId: string): Promise<
     previousCitationsToDomain: number | null;
     previousScore: number | null;
     score: number;
+    site: Site;
+    totalBotVisits: number;
     totalCitations: number;
     uniqueBots: number;
-    totalBotVisits: number;
-    site: Site;
   }[]
 > {
   const gte = new Date(
