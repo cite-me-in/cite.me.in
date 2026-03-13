@@ -105,7 +105,7 @@ function HeroSection({ isSignedIn }: { isSignedIn: boolean }) {
         </p>
         <div className="flex flex-col gap-4 sm:flex-row">
           {isSignedIn ? (
-            <ActiveLink variant="button" to="/sites/new" size="xl">
+            <ActiveLink variant="button" to="/sites" size="xl">
               Add a site
             </ActiveLink>
           ) : (
