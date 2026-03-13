@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { extractDomain, fetchPageContent } from "~/lib/sites.server";
+import { extractDomain, fetchSiteContent } from "~/lib/sites.server";
 
 vi.mock("node:dns", () => ({
   default: {
@@ -40,7 +40,10 @@ describe("fetchPageContent", () => {
         text: async () => "<html><body><p>Hello world</p></body></html>",
       }),
     );
-    const content = await fetchPageContent("example.com");
+    const content = await fetchSiteContent({
+      domain: "example.com",
+      maxWords: 1000,
+    });
     expect(content).toContain("Hello world");
   });
 
@@ -49,15 +52,15 @@ describe("fetchPageContent", () => {
       "fetch",
       vi.fn().mockResolvedValue({ ok: false, text: async () => "" }),
     );
-    expect(fetchPageContent("example.com")).rejects.toThrow(
-      "I couldn't fetch the main page of example.com",
-    );
+    expect(
+      fetchSiteContent({ domain: "example.com", maxWords: 1000 }),
+    ).rejects.toThrow("I couldn't fetch the main page of example.com");
   });
 
   it("returns null on network error", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network")));
-    expect(fetchPageContent("example.com")).rejects.toThrow(
-      "I couldn't fetch the main page of example.com",
-    );
+    expect(
+      fetchSiteContent({ domain: "example.com", maxWords: 1000 }),
+    ).rejects.toThrow("I couldn't fetch the main page of example.com");
   });
 });

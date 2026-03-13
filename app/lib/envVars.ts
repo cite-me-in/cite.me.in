@@ -7,6 +7,11 @@ const envVars = {
   ANTHROPIC_API_KEY: env.get("ANTHROPIC_API_KEY").required().asString(),
   BOT_TRACKER_API_KEY: env.get("BOT_TRACKER_API_KEY").required().asString(),
   BOT_TRACKER_URL: env.get("BOT_TRACKER_URL").required().asUrlString(),
+  CLOUDFLARE_API_KEY: env.get("CLOUDFLARE_API_KEY").required(false).asString(),
+  CLOUDFLARE_ACCOUNT_ID: env
+    .get("CLOUDFLARE_ACCOUNT_ID")
+    .required(false)
+    .asString(),
   CRON_SECRET: env.get("CRON_SECRET").required(false).asString(),
   POSTGRES_URL: env.get("POSTGRES_URL").required().asUrlString(),
   POSTGRES_URL_NON_POOLING: env
