@@ -1,4 +1,3 @@
-import { generateApiKey } from "random-password-toolkit";
 import { Form, redirect } from "react-router";
 import { ActiveLink } from "~/components/ui/ActiveLink";
 import AuthForm from "~/components/ui/AuthForm";
@@ -21,11 +20,17 @@ import sendEmailVerificationEmail from "~/lib/emails/EmailVerification";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 
+export async function loader({ request }: Route.LoaderArgs) {
+  const url = new URL(request.url);
+  return { inviteToken: url.searchParams.get("invite") ?? "" };
+}
+
 export async function action({ request }: Route.ActionArgs) {
   const form = await request.formData();
   const email = (form.get("email") ?? "").toString().trim();
   const password = (form.get("password") ?? "").toString();
   const confirm = (form.get("confirm") ?? "").toString();
+  const inviteToken = (form.get("inviteToken") ?? "").toString().trim();
 
   const errors: Record<string, string> = {};
 
@@ -45,15 +50,8 @@ export async function action({ request }: Route.ActionArgs) {
 
   const passwordHash = await hashPassword(password);
 
-  const user = await prisma.$transaction(async (tx) => {
-    const account = await tx.account.create({
-      data: {
-        apiKey: `cite.me.in_${generateApiKey(16)}`,
-      },
-    });
-    return tx.user.create({
-      data: { email, passwordHash, accountId: account.id },
-    });
+  const user = await prisma.user.create({
+    data: { email, passwordHash },
   });
 
   const setCookie = await createSession(user.id, request);
@@ -68,10 +66,11 @@ export async function action({ request }: Route.ActionArgs) {
     captureException(error);
   }
 
-  return redirect("/sites", { headers: { "Set-Cookie": setCookie } });
+  const redirectTo = inviteToken ? `/invite/${inviteToken}` : "/sites";
+  return redirect(redirectTo, { headers: { "Set-Cookie": setCookie } });
 }
 
-export default function SignUp({ actionData }: Route.ComponentProps) {
+export default function SignUp({ actionData, loaderData }: Route.ComponentProps) {
   const errors = actionData?.errors ?? {};
 
   return (
@@ -79,6 +78,9 @@ export default function SignUp({ actionData }: Route.ComponentProps) {
       title="Create account"
       form={
         <Form method="post">
+          {loaderData.inviteToken && (
+            <input type="hidden" name="inviteToken" value={loaderData.inviteToken} />
+          )}
           <FieldSet>
             <FieldGroup>
               <Field data-invalid={!!errors.email}>

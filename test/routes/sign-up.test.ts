@@ -61,7 +61,6 @@ describe("sign-up route", () => {
         id: "user-1",
         email: EXISTING_EMAIL,
         passwordHash: await hashPassword("password123"),
-        account: { create: { id: "account-1", apiKey: "api-key-1" } },
       },
     });
 
