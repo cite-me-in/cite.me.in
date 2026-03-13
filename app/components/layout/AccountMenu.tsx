@@ -1,7 +1,6 @@
 import {
   CornerDownRightIcon,
   LayoutDashboardIcon,
-  SettingsIcon,
   UnlockIcon,
   UserIcon,
 } from "lucide-react";
@@ -111,14 +110,6 @@ function DropdownMenu({
               to="/profile"
               icon={<UserIcon className="mr-2 size-4" />}
               label="Profile Settings"
-            />
-          </li>
-
-          <li>
-            <AccountMenuLink
-              to="/account"
-              icon={<SettingsIcon className="mr-2 size-4" />}
-              label="Account"
             />
           </li>
 
