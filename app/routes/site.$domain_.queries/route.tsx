@@ -9,6 +9,7 @@ import { requireUser } from "~/lib/auth.server";
 import captureException from "~/lib/captureException.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import prisma from "~/lib/prisma.server";
+import { requireSiteAccess } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
 import AddQueriesGroup from "./AddQueriesGroup";
 import GroupOfQueries from "./GroupOfQueries";
@@ -24,16 +25,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const user = await requireUser(request);
-  const site = await prisma.site.findFirst({
-    where: {
-      domain: params.domain,
-      OR: [
-        { ownerId: user.id },
-        { siteUsers: { some: { userId: user.id } } },
-      ],
-    },
-  });
-  if (!site) throw new Response("Not found", { status: 404 });
+  const site = await requireSiteAccess(params.domain, user.id);
 
   const rows = await prisma.siteQuery.findMany({
     where: { siteId: site.id },
@@ -52,16 +44,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
 export async function action({ request, params }: Route.ActionArgs) {
   const user = await requireUser(request);
-  const site = await prisma.site.findFirst({
-    where: {
-      domain: params.domain,
-      OR: [
-        { ownerId: user.id },
-        { siteUsers: { some: { userId: user.id } } },
-      ],
-    },
-  });
-  if (!site) throw new Response("Not found", { status: 404 });
+  const site = await requireSiteAccess(params.domain, user.id);
 
   const data = await request.formData();
   const intent = data.get("_intent")?.toString();

@@ -18,27 +18,19 @@ import captureException from "~/lib/captureException.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import queryGroups from "~/lib/llm-visibility/queryGroups";
 import prisma from "~/lib/prisma.server";
+import { requireSiteAccess } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
 import OurSource from "./OurSource";
 
 export const handle = { siteNav: true };
 
-export function meta(): Route.MetaDescriptors {
-  return [{ title: "Add a Site | Cite.me.in" }];
+export function meta({ loaderData }: Route.MetaArgs) {
+  return [{ title: `Suggested Queries — ${loaderData?.site.domain} | Cite.me.in` }];
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const user = await requireUser(request);
-  const site = await prisma.site.findFirst({
-    where: {
-      domain: params.domain,
-      OR: [
-        { ownerId: user.id },
-        { siteUsers: { some: { userId: user.id } } },
-      ],
-    },
-  });
-  if (!site) throw new Response("Not found", { status: 404 });
+  const site = await requireSiteAccess(params.domain, user.id);
   const suggestions = await prisma.siteQuerySuggestion.findMany({
     where: { siteId: site.id },
   });
@@ -49,16 +41,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 export async function action({ params, request }: Route.ActionArgs) {
   try {
     const user = await requireUser(request);
-    const site = await prisma.site.findFirst({
-      where: {
-        domain: params.domain,
-        OR: [
-          { ownerId: user.id },
-          { siteUsers: { some: { userId: user.id } } },
-        ],
-      },
-    });
-    if (!site) return { error: "Site not found" };
+    const site = await requireSiteAccess(params.domain, user.id);
 
     switch (request.method) {
       case "PUT": {
@@ -82,6 +65,7 @@ export async function action({ params, request }: Route.ActionArgs) {
       }
     }
   } catch (error) {
+    if (error instanceof Response) throw error;
     captureException(error);
     return {
       error: "An error occurred while saving the queries. Please try again.",

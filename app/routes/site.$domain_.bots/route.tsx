@@ -7,6 +7,7 @@ import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SitePageHeader";
 import { requireUser } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
+import { requireSiteAccess } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
 import BotAcceptTypes from "./BotAcceptTypes";
 import BotActivity from "./BotActivity";
@@ -24,16 +25,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const user = await requireUser(request);
-  const site = await prisma.site.findFirst({
-    where: {
-      domain: params.domain,
-      OR: [
-        { ownerId: user.id },
-        { siteUsers: { some: { userId: user.id } } },
-      ],
-    },
-  });
-  if (!site) throw new Response("Not found", { status: 404 });
+  const site = await requireSiteAccess(params.domain, user.id);
 
   const { from, until, period } = parseDateRange(
     new URL(request.url).searchParams,

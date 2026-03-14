@@ -3,14 +3,12 @@ import sendSiteInvitationEmail from "~/emails/SiteInvitation";
 import { requireUser } from "~/lib/auth.server";
 import captureException from "~/lib/captureException.server";
 import prisma from "~/lib/prisma.server";
+import { requireSiteOwner } from "~/lib/sites.server";
 import type { Route } from "./+types/site.$domain_.invite";
 
 export async function action({ request, params }: Route.ActionArgs) {
   const user = await requireUser(request);
-  const site = await prisma.site.findFirst({
-    where: { domain: params.domain, ownerId: user.id },
-  });
-  if (!site) throw new Response("Forbidden", { status: 403 });
+  const site = await requireSiteOwner(params.domain, user.id);
 
   const formData = await request.formData();
   const email = formData.get("email")?.toString().trim().toLowerCase() ?? "";

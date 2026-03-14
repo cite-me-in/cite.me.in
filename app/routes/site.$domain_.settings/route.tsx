@@ -6,6 +6,7 @@ import SitePageHeader from "~/components/ui/SitePageHeader";
 import { requireUser } from "~/lib/auth.server";
 import envVars from "~/lib/envVars";
 import prisma from "~/lib/prisma.server";
+import { requireSiteOwner } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
 
 export const handle = { siteNav: true };
@@ -67,10 +68,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
 export async function action({ request, params }: Route.ActionArgs) {
   const user = await requireUser(request);
-  const site = await prisma.site.findFirst({
-    where: { domain: params.domain, ownerId: user.id },
-  });
-  if (!site) throw new Response("Forbidden", { status: 403 });
+  const site = await requireSiteOwner(params.domain, user.id);
 
   const formData = await request.formData();
   const intent = formData.get("intent")?.toString();
@@ -95,7 +93,7 @@ export default function SiteSettingsPage({ loaderData }: Route.ComponentProps) {
       <section className="space-y-8">
         <ApiKeySection apiKey={site.apiKey} script={script} />
         <MembersSection site={site} isOwner={isOwner} />
-        {isOwner && <InviteSection siteDomain={site.domain} invitations={site.siteInvitations} />}
+        {isOwner && <InviteSection site={site} invitations={site.siteInvitations} />}
       </section>
     </Main>
   );
@@ -200,10 +198,10 @@ function MembersSection({
 }
 
 function InviteSection({
-  siteDomain,
+  site,
   invitations,
 }: {
-  siteDomain: string;
+  site: { domain: string };
   invitations: { id: string; email: string; createdAt: Date }[];
 }) {
   const fetcher = useFetcher();
@@ -212,7 +210,7 @@ function InviteSection({
     <div className="space-y-4 rounded-base border-2 border-black bg-white p-6 shadow-[4px_4px_0px_0px_black]">
       <h2 className="font-heading text-xl">Invite Member</h2>
 
-      <fetcher.Form method="post" action={`/site/${siteDomain}/invite`} className="flex gap-3">
+      <fetcher.Form method="post" action={`/site/${site.domain}/invite`} className="flex gap-3">
         <input
           type="email"
           name="email"
