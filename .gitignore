@@ -20,3 +20,4 @@ __screenshots__/*.new.html
 __screenshots__/*.html.diff
 test-results/
 .vercel
+.worktrees/
