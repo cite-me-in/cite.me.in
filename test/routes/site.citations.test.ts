@@ -132,6 +132,7 @@ describe("unauthenticated access", () => {
 describe("site page", () => {
   let user: User;
   let siteId: string;
+  let siteDomain: string;
 
   beforeAll(async () => {
     user = await prisma.user.create({
@@ -144,7 +145,8 @@ describe("site page", () => {
     const site = await prisma.site.create({
       data: { id: "site-1", domain: HOSTNAME, ownerId: user.id, apiKey: "test-api-key-citations-1" },
     });
-    siteId = site.domain;
+    siteId = site.id;
+    siteDomain = site.domain;
 
     // Three runs per platform (oldest → newest) so charts have ≥2 data points.
     const runDays = [14, 7, 0];
@@ -180,7 +182,7 @@ describe("site page", () => {
 
   it("should match visually", { timeout: 30_000 }, async () => {
     await signIn(user.id);
-    const page = await goto(`/site/${siteId}/citations`);
+    const page = await goto(`/site/${siteDomain}/citations`);
     // Strip chart SVGs: Recharts computes floating-point coordinates from
     // ResizeObserver measurements that drift slightly between runs. The
     // screenshot test covers visual regressions in charts.
