@@ -27,6 +27,7 @@ export async function launchServer(port: number): Promise<void> {
       : undefined,
     env: {
       ...process.env,
+      CHOKIDAR_USEPOLLING: "1",
       NODE_ENV: "test",
       PORT: port.toString(),
       VITE_TEST_MODE: "1",
