@@ -26,7 +26,7 @@ const charts = [
     name: "Visibility Score",
     color: "var(--chart-4)",
     explainer:
-      "Composite visibility score (0–100) weighting query coverage (35%), position-decayed citation rank (30%), share of voice (20%), and soft text mentions (15%).",
+      "Composite visibility score (0-100) weighting query coverage (35%), position-decayed citation rank (30%), share of voice (20%), and soft text mentions (15%).",
   },
 ] as const;
 
