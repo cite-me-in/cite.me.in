@@ -5,8 +5,8 @@ import { Button } from "~/components/ui/Button";
 import { Card, CardContent } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
 import { requireUser } from "~/lib/auth.server";
-import captureException from "~/lib/captureException.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
+import logError from "~/lib/logError.server";
 import {
   addSiteToUser,
   deleteSite,
@@ -45,7 +45,7 @@ export async function action({ request }: Route.ActionArgs) {
           return redirect(`/site/${site.domain}/suggestions`);
         }
       } catch (error) {
-        captureException(error, { extra: { url } });
+        logError(error, { extra: { url } });
         return {
           error:
             error instanceof Error

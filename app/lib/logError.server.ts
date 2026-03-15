@@ -21,7 +21,7 @@ const logtail =
     sendLogsToBetterStack: true,
   });
 
-export default function captureException(
+export default function logError(
   error: unknown,
   hints?: {
     user?: { id: string; email: string };

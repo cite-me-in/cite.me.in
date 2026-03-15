@@ -6,8 +6,8 @@ import addSiteQueries, {
   updateSiteQuery,
 } from "~/lib/addSiteQueries";
 import { requireUser } from "~/lib/auth.server";
-import captureException from "~/lib/captureException.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
+import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import { requireSiteAccess } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
@@ -97,7 +97,7 @@ export async function action({ request, params }: Route.ActionArgs) {
         const suggestions = await generateSiteQueries(site);
         return { ok: true, suggestions };
       } catch (error) {
-        captureException(error, { extra: { siteId: site.id } });
+        logError(error, { extra: { siteId: site.id } });
         return {
           ok: false,
           error: "Couldn't generate suggestions. Please try again.",

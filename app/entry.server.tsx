@@ -9,8 +9,8 @@ import type {
 import "~/lib/logger.server";
 import msw from "~/test/mocks/msw";
 import { createBotTracker } from "./lib/botTracker";
-import captureException from "./lib/captureException.server";
 import envVars from "./lib/envVars";
+import logError from "./lib/logError.server";
 
 if (import.meta.env.PROD)
   Sentry.init({
@@ -110,7 +110,7 @@ export function handleError(
   { request }: LoaderFunctionArgs | ActionFunctionArgs,
 ) {
   if (!request.signal.aborted) {
-    captureException(error, { extra: { request } });
+    logError(error, { extra: { request } });
     logger("error: %s", error);
   }
 }

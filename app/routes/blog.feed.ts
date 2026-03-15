@@ -1,7 +1,7 @@
 import { Feed } from "feed";
 import { marked } from "marked";
 import { recentBlogPosts } from "~/lib/blogPosts.server";
-import captureException from "~/lib/captureException.server";
+import logError from "~/lib/logError.server";
 
 export async function loader() {
   try {
@@ -65,7 +65,7 @@ export async function loader() {
       },
     });
   } catch (error) {
-    captureException(error);
+    logError(error);
     throw new Response("Internal Server Error", { status: 500 });
   }
 }

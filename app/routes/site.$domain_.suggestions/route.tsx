@@ -14,9 +14,9 @@ import ProgressIndicator from "~/components/ui/ProgressIndicator";
 import Spinner from "~/components/ui/Spinner";
 import addSiteQueries from "~/lib/addSiteQueries";
 import { requireUser } from "~/lib/auth.server";
-import captureException from "~/lib/captureException.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import queryGroups from "~/lib/llm-visibility/queryGroups";
+import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import { requireSiteAccess } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
@@ -25,7 +25,9 @@ import OurSource from "./OurSource";
 export const handle = { siteNav: true };
 
 export function meta({ loaderData }: Route.MetaArgs) {
-  return [{ title: `Suggested Queries — ${loaderData?.site.domain} | Cite.me.in` }];
+  return [
+    { title: `Suggested Queries — ${loaderData?.site.domain} | Cite.me.in` },
+  ];
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
@@ -34,7 +36,8 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const suggestions = await prisma.siteQuerySuggestion.findMany({
     where: { siteId: site.id },
   });
-  if (suggestions.length === 0) throw redirect(`/site/${params.domain}/queries`);
+  if (suggestions.length === 0)
+    throw redirect(`/site/${params.domain}/queries`);
   return { site, suggestions };
 }
 
@@ -66,7 +69,7 @@ export async function action({ params, request }: Route.ActionArgs) {
     }
   } catch (error) {
     if (error instanceof Response) throw error;
-    captureException(error);
+    logError(error);
     return {
       error: "An error occurred while saving the queries. Please try again.",
     };

@@ -6,7 +6,7 @@ import { Button } from "~/components/ui/Button";
 import { FieldSet } from "~/components/ui/FieldSet";
 import sendEmailVerificationEmail from "~/emails/EmailVerification";
 import { createEmailVerificationToken } from "~/lib/auth.server";
-import captureException from "~/lib/captureException.server";
+import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 
@@ -54,7 +54,7 @@ export async function action({ params, request }: Route.ActionArgs) {
         url: new URL(`/verify-email/${newToken}`, request.url).toString(),
       });
     } catch (error) {
-      captureException(error);
+      logError(error);
     }
   }
 

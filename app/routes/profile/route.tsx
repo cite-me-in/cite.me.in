@@ -3,7 +3,7 @@ import * as zod from "zod";
 import AuthForm from "~/components/ui/AuthForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/Tabs";
 import { hashPassword, requireUser, verifyPassword } from "~/lib/auth.server";
-import captureException from "~/lib/captureException.server";
+import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 import ProfileApiKeyForm from "./ProfileApiKeyForm";
@@ -27,7 +27,8 @@ export async function action({ request }: Route.ActionArgs) {
   const form = await request.formData();
 
   const intent = form.get("intent")?.toString();
-  if (intent === "regenerateApiKey") return regenerateApiKey({ userId: user.id });
+  if (intent === "regenerateApiKey")
+    return regenerateApiKey({ userId: user.id });
 
   const email = form.get("email")?.toString().trim().toLowerCase();
   if (email) return updateEmail({ userId: user.id, email });
@@ -89,7 +90,7 @@ async function updatePassword({
     });
     return { success: "Password changed successfully" };
   } catch (error) {
-    captureException(error);
+    logError(error);
     return { error: "Failed to change password, please try again" };
   }
 }
@@ -105,7 +106,7 @@ async function regenerateApiKey({ userId }: { userId: string }) {
     });
     return { apiKey: updated.apiKey };
   } catch (error) {
-    captureException(error);
+    logError(error);
     return { error: "Failed to generate API key" };
   }
 }

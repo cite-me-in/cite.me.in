@@ -1,7 +1,7 @@
 import { redirect } from "react-router";
 import sendSiteInvitationEmail from "~/emails/SiteInvitation";
 import { requireUser } from "~/lib/auth.server";
-import captureException from "~/lib/captureException.server";
+import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import { requireSiteOwner } from "~/lib/sites.server";
 import type { Route } from "./+types/site.$domain_.invite";
@@ -43,7 +43,7 @@ export async function action({ request, params }: Route.ActionArgs) {
       url: new URL(`/invite/${token}`, request.url).toString(),
     });
   } catch (error) {
-    captureException(error);
+    logError(error);
   }
 
   return redirect(`/site/${site.domain}/settings`);

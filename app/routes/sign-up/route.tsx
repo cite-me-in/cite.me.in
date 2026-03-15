@@ -16,7 +16,7 @@ import {
   createSession,
   hashPassword,
 } from "~/lib/auth.server";
-import captureException from "~/lib/captureException.server";
+import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 
@@ -63,7 +63,7 @@ export async function action({ request }: Route.ActionArgs) {
       url: new URL(`/verify-email/${verifyToken}`, request.url).toString(),
     });
   } catch (error) {
-    captureException(error);
+    logError(error);
   }
 
   const redirectTo = inviteToken ? `/invite/${inviteToken}` : "/sites";

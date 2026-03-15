@@ -1,8 +1,8 @@
 import { Temporal } from "@js-temporal/polyfill";
 import debug from "debug";
-import captureException from "~/lib/captureException.server";
 import envVars from "~/lib/envVars";
 import generateBotInsight from "~/lib/llm-visibility/generateBotInsight";
+import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/cron.bot-insights";
 
@@ -81,7 +81,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         site.domain,
         message,
       );
-      captureException(error, { extra: { siteId: site.id } });
+      logError(error, { extra: { siteId: site.id } });
       results.push({ siteId: site.id, ok: false, error: message });
     }
   }

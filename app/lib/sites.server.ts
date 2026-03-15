@@ -5,9 +5,9 @@ import { delay, groupBy, sortBy, sumBy, uniqBy } from "es-toolkit";
 import { generateApiKey } from "random-password-toolkit";
 import parseHTMLTree, { getBodyContent } from "~/lib/html/parseHTML";
 import type { Site } from "~/prisma";
-import captureException from "./captureException.server";
 import envVars from "./envVars";
 import calculateVisibilityScore from "./llm-visibility/calculateVisibilityScore";
+import logError from "./logError.server";
 import prisma from "./prisma.server";
 
 const logger = debug("fetch");
@@ -80,7 +80,7 @@ export async function fetchSiteContent({
     const content = await crawlSite({ domain, maxWords });
     if (content) return content;
   } catch (error) {
-    captureException(error, { extra: { domain } });
+    logError(error, { extra: { domain } });
     logger("Failed to crawl %s: %s", domain, error);
   }
 
@@ -88,7 +88,7 @@ export async function fetchSiteContent({
     const content = await fetchPage({ domain, maxWords });
     if (content) return content;
   } catch (error) {
-    captureException(error, { extra: { domain } });
+    logError(error, { extra: { domain } });
     throw new Error(`I couldn't fetch the main page of ${domain}`);
   }
 
@@ -311,13 +311,12 @@ export async function loadSitesWithMetrics(userId: string): Promise<
       queries: chronological[0]?.queries ?? [],
     });
     // Compute for the second most recent date for delta comparison
-    const previous =
-      chronological[1]
-        ? calculateVisibilityScore({
-            domain: site.domain,
-            queries: chronological[1].queries,
-          })
-        : null;
+    const previous = chronological[1]
+      ? calculateVisibilityScore({
+          domain: site.domain,
+          queries: chronological[1].queries,
+        })
+      : null;
 
     return {
       citationsToDomain: current.domainCitations,

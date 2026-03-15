@@ -1,6 +1,6 @@
 import { Temporal } from "@js-temporal/polyfill";
 import prisma from "~/lib/prisma.server";
-import captureException from "./captureException.server";
+import logError from "./logError.server";
 
 /**
  * Known bot patterns for classification
@@ -135,7 +135,7 @@ export default async function recordBotVisit({
     });
     return { tracked: true };
   } catch (error) {
-    captureException(error, {
+    logError(error, {
       extra: { botType, domain, pathname, userAgent },
     });
     return { tracked: false, reason: "db error" };

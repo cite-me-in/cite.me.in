@@ -1,7 +1,7 @@
 import type { Temporal } from "@js-temporal/polyfill";
 import { ms } from "convert";
 import debug from "debug";
-import captureException from "~/lib/captureException.server";
+import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import {
   checkUsageLimits,
@@ -77,7 +77,7 @@ export default async function queryPlatform({
       });
     }
   } catch (error) {
-    captureException(error, {
+    logError(error, {
       extra: { siteId: site.id, platform },
     });
   }
@@ -147,7 +147,7 @@ async function singleQueryRepetition({
     });
   } catch (error) {
     console.error(error);
-    captureException(error, {
+    logError(error, {
       extra: {
         siteId: site.id,
         platform,
