@@ -7,7 +7,7 @@ import parseHTMLTree, { getBodyContent } from "~/lib/html/parseHTML";
 import type { Site } from "~/prisma";
 import captureException from "./captureException.server";
 import envVars from "./envVars";
-import calculateCitationMetrics from "./llm-visibility/calculateCitationMetrics";
+import calculateVisibilityScore from "./llm-visibility/calculateVisibilityScore";
 import prisma from "./prisma.server";
 
 const logger = debug("fetch");
@@ -272,7 +272,7 @@ export async function loadSitesWithMetrics(userId: string): Promise<
         select: {
           createdAt: true,
           queries: {
-            select: { citations: true },
+            select: { citations: true, position: true, text: true },
           },
         },
         orderBy: { createdAt: "desc" },
@@ -297,34 +297,33 @@ export async function loadSitesWithMetrics(userId: string): Promise<
     );
 
     // Sort the dates in reverse chronological order, most recent is first:
-    // [{ date: "2026-03-12", citations }, { date: "2026-03-11", citations }, ...]
+    // [{ date: "2026-03-12", queries }, { date: "2026-03-11", queries }, ...]
     const chronological = sortBy(Object.entries(byDate), [([date]) => date])
       .reverse()
       .flatMap(([date, runs]) => ({
         date,
-        citations: runs.flatMap(({ queries }) =>
-          queries.flatMap(({ citations }) => citations),
-        ),
+        queries: runs.flatMap(({ queries }) => queries),
       }));
 
-    // Choose all citations from the most recent run
-    const current = calculateCitationMetrics({
+    // Compute composite visibility score for the most recent date's queries
+    const current = calculateVisibilityScore({
       domain: site.domain,
-      citations: chronological[0]?.citations ?? [],
+      queries: chronological[0]?.queries ?? [],
     });
-    // Choose all citations from the second most recent run
-    const previous = site.citationRuns[1]
-      ? calculateCitationMetrics({
-          domain: site.domain,
-          citations: chronological[1]?.citations ?? [],
-        })
-      : null;
+    // Compute for the second most recent date for delta comparison
+    const previous =
+      chronological[1]
+        ? calculateVisibilityScore({
+            domain: site.domain,
+            queries: chronological[1].queries,
+          })
+        : null;
 
     return {
-      citationsToDomain: current.citationsToDomain,
-      previousCitationsToDomain: previous?.citationsToDomain ?? null,
-      previousScore: previous?.score ?? null,
-      score: current.score,
+      citationsToDomain: current.domainCitations,
+      previousCitationsToDomain: previous?.domainCitations ?? null,
+      previousScore: previous?.visibilityScore ?? null,
+      score: current.visibilityScore,
       site,
       totalBotVisits: sumBy(site.botVisits, (v) => v.count),
       totalCitations: current.totalCitations,
