@@ -50,5 +50,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     }
   }
 
+  if (envVars.HEARTBEAT_CRON_CITATIONS)
+    await fetch(envVars.HEARTBEAT_CRON_CITATIONS);
   return Response.json({ ok: true, results });
 }

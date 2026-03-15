@@ -32,6 +32,15 @@ const envVars = {
   SESSION_SECRET: env.get("SESSION_SECRET").required().asString(),
   VITE_APP_URL: env.get("VITE_APP_URL").required().asUrlString(),
   VITE_EMAIL_FROM: env.get("VITE_EMAIL_FROM").required().asString(),
+
+  HEARTBEAT_CRON_CITATIONS: env
+    .get("HEARTBEAT_CRON_CITATIONS")
+    .required(false)
+    .asString(),
+  HEARTBEAT_CRON_BOT_INSIGHTS: env
+    .get("HEARTBEAT_CRON_BOT_INSIGHTS")
+    .required(false)
+    .asString(),
 };
 
 export default envVars;
