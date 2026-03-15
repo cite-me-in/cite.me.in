@@ -5,7 +5,10 @@ import CiteMeInLogo from "./CiteMeInLogo";
 const links = [
   {
     title: "Product",
-    links: [{ to: "/faq", label: "FAQ" }],
+    links: [
+      { to: "/faq", label: "FAQ" },
+      { to: "/docs", label: "API Docs" },
+    ],
   },
   {
     title: "Resources",

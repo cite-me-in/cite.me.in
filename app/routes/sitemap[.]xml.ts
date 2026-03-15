@@ -27,6 +27,11 @@ const routes = {
     path: "/privacy",
   },
   "/terms": { id: "routes/terms/route.tsx", module: "terms", path: "/terms" },
+  "/api-docs": {
+    id: "routes/api-docs/route.tsx",
+    module: "api-docs",
+    path: "/api-docs",
+  },
 };
 
 async function blogRoutes(): Promise<
