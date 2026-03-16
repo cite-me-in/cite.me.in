@@ -41,6 +41,10 @@ const envVars = {
     .get("HEARTBEAT_CRON_BOT_INSIGHTS")
     .required(false)
     .asString(),
+  HEARTBEAT_CRON_WEEKLY_DIGEST: env
+    .get("HEARTBEAT_CRON_WEEKLY_DIGEST")
+    .required(false)
+    .asString(),
 };
 
 export default envVars;

@@ -254,6 +254,7 @@ model User {
   siteUsers               SiteUser[]
   sentInvitations         SiteInvitation[]         @relation("SentInvitations")
   updatedAt               DateTime                 @map("updated_at")        @updatedAt
+  weeklyDigestEnabled     Boolean                  @map("weekly_digest_enabled") @default(true)
 
   @@map("users")
 }
