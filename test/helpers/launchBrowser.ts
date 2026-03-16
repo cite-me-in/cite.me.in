@@ -33,10 +33,10 @@ export async function goto(path: string, headers?: HeadersInit): Promise<Page> {
   // NOTE: We need to reload the page otherwise React doesn't handle the form
   // submission correctly on Playwright.
   await page.reload({ waitUntil: "load" });
-  await page.waitForFunction(() => "__reactRouterContext" in window, {
-    timeout: ms("15s"),
-  });
-  await page.waitForTimeout(ms("1s"));
+  await page.waitForFunction(
+    () => document.body.getAttribute("data-hydrated") === "true",
+    { timeout: ms("15s") },
+  );
 
   return page;
 }

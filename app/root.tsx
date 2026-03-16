@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   type HeadersFunction,
   Outlet,
@@ -94,6 +95,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  useEffect(() => {
+    document.body.setAttribute("data-hydrated", "true");
+  }, []);
   return <Outlet />;
 }
 

@@ -5,7 +5,6 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Links, Meta, Scripts, ScrollRestoration } from "react-router";
 import PageLoadingBouncer from "~/components/ui/PageLoadingBouncer";
 import "~/global.css";
-import envVars from "~/lib/envVars";
 import PageFooter from "./PageFooter";
 import PageHeader from "./PageHeader";
 
@@ -45,7 +44,7 @@ export default function PageLayout({
           itemProp="image"
           content={new URL(
             "/images/og-image.png",
-            envVars.VITE_APP_URL,
+            import.meta.env.VITE_APP_URL,
           ).toString()}
         />
         <meta itemProp="name" content={title} />

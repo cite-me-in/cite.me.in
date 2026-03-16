@@ -28,6 +28,12 @@ export default async function setup() {
   // Launch server and start test env MSW handlers
   await launchServer(port);
 
+  // Pre-warm Vite dep optimization: the first browser request is held until
+  // Vite finishes crawling and bundling deps. By making an HTTP request here
+  // (in global setup, outside the 30s test timeout), we ensure Vite completes
+  // that work before any browser test calls goto().
+  await fetch(`http://localhost:${port}/`).catch(() => {});
+
   // Cleanup database: we do this here for Playwright tests, and we do it in the
   // suite.setup.ts for the unit tests
   await prisma.user.deleteMany();
