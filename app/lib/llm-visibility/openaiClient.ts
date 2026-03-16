@@ -4,7 +4,8 @@ import { invariant } from "es-toolkit";
 import envVars from "~/lib/envVars";
 import type { QueryFn } from "./queryFn";
 
-const MODEL_ID = "gpt-5-chat-latest";
+export const MODEL_ID = "gpt-5-chat-latest";
+export const MODEL_PRICING = { costPerInputM: 1.25, costPerOutputM: 10.0 };
 
 export default async function openaiClient({
   maxRetries,

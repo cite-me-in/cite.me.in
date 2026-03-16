@@ -4,7 +4,8 @@ import { invariant } from "es-toolkit";
 import envVars from "~/lib/envVars";
 import type { QueryFn } from "./queryFn";
 
-const MODEL_ID = "sonar";
+export const MODEL_ID = "sonar";
+export const MODEL_PRICING = { costPerInputM: 1.0, costPerOutputM: 1.0 };
 
 export default async function queryPerplexity({
   maxRetries,

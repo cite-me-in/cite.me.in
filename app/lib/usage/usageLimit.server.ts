@@ -1,30 +1,24 @@
 import { invariant } from "es-toolkit";
+import envVars from "~/lib/envVars";
+import {
+  MODEL_ID as CLAUDE_MODEL_ID,
+  MODEL_PRICING as CLAUDE_PRICING,
+} from "~/lib/llm-visibility/claudeClient";
+import {
+  MODEL_ID as GEMINI_MODEL_ID,
+  MODEL_PRICING as GEMINI_PRICING,
+} from "~/lib/llm-visibility/geminiClient";
+import {
+  MODEL_ID as OPENAI_MODEL_ID,
+  MODEL_PRICING as OPENAI_PRICING,
+} from "~/lib/llm-visibility/openaiClient";
+import {
+  MODEL_ID as PERPLEXITY_MODEL_ID,
+  MODEL_PRICING as PERPLEXITY_PRICING,
+} from "~/lib/llm-visibility/perplexityClient";
 import prisma from "~/lib/prisma.server";
 import { Prisma } from "~/prisma";
 import { UsageLimitExceededError } from "./UsageLimitExceededError";
-
-// Aggregate limits per account across all models.
-const accountLimits = {
-  hourly: { costUSD: 2.0, requests: 500 },
-  daily: { costUSD: 5.0, requests: 1000 },
-  monthly: { costUSD: 20.0, requests: 5000 },
-} as const;
-
-// Keyed by exact model ID string used in generateText calls.
-// Add new models here when model pricing is updated.
-const modelPricing: Record<
-  string,
-  {
-    costPerInputM: number;
-    costPerOutputM: number;
-    perRequest?: number;
-  }
-> = {
-  "claude-haiku-4-5-20251001": { costPerInputM: 1.0, costPerOutputM: 5.0 },
-  "gpt-5-chat-latest": { costPerInputM: 1.25, costPerOutputM: 10.0 },
-  "gemini-2.5-flash": { costPerInputM: 0.3, costPerOutputM: 2.5 },
-  sonar: { costPerInputM: 1.0, costPerOutputM: 1.0 },
-};
 
 export async function recordUsageEvent({
   siteId,
@@ -46,35 +40,69 @@ export async function recordUsageEvent({
 }
 
 export async function checkUsageLimits(siteId: string): Promise<void> {
+  const baseRequests = envVars.USAGE_LIMIT_REQUESTS;
+  const requestLimits = baseRequests
+    ? {
+        hourly: baseRequests,
+        daily: baseRequests * 2,
+        monthly: baseRequests * 5,
+      }
+    : null;
+
+  const costLimits = {
+    hourly: envVars.USAGE_LIMIT_COST_USD_HOURLY,
+    daily: envVars.USAGE_LIMIT_COST_USD_DAILY,
+    monthly: envVars.USAGE_LIMIT_COST_USD_MONTHLY,
+  };
+
+  const hasAnyCostLimit = Object.values(costLimits).some((v) => v != null);
+  if (!requestLimits && !hasAnyCostLimit) return;
+
   const now = new Date();
   const timeWindows = [
-    { timeWindow: "hourly", since: new Date(now.getTime() - 60 * 60 * 1000) },
     {
-      timeWindow: "daily",
+      key: "hourly" as const,
+      since: new Date(now.getTime() - 60 * 60 * 1000),
+    },
+    {
+      key: "daily" as const,
       since: new Date(now.getTime() - 24 * 60 * 60 * 1000),
     },
     {
-      timeWindow: "monthly",
+      key: "monthly" as const,
       since: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000),
     },
-  ] as { timeWindow: keyof typeof accountLimits; since: Date }[];
+  ];
 
   await Promise.all(
-    timeWindows.map(async ({ timeWindow, since }) => {
-      const { _sum } = await prisma.usageEvent.aggregate({
+    timeWindows.map(async ({ key, since }) => {
+      const { _sum, _count } = await prisma.usageEvent.aggregate({
         where: { siteId, createdAt: { gte: since } },
         _sum: { cost: true },
+        _count: { id: true },
       });
 
-      const totalCost = Number(_sum.cost ?? 0);
-      const limits = accountLimits[timeWindow];
+      const costLimit = costLimits[key];
+      if (costLimit != null) {
+        const totalCost = Number(_sum.cost ?? 0);
+        if (totalCost > costLimit)
+          throw new UsageLimitExceededError({
+            current: totalCost,
+            limit: costLimit,
+            timeWindow: key,
+          });
+      }
 
-      if (totalCost > limits.costUSD)
-        throw new UsageLimitExceededError({
-          current: totalCost,
-          limit: limits.costUSD,
-          timeWindow: timeWindow,
-        });
+      if (requestLimits) {
+        const totalRequests = _count.id;
+        const reqLimit = requestLimits[key];
+        if (totalRequests > reqLimit)
+          throw new UsageLimitExceededError({
+            current: totalRequests,
+            limit: reqLimit,
+            timeWindow: `${key} requests`,
+          });
+      }
     }),
   );
 }
@@ -84,7 +112,12 @@ function calculateCostUSD(
   inputTokens: number,
   outputTokens: number,
 ): number {
-  const cost = modelPricing[model];
+  const cost = {
+    [CLAUDE_MODEL_ID]: CLAUDE_PRICING,
+    [OPENAI_MODEL_ID]: OPENAI_PRICING,
+    [GEMINI_MODEL_ID]: GEMINI_PRICING,
+    [PERPLEXITY_MODEL_ID]: PERPLEXITY_PRICING,
+  }[model];
   invariant(cost, `Unknown model: ${model}`);
   return "perRequest" in cost
     ? Number(cost.perRequest)

@@ -4,7 +4,8 @@ import { invariant, mapAsync } from "es-toolkit";
 import envVars from "~/lib/envVars";
 import type { QueryFn } from "./queryFn";
 
-const MODEL_ID = "gemini-2.5-flash";
+export const MODEL_ID = "gemini-2.5-flash";
+export const MODEL_PRICING = { costPerInputM: 0.3, costPerOutputM: 2.5 };
 
 export default async function queryGemini({
   maxRetries,

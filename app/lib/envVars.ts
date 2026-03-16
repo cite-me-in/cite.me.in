@@ -28,6 +28,23 @@ const envVars = {
   VITE_APP_URL: env.get("VITE_APP_URL").required().asUrlString(),
   VITE_EMAIL_FROM: env.get("VITE_EMAIL_FROM").required().asString(),
 
+  USAGE_LIMIT_COST_USD_HOURLY: env
+    .get("USAGE_LIMIT_COST_USD_HOURLY")
+    .required(false)
+    .asFloat(),
+  USAGE_LIMIT_COST_USD_DAILY: env
+    .get("USAGE_LIMIT_COST_USD_DAILY")
+    .required(false)
+    .asFloat(),
+  USAGE_LIMIT_COST_USD_MONTHLY: env
+    .get("USAGE_LIMIT_COST_USD_MONTHLY")
+    .required(false)
+    .asFloat(),
+  USAGE_LIMIT_REQUESTS: env
+    .get("USAGE_LIMIT_REQUESTS")
+    .required(false)
+    .asInt(),
+
   HEARTBEAT_CRON_CITATIONS: env
     .get("HEARTBEAT_CRON_CITATIONS")
     .required(false)

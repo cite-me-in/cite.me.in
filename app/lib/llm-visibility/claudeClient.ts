@@ -3,6 +3,9 @@ import { generateText } from "ai";
 import { haiku } from "./anthropic";
 import type { QueryFn } from "./queryFn";
 
+export const MODEL_ID = "claude-haiku-4-5-20251001";
+export const MODEL_PRICING = { costPerInputM: 1.0, costPerOutputM: 5.0 };
+
 export default async function queryClaude({
   maxRetries,
   timeout,
