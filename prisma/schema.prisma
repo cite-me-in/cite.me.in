@@ -35,6 +35,26 @@ model BotVisit {
   @@map("bot_visits")
 }
 
+model HumanVisit {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @map("created_at") @default(now())
+  updatedAt  DateTime @map("updated_at") @updatedAt
+  date       DateTime @map("date")
+  siteId     String   @map("site_id")
+  site       Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  visitorId  String   @map("visitor_id")
+  browser    String   @map("browser")
+  deviceType String   @map("device_type")
+  aiReferral String?  @map("ai_referral")
+  count      Int      @map("count")      @default(1)
+  firstSeen  DateTime @map("first_seen") @default(now())
+  lastSeen   DateTime @map("last_seen")  @default(now())
+
+  @@unique([date, siteId, visitorId])
+  @@index([siteId])
+  @@map("human_visits")
+}
+
 model BotInsight {
   id          String                        @id @default(cuid())
   createdAt   DateTime @map("created_at")   @default(now())
@@ -126,6 +146,7 @@ model Site {
   apiKey               String                @map("api_key") @unique @default("")
   botInsight           BotInsight?
   botVisits            BotVisit[]
+  humanVisits          HumanVisit[]
   citationRuns         CitationQueryRun[]
   content              String?               @map("content")
   createdAt            DateTime              @map("created_at") @default(now())
