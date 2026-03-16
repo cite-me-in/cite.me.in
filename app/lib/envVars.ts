@@ -45,16 +45,8 @@ const envVars = {
     .asFloat(),
   USAGE_LIMIT_REQUESTS: env.get("USAGE_LIMIT_REQUESTS").required(false).asInt(),
 
-  HEARTBEAT_CRON_CITATIONS: env
-    .get("HEARTBEAT_CRON_CITATIONS")
-    .required(false)
-    .asString(),
-  HEARTBEAT_CRON_BOT_INSIGHTS: env
-    .get("HEARTBEAT_CRON_BOT_INSIGHTS")
-    .required(false)
-    .asString(),
-  HEARTBEAT_CRON_WEEKLY_DIGEST: env
-    .get("HEARTBEAT_CRON_WEEKLY_DIGEST")
+  HEARTBEAT_CRON_PROCESS_SITES: env
+    .get("HEARTBEAT_CRON_PROCESS_SITES")
     .required(false)
     .asString(),
 };
