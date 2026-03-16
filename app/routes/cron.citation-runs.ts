@@ -11,10 +11,7 @@ const logger = debug("server");
 
 // Vercel Cron fires a GET with Authorization: Bearer <CRON_SECRET>.
 export async function loader({ request }: Route.LoaderArgs) {
-  if (
-    envVars.CRON_SECRET &&
-    request.headers.get("authorization") !== `Bearer ${envVars.CRON_SECRET}`
-  )
+  if (request.headers.get("authorization") !== `Bearer ${envVars.CRON_SECRET}`)
     throw new Response("Unauthorized", { status: 401 });
 
   const sites = await prisma.site.findMany();

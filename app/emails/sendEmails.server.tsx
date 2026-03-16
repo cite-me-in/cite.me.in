@@ -30,10 +30,12 @@ export async function sendEmail({
   render: renderFn,
   subject,
   to,
+  headers,
 }: {
   render: ({ subject }: { subject: string }) => React.ReactNode;
   subject: string;
   to: string;
+  headers?: Record<string, string>;
 }): Promise<string> {
   lastEmailSent = undefined;
   const html = await pretty(await render(await renderFn({ subject })));
@@ -45,6 +47,7 @@ export async function sendEmail({
   } else {
     const { error, data } = await resend.emails.send({
       from: `cite.me.in <${import.meta.env.VITE_EMAIL_FROM}>`,
+      headers,
       html,
       subject,
       to: [to],

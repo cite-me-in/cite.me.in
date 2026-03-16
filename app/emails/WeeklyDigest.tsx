@@ -20,6 +20,10 @@ export default async function sendWeeklyDigestEmail({
   await sendEmail({
     to,
     subject: `Weekly Digest for ${domain} · ${weekLabel}`,
+    headers: {
+      "List-Unsubscribe": `<${unsubscribeUrl}>`,
+      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+    },
     render: ({ subject }) => (
       <WeeklyDigestEmail
         subject={subject}
