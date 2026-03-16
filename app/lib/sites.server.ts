@@ -12,6 +12,8 @@ import type { Site } from "~/prisma";
 import calculateVisibilityScore from "./llm-visibility/calculateVisibilityScore";
 import prisma from "./prisma.server";
 
+const MEDIA_EXTENSIONS = /\.(pdf|jpg|jpeg|png|gif|svg|webp|mp4|mp3|zip|exe)$/i;
+const CRAWL_BUDGET_MS = ms("15s");
 const logger = debug("fetch");
 
 export async function addSiteToUser(
@@ -86,8 +88,6 @@ export async function fetchSiteContent({
   }
 }
 
-const MEDIA_EXTENSIONS = /\.(pdf|jpg|jpeg|png|gif|svg|webp|mp4|mp3|zip|exe)$/i;
-
 async function crawlSiteCustom({
   domain,
   maxPages,
@@ -98,10 +98,11 @@ async function crawlSiteCustom({
   maxWords: number;
 }): Promise<string> {
   logger("Crawling %s", domain);
+  const budget = AbortSignal.timeout(CRAWL_BUDGET_MS);
 
   // Step 1: fetch homepage
   const homepageRes = await fetch(`https://${domain}/`, {
-    signal: AbortSignal.timeout(ms("5s")),
+    signal: AbortSignal.any([budget, AbortSignal.timeout(ms("5s"))]),
     redirect: "follow",
   });
   if (!homepageRes.ok)
@@ -111,19 +112,20 @@ async function crawlSiteCustom({
   const homepageHtml = await homepageRes.text();
   const homepageTree = parseHTMLTree(homepageHtml);
 
-  // Step 2: discover additional URLs (up to 10)
+  // Step 2: discover additional URLs
   const additionalUrls = await discoverUrls({
+    budget,
     domain,
     maxPages: maxPages - 1,
     tree: homepageTree,
   });
 
-  // Step 3: fetch additional pages concurrently
+  // Step 3: fetch additional pages concurrently; budget abort cancels remaining fetches
   const additionalHtmls = await Promise.all(
     additionalUrls.map(async (url) => {
       try {
         const res = await fetch(url, {
-          signal: AbortSignal.timeout(ms("5s")),
+          signal: AbortSignal.any([budget, AbortSignal.timeout(ms("5s"))]),
           redirect: "follow",
         });
         if (!res.ok) return null;
@@ -164,15 +166,17 @@ async function crawlSiteCustom({
 }
 
 async function discoverUrls({
+  budget,
   domain,
   maxPages,
   tree,
 }: {
+  budget: AbortSignal;
   domain: string;
   maxPages: number;
   tree: ReturnType<typeof parseHTMLTree>;
 }): Promise<string[]> {
-  const sitemapUrls = await fetchSitemapUrls(domain);
+  const sitemapUrls = await fetchSitemapUrls(domain, budget);
   if (sitemapUrls.length >= maxPages) return sitemapUrls.slice(0, maxPages);
 
   const navUrls = extractNavUrls({ domain, tree });
@@ -183,10 +187,13 @@ async function discoverUrls({
   return combined.slice(0, maxPages);
 }
 
-async function fetchSitemapUrls(domain: string): Promise<string[]> {
+async function fetchSitemapUrls(
+  domain: string,
+  budget: AbortSignal,
+): Promise<string[]> {
   try {
     const res = await fetch(`https://${domain}/sitemap.xml`, {
-      signal: AbortSignal.timeout(ms("3s")),
+      signal: AbortSignal.any([budget, AbortSignal.timeout(ms("3s"))]),
     });
     if (!res.ok) return [];
     const xml = await res.text();
@@ -377,13 +384,4 @@ export async function deleteSite({
     where: { id: siteId, ownerId: userId },
   });
   if (site) await prisma.site.delete({ where: { id: siteId } });
-}
-
-if (import.meta.main) {
-  const content = await fetchSiteContent({
-    domain: "cite.me.in",
-    maxPages: 10,
-    maxWords: 5_000,
-  });
-  console.log(content);
 }

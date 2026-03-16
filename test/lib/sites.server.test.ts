@@ -42,6 +42,7 @@ describe("fetchPageContent", () => {
     );
     const content = await fetchSiteContent({
       domain: "example.com",
+      maxPages: 5,
       maxWords: 1000,
     });
     expect(content).toContain("Hello world");
@@ -53,14 +54,14 @@ describe("fetchPageContent", () => {
       vi.fn().mockResolvedValue({ ok: false, text: async () => "" }),
     );
     expect(
-      fetchSiteContent({ domain: "example.com", maxWords: 1000 }),
+      fetchSiteContent({ domain: "example.com", maxPages: 5, maxWords: 1000 }),
     ).rejects.toThrow("I couldn't fetch the main page of example.com");
   });
 
   it("should return null on network error", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network")));
     expect(
-      fetchSiteContent({ domain: "example.com", maxWords: 1000 }),
+      fetchSiteContent({ domain: "example.com", maxPages: 5, maxWords: 1000 }),
     ).rejects.toThrow("I couldn't fetch the main page of example.com");
   });
 });
