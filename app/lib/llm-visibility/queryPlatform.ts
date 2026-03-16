@@ -63,19 +63,21 @@ export default async function queryPlatform({
     });
     logger("[%s:%s] Created citation query run %s", site.id, platform, run.id);
 
-    for (let qi = 0; qi < queries.length; qi++) {
-      const query = queries[qi];
-      await singleQueryRepetition({
-        siteId,
-        group: query.group,
-        modelId,
-        platform,
-        query: query.query,
-        queryFn,
-        runId: run.id,
-        site,
-      });
-    }
+    await Promise.all(
+      queries.map(async (query, index) => {
+        await new Promise((resolve) => setTimeout(resolve, index * 1000));
+        return singleQueryRepetition({
+          siteId,
+          group: query.group,
+          modelId,
+          platform,
+          query: query.query,
+          queryFn,
+          runId: run.id,
+          site,
+        });
+      }),
+    );
   } catch (error) {
     logError(error, {
       extra: { siteId: site.id, platform },
@@ -119,8 +121,8 @@ async function singleQueryRepetition({
   try {
     await checkUsageLimits(siteId);
     const { citations, extraQueries, text, usage } = await queryFn({
-      maxRetries: 0,
-      timeout: ms("10s"),
+      maxRetries: 3,
+      timeout: ms("60s"),
       query,
     });
     await recordUsageEvent({
