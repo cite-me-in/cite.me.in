@@ -1,4 +1,3 @@
-import { invariant } from "es-toolkit";
 import envVars from "~/lib/envVars";
 import {
   MODEL_ID as CLAUDE_MODEL_ID,
@@ -18,6 +17,7 @@ import {
 } from "~/lib/llm-visibility/perplexityClient";
 import prisma from "~/lib/prisma.server";
 import { Prisma } from "~/prisma";
+import logError from "../logError.server";
 import { UsageLimitExceededError } from "./UsageLimitExceededError";
 
 export async function recordUsageEvent({
@@ -40,19 +40,17 @@ export async function recordUsageEvent({
 }
 
 export async function checkUsageLimits(siteId: string): Promise<void> {
-  const baseRequests = envVars.USAGE_LIMIT_REQUESTS;
-  const requestLimits = baseRequests
-    ? {
-        hourly: baseRequests,
-        daily: baseRequests * 2,
-        monthly: baseRequests * 5,
-      }
-    : null;
+  const baseRequests = envVars.USAGE_LIMIT_REQUESTS ?? 0;
+  const requestLimits = {
+    hourly: baseRequests,
+    daily: baseRequests * 2,
+    monthly: baseRequests * 5,
+  };
 
   const costLimits = {
-    hourly: envVars.USAGE_LIMIT_COST_USD_HOURLY,
-    daily: envVars.USAGE_LIMIT_COST_USD_DAILY,
-    monthly: envVars.USAGE_LIMIT_COST_USD_MONTHLY,
+    hourly: envVars.USAGE_LIMIT_COST_USD_HOURLY ?? 0,
+    daily: envVars.USAGE_LIMIT_COST_USD_DAILY ?? 0,
+    monthly: envVars.USAGE_LIMIT_COST_USD_MONTHLY ?? 0,
   };
 
   const hasAnyCostLimit = Object.values(costLimits).some((v) => v != null);
@@ -83,26 +81,22 @@ export async function checkUsageLimits(siteId: string): Promise<void> {
       });
 
       const costLimit = costLimits[key];
-      if (costLimit != null) {
-        const totalCost = Number(_sum.cost ?? 0);
-        if (totalCost > costLimit)
-          throw new UsageLimitExceededError({
-            current: totalCost,
-            limit: costLimit,
-            timeWindow: key,
-          });
-      }
+      const totalCost = Number(_sum.cost ?? 0);
+      if (costLimit && totalCost > costLimit)
+        throw new UsageLimitExceededError({
+          current: totalCost,
+          limit: costLimit,
+          timeWindow: key,
+        });
 
-      if (requestLimits) {
-        const totalRequests = _count.id;
-        const reqLimit = requestLimits[key];
-        if (totalRequests > reqLimit)
-          throw new UsageLimitExceededError({
-            current: totalRequests,
-            limit: reqLimit,
-            timeWindow: `${key} requests`,
-          });
-      }
+      const totalRequests = _count.id;
+      const reqLimit = requestLimits[key];
+      if (reqLimit && totalRequests > reqLimit)
+        throw new UsageLimitExceededError({
+          current: totalRequests,
+          limit: reqLimit,
+          timeWindow: `${key} requests`,
+        });
     }),
   );
 }
@@ -118,7 +112,10 @@ function calculateCostUSD(
     [GEMINI_MODEL_ID]: GEMINI_PRICING,
     [PERPLEXITY_MODEL_ID]: PERPLEXITY_PRICING,
   }[model];
-  invariant(cost, `Unknown model: ${model}`);
+  if (!cost) {
+    logError(`Unknown usage cost for ${model}`);
+    return 0;
+  }
   return "perRequest" in cost
     ? Number(cost.perRequest)
     : (inputTokens / 1_000_000) * cost.costPerInputM +
