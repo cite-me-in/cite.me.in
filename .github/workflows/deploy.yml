@@ -5,29 +5,11 @@ on:
   - workflow_dispatch
 
 env:
-  ADMIN_API_SECRET: "admin-api-secret"
-  ANTHROPIC_API_KEY: "sk-ant-"
-  BOT_TRACKER_API_KEY: "bot-tracker-api-key"
-  CRON_SECRET: "test-cron-secret"
-  BOT_TRACKER_URL: "http://localhost:9222/api/track"
-  DEBUG: ""
-  GOOGLE_GENERATIVE_AI_API_KEY: "AIza"
   NODE_OPTIONS: "--max-old-space-size=3096"
-  OPENAI_API_KEY: "sk-proj-"
-  PERPLEXITY_API_KEY: "pk-prod-"
   POSTGRES_URL_NON_POOLING: "postgresql://postgres:postgres@localhost:5432/citeup"
   POSTGRES_URL: "postgresql://postgres:postgres@localhost:5432/citeup"
-  REDIS_URL: "redis://localhost:6379"
-  RESEND_API_KEY: "preq_test_..."
-  SESSION_SECRET: "secret"
-  USAGE_LIMIT_COST_USD_HOURLY: 2.00
-  USAGE_LIMIT_COST_USD_DAILY: 5.00
-  USAGE_LIMIT_COST_USD_MONTHLY: 20.00
-  USAGE_LIMIT_REQUESTS: 500
   VERCEL_PROJECT: "prj_Ipf1EVCJ9lIgoCIIbiizNp5W5O66"
   VERCEL_TEAM: "team_bjyg9pgn8TQQVP2NLMPnSYSN"
-  VITE_APP_URL: "http://localhost:9222"
-  VITE_EMAIL_FROM: "hello@cite.me.in"
 
 jobs:
   deploy:
