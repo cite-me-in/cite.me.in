@@ -6,8 +6,8 @@ on:
 
 env:
   NODE_OPTIONS: "--max-old-space-size=3096"
-  POSTGRES_URL_NON_POOLING: "postgresql://postgres:postgres@localhost:5432/citeup"
-  POSTGRES_URL: "postgresql://postgres:postgres@localhost:5432/citeup"
+  POSTGRES_URL_NON_POOLING: "postgresql://postgres:postgres@localhost:5432/citeup_test"
+  POSTGRES_URL: "postgresql://postgres:postgres@localhost:5432/citeup_test?pgbouncer=true"
   VERCEL_PROJECT: "prj_Ipf1EVCJ9lIgoCIIbiizNp5W5O66"
   VERCEL_TEAM: "team_bjyg9pgn8TQQVP2NLMPnSYSN"
 
@@ -23,7 +23,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: citeup
+          POSTGRES_DB: citeup_test
         ports:
           - 5432:5432
         # needed because the postgres container does not provide a healthcheck

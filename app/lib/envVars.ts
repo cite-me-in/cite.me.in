@@ -1,7 +1,10 @@
 import dotenv from "dotenv";
 import env from "env-var";
 
-dotenv.config({ quiet: true });
+dotenv.config({
+  path: process.env.NODE_ENV === "test" ? ".env.test" : ".env",
+  quiet: true,
+});
 
 const envVars = {
   ADMIN_API_SECRET: env.get("ADMIN_API_SECRET").required(false).asString(),
