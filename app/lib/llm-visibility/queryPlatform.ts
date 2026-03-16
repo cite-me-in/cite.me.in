@@ -1,6 +1,7 @@
 import type { Temporal } from "@js-temporal/polyfill";
 import { ms } from "convert";
 import debug from "debug";
+import { delay } from "es-toolkit";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import {
@@ -65,7 +66,7 @@ export default async function queryPlatform({
 
     await Promise.all(
       queries.map(async (query, index) => {
-        await new Promise((resolve) => setTimeout(resolve, index * 1000));
+        if (process.env.NODE_ENV !== "test") await delay(ms("1s") * index);
         return singleQueryRepetition({
           siteId,
           group: query.group,
