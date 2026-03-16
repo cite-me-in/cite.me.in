@@ -40,10 +40,7 @@ const envVars = {
     .get("USAGE_LIMIT_COST_USD_MONTHLY")
     .required(false)
     .asFloat(),
-  USAGE_LIMIT_REQUESTS: env
-    .get("USAGE_LIMIT_REQUESTS")
-    .required(false)
-    .asInt(),
+  USAGE_LIMIT_REQUESTS: env.get("USAGE_LIMIT_REQUESTS").required(false).asInt(),
 
   HEARTBEAT_CRON_CITATIONS: env
     .get("HEARTBEAT_CRON_CITATIONS")
