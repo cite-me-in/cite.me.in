@@ -1,22 +1,31 @@
 import { describe, expect, it } from "vitest";
-import parseHTMLTree, { getMainContent, htmlToMarkdown } from "~/lib/html/parseHTML";
+import parseHTMLTree, {
+  getMainContent,
+  htmlToMarkdown,
+} from "~/lib/html/parseHTML";
 
 describe("getMainContent", () => {
   it("should prefer <main> over <body>", () => {
-    const tree = parseHTMLTree("<body><nav>nav</nav><main><p>content</p></main></body>");
+    const tree = parseHTMLTree(
+      "<body><nav>nav</nav><main><p>content</p></main></body>",
+    );
     const content = getMainContent(tree);
     expect(htmlToMarkdown(content)).toContain("content");
     expect(htmlToMarkdown(content)).not.toContain("nav");
   });
 
   it("should fall back to <article> when no <main>", () => {
-    const tree = parseHTMLTree("<body><article><p>article content</p></article></body>");
+    const tree = parseHTMLTree(
+      "<body><article><p>article content</p></article></body>",
+    );
     const content = getMainContent(tree);
     expect(htmlToMarkdown(content)).toContain("article content");
   });
 
   it("should fall back to [role=main]", () => {
-    const tree = parseHTMLTree('<body><div role="main"><p>role content</p></div></body>');
+    const tree = parseHTMLTree(
+      '<body><div role="main"><p>role content</p></div></body>',
+    );
     const content = getMainContent(tree);
     expect(htmlToMarkdown(content)).toContain("role content");
   });
@@ -51,8 +60,15 @@ describe("htmlToMarkdown", () => {
     expect(htmlToMarkdown(tree)).toBe("First\n\nSecond\n\n");
   });
 
+  it("should render block elements with newlines", () => {
+    const tree = parseHTMLTree("<div>First</div><div>Second</div>");
+    expect(htmlToMarkdown(tree)).toBe("First\nSecond\n");
+  });
+
   it("should render bold and italic inline", () => {
-    const tree = parseHTMLTree("<p><strong>bold</strong> and <em>italic</em></p>");
+    const tree = parseHTMLTree(
+      "<p><strong>bold</strong> and <em>italic</em></p>",
+    );
     expect(htmlToMarkdown(tree)).toContain("**bold**");
     expect(htmlToMarkdown(tree)).toContain("*italic*");
   });

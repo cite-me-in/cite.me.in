@@ -34,6 +34,29 @@ const emptyAttributes = [
   "itemscope",
 ];
 
+const blockElements = [
+  "p",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "blockquote",
+  "div",
+  "pre",
+  "ol",
+  "ul",
+  "li",
+  "dl",
+  "dt",
+  "dd",
+  "table",
+  "tr",
+  "td",
+  "th",
+];
+
 /**
  * Parses an HTML string into a tree of elements and text nodes.  The HTML is
  * assumed to be valid, well-formed HTML (i.e., as returned by innerHTML).
@@ -282,28 +305,6 @@ export function modifyElements(
       modifyElements(node.children, match, modify);
   }
 }
-
-const blockElements = [
-  "p",
-  "h1",
-  "h2",
-  "h3",
-  "h4",
-  "h5",
-  "h6",
-  "blockquote",
-  "pre",
-  "ol",
-  "ul",
-  "li",
-  "dl",
-  "dt",
-  "dd",
-  "table",
-  "tr",
-  "td",
-  "th",
-];
 
 /**
  * Gets the text content of the HTML tree. The text content is the text of the
