@@ -29,7 +29,11 @@ export async function addSiteToUser(
   });
   if (existing) return { site: existing, existing: true };
 
-  const content = await fetchSiteContent({ domain, maxWords: 5_000 });
+  const content = await fetchSiteContent({
+    domain,
+    maxPages: 10,
+    maxWords: 5_000,
+  });
   const site = await prisma.site.create({
     data: {
       owner: { connect: { id: user.id } },
@@ -60,19 +64,22 @@ export function extractDomain(url: string): string | null {
 }
 
 /**
- * Fetch the page content for a given domain. Crawls up to 5 pages (homepage +
- * up to 4 additional pages discovered via sitemap.xml or nav links), converts
- * HTML to Markdown, and returns the combined text up to maxWords words.
+ * Fetch the page content for a given domain. Crawls up to maxPages pages
+ * (homepage + additional pages discovered via sitemap.xml or nav links),
+ * converts HTML to Markdown, and returns the combined text up to maxWords
+ * words.
  */
 export async function fetchSiteContent({
   domain,
+  maxPages,
   maxWords,
 }: {
   domain: string;
+  maxPages: number;
   maxWords: number;
 }): Promise<string> {
   try {
-    return await crawlSiteCustom({ domain, maxWords });
+    return await crawlSiteCustom({ domain, maxPages, maxWords });
   } catch (error) {
     if (error instanceof Response) throw error;
     throw new Error(`I couldn't fetch the main page of ${domain}`);
@@ -83,9 +90,11 @@ const MEDIA_EXTENSIONS = /\.(pdf|jpg|jpeg|png|gif|svg|webp|mp4|mp3|zip|exe)$/i;
 
 async function crawlSiteCustom({
   domain,
+  maxPages,
   maxWords,
 }: {
   domain: string;
+  maxPages: number;
   maxWords: number;
 }): Promise<string> {
   logger("Crawling %s", domain);
@@ -102,8 +111,12 @@ async function crawlSiteCustom({
   const homepageHtml = await homepageRes.text();
   const homepageTree = parseHTMLTree(homepageHtml);
 
-  // Step 2: discover additional URLs (up to 4)
-  const additionalUrls = await discoverUrls({ domain, tree: homepageTree });
+  // Step 2: discover additional URLs (up to 10)
+  const additionalUrls = await discoverUrls({
+    domain,
+    maxPages: maxPages - 1,
+    tree: homepageTree,
+  });
 
   // Step 3: fetch additional pages concurrently
   const additionalHtmls = await Promise.all(
@@ -152,20 +165,22 @@ async function crawlSiteCustom({
 
 async function discoverUrls({
   domain,
+  maxPages,
   tree,
 }: {
   domain: string;
+  maxPages: number;
   tree: ReturnType<typeof parseHTMLTree>;
 }): Promise<string[]> {
   const sitemapUrls = await fetchSitemapUrls(domain);
-  if (sitemapUrls.length >= 4) return sitemapUrls.slice(0, 4);
+  if (sitemapUrls.length >= maxPages) return sitemapUrls.slice(0, maxPages);
 
   const navUrls = extractNavUrls({ domain, tree });
   const combined = [
     ...sitemapUrls,
     ...navUrls.filter((u) => !sitemapUrls.includes(u)),
   ];
-  return combined.slice(0, 4);
+  return combined.slice(0, maxPages);
 }
 
 async function fetchSitemapUrls(domain: string): Promise<string[]> {
@@ -367,6 +382,7 @@ export async function deleteSite({
 if (import.meta.main) {
   const content = await fetchSiteContent({
     domain: "cite.me.in",
+    maxPages: 10,
     maxWords: 5_000,
   });
   console.log(content);
