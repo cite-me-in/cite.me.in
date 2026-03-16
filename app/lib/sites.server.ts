@@ -1,13 +1,15 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { ms } from "convert";
 import debug from "debug";
-import { delay, groupBy, sortBy, sumBy, uniqBy } from "es-toolkit";
+import { groupBy, sortBy, sumBy, uniqBy } from "es-toolkit";
 import { generateApiKey } from "random-password-toolkit";
-import parseHTMLTree, { getBodyContent } from "~/lib/html/parseHTML";
+import parseHTMLTree, {
+  getElementsByTagName,
+  getMainContent,
+  htmlToMarkdown,
+} from "~/lib/html/parseHTML";
 import type { Site } from "~/prisma";
-import envVars from "./envVars";
 import calculateVisibilityScore from "./llm-visibility/calculateVisibilityScore";
-import logError from "./logError.server";
 import prisma from "./prisma.server";
 
 const logger = debug("fetch");
@@ -58,16 +60,9 @@ export function extractDomain(url: string): string | null {
 }
 
 /**
- * Fetch the page content for a given domain. If the page is not found or the
- * request times out, throws an error. Starts using Cloudflare's API to crawl 5
- * pages and return the markdown content, up to maxWords words. If that fails,
- * falls back to fetching one page content directly.
- *
- * @param domain - The domain to fetch the page content for.
- * @param maxWords - The maximum number of words to return from the page content.
- * @returns The page content, up to maxWords words.
- * @throws {Error} If the page is not found or the request times out, or if the
- * page content cannot be fetched using Cloudflare's API or directly.
+ * Fetch the page content for a given domain. Crawls up to 5 pages (homepage +
+ * up to 4 additional pages discovered via sitemap.xml or nav links), converts
+ * HTML to Markdown, and returns the combined text up to maxWords words.
  */
 export async function fetchSiteContent({
   domain,
@@ -77,177 +72,170 @@ export async function fetchSiteContent({
   maxWords: number;
 }): Promise<string> {
   try {
-    const content = await crawlSite({ domain, maxWords });
-    if (content) return content;
+    return await crawlSiteCustom({ domain, maxWords });
   } catch (error) {
-    logError(error, { extra: { domain } });
-    logger("Failed to crawl %s: %s", domain, error);
-  }
-
-  try {
-    const content = await fetchPage({ domain, maxWords });
-    if (content) return content;
-  } catch (error) {
-    logError(error, { extra: { domain } });
+    if (error instanceof Response) throw error;
     throw new Error(`I couldn't fetch the main page of ${domain}`);
   }
-
-  throw new Error(
-    `I couldn't fetch ${domain} — is the site live and accessible?`,
-  );
 }
 
-/**
- * Fetch the page content for a given domain directly. If the page is not found
- * or the request times out, throws an error.
- */
-async function fetchPage({
+const MEDIA_EXTENSIONS = /\.(pdf|jpg|jpeg|png|gif|svg|webp|mp4|mp3|zip|exe)$/i;
+
+async function crawlSiteCustom({
   domain,
   maxWords,
 }: {
   domain: string;
   maxWords: number;
-}): Promise<string | null> {
-  const response = await fetch(`https://${domain}/`, {
+}): Promise<string> {
+  logger("Crawling %s", domain);
+
+  // Step 1: fetch homepage
+  const homepageRes = await fetch(`https://${domain}/`, {
     signal: AbortSignal.timeout(ms("5s")),
     redirect: "follow",
   });
-  if (!response.ok)
+  if (!homepageRes.ok)
     throw new Error(
-      `HTTP error! status: ${response.status} ${await response.text()}`,
+      `HTTP ${homepageRes.status} fetching ${domain}: ${await homepageRes.text()}`,
     );
-  const html = await response.text();
-  const tree = parseHTMLTree(html);
-  const content = getBodyContent(tree).slice(0, 5_000);
-  const words = content.split(/\s+/);
-  logger("Fetched %s ch => %s words", content.length, words.length);
+  const homepageHtml = await homepageRes.text();
+  const homepageTree = parseHTMLTree(homepageHtml);
+
+  // Step 2: discover additional URLs (up to 4)
+  const additionalUrls = await discoverUrls({ domain, tree: homepageTree });
+
+  // Step 3: fetch additional pages concurrently
+  const additionalHtmls = await Promise.all(
+    additionalUrls.map(async (url) => {
+      try {
+        const res = await fetch(url, {
+          signal: AbortSignal.timeout(ms("5s")),
+          redirect: "follow",
+        });
+        if (!res.ok) return null;
+        return { url, html: await res.text() };
+      } catch {
+        return null;
+      }
+    }),
+  );
+
+  // Step 4: convert each page to markdown
+  const pages = [
+    { url: `https://${domain}/`, html: homepageHtml },
+    ...additionalHtmls.filter((p) => p !== null),
+  ];
+
+  const markdowns = pages.map(({ url, html }) => {
+    const tree = parseHTMLTree(html);
+    const content = getMainContent(tree);
+    const md = htmlToMarkdown(content);
+
+    const titleNodes = getElementsByTagName(tree, "title");
+    const title =
+      titleNodes[0]?.children
+        .filter((n) => n.type === "text")
+        .map((n) => (n.type === "text" ? n.content : ""))
+        .join("") ?? new URL(url).pathname;
+
+    return `## ${title}\n\n${md}`;
+  });
+
+  // Step 5: combine and limit
+  const combined = markdowns.join("\n\n---\n\n");
+  const words = combined.split(/\s+/);
+  logger("Crawled %s pages => %s words", pages.length, words.length);
   return words.slice(0, maxWords).join(" ");
 }
 
-/**
- * Crawl the site using Cloudflare's API. This will crawl up to 5 pages per site,
- * and return the markdown content of the pages, up to maxWords words.
- *
- * @param domain - The domain to crawl.
- * @param maxWords - The maximum number of words to return.
- * @returns The markdown content of the pages, up to maxWords words.
- */
-async function crawlSite({
+async function discoverUrls({
   domain,
-  maxWords,
+  tree,
 }: {
   domain: string;
-  maxWords: number;
-}): Promise<string | null> {
-  logger("Crawling %s", domain);
-  const crawlId = await startCrawl({ limit: 5, url: domain });
-  const records = await pollCrawl(crawlId);
+  tree: ReturnType<typeof parseHTMLTree>;
+}): Promise<string[]> {
+  const sitemapUrls = await fetchSitemapUrls(domain);
+  if (sitemapUrls.length >= 4) return sitemapUrls.slice(0, 4);
 
-  const markdown = records.map(({ markdown }) => markdown).join("\n");
-  const words = markdown.split(/\s+/);
-  logger("Crawled %s ch => %s words", markdown.length, words.length);
-
-  return words.slice(0, maxWords).join(" ");
+  const navUrls = extractNavUrls({ domain, tree });
+  const combined = [
+    ...sitemapUrls,
+    ...navUrls.filter((u) => !sitemapUrls.includes(u)),
+  ];
+  return combined.slice(0, 4);
 }
 
-/**
- * Start a crawl using Cloudflare's API.
- *
- * @param url - The URL to crawl.
- * @param limit - The number of pages to crawl.
- * @returns The crawl ID, @see pollCrawl
- */
-async function startCrawl({
-  limit,
-  url,
-}: {
-  limit: number;
-  url: string;
-}): Promise<string> {
-  const response = await fetch(
-    `https://api.cloudflare.com/client/v4/accounts/${envVars.CLOUDFLARE_ACCOUNT_ID}/browser-rendering/crawl`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${envVars.CLOUDFLARE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        depth: 2,
-        formats: ["markdown"],
-        limit,
-        render: false,
-        source: "all",
-        url,
-      }),
-    },
-  );
-  if (!response.ok)
-    throw new Error(
-      `HTTP error! status: ${response.status}: ${await response.text()}`,
-    );
-  const { success, result } = (await response.json()) as {
-    success: boolean;
-    result: string;
-  };
-  if (!success) throw new Error(`Failed to crawl ${url}`);
-  return result;
-}
-
-/**
- * Poll a crawl using Cloudflare's API. Polls until the crawl is completed or
- * fails.
- *
- * @param crawlId - The ID of the crawl to poll.
- * @returns The records of the crawl, @see startCrawl
- */
-async function pollCrawl(crawlId: string): Promise<
-  {
-    url: string;
-    status: string;
-    metadata: {
-      lastModified: string;
-      status: number;
-      title: string;
-      url: string;
-    };
-    markdown: string;
-  }[]
-> {
-  for (let i = 0; i < 100; i++) {
-    const response = await fetch(
-      `https://api.cloudflare.com/client/v4/accounts/${envVars.CLOUDFLARE_ACCOUNT_ID}/browser-rendering/crawl/${crawlId}`,
-      { headers: { Authorization: `Bearer ${envVars.CLOUDFLARE_API_KEY}` } },
-    );
-    if (!response.ok)
-      throw new Error(
-        `HTTP error! status: ${response.status} ${await response.text()}`,
-      );
-    const { result, success } = (await response.json()) as {
-      success: boolean;
-      result: {
-        id: string;
-        status: string;
-        records: {
-          url: string;
-          status: string;
-          metadata: {
-            lastModified: string;
-            status: number;
-            title: string;
-            url: string;
-          };
-          markdown: string;
-        }[];
-      };
-    };
-    if (!success) throw new Error(`Failed to poll crawl ${crawlId}`);
-    if (result.status === "completed") return result.records;
-    if (result.status !== "running")
-      throw new Error(`Failed to crawl ${crawlId}: ${result.status}`);
-    await delay(ms("1s"));
+async function fetchSitemapUrls(domain: string): Promise<string[]> {
+  try {
+    const res = await fetch(`https://${domain}/sitemap.xml`, {
+      signal: AbortSignal.timeout(ms("3s")),
+    });
+    if (!res.ok) return [];
+    const xml = await res.text();
+    const locs: string[] = [];
+    const locRegex = /<loc>(.*?)<\/loc>/g;
+    let match: RegExpExecArray | null;
+    while ((match = locRegex.exec(xml)) !== null) {
+      const url = match[1]?.trim();
+      if (!url) continue;
+      try {
+        const parsed = new URL(url);
+        if (parsed.hostname !== domain) continue;
+        if (parsed.pathname === "/" || parsed.pathname === "") continue;
+        if (MEDIA_EXTENSIONS.test(parsed.pathname)) continue;
+        locs.push(url);
+      } catch {
+        // ignore malformed URLs
+      }
+    }
+    return locs.slice(0, 4);
+  } catch {
+    return [];
   }
-  throw new Error(`Failed to crawl: ${crawlId}`);
+}
+
+function extractNavUrls({
+  domain,
+  tree,
+}: {
+  domain: string;
+  tree: ReturnType<typeof parseHTMLTree>;
+}): string[] {
+  const navs = getElementsByTagName(tree, "nav");
+  const anchors =
+    navs.length > 0
+      ? navs.flatMap((nav) => getElementsByTagName(nav.children, "a"))
+      : getElementsByTagName(tree, "a");
+
+  const seen = new Set<string>();
+  const urls: string[] = [];
+
+  for (const anchor of anchors) {
+    const href = anchor.attributes.href;
+    if (!href || href.startsWith("#") || href.startsWith("mailto:")) continue;
+    if (MEDIA_EXTENSIONS.test(href)) continue;
+
+    let url: URL;
+    try {
+      url = new URL(href.startsWith("http") ? href : `https://${domain}${href}`);
+    } catch {
+      continue;
+    }
+
+    if (url.hostname !== domain) continue;
+    if (url.pathname === "/" || url.pathname === "") continue;
+    const depth = url.pathname.split("/").filter(Boolean).length;
+    if (depth > 3) continue;
+
+    const key = url.origin + url.pathname;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    urls.push(url.href);
+  }
+
+  return urls;
 }
 
 export async function loadSitesWithMetrics(userId: string): Promise<

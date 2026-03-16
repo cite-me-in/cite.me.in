@@ -327,6 +327,104 @@ export function getTextContent(html: HTMLNode[]): string {
     .join(" ");
 }
 
+const NOISE_TAGS = new Set(["nav", "header", "footer", "aside", "form"]);
+
+export function getMainContent(tree: HTMLNode[]): HTMLNode[] {
+  // Strip noisy elements first (mutates a copy at top level)
+  const filtered = tree.filter(
+    (n) => !(n.type === "element" && NOISE_TAGS.has(n.tag)),
+  );
+  for (const node of filtered) {
+    if (node.type === "element")
+      removeElements(node.children, (n) => NOISE_TAGS.has(n.tag));
+  }
+
+  // Priority: <main> → <article> → [role="main"] → <body>
+  const main = getElementsByTagName(filtered, "main");
+  if (main.length > 0) return main[0].children;
+
+  const article = getElementsByTagName(filtered, "article");
+  if (article.length > 0) return article[0].children;
+
+  const roleMain = findByAttribute(filtered, "role", "main");
+  if (roleMain) return roleMain.children;
+
+  const body = getElementsByTagName(filtered, "body");
+  if (body.length > 0) return body[0].children;
+
+  return filtered;
+}
+
+function findByAttribute(
+  nodes: HTMLNode[],
+  attr: string,
+  value: string,
+): (HTMLNode & { type: "element" }) | null {
+  for (const node of nodes) {
+    if (node.type !== "element") continue;
+    if (node.attributes[attr] === value) return node;
+    const found = findByAttribute(node.children, attr, value);
+    if (found) return found;
+  }
+  return null;
+}
+
+export function htmlToMarkdown(nodes: HTMLNode[]): string {
+  return nodes.map((node) => nodeToMarkdown(node)).join("");
+}
+
+function nodeToMarkdown(node: HTMLNode): string {
+  if (node.type === "text") return decodeHTMLEntities(node.content);
+
+  const { tag, children } = node;
+  const inner = () => htmlToMarkdown(children);
+
+  switch (tag) {
+    case "h1":
+      return `# ${inner()}\n\n`;
+    case "h2":
+      return `## ${inner()}\n\n`;
+    case "h3":
+      return `### ${inner()}\n\n`;
+    case "h4":
+      return `#### ${inner()}\n\n`;
+    case "h5":
+      return `##### ${inner()}\n\n`;
+    case "h6":
+      return `###### ${inner()}\n\n`;
+    case "p":
+      return `${inner()}\n\n`;
+    case "br":
+      return "\n";
+    case "hr":
+      return "---\n\n";
+    case "strong":
+    case "b":
+      return `**${inner()}**`;
+    case "em":
+    case "i":
+      return `*${inner()}*`;
+    case "li":
+      return `- ${inner()}\n`;
+    case "ul":
+    case "ol":
+      return `${inner()}\n`;
+    case "a":
+      return inner();
+    case "script":
+    case "style":
+    case "noscript":
+      return "";
+    case "div":
+    case "section":
+    case "blockquote":
+    case "pre":
+      return `${inner()}\n`;
+    default:
+      return inner();
+  }
+}
+
 function decodeHTMLEntities(content: string): string {
   return content
     .replace(/&amp;/g, "&")
