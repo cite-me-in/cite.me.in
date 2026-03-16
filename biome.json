@@ -17,7 +17,8 @@
       "!build",
       "!node_modules",
       "!prisma/generated",
-      "!prisma/backup.sql"
+      "!prisma/backup.sql",
+      "!.worktrees"
     ],
     "ignoreUnknown": false
   },

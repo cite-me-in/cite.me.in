@@ -5,7 +5,6 @@ import {
 } from "react-router";
 import { WaveLoading } from "respinner";
 import { getCurrentUser } from "~/lib/auth.server";
-import recordBotVisit from "~/lib/botTracking.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/root";
 import PageLayout from "./components/layout/PageLayout";
@@ -13,19 +12,6 @@ import Main from "./components/ui/Main";
 import "./global.css";
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const site = await prisma.site.findFirst({
-    where: { domain: "cite.me.in" },
-  });
-  if (site)
-    recordBotVisit({
-      accept: request.headers.get("accept"),
-      ip: request.headers.get("x-real-ip"),
-      referer: request.headers.get("referer"),
-      site,
-      url: request.url,
-      userAgent: request.headers.get("user-agent"),
-    });
-
   const baseUrl = new URL(request.url).origin;
   const user = await getCurrentUser(request);
   const sites = user
