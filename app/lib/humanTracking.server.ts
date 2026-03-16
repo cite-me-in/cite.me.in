@@ -106,24 +106,16 @@ function visitorFingerprint(ip: string, userAgent: string): string {
 export default async function recordHumanVisit({
   ip,
   referer,
-  url,
+  site,
   userAgent,
   utmSource,
-  site: resolvedSite,
 }: {
   ip: string | null;
   referer: string | null;
-  url: string;
+  site: { id: string };
   userAgent: string;
   utmSource: string | null;
-  site?: { id: string };
 }): Promise<{ tracked: boolean; reason?: string }> {
-  const { hostname } = new URL(url);
-  const domain = hostname.toLowerCase();
-  const site =
-    resolvedSite ?? (await prisma.site.findFirst({ where: { domain } }));
-  if (!site) return { tracked: false, reason: "site not found" };
-
   const date = new Date(
     Temporal.Now.zonedDateTimeISO("UTC").startOfDay().epochMilliseconds,
   );
@@ -151,7 +143,7 @@ export default async function recordHumanVisit({
     });
     return { tracked: true };
   } catch (error) {
-    logError(error, { extra: { domain, visitorId, browser, deviceType } });
+    logError(error, { extra: { visitorId, browser, deviceType } });
     return { tracked: false, reason: "db error" };
   }
 }

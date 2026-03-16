@@ -1,19 +1,16 @@
+import { data } from "react-router";
 import { z } from "zod";
-import recordHumanVisit, {
-  isHumanBrowser,
-} from "~/lib/humanTracking.server";
 import recordBotVisit from "~/lib/botTracking.server";
+import recordHumanVisit, { isHumanBrowser } from "~/lib/humanTracking.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/api.track";
 
 const TrackSchema = z.object({
   url: z.url(),
-  userAgent: z.string().nullable().optional(),
-  accept: z.string().nullable().optional(),
-  ip: z.string().nullable().optional(),
-  referer: z.string().nullable().optional(),
-  utmSource: z.string().nullable().optional(),
-  utmMedium: z.string().nullable().optional(),
+  userAgent: z.string().nullable().optional().default(null),
+  accept: z.string().nullable().optional().default(null),
+  ip: z.string().nullable().optional().default(null),
+  referer: z.string().nullable().optional().default(null),
 });
 
 const CORS_HEADERS = {
@@ -22,87 +19,58 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Headers": "Authorization, Content-Type",
 };
 
-function forbidden() {
-  return Response.json(
-    { tracked: false, reason: "Forbidden" },
-    { status: 403, headers: CORS_HEADERS },
-  );
-}
-
 export async function action({ request }: Route.ActionArgs) {
   if (request.method === "OPTIONS")
     return new Response(null, { status: 204, headers: CORS_HEADERS });
 
   if (request.method !== "POST")
-    return Response.json(
-      { tracked: false, reason: "Method not allowed" },
-      { status: 405, headers: CORS_HEADERS },
-    );
+    return new Response("Method not allowed", { status: 405 });
 
-  let data: z.infer<typeof TrackSchema>;
+  let inputs: z.infer<typeof TrackSchema>;
   try {
     const body = await request.json();
-    const parsed = TrackSchema.safeParse(body);
-    if (parsed.error) throw new Error(parsed.error.message);
-    data = parsed.data;
+    const { data, error } = TrackSchema.safeParse(body);
+    if (error) throw new Error(error.message);
+    inputs = data;
   } catch {
-    return Response.json(
-      { tracked: false, reason: "Invalid JSON" },
-      { status: 400, headers: CORS_HEADERS },
-    );
+    return new Response("Invalid JSON", { status: 400 });
   }
 
   const authHeader = request.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) return forbidden();
-  const apiKey = authHeader.slice(7);
-
-  const hostname = new URL(data.url).hostname.toLowerCase();
+  const [tokenType, token] = authHeader?.split(" ") ?? [];
+  if (tokenType !== "Bearer") return new Response("Forbidden", { status: 403 });
+  const { hostname, searchParams } = new URL(inputs.url);
   const site = await prisma.site.findFirst({
-    where: { domain: hostname, apiKey },
+    where: { domain: hostname, apiKey: token },
   });
-  if (!site) return forbidden();
+  if (!site) return new Response("Forbidden", { status: 403 });
 
-  const { url, userAgent, accept, ip, referer, utmSource } = data;
+  const { userAgent } = inputs;
+  if (!userAgent) return new Response("No user agent", { status: 400 });
 
-  if (!userAgent)
-    return Response.json(
-      { tracked: false, reason: "no user agent" },
-      { headers: CORS_HEADERS },
-    );
+  if (isHumanBrowser(userAgent)) {
+    const utmSource = searchParams.get("utm_source");
+    await recordHumanVisit({
+      ip: inputs.ip,
+      referer: inputs.referer,
+      site,
+      userAgent,
+      utmSource,
+    });
+    return data({ ok: true }, { headers: CORS_HEADERS });
+  }
 
-  // 1. Try bot classification first
-  const botResult = await recordBotVisit({
-    url,
-    userAgent,
-    accept: accept ?? null,
-    ip: ip ?? null,
-    referer: referer ?? null,
+  const { tracked } = await recordBotVisit({
+    accept: inputs.accept,
+    ip: inputs.ip,
+    referer: inputs.referer,
     site,
-  });
-  if (botResult.tracked || botResult.reason !== "not a bot")
-    return Response.json(botResult, { headers: CORS_HEADERS });
-
-  // 2. Fall through to human tracking if UA looks like a real browser
-  if (!isHumanBrowser(userAgent))
-    return Response.json(
-      { tracked: false, reason: "unrecognized agent" },
-      { headers: CORS_HEADERS },
-    );
-
-  const humanResult = await recordHumanVisit({
-    url,
+    url: inputs.url,
     userAgent,
-    ip: ip ?? null,
-    referer: referer ?? null,
-    utmSource: utmSource ?? null,
-    site,
   });
-  return Response.json(humanResult, { headers: CORS_HEADERS });
+  return data({ ok: tracked }, { headers: CORS_HEADERS });
 }
 
 export async function loader() {
-  return Response.json(
-    { tracked: false, reason: "Method not allowed" },
-    { status: 405 },
-  );
+  return new Response("Method not allowed", { status: 405 });
 }

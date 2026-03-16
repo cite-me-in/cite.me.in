@@ -70,46 +70,36 @@ function classifyBot(userAgent: string): string | null {
 /**
  * Record a bot visit given explicit parameters.
  *
- * @param params - The parameters to record a bot visit.
- * @param params.accept - The accept header.
- * @param params.ip - The IP address.
- * @param params.referer - The referer header.
- * @param params.url - The URL of the request.
- * @param params.userAgent - The user agent.
+ * @param accept - The accept header.
+ * @param ip - The IP address.
+ * @param referer - The referer header.
+ * @param url - The URL of the request.
+ * @param userAgent - The user agent.
  * @returns A promise that resolves to the result of the bot visit.
  */
 export default async function recordBotVisit({
   accept,
   ip,
   referer,
+  site,
   url,
   userAgent,
-  site: resolvedSite,
 }: {
   accept: string | null;
   ip: string | null;
   referer: string | null;
+  site: { id: string };
   url: string;
   userAgent: string | null;
-  site?: { id: string };
 }): Promise<{ tracked: boolean; reason?: string }> {
+  const { pathname } = new URL(url);
   if (!userAgent) return { tracked: false, reason: "no user agent" };
-
   const botType = classifyBot(userAgent);
   if (!botType) return { tracked: false, reason: "not a bot" };
-  if (/Better Stack/i.test(userAgent))
-    return { tracked: false, reason: "excluded" };
-
-  const { hostname, pathname } = new URL(url);
-  const domain = hostname.toLowerCase();
-  const site =
-    resolvedSite ?? (await prisma.site.findFirst({ where: { domain } }));
-  if (!site) return { tracked: false, reason: "site not found" };
 
   const date = new Date(
     Temporal.Now.zonedDateTimeISO("UTC").startOfDay().epochMilliseconds,
   );
-
   try {
     await prisma.botVisit.upsert({
       where: {
@@ -136,7 +126,7 @@ export default async function recordBotVisit({
     return { tracked: true };
   } catch (error) {
     logError(error, {
-      extra: { botType, domain, pathname, userAgent },
+      extra: { botType, url, userAgent },
     });
     return { tracked: false, reason: "db error" };
   }

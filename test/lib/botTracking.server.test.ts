@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import recordBotVisit from "~/lib/botTracking.server";
 import prisma from "~/lib/prisma.server";
 
-function makeRequest(
+async function makeRequest(
   userAgent: string,
   url = new URL("/", import.meta.env.VITE_APP_URL).toString(),
   accept?: string,
@@ -10,12 +10,16 @@ function makeRequest(
 ) {
   const headers: Record<string, string> = { "user-agent": userAgent };
   if (accept) headers.accept = accept;
+  const site = await prisma.site.findFirstOrThrow({
+    where: { domain: new URL(url).hostname },
+  });
   return {
-    url,
-    userAgent,
     accept: accept || null,
     ip: "127.0.0.1",
     referer: referer || null,
+    site,
+    url,
+    userAgent,
   };
 }
 
@@ -36,7 +40,7 @@ describe("trackBotVisit", () => {
 
   it("should ignore regular browser user agents", async () => {
     await recordBotVisit(
-      makeRequest(
+      await makeRequest(
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
       ),
     );
@@ -46,7 +50,7 @@ describe("trackBotVisit", () => {
 
   it("should track a known bot by type", async () => {
     await recordBotVisit(
-      makeRequest(
+      await makeRequest(
         "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
       ),
     );
@@ -54,27 +58,15 @@ describe("trackBotVisit", () => {
     expect(last.botType).toBe("Google");
   });
 
-  it("should skip upsert when no site matches the domain", async () => {
-    await recordBotVisit(makeRequest("Googlebot/2.1", "https://example.com/"));
-    const last = await prisma.botVisit.findFirst();
-    expect(last).toBeNull();
-  });
-
   it("should track an unknown bot as 'Other Bot'", async () => {
-    await recordBotVisit(makeRequest("custom-spider/1.0"));
+    await recordBotVisit(await makeRequest("custom-spider/1.0"));
     const last = await prisma.botVisit.findFirstOrThrow();
     expect(last.botType).toBe("Other Bot");
   });
 
-  it("should ignore Better Stack uptime checks", async () => {
-    await recordBotVisit(makeRequest("Better Stack Uptime Monitor/1.0 bot"));
-    const last = await prisma.botVisit.findFirst();
-    expect(last).toBeNull();
-  });
-
   it("should record domain and path from request URL", async () => {
     await recordBotVisit(
-      makeRequest(
+      await makeRequest(
         "Googlebot/2.1",
         new URL("/blog/post", import.meta.env.VITE_APP_URL).toString(),
       ),
@@ -85,7 +77,7 @@ describe("trackBotVisit", () => {
 
   it("should parse Accept header into MIME type array, stripping quality values", async () => {
     await recordBotVisit(
-      makeRequest(
+      await makeRequest(
         "Googlebot/2.1",
         new URL("/", import.meta.env.VITE_APP_URL).toString(),
         "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8",
@@ -97,7 +89,7 @@ describe("trackBotVisit", () => {
 
   it("should record referer if present", async () => {
     await recordBotVisit(
-      makeRequest(
+      await makeRequest(
         "Googlebot/2.1",
         new URL("/", import.meta.env.VITE_APP_URL).toString(),
         "text/html",
@@ -110,7 +102,7 @@ describe("trackBotVisit", () => {
 
   it("should not record referer if it is the same as the request URL", async () => {
     await recordBotVisit(
-      makeRequest(
+      await makeRequest(
         "Googlebot/2.1",
         new URL("/", import.meta.env.VITE_APP_URL).toString(),
         "text/html",

@@ -64,8 +64,6 @@ describe("api.track", () => {
         body: "not json",
       });
       expect(res.status).toBe(400);
-      const body = await res.json();
-      expect(body.tracked).toBe(false);
     });
 
     it("should return 400 when url is missing", async () => {
@@ -92,21 +90,20 @@ describe("api.track", () => {
       expect(res.headers.get("access-control-allow-origin")).toBe("*");
     });
 
-    it("should not track a regular browser visit", async () => {
+    it("should track a human browser visit", async () => {
+      await prisma.humanVisit.deleteMany();
       const res = await post(
         {
           url: "https://apitrack.example.com/",
           userAgent:
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36",
           accept: "text/html",
           ip: "1.2.3.4",
         },
         authHeader(),
       );
       expect(res.status).toBe(200);
-      const body = await res.json();
-      expect(body.tracked).toBe(false);
-      expect(body.reason).toBe("not a bot");
+      await expect(prisma.humanVisit.findFirst()).resolves.not.toBeNull();
     });
 
     it("should return 403 when domain is not in the account", async () => {
@@ -123,6 +120,7 @@ describe("api.track", () => {
     });
 
     it("should track a bot visit for a known domain", async () => {
+      await prisma.botVisit.deleteMany();
       const res = await post(
         {
           url: "https://apitrack.example.com/about",
@@ -135,7 +133,7 @@ describe("api.track", () => {
       );
       expect(res.status).toBe(200);
       const body = await res.json();
-      expect(body.tracked).toBe(true);
+      expect(body.ok).toBe(true);
 
       const record = await prisma.botVisit.findFirst({
         where: { siteId: "site-apitrack-1", path: "/about" },
@@ -208,7 +206,7 @@ describe("api.track", () => {
       );
       expect(res.status).toBe(200);
       const body = await res.json();
-      expect(body.tracked).toBe(true);
+      expect(body.ok).toBe(true);
     });
   });
 });

@@ -10,7 +10,7 @@ import prisma from "~/lib/prisma.server";
 const BASE_URL = new URL("/", import.meta.env.VITE_APP_URL).toString();
 const DOMAIN = new URL(BASE_URL).hostname;
 
-function makeVisit(
+async function makeVisit(
   userAgent: string,
   opts: {
     url?: string;
@@ -19,7 +19,11 @@ function makeVisit(
     utmSource?: string | null;
   } = {},
 ) {
+  const site = await prisma.site.findFirstOrThrow({
+    where: { domain: DOMAIN },
+  });
   return {
+    site,
     url: opts.url ?? BASE_URL,
     userAgent,
     ip: opts.ip ?? "1.2.3.4",
@@ -246,7 +250,7 @@ describe("recordHumanVisit", () => {
   });
 
   it("should create a record on first visit", async () => {
-    await recordHumanVisit(makeVisit(UA.chrome));
+    await recordHumanVisit(await makeVisit(UA.chrome));
     const record = await prisma.humanVisit.findFirstOrThrow();
     expect(record.browser).toBe("Chrome");
     expect(record.deviceType).toBe("desktop");
@@ -255,22 +259,22 @@ describe("recordHumanVisit", () => {
   });
 
   it("should increment count on subsequent visits from same visitor same day", async () => {
-    await recordHumanVisit(makeVisit(UA.chrome));
-    await recordHumanVisit(makeVisit(UA.chrome));
-    await recordHumanVisit(makeVisit(UA.chrome));
+    await recordHumanVisit(await makeVisit(UA.chrome));
+    await recordHumanVisit(await makeVisit(UA.chrome));
+    await recordHumanVisit(await makeVisit(UA.chrome));
     const record = await prisma.humanVisit.findFirstOrThrow();
     expect(record.count).toBe(3);
   });
 
   it("should create separate records for different visitors", async () => {
-    await recordHumanVisit(makeVisit(UA.chrome, { ip: "1.1.1.1" }));
-    await recordHumanVisit(makeVisit(UA.chrome, { ip: "2.2.2.2" }));
+    await recordHumanVisit(await makeVisit(UA.chrome, { ip: "1.1.1.1" }));
+    await recordHumanVisit(await makeVisit(UA.chrome, { ip: "2.2.2.2" }));
     const records = await prisma.humanVisit.findMany();
     expect(records).toHaveLength(2);
   });
 
   it("should store mobile device type", async () => {
-    await recordHumanVisit(makeVisit(UA.iphone));
+    await recordHumanVisit(await makeVisit(UA.iphone));
     const record = await prisma.humanVisit.findFirstOrThrow();
     expect(record.deviceType).toBe("mobile");
     expect(record.browser).toBe("Safari");
@@ -278,24 +282,19 @@ describe("recordHumanVisit", () => {
 
   it("should store AI referral when coming from Perplexity", async () => {
     await recordHumanVisit(
-      makeVisit(UA.chrome, { referer: "https://perplexity.ai/search/xyz" }),
+      await makeVisit(UA.chrome, {
+        referer: "https://perplexity.ai/search/xyz",
+      }),
     );
     const record = await prisma.humanVisit.findFirstOrThrow();
     expect(record.aiReferral).toBe("perplexity");
   });
 
   it("should store AI referral from utmSource when referer is absent", async () => {
-    await recordHumanVisit(makeVisit(UA.chrome, { utmSource: "chatgpt.com" }));
+    await recordHumanVisit(
+      await makeVisit(UA.chrome, { utmSource: "chatgpt.com" }),
+    );
     const record = await prisma.humanVisit.findFirstOrThrow();
     expect(record.aiReferral).toBe("chatgpt");
-  });
-
-  it("should return tracked: false when site is not found", async () => {
-    const result = await recordHumanVisit(
-      makeVisit(UA.chrome, { url: "https://unknown-domain.xyz/" }),
-    );
-    expect(result).toEqual({ tracked: false, reason: "site not found" });
-    const records = await prisma.humanVisit.findMany();
-    expect(records).toHaveLength(0);
   });
 });
