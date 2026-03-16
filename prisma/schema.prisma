@@ -255,6 +255,21 @@ model User {
   sentInvitations         SiteInvitation[]         @relation("SentInvitations")
   updatedAt               DateTime                 @map("updated_at")        @updatedAt
   weeklyDigestEnabled     Boolean                  @map("weekly_digest_enabled") @default(true)
+  account                 Account?
 
   @@map("users")
+}
+
+model Account {
+  id                   String   @id @default(cuid())
+  userId               String   @unique @map("user_id")
+  stripeCustomerId     String   @map("stripe_customer_id")
+  stripeSubscriptionId String   @map("stripe_subscription_id")
+  status               String   @map("status")
+  createdAt            DateTime @map("created_at") @default(now())
+  updatedAt            DateTime @map("updated_at") @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("accounts")
 }
