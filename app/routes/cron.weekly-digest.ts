@@ -1,13 +1,14 @@
 import debug from "debug";
-import captureException from "~/lib/captureException.server";
+import { data } from "react-router";
+import sendWeeklyDigestEmail from "~/emails/WeeklyDigest";
 import envVars from "~/lib/envVars";
+import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import {
   generateCitationChart,
   generateUnsubscribeToken,
   getWeeklyMetrics,
 } from "~/lib/weeklyDigest.server";
-import sendWeeklyDigestEmail from "~/emails/WeeklyDigest";
 import type { Route } from "./+types/cron.weekly-digest";
 
 const logger = debug("server");
@@ -25,14 +26,20 @@ export async function loader({ request }: Route.LoaderArgs) {
       },
       siteUsers: {
         select: {
-          user: { select: { id: true, email: true, weeklyDigestEnabled: true } },
+          user: {
+            select: { id: true, email: true, weeklyDigestEnabled: true },
+          },
         },
       },
     },
   });
 
-  const results: { siteId: string; ok: boolean; sent: number; error?: string }[] =
-    [];
+  const results: {
+    siteId: string;
+    ok: boolean;
+    sent: number;
+    error?: string;
+  }[] = [];
 
   for (const site of sites) {
     try {
@@ -51,18 +58,27 @@ export async function loader({ request }: Route.LoaderArgs) {
       let sent = 0;
       for (const user of recipients) {
         const token = generateUnsubscribeToken(user.id);
-        const unsubscribeUrl = `${appUrl}/unsubscribe?token=${token}&user=${user.id}`;
-        await sendWeeklyDigestEmail({
-          to: user.email,
-          domain: site.domain,
-          unsubscribeUrl,
-          metrics,
-          chartBase64,
-        });
+        const unsubscribeUrl = new URL("/unsubscribe", appUrl);
+        unsubscribeUrl.searchParams.set("token", token);
+        unsubscribeUrl.searchParams.set("user", user.id);
+
+        if (user.email === "assaf@labnotes.org")
+          await sendWeeklyDigestEmail({
+            to: user.email,
+            domain: site.domain,
+            unsubscribeUrl: unsubscribeUrl.toString(),
+            metrics,
+            chartBase64,
+          });
         sent++;
       }
 
-      logger("[cron:weekly-digest] Done — %s (%s), sent %d", site.id, site.domain, sent);
+      logger(
+        "[cron:weekly-digest] Done — %s (%s), sent %d",
+        site.id,
+        site.domain,
+        sent,
+      );
       results.push({ siteId: site.id, ok: true, sent });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -72,7 +88,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         site.domain,
         message,
       );
-      captureException(error, { extra: { siteId: site.id } });
+      logError(error, { extra: { siteId: site.id } });
       results.push({ siteId: site.id, ok: false, sent: 0, error: message });
     }
   }
@@ -80,5 +96,5 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (envVars.HEARTBEAT_CRON_WEEKLY_DIGEST)
     await fetch(envVars.HEARTBEAT_CRON_WEEKLY_DIGEST);
 
-  return Response.json({ ok: true, results });
+  return data({ ok: true, results });
 }

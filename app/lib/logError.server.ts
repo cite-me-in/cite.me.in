@@ -31,19 +31,17 @@ export default function logError(
     };
   },
 ) {
-  if (error instanceof Error) {
-    logger(error.stack);
-    if (logFile) logFile.write(`${error.stack}\n`);
-  } else {
-    logger(error);
-    if (logFile) logFile.write(`${error}\n`);
-  }
-
   sentryCaptureException(error, hints);
 
-  if (logtail)
-    logtail.error(
-      error instanceof Error ? error.message : String(error),
-      hints,
-    );
+  if (error instanceof Error) {
+    logger(error.stack);
+    console.error(error.stack);
+    if (logFile) logFile.write(`${error.stack}\n`);
+    if (logtail) logtail.error(error.message, hints);
+  } else {
+    logger(error);
+    console.error(error);
+    if (logFile) logFile.write(`${error}\n`);
+    if (logtail) logtail.error(String(error), hints);
+  }
 }

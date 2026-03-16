@@ -1,11 +1,4 @@
-import {
-  Column,
-  Img,
-  Link,
-  Row,
-  Section,
-  Text,
-} from "@react-email/components";
+import { Column, Img, Link, Row, Section, Text } from "@react-email/components";
 import type { WeeklyMetrics } from "~/lib/weeklyDigest.server";
 import EmailLayout from "./EmailLayout";
 import { sendEmail } from "./sendEmails.server";
@@ -43,7 +36,7 @@ function formatWeekRange(start: Date, end: Date): string {
   const opts: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
   const s = start.toLocaleDateString("en-US", opts);
   const e = new Date(end.getTime() - 1).toLocaleDateString("en-US", opts);
-  return `${s}–${e}`;
+  return `${s} — ${e}`;
 }
 
 function delta(n: number, suffix = ""): string {
@@ -81,7 +74,7 @@ function WeeklyDigestEmail({
             </Text>
             <Text className="my-1 text-light text-xs">Total Citations</Text>
             <Text
-              className="my-0 text-xs font-semibold"
+              className="my-0 font-semibold text-xs"
               style={{ color: deltaColor(metrics.citations.delta) }}
             >
               {delta(metrics.citations.delta)}
@@ -93,7 +86,7 @@ function WeeklyDigestEmail({
             </Text>
             <Text className="my-1 text-light text-xs">Score</Text>
             <Text
-              className="my-0 text-xs font-semibold"
+              className="my-0 font-semibold text-xs"
               style={{ color: deltaColor(metrics.score.delta) }}
             >
               {delta(metrics.score.delta, "pts")}
@@ -105,7 +98,7 @@ function WeeklyDigestEmail({
             </Text>
             <Text className="my-1 text-light text-xs">Bot Visits</Text>
             <Text
-              className="my-0 text-xs font-semibold"
+              className="my-0 font-semibold text-xs"
               style={{ color: deltaColor(metrics.botVisits.delta) }}
             >
               {delta(metrics.botVisits.delta)}
@@ -162,11 +155,11 @@ function WeeklyDigestEmail({
           {metrics.topQueries.map(({ query, count, delta: d }) => (
             <Row key={query} className="border-borderLight border-b py-2">
               <Column className="text-sm text-text">{query}</Column>
-              <Column className="w-24 text-right text-sm text-dark">
+              <Column className="w-24 text-right text-dark text-sm">
                 {count}
               </Column>
               <Column
-                className="w-16 text-right text-xs font-semibold"
+                className="w-16 text-right font-semibold text-xs"
                 style={{ color: deltaColor(d) }}
               >
                 {delta(d)}

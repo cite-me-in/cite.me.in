@@ -37,15 +37,14 @@ export async function sendEmail({
 }): Promise<string> {
   lastEmailSent = undefined;
   const html = await pretty(await render(await renderFn({ subject })));
-  if (process.env.NODE_ENV === "test")
-    await captureLastEmail({ html, to: to, subject });
 
   // In tests, we don't want to actually send emails, we just want to render them
   if (process.env.NODE_ENV === "test") {
+    await captureLastEmail({ html, to: to, subject });
     return "test-email-id";
   } else {
     const { error, data } = await resend.emails.send({
-      from: `Cite.me.in <${import.meta.env.VITE_EMAIL_FROM}>`,
+      from: `cite.me.in <${import.meta.env.VITE_EMAIL_FROM}>`,
       html,
       subject,
       to: [to],

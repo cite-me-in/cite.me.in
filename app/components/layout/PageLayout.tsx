@@ -5,11 +5,11 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Links, Meta, Scripts, ScrollRestoration } from "react-router";
 import PageLoadingBouncer from "~/components/ui/PageLoadingBouncer";
 import "~/global.css";
+import envVars from "~/lib/envVars";
 import PageFooter from "./PageFooter";
 import PageHeader from "./PageHeader";
 
 const title = "Cite.me.in — Monitor AI citation visibility";
-const url = "https://cite.me.in/";
 
 export type HeaderLink = {
   label: string;
@@ -41,7 +41,13 @@ export default function PageLayout({
         <meta name="mobile-web-app-capable" content="yes" />
 
         {/* Google / Search Engine Tags */}
-        <meta itemProp="image" content={`${url}/images/og-image.png`} />
+        <meta
+          itemProp="image"
+          content={new URL(
+            "/images/og-image.png",
+            envVars.VITE_APP_URL,
+          ).toString()}
+        />
         <meta itemProp="name" content={title} />
 
         {/* https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Client_hints */}

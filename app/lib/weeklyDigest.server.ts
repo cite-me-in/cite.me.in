@@ -1,14 +1,18 @@
-import { createHmac } from "node:crypto";
 import { Temporal } from "@js-temporal/polyfill";
-import calculateCitationMetrics from "~/lib/llm-visibility/calculateCitationMetrics";
+import { createHmac } from "node:crypto";
 import envVars from "~/lib/envVars";
+import calculateVisibilityScore from "~/lib/llm-visibility/calculateVisibilityScore";
 import prisma from "~/lib/prisma.server";
 
 export type WeeklyMetrics = {
   domain: string;
   weekStart: Date;
   weekEnd: Date;
-  citations: { total: number; delta: number; byPlatform: Record<string, number> };
+  citations: {
+    total: number;
+    delta: number;
+    byPlatform: Record<string, number>;
+  };
   score: { current: number; delta: number };
   botVisits: { total: number; delta: number };
   topQueries: { query: string; count: number; delta: number }[];
@@ -26,7 +30,6 @@ export async function getWeeklyMetrics(
   siteId: string,
   domain: string,
 ): Promise<WeeklyMetrics> {
-  const now = Temporal.Now.instant();
   const todayMidnight = Temporal.Now.zonedDateTimeISO("UTC")
     .startOfDay()
     .toInstant();
@@ -45,7 +48,9 @@ export async function getWeeklyMetrics(
       select: {
         createdAt: true,
         platform: true,
-        queries: { select: { query: true, citations: true } },
+        queries: {
+          select: { query: true, citations: true, position: true, text: true },
+        },
       },
     }),
     prisma.citationQueryRun.findMany({
@@ -53,7 +58,9 @@ export async function getWeeklyMetrics(
       select: {
         createdAt: true,
         platform: true,
-        queries: { select: { query: true, citations: true } },
+        queries: {
+          select: { query: true, citations: true, position: true, text: true },
+        },
       },
     }),
     prisma.botVisit.aggregate({
@@ -66,20 +73,13 @@ export async function getWeeklyMetrics(
     }),
   ]);
 
-  const allCurrentCitations = currentRuns.flatMap((r) =>
-    r.queries.flatMap((q) => q.citations),
-  );
-  const allPrevCitations = prevRuns.flatMap((r) =>
-    r.queries.flatMap((q) => q.citations),
-  );
-
-  const currentMetrics = calculateCitationMetrics({
+  const currentMetrics = calculateVisibilityScore({
     domain,
-    citations: allCurrentCitations,
+    queries: currentRuns.flatMap((r) => r.queries),
   });
-  const prevMetrics = calculateCitationMetrics({
+  const prevMetrics = calculateVisibilityScore({
     domain,
-    citations: allPrevCitations,
+    queries: prevRuns.flatMap((r) => r.queries),
   });
 
   const byPlatform: Record<string, number> = {};
@@ -97,8 +97,9 @@ export async function getWeeklyMetrics(
       (run.createdAt.getTime() - weekStart.getTime()) / (1000 * 60 * 60 * 24),
     );
     if (dayIndex >= 0 && dayIndex < 7)
-      dailyCitations[dayIndex] +=
-        run.queries.flatMap((q) => q.citations).length;
+      dailyCitations[dayIndex] += run.queries.flatMap(
+        (q) => q.citations,
+      ).length;
   }
   for (const run of prevRuns) {
     const dayIndex = Math.floor(
@@ -106,8 +107,9 @@ export async function getWeeklyMetrics(
         (1000 * 60 * 60 * 24),
     );
     if (dayIndex >= 0 && dayIndex < 7)
-      prevDailyCitations[dayIndex] +=
-        run.queries.flatMap((q) => q.citations).length;
+      prevDailyCitations[dayIndex] += run.queries.flatMap(
+        (q) => q.citations,
+      ).length;
   }
 
   // Top queries
@@ -140,13 +142,15 @@ export async function getWeeklyMetrics(
     weekStart,
     weekEnd,
     citations: {
-      total: currentMetrics.citationsToDomain,
-      delta: currentMetrics.citationsToDomain - prevMetrics.citationsToDomain,
+      total: currentMetrics.domainCitations,
+      delta: currentMetrics.domainCitations - prevMetrics.domainCitations,
       byPlatform,
     },
     score: {
-      current: Math.round(currentMetrics.score),
-      delta: Math.round(currentMetrics.score - prevMetrics.score),
+      current: Math.round(currentMetrics.visibilityScore),
+      delta: Math.round(
+        currentMetrics.visibilityScore - prevMetrics.visibilityScore,
+      ),
     },
     botVisits: {
       total: botVisitsTotal,
@@ -233,8 +237,7 @@ export async function generateCitationChart(
   ctx.fillStyle = "#6b7280";
   ctx.font = "11px sans-serif";
   ctx.textAlign = "center";
-  for (let i = 0; i < 7; i++)
-    ctx.fillText(days[i] ?? "", xAt(i), height - 8);
+  for (let i = 0; i < 7; i++) ctx.fillText(days[i] ?? "", xAt(i), height - 8);
 
   const buffer = canvas.toBuffer("image/png");
   return buffer.toString("base64");

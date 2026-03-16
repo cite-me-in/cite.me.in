@@ -176,7 +176,7 @@ function statusCodesTable(
 }
 
 export function generateApiDocsMarkdown(spec: OpenApiSpec): string {
-  const baseUrl = spec.servers[0]?.url ?? "https://cite.me.in";
+  const baseUrl = spec.servers[0]?.url;
   const sections: string[] = [];
 
   sections.push("# cite.me.in API");

@@ -10,6 +10,7 @@ import {
   SiteSchema,
   UserSchema,
 } from "~/lib/api/schemas";
+import envVars from "../envVars";
 
 const registry = new OpenAPIRegistry();
 
@@ -139,6 +140,6 @@ export function generateOpenApiSpec() {
       description:
         "Monitor your brand's visibility in AI-generated responses. Authenticate with your API key from the profile page. See the [documentation](https://cite.me.in/docs) for more information.",
     },
-    servers: [{ url: "https://cite.me.in" }],
+    servers: [{ url: envVars.VITE_APP_URL }],
   });
 }
