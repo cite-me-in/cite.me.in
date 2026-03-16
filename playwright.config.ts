@@ -1,5 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
-import { port } from "./test/helpers/launchBrowser";
+
+process.env.NODE_ENV = "test";
 
 export default defineConfig({
   globalSetup: "test/helpers/global.setup.ts",
@@ -10,7 +11,7 @@ export default defineConfig({
   testDir: "test/e2e",
   testMatch: /.*\.test\.ts$/,
   use: {
-    baseURL: `http://localhost:${port}`,
+    baseURL: "http://localhost:9222",
     screenshot: "only-on-failure",
     viewport: { width: 1280, height: 720 },
   },
