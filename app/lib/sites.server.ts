@@ -145,6 +145,7 @@ async function crawlSiteCustom({
   // Step 5: combine and limit
   const combined = markdowns.join("\n\n---\n\n");
   const words = combined.split(/\s+/);
+  console.log("Crawled %s pages => %s words", pages.length, words.length);
   logger("Crawled %s pages => %s words", pages.length, words.length);
   return words.slice(0, maxWords).join(" ");
 }
@@ -176,8 +177,11 @@ async function fetchSitemapUrls(domain: string): Promise<string[]> {
     const xml = await res.text();
     const locs: string[] = [];
     const locRegex = /<loc>(.*?)<\/loc>/g;
-    let match: RegExpExecArray | null;
-    while ((match = locRegex.exec(xml)) !== null) {
+    for (
+      let match = locRegex.exec(xml);
+      match !== null;
+      match = locRegex.exec(xml)
+    ) {
       const url = match[1]?.trim();
       if (!url) continue;
       try {
@@ -219,7 +223,9 @@ function extractNavUrls({
 
     let url: URL;
     try {
-      url = new URL(href.startsWith("http") ? href : `https://${domain}${href}`);
+      url = new URL(
+        href.startsWith("http") ? href : `https://${domain}${href}`,
+      );
     } catch {
       continue;
     }
@@ -356,4 +362,12 @@ export async function deleteSite({
     where: { id: siteId, ownerId: userId },
   });
   if (site) await prisma.site.delete({ where: { id: siteId } });
+}
+
+if (import.meta.main) {
+  const content = await fetchSiteContent({
+    domain: "cite.me.in",
+    maxWords: 5_000,
+  });
+  console.log(content);
 }
