@@ -8,12 +8,14 @@ import Spinner from "~/components/ui/Spinner";
 import type { action } from "./route";
 
 export default function AddSiteForm({
+  actionData,
   fetcher,
 }: {
+  actionData: Awaited<ReturnType<typeof action>> | undefined;
   fetcher: ReturnType<typeof useFetcher<typeof action>>;
 }) {
   const isProcessing = fetcher.state !== "idle";
-  const result = fetcher.data;
+  const result = fetcher.data ?? actionData;
   const error = result && "error" in result ? result.error : undefined;
   const url = fetcher.formData?.get("url")?.toString();
 

@@ -6,7 +6,6 @@ import { Card, CardContent } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
 import { requireUser } from "~/lib/auth.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
-import logError from "~/lib/logError.server";
 import {
   addSiteToUser,
   deleteSite,
@@ -45,7 +44,6 @@ export async function action({ request }: Route.ActionArgs) {
           return redirect(`/site/${site.domain}/suggestions`);
         }
       } catch (error) {
-        logError(error, { extra: { url } });
         return {
           error:
             error instanceof Error
@@ -68,7 +66,10 @@ export async function action({ request }: Route.ActionArgs) {
   }
 }
 
-export default function SitesPage({ loaderData }: Route.ComponentProps) {
+export default function SitesPage({
+  loaderData,
+  actionData,
+}: Route.ComponentProps) {
   const { sites } = loaderData;
   const [isAddSiteFormOpen, setIsAddSiteFormOpen] = useState(
     sites.length === 0,
@@ -84,7 +85,9 @@ export default function SitesPage({ loaderData }: Route.ComponentProps) {
         )}
       </div>
 
-      {isAddSiteFormOpen && <AddSiteForm fetcher={fetcher} />}
+      {isAddSiteFormOpen && (
+        <AddSiteForm actionData={actionData} fetcher={fetcher} />
+      )}
 
       {sites.length > 0 && (
         <Card>
