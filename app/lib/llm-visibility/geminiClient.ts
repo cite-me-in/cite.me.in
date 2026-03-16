@@ -1,5 +1,6 @@
 import { google } from "@ai-sdk/google";
 import { generateText } from "ai";
+import { ms } from "convert";
 import { invariant, mapAsync } from "es-toolkit";
 import envVars from "~/lib/envVars";
 import type { QueryFn } from "./queryFn";
@@ -55,9 +56,14 @@ references, with a link to each source URL.`,
 
   const extraQueries = metadata?.webSearchQueries ?? [];
   const urls = metadata?.groundingChunks?.map((chunk) => chunk.web.uri);
+  const signal = AbortSignal.timeout(ms("10s"));
   const urlSources = await mapAsync(urls ?? [], async (url) => {
-    const response = await fetch(url, { redirect: "follow" });
-    return response.url;
+    try {
+      const response = await fetch(url, { redirect: "follow", signal });
+      return response.url;
+    } catch {
+      return null;
+    }
   });
   const citations = [...new Set(urlSources.filter((url) => url !== null))];
 
