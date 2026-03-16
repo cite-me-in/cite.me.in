@@ -1,4 +1,5 @@
 import debug from "debug";
+import { data } from "react-router";
 import envVars from "~/lib/envVars";
 import queryAccount from "~/lib/llm-visibility/queryAccount";
 import logError from "~/lib/logError.server";
@@ -52,5 +53,5 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   if (envVars.HEARTBEAT_CRON_CITATIONS)
     await fetch(envVars.HEARTBEAT_CRON_CITATIONS);
-  return Response.json({ ok: true, results });
+  return data({ ok: true, results });
 }

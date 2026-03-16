@@ -1,4 +1,5 @@
 import { sumBy } from "es-toolkit";
+import { data } from "react-router";
 import { verifySiteAccess } from "~/lib/api/apiAuth.server";
 import { RunsSchema } from "~/lib/api/schemas";
 import prisma from "~/lib/prisma.server";
@@ -26,7 +27,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     orderBy: { createdAt: "desc" },
   });
 
-  return Response.json(
+  return data(
     RunsSchema.parse({
       runs: runs.map(({ queries, ...run }) => ({
         id: run.id,

@@ -1,3 +1,4 @@
+import { data } from "react-router";
 import { verifySiteAccess } from "~/lib/api/apiAuth.server";
 import { SiteSchema } from "~/lib/api/schemas";
 import type { Route } from "./+types/api.sites.$domain";
@@ -5,7 +6,7 @@ import type { Route } from "./+types/api.sites.$domain";
 export async function loader({ request, params }: Route.LoaderArgs) {
   const site = await verifySiteAccess({ domain: params.domain, request });
 
-  return Response.json(
+  return data(
     SiteSchema.parse({
       domain: site.domain,
       createdAt: site.createdAt.toISOString().split("T")[0],

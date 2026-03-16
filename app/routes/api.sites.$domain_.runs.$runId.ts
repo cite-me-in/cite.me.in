@@ -1,3 +1,4 @@
+import { data } from "react-router";
 import { verifySiteAccess } from "~/lib/api/apiAuth.server";
 import { RunDetailSchema } from "~/lib/api/schemas";
 import prisma from "~/lib/prisma.server";
@@ -27,7 +28,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   });
 
   if (!run) throw new Response("Not found", { status: 404 });
-  return Response.json(
+  return data(
     RunDetailSchema.parse({
       id: run.id,
       platform: run.platform,

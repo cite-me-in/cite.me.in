@@ -1,4 +1,5 @@
 import { sortBy } from "es-toolkit";
+import { data } from "react-router";
 import { verifyUserAccess } from "~/lib/api/apiAuth.server";
 import { UserSchema } from "~/lib/api/schemas";
 import type { Route } from "./+types/api.me.$email";
@@ -19,5 +20,5 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     ["domain"],
   );
 
-  return Response.json(UserSchema.parse({ email: params.email, sites }));
+  return data(UserSchema.parse({ email: params.email, sites }));
 }

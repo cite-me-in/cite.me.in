@@ -1,5 +1,6 @@
 import { Temporal } from "@js-temporal/polyfill";
 import debug from "debug";
+import { data } from "react-router";
 import envVars from "~/lib/envVars";
 import generateBotInsight from "~/lib/llm-visibility/generateBotInsight";
 import logError from "~/lib/logError.server";
@@ -88,5 +89,5 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   if (envVars.HEARTBEAT_CRON_BOT_INSIGHTS)
     await fetch(envVars.HEARTBEAT_CRON_BOT_INSIGHTS);
-  return Response.json({ ok: true, results });
+  return data({ ok: true, results });
 }

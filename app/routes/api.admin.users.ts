@@ -1,3 +1,4 @@
+import { data } from "react-router";
 import { requireAdminApiKey } from "~/lib/api/apiAuth.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/api.admin.users";
@@ -18,7 +19,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     orderBy: { createdAt: "desc" },
   });
 
-  return Response.json({
+  return data({
     users: users.map(({ ownedSites, ...user }) => ({
       id: user.id,
       email: user.email,
