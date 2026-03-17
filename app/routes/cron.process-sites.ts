@@ -19,6 +19,11 @@ import type { Route } from "./+types/cron.process-sites";
 
 const logger = debug("server");
 
+// This function can run for a maximum of 300 seconds (5 minutes)
+export const config = {
+  maxDuration: 300,
+};
+
 export async function loader({ request }: Route.LoaderArgs) {
   if (request.headers.get("authorization") !== `Bearer ${envVars.CRON_SECRET}`)
     throw new Response("Unauthorized", { status: 401 });
