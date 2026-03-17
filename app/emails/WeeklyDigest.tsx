@@ -1,34 +1,41 @@
-import { Column, Img, Link, Row, Section, Text } from "@react-email/components";
-import type { WeeklyMetrics } from "~/lib/weeklyDigest.server";
+import { Column, Img, Row, Section, Text } from "@react-email/components";
 import EmailLayout from "./EmailLayout";
 import { sendEmail } from "./sendEmails.server";
 
 export default async function sendWeeklyDigestEmail({
-  to,
-  domain,
-  unsubscribeUrl,
-  metrics,
   chartBase64,
+  domain,
+  metrics,
+  to,
 }: {
   to: string;
   domain: string;
-  unsubscribeUrl: string;
-  metrics: WeeklyMetrics;
+  metrics: {
+    domain: string;
+    weekStart: Date;
+    weekEnd: Date;
+    citations: {
+      total: number;
+      delta: number;
+      byPlatform: Record<string, number>;
+    };
+    score: { current: number; delta: number };
+    botVisits: { total: number; delta: number };
+    topQueries: { query: string; count: number; delta: number }[];
+    dailyCitations: number[];
+    prevDailyCitations: number[];
+  };
   chartBase64: string;
-}) {
+}): Promise<{ id: string }> {
   const weekLabel = formatWeekRange(metrics.weekStart, metrics.weekEnd);
-  await sendEmail({
-    to,
+  return await sendEmail({
+    canUnsubscribe: true,
     subject: `Weekly Digest for ${domain} · ${weekLabel}`,
-    headers: {
-      "List-Unsubscribe": `<${unsubscribeUrl}>`,
-      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-    },
-    render: ({ subject }) => (
+    to,
+    render: ({ subject, unsubscribeURL }) => (
       <WeeklyDigestEmail
         subject={subject}
-        domain={domain}
-        unsubscribeUrl={unsubscribeUrl}
+        unsubscribeURL={unsubscribeURL}
         metrics={metrics}
         chartBase64={chartBase64}
       />
@@ -54,21 +61,33 @@ function deltaColor(n: number): string {
   return "#6b7280";
 }
 
-function WeeklyDigestEmail({
+export function WeeklyDigestEmail({
   subject,
-  domain,
-  unsubscribeUrl,
+  unsubscribeURL,
   metrics,
   chartBase64,
 }: {
   subject: string;
-  domain: string;
-  unsubscribeUrl: string;
-  metrics: WeeklyMetrics;
+  unsubscribeURL?: string;
+  metrics: {
+    domain: string;
+    weekStart: Date;
+    weekEnd: Date;
+    citations: {
+      total: number;
+      delta: number;
+      byPlatform: Record<string, number>;
+    };
+    score: { current: number; delta: number };
+    botVisits: { total: number; delta: number };
+    topQueries: { query: string; count: number; delta: number }[];
+    dailyCitations: number[];
+    prevDailyCitations: number[];
+  };
   chartBase64: string;
 }) {
   return (
-    <EmailLayout subject={subject} isCustomer={false}>
+    <EmailLayout subject={subject} unsubscribeURL={unsubscribeURL}>
       {/* Metric cards */}
       <Section className="my-6">
         <Row>
@@ -172,17 +191,6 @@ function WeeklyDigestEmail({
           ))}
         </Section>
       )}
-
-      {/* Footer */}
-      <Section className="mt-8 border-border border-t pt-4">
-        <Text className="my-2 text-center text-light text-xs">
-          You received this because you're a member of {domain} on Cite.me.in.
-          <br />
-          <Link href={unsubscribeUrl} className="text-primary underline">
-            Unsubscribe from weekly digests
-          </Link>
-        </Text>
-      </Section>
     </EmailLayout>
   );
 }

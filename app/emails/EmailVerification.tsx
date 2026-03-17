@@ -10,6 +10,7 @@ export default async function sendEmailVerificationEmail({
   url: string;
 }) {
   await sendEmail({
+    canUnsubscribe: false,
     to,
     subject: "Verify your email address for cite.me.in",
     render: ({ subject }) => <EmailVerification subject={subject} url={url} />,

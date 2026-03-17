@@ -1,25 +1,13 @@
 import { Temporal } from "@js-temporal/polyfill";
+import { WeeklyDigestEmail } from "~/emails/WeeklyDigest";
 import calculateVisibilityScore from "~/lib/llm-visibility/calculateVisibilityScore";
 import prisma from "~/lib/prisma.server";
+import type { Route } from "./+types/[_]preview";
 
-export async function getWeeklyMetrics(
-  siteId: string,
-  domain: string,
-): Promise<{
-  domain: string;
-  weekStart: Date;
-  weekEnd: Date;
-  citations: {
-    total: number;
-    delta: number;
-    byPlatform: Record<string, number>;
-  };
-  score: { current: number; delta: number };
-  botVisits: { total: number; delta: number };
-  topQueries: { query: string; count: number; delta: number }[];
-  dailyCitations: number[];
-  prevDailyCitations: number[];
-}> {
+export async function loader() {
+  const siteId = "cmmi2yfwi000404l9qcci3j0x";
+  const domain = "rentail.space";
+
   const todayMidnight = Temporal.Now.zonedDateTimeISO("UTC")
     .startOfDay()
     .toInstant();
@@ -152,83 +140,13 @@ export async function getWeeklyMetrics(
   };
 }
 
-export async function generateCitationChart(
-  daily: number[],
-  prevDaily: number[],
-): Promise<string> {
-  const { createCanvas } = await import("@napi-rs/canvas");
-  const width = 600;
-  const height = 200;
-  const canvas = createCanvas(width, height);
-  const ctx = canvas.getContext("2d");
-
-  const paddingLeft = 40;
-  const paddingRight = 20;
-  const paddingTop = 20;
-  const paddingBottom = 30;
-  const chartWidth = width - paddingLeft - paddingRight;
-  const chartHeight = height - paddingTop - paddingBottom;
-
-  const allValues = [...daily, ...prevDaily];
-  const maxVal = Math.max(...allValues, 1);
-
-  const xStep = chartWidth / 6;
-  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
-  function xAt(i: number) {
-    return paddingLeft + i * xStep;
-  }
-  function yAt(v: number) {
-    return paddingTop + chartHeight - (v / maxVal) * chartHeight;
-  }
-
-  // Background
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, width, height);
-
-  // Grid lines
-  ctx.strokeStyle = "#e5e7eb";
-  ctx.lineWidth = 1;
-  for (let i = 0; i <= 4; i++) {
-    const y = paddingTop + (i * chartHeight) / 4;
-    ctx.beginPath();
-    ctx.moveTo(paddingLeft, y);
-    ctx.lineTo(width - paddingRight, y);
-    ctx.stroke();
-  }
-
-  // Previous week — gray dashed
-  ctx.strokeStyle = "#9ca3af";
-  ctx.lineWidth = 2;
-  ctx.setLineDash([4, 4]);
-  ctx.beginPath();
-  for (let i = 0; i < 7; i++) {
-    const x = xAt(i);
-    const y = yAt(prevDaily[i] ?? 0);
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  }
-  ctx.stroke();
-
-  // Current week — blue solid
-  ctx.strokeStyle = "#4f46e5";
-  ctx.lineWidth = 2;
-  ctx.setLineDash([]);
-  ctx.beginPath();
-  for (let i = 0; i < 7; i++) {
-    const x = xAt(i);
-    const y = yAt(daily[i] ?? 0);
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  }
-  ctx.stroke();
-
-  // X-axis labels
-  ctx.fillStyle = "#6b7280";
-  ctx.font = "11px sans-serif";
-  ctx.textAlign = "center";
-  for (let i = 0; i < 7; i++) ctx.fillText(days[i] ?? "", xAt(i), height - 8);
-
-  const buffer = canvas.toBuffer("image/png");
-  return buffer.toString("base64");
+export default function WeeklyDigest({ loaderData }: Route.MetaArgs) {
+  return (
+    <WeeklyDigestEmail
+      subject="Weekly Digest"
+      unsubscribeURL="https://example.com/unsubscribe"
+      metrics={loaderData}
+      chartBase64="data:image/png;base64,..."
+    />
+  );
 }

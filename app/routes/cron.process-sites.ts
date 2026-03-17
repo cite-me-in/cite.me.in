@@ -1,6 +1,7 @@
 import { Temporal } from "@js-temporal/polyfill";
+import { ms } from "convert";
 import debug from "debug";
-import { mapAsync } from "es-toolkit";
+import { delay, mapAsync } from "es-toolkit";
 import { data } from "react-router";
 import sendWeeklyDigestEmail from "~/emails/WeeklyDigest";
 import envVars from "~/lib/envVars";
@@ -11,7 +12,6 @@ import prisma from "~/lib/prisma.server";
 import { UsageLimitExceededError } from "~/lib/usage/UsageLimitExceededError";
 import {
   generateCitationChart,
-  generateUnsubscribeToken,
   getWeeklyMetrics,
 } from "~/lib/weeklyDigest.server";
 import type { Prisma } from "~/prisma";
@@ -91,13 +91,12 @@ export async function loader({ request }: Route.LoaderArgs) {
       nextCitationRun(site),
       updateBotInsight(site),
     ]);
-    const digestSent = await sendDigestEmails(site);
+    const emailIds = await sendDigestEmails(site);
     return {
-      siteId: site.id,
-      ok: citationRun,
-      citationRun,
       botInsight,
-      digestSent,
+      citationRun,
+      emailIds,
+      siteId: site.id,
     };
   });
 
@@ -213,42 +212,41 @@ async function sendDigestEmails(
       };
     };
   }>,
-): Promise<number> {
-  let digestSent = 0;
+): Promise<{ id: string }[]> {
   try {
     const metrics = await getWeeklyMetrics(site.id, site.domain);
     const chartBase64 = await generateCitationChart(
       metrics.dailyCitations,
       metrics.prevDailyCitations,
     );
-    const appUrl = envVars.VITE_APP_URL ?? "";
     const recipients = [
       site.owner,
       ...site.siteUsers.map((su) => su.user),
     ].filter((u) => u.weeklyDigestEnabled);
+
+    const emailIds = [];
     for (const user of recipients) {
-      const token = generateUnsubscribeToken(user.id);
-      const unsubscribeUrl = new URL("/unsubscribe", appUrl);
-      unsubscribeUrl.searchParams.set("token", token);
-      unsubscribeUrl.searchParams.set("user", user.id);
-      await sendWeeklyDigestEmail({
+      const emailId = await sendWeeklyDigestEmail({
         to: "assaf@labnotes.org", //  user.email,
         domain: site.domain,
-        unsubscribeUrl: unsubscribeUrl.toString(),
         metrics,
         chartBase64,
       });
-      digestSent++;
+      console.log({ emailId });
+      emailIds.push(emailId);
+      await delay(ms("1s"));
     }
+
     logger(
       "[cron:process-sites] Digest done — %s, sent %d",
       site.domain,
-      digestSent,
+      emailIds.length,
     );
+    return emailIds;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     logger("[cron:process-sites] Digest failed — %s: %s", site.domain, message);
     logError(error, { extra: { siteId: site.id, step: "digest" } });
+    return [];
   }
-  return digestSent;
 }

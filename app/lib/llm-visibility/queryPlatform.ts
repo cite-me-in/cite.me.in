@@ -1,7 +1,7 @@
 import type { Temporal } from "@js-temporal/polyfill";
 import { ms } from "convert";
 import debug from "debug";
-import { delay, mapAsync } from "es-toolkit";
+import { delay, forEachAsync } from "es-toolkit";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import {
@@ -64,7 +64,7 @@ export default async function queryPlatform({
     });
     logger("[%s:%s] Created citation query run %s", site.id, platform, run.id);
 
-    await mapAsync(queries, async (query, index) => {
+    await forEachAsync(queries, async (query, index) => {
       if (process.env.NODE_ENV !== "test") await delay(ms("1s") * index);
       return singleQueryRepetition({
         siteId,

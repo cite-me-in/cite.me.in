@@ -1,32 +1,24 @@
+import generateUnsubscribeToken from "~/emails/generateUnsubscribeToken";
 import prisma from "~/lib/prisma.server";
-import { generateUnsubscribeToken } from "~/lib/weeklyDigest.server";
 import type { Route } from "./+types/unsubscribe";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const token = url.searchParams.get("token");
-  const userId = url.searchParams.get("user");
+  const email = url.searchParams.get("email");
 
-  if (!token || !userId) {
+  if (!token || !email)
     return new Response("Invalid unsubscribe link", { status: 400 });
-  }
 
-  const expectedToken = generateUnsubscribeToken(userId);
-  if (token !== expectedToken) {
+  const expectedToken = generateUnsubscribeToken(email);
+  if (token !== expectedToken)
     return new Response("Invalid unsubscribe token", { status: 400 });
-  }
 
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { id: true },
-  });
-
-  if (!user) {
-    return new Response("User not found", { status: 400 });
-  }
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) return new Response("User not found", { status: 400 });
 
   await prisma.user.update({
-    where: { id: userId },
+    where: { id: user.id },
     data: { weeklyDigestEnabled: false },
   });
 

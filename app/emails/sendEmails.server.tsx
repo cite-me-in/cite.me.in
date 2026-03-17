@@ -5,6 +5,7 @@ import { delay, invariant, withTimeout } from "es-toolkit";
 import Redis from "ioredis";
 import { Resend } from "resend";
 import envVars from "~/lib/envVars";
+import generateUnsubscribeToken from "./generateUnsubscribeToken";
 
 export type LastEmail = {
   html: string;
@@ -21,40 +22,68 @@ const logger = debug("email");
  * Send an email using Resend. If an error occurs, it will be captured by Sentry.
  * The email will be stored in `lastEmailSent` for visual regression testing.
  *
+ * @param canUnsubscribe - Whether the email can be unsubscribed from.
  * @param renderFn - The function to render the email.
  * @param subject - The subject of the email.
  * @param to - The email address to send the email to.
  * @returns The ID of the email that was sent.
  */
 export async function sendEmail({
+  canUnsubscribe,
+  headers,
   render: renderFn,
   subject,
   to,
-  headers,
 }: {
-  render: ({ subject }: { subject: string }) => React.ReactNode;
+  canUnsubscribe?: boolean;
+  headers?: Record<string, string>;
+  render: ({
+    subject,
+    unsubscribeURL,
+  }: {
+    subject: string;
+    unsubscribeURL?: string;
+  }) => React.ReactNode;
   subject: string;
   to: string;
-  headers?: Record<string, string>;
-}): Promise<string> {
+}): Promise<{
+  id: string;
+}> {
+  let unsubscribeURL: string | undefined;
+  if (canUnsubscribe) {
+    const token = generateUnsubscribeToken(to);
+    const url = new URL("/unsubscribe", envVars.VITE_APP_URL);
+    url.searchParams.set("token", token);
+    url.searchParams.set("email", to);
+    unsubscribeURL = url.toString();
+  }
+
   lastEmailSent = undefined;
-  const html = await pretty(await render(await renderFn({ subject })));
+  const html = await pretty(
+    await render(await renderFn({ subject, unsubscribeURL })),
+  );
 
   // In tests, we don't want to actually send emails, we just want to render them
   if (process.env.NODE_ENV === "test") {
     await captureLastEmail({ html, to: to, subject });
-    return "test-email-id";
+    return { id: "test-email-id" };
   } else {
     const { error, data } = await resend.emails.send({
       from: `cite.me.in <${import.meta.env.VITE_EMAIL_FROM}>`,
-      headers,
       html,
       subject,
       to: [to],
+      headers: canUnsubscribe
+        ? {
+            ...headers,
+            "List-Unsubscribe": `<${unsubscribeURL}>`,
+            "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+          }
+        : headers,
     });
     if (error) throw error;
     logger("%s sent to %s", subject, to);
-    return data?.id;
+    return data;
   }
 }
 

@@ -10,6 +10,7 @@ export default async function sendPasswordRecoveryEmail({
   url: string;
 }) {
   await sendEmail({
+    canUnsubscribe: false,
     to,
     subject: "Reset your Cite.me.in password",
     render: ({ subject }) => <PasswordRecovery subject={subject} url={url} />,

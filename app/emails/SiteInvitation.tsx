@@ -14,6 +14,7 @@ export default async function sendSiteInvitationEmail({
   url: string;
 }) {
   await sendEmail({
+    canUnsubscribe: false,
     to,
     subject: `${invitedByEmail} invited you to ${siteDomain} on Cite.me.in`,
     render: ({ subject }) => (

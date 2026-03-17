@@ -18,21 +18,21 @@ import {
  * It is used to ensure that all emails have the same layout and consistent styling.
  *
  * @param children - The content of the email.
- * @param isCustomer - Whether the email is for a customer. Defaults to true.
  * @param preview - The preview text of the email. If not provided, the subject will be used.
  * @param subject - The subject of the email.
+ * @param unsubscribeURL - The URL to unsubscribe from all emails.
  * @returns The HTML email.
  */
 export default function EmailLayout({
   children,
-  isCustomer = true,
   preview,
   subject,
+  unsubscribeURL,
 }: {
   children: React.ReactNode;
-  isCustomer?: boolean;
   preview?: string;
   subject: string;
+  unsubscribeURL?: string;
 }) {
   return (
     <Html>
@@ -62,7 +62,7 @@ export default function EmailLayout({
           <Container className="mx-auto my-40px max-w-600px bg-white p-4">
             <Header subject={subject} />
             {children}
-            <Footer isCustomer={isCustomer} />
+            <Footer unsubscribeURL={unsubscribeURL} />
           </Container>
         </Body>
       </Tailwind>
@@ -73,13 +73,17 @@ export default function EmailLayout({
 function Header({ subject }: { subject: string }) {
   return (
     <Section>
-      <Img
-        alt="Cite.me.in Logo"
-        height="80"
-        src={new URL("/icon-192.png", import.meta.env.VITE_APP_URL).toString()}
-        className="mx-auto mb-8 block"
-        width="80"
-      />
+      <Text className="my-2 flex items-center justify-center text-center">
+        <Img
+          height={32}
+          src={new URL("/icon-192.png", "https://cite.me.in").toString()}
+          className="mt-1 mr-2"
+          width={32}
+        />{" "}
+        <span className="font-bold text-2xl text-[#F59E0B] leading-none">
+          cite.me.in
+        </span>
+      </Text>
 
       <Heading className="mb-6 text-center font-bold text-2xl text-gray-800 leading-snug">
         {subject}
@@ -88,11 +92,11 @@ function Header({ subject }: { subject: string }) {
   );
 }
 
-function Footer({ isCustomer = true }: { isCustomer: boolean }) {
+function Footer({ unsubscribeURL }: { unsubscribeURL?: string }) {
   return (
     <Section className="mt-8 border-gray-200 border-t pt-6">
-      {isCustomer && (
-        <Text className="mb-4 text-center text-gray-500 text-sm leading-relaxed">
+      {unsubscribeURL && (
+        <Text className="my-2 text-center text-light text-xs">
           You're receiving this email because you signed up for an account at{" "}
           <Link
             href={import.meta.env.VITE_APP_URL}
@@ -100,8 +104,13 @@ function Footer({ isCustomer = true }: { isCustomer: boolean }) {
           >
             cite.me.in
           </Link>
+          <br />
+          <Link href={unsubscribeURL} className="text-primary underline">
+            Unsubscribe from all emails
+          </Link>
         </Text>
       )}
+
       <Text className="my-2 text-center text-light text-sm leading-relaxed">
         <Link
           href={new URL("/privacy", import.meta.env.VITE_APP_URL).toString()}

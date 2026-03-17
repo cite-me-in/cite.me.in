@@ -160,7 +160,6 @@ async function crawlSiteCustom({
   // Step 5: combine and limit
   const combined = markdowns.join("\n\n---\n\n");
   const words = combined.split(/\s+/);
-  console.log("Crawled %s pages => %s words", pages.length, words.length);
   logger("Crawled %s pages => %s words", pages.length, words.length);
   return words.slice(0, maxWords).join(" ");
 }
