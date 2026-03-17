@@ -1,6 +1,6 @@
 import { Column, Img, Row, Section, Text } from "@react-email/components";
 import EmailLayout from "./EmailLayout";
-import { sendEmail } from "./sendEmails.server";
+import { sendEmail } from "./sendEmails";
 
 export default async function sendWeeklyDigestEmail({
   chartBase64,
