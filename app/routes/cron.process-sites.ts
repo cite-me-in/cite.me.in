@@ -226,14 +226,13 @@ async function sendDigestEmails(
       const unsubscribeUrl = new URL("/unsubscribe", appUrl);
       unsubscribeUrl.searchParams.set("token", token);
       unsubscribeUrl.searchParams.set("user", user.id);
-      if (user.email === "assaf@labnotes.org")
-        await sendWeeklyDigestEmail({
-          to: user.email,
-          domain: site.domain,
-          unsubscribeUrl: unsubscribeUrl.toString(),
-          metrics,
-          chartBase64,
-        });
+      await sendWeeklyDigestEmail({
+        to: "assaf@labnotes.org", //  user.email,
+        domain: site.domain,
+        unsubscribeUrl: unsubscribeUrl.toString(),
+        metrics,
+        chartBase64,
+      });
       digestSent++;
     }
     logger(
