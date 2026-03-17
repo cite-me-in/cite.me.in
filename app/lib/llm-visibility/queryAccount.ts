@@ -1,7 +1,6 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { groupBy, orderBy } from "es-toolkit";
 import prisma from "~/lib/prisma.server";
-import type { Site } from "~/prisma";
 import queryClaude from "./claudeClient";
 import queryGemini from "./geminiClient";
 import openaiClient from "./openaiClient";
@@ -22,7 +21,7 @@ export default async function queryAccount({
   site,
   queries,
 }: {
-  site: Site;
+  site: { id: string; domain: string };
   queries: { query: string; group: string }[];
 }) {
   const newerThan = Temporal.Now.instant()
