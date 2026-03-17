@@ -82,6 +82,7 @@ describe("queryGemini", () => {
     });
 
     expect(fetchMock).toHaveBeenCalledWith("https://redirect.example.com", {
+      signal: expect.any(AbortSignal),
       redirect: "follow",
     });
   });
