@@ -59,7 +59,7 @@ export async function action({ request }: Route.ActionArgs) {
   try {
     const verifyToken = await createEmailVerificationToken(user.id);
     await sendEmailVerificationEmail({
-      to: user.email,
+      email: user.email,
       url: new URL(`/verify-email/${verifyToken}`, request.url).toString(),
     });
   } catch (error) {

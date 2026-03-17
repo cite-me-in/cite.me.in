@@ -3,17 +3,17 @@ import EmailLayout from "./EmailLayout";
 import { sendEmail } from "./sendEmails";
 
 export default async function sendPasswordRecoveryEmail({
-  to,
+  email,
   url,
 }: {
-  to: string;
+  email: string;
   url: string;
 }) {
   await sendEmail({
     canUnsubscribe: false,
-    to,
-    subject: "Reset your Cite.me.in password",
     render: ({ subject }) => <PasswordRecovery subject={subject} url={url} />,
+    subject: "Reset your Cite.me.in password",
+    user: { email, unsubscribed: false },
   });
 }
 

@@ -3,20 +3,18 @@ import EmailLayout from "./EmailLayout";
 import { sendEmail } from "./sendEmails";
 
 export default async function sendSiteInvitationEmail({
-  to,
+  email,
   siteDomain,
   invitedByEmail,
   url,
 }: {
-  to: string;
+  email: string;
   siteDomain: string;
   invitedByEmail: string;
   url: string;
 }) {
   await sendEmail({
     canUnsubscribe: false,
-    to,
-    subject: `${invitedByEmail} invited you to ${siteDomain} on Cite.me.in`,
     render: ({ subject }) => (
       <SiteInvitationEmail
         subject={subject}
@@ -25,6 +23,8 @@ export default async function sendSiteInvitationEmail({
         url={url}
       />
     ),
+    subject: `${invitedByEmail} invited you to ${siteDomain} on Cite.me.in`,
+    user: { email, unsubscribed: false },
   });
 }
 

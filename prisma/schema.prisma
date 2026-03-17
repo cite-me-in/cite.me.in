@@ -36,9 +36,9 @@ model BotVisit {
 }
 
 model HumanVisit {
-  id         String   @id @default(cuid())
-  createdAt  DateTime @map("created_at") @default(now())
-  updatedAt  DateTime @map("updated_at") @updatedAt
+  id         String                       @id @default(cuid())
+  createdAt  DateTime @map("created_at")  @default(now())
+  updatedAt  DateTime @map("updated_at")  @updatedAt
   date       DateTime @map("date")
   siteId     String   @map("site_id")
   site       Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
@@ -46,9 +46,9 @@ model HumanVisit {
   browser    String   @map("browser")
   deviceType String   @map("device_type")
   aiReferral String?  @map("ai_referral")
-  count      Int      @map("count")      @default(1)
-  firstSeen  DateTime @map("first_seen") @default(now())
-  lastSeen   DateTime @map("last_seen")  @default(now())
+  count      Int      @map("count")       @default(1)
+  firstSeen  DateTime @map("first_seen")  @default(now())
+  lastSeen   DateTime @map("last_seen")   @default(now())
 
   @@unique([date, siteId, visitorId])
   @@index([siteId])
@@ -143,7 +143,7 @@ model Session {
 model Site {
   owner                User                  @relation("OwnedSites", fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId              String                @map("owner_id")
-  apiKey               String                @map("api_key") @unique @default("")
+  apiKey               String                @map("api_key")    @unique @default("")
   botInsight           BotInsight?
   botVisits            BotVisit[]
   humanVisits          HumanVisit[]
@@ -151,7 +151,7 @@ model Site {
   content              String?               @map("content")
   createdAt            DateTime              @map("created_at") @default(now())
   domain               String                @map("domain")
-  id                   String                @id @default(cuid())
+  id                   String                                   @id @default(cuid())
   siteQueries          SiteQuery[]
   siteQuerySuggestions SiteQuerySuggestion[]
   siteUsers            SiteUser[]
@@ -160,7 +160,7 @@ model Site {
   updatedAt            DateTime              @map("updated_at") @updatedAt
 
   @@index([domain])
-  @@unique([ownerId, domain])
+  @@unique([ownerId,   domain])
   @@map("sites")
 }
 
@@ -183,13 +183,13 @@ enum InvitationStatus {
 }
 
 model SiteInvitation {
-  id          String           @id @default(cuid())
+  id          String                                 @id @default(cuid())
   siteId      String           @map("site_id")
   invitedById String           @map("invited_by_id")
   email       String           @map("email")
-  token       String           @map("token") @unique
-  status      InvitationStatus @default(PENDING)
-  createdAt   DateTime         @map("created_at") @default(now())
+  token       String           @map("token")         @unique
+  status      InvitationStatus                       @default(PENDING)
+  createdAt   DateTime         @map("created_at")    @default(now())
   acceptedAt  DateTime?        @map("accepted_at")
 
   site        Site             @relation(fields: [siteId], references: [id], onDelete: Cascade)
@@ -241,35 +241,35 @@ model UsageEvent {
 }
 
 model User {
+  account                 Account?
+  apiKey                  String?                  @map("api_key")           @unique
   createdAt               DateTime                 @map("created_at")        @default(now())
   email                   String                   @map("email")             @unique
   emailVerificationTokens EmailVerificationToken[]
   emailVerifiedAt         DateTime?                @map("email_verified_at")
   id                      String                                             @id @default(cuid())
-  apiKey                  String?                  @map("api_key")           @unique
   ownedSites              Site[]                   @relation("OwnedSites")
   passwordHash            String                   @map("password_hash")
   passwordRecoveryTokens  PasswordRecoveryToken[]
+  sentInvitations         SiteInvitation[]         @relation("SentInvitations")
   sessions                Session[]
   siteUsers               SiteUser[]
-  sentInvitations         SiteInvitation[]         @relation("SentInvitations")
+  unsubscribed            Boolean                  @map("unsubscribed")      @default(false)
   updatedAt               DateTime                 @map("updated_at")        @updatedAt
-  weeklyDigestEnabled     Boolean                  @map("weekly_digest_enabled") @default(true)
-  account                 Account?
 
   @@map("users")
 }
 
 model Account {
-  id                   String   @id @default(cuid())
-  userId               String   @unique @map("user_id")
+  id                   String                                  @id @default(cuid())
+  userId               String   @map("user_id")                @unique
   stripeCustomerId     String   @map("stripe_customer_id")
   stripeSubscriptionId String   @map("stripe_subscription_id")
   status               String   @map("status")
-  createdAt            DateTime @map("created_at") @default(now())
-  updatedAt            DateTime @map("updated_at") @updatedAt
+  createdAt            DateTime @map("created_at")             @default(now())
+  updatedAt            DateTime @map("updated_at")             @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("accounts")
 }

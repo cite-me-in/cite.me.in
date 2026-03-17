@@ -31,7 +31,7 @@ export async function action({ request }: Route.ActionArgs) {
 
     try {
       await sendPasswordRecoveryEmail({
-        to: email,
+        email,
         url: new URL(`/reset-password/${token}`, request.url).toString(),
       });
     } catch {

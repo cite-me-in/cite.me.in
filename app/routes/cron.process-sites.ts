@@ -45,14 +45,14 @@ export async function loader({ request }: Route.LoaderArgs) {
           id: true,
           createdAt: true,
           email: true,
-          weeklyDigestEnabled: true,
+          unsubscribed: true,
           account: { select: { status: true } },
         },
       },
       siteUsers: {
         select: {
           user: {
-            select: { id: true, email: true, weeklyDigestEnabled: true },
+            select: { id: true, email: true, unsubscribed: true },
           },
         },
       },
@@ -196,8 +196,9 @@ async function sendDigestEmails(
         select: {
           id: true;
           email: true;
-          weeklyDigestEnabled: true;
+          unsubscribed: true;
         };
+        where: { unsubscribed: false };
       };
       siteUsers: {
         select: {
@@ -205,8 +206,9 @@ async function sendDigestEmails(
             select: {
               id: true;
               email: true;
-              weeklyDigestEnabled: true;
+              unsubscribed: true;
             };
+            where: { user: { unsubscribed: false } };
           };
         };
       };
@@ -219,21 +221,17 @@ async function sendDigestEmails(
       metrics.dailyCitations,
       metrics.prevDailyCitations,
     );
-    const recipients = [
-      site.owner,
-      ...site.siteUsers.map((su) => su.user),
-    ].filter((u) => u.weeklyDigestEnabled);
+    const recipients = [site.owner, ...site.siteUsers.map((su) => su.user)];
 
     const emailIds = [];
     for (const user of recipients) {
       const emailId = await sendWeeklyDigestEmail({
-        to: "assaf@labnotes.org", //  user.email,
+        user,
         domain: site.domain,
         metrics,
         chartBase64,
       });
-      console.log({ emailId });
-      emailIds.push(emailId);
+      if (emailId) emailIds.push(emailId);
       await delay(ms("1s"));
     }
 

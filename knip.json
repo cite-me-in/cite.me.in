@@ -3,7 +3,7 @@
   "entry": [
     "app/components/layout/PageLayout.tsx",
     "app/components/ui/*.tsx",
-    "app/emails/sendEmails.server.tsx",
+    "app/emails/sendEmails.tsx",
     "app/global.css",
     "test/helpers/serverWorker.ts",
     "vercel.ts"

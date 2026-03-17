@@ -37,7 +37,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 
   try {
     await sendSiteInvitationEmail({
-      to: email,
+      email,
       siteDomain: site.domain,
       invitedByEmail: user.email,
       url: new URL(`/invite/${token}`, request.url).toString(),

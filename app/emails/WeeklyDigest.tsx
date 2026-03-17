@@ -6,9 +6,13 @@ export default async function sendWeeklyDigestEmail({
   chartBase64,
   domain,
   metrics,
-  to,
+  user,
 }: {
-  to: string;
+  user: {
+    id: string;
+    email: string;
+    unsubscribed: boolean;
+  };
   domain: string;
   metrics: {
     domain: string;
@@ -26,12 +30,10 @@ export default async function sendWeeklyDigestEmail({
     prevDailyCitations: number[];
   };
   chartBase64: string;
-}): Promise<{ id: string }> {
+}): Promise<{ id: string } | null> {
   const weekLabel = formatWeekRange(metrics.weekStart, metrics.weekEnd);
   return await sendEmail({
     canUnsubscribe: true,
-    subject: `Weekly Digest for ${domain} · ${weekLabel}`,
-    to,
     render: ({ subject, unsubscribeURL }) => (
       <WeeklyDigestEmail
         subject={subject}
@@ -40,6 +42,8 @@ export default async function sendWeeklyDigestEmail({
         chartBase64={chartBase64}
       />
     ),
+    subject: `Weekly Digest for ${domain} · ${weekLabel}`,
+    user,
   });
 }
 

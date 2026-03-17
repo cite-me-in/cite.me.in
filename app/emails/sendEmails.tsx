@@ -7,13 +7,11 @@ import { Resend } from "resend";
 import envVars from "~/lib/envVars";
 import generateUnsubscribeToken from "./generateUnsubscribeToken";
 
-export type LastEmail = {
+let lastEmailSent: {
   html: string;
   subject: string;
   to: string;
-};
-
-export let lastEmailSent: LastEmail | undefined = undefined;
+} | null = null;
 
 const resend = new Resend(envVars.RESEND_API_KEY);
 const logger = debug("email");
@@ -33,7 +31,7 @@ export async function sendEmail({
   headers,
   render: renderFn,
   subject,
-  to,
+  user,
 }: {
   canUnsubscribe?: boolean;
   headers?: Record<string, string>;
@@ -45,34 +43,39 @@ export async function sendEmail({
     unsubscribeURL?: string;
   }) => React.ReactNode;
   subject: string;
-  to: string;
+  user: {
+    email: string;
+    unsubscribed: boolean;
+  };
 }): Promise<{
   id: string;
-}> {
+} | null> {
   let unsubscribeURL: string | undefined;
   if (canUnsubscribe) {
-    const token = generateUnsubscribeToken(to);
+    if (user.unsubscribed) return null;
+
+    const token = generateUnsubscribeToken(user.email);
     const url = new URL("/unsubscribe", envVars.VITE_APP_URL);
     url.searchParams.set("token", token);
-    url.searchParams.set("email", to);
+    url.searchParams.set("email", user.email);
     unsubscribeURL = url.toString();
   }
 
-  lastEmailSent = undefined;
+  lastEmailSent = null;
   const html = await pretty(
     await render(await renderFn({ subject, unsubscribeURL })),
   );
 
   // In tests, we don't want to actually send emails, we just want to render them
   if (process.env.NODE_ENV === "test") {
-    await captureLastEmail({ html, to: to, subject });
+    await captureLastEmail({ html, to: user.email, subject });
     return { id: "test-email-id" };
   } else {
     const { error, data } = await resend.emails.send({
       from: `cite.me.in <${import.meta.env.VITE_EMAIL_FROM}>`,
       html,
       subject,
-      to: [to],
+      to: [user.email],
       headers: canUnsubscribe
         ? {
             ...headers,
@@ -82,7 +85,7 @@ export async function sendEmail({
         : headers,
     });
     if (error) throw error;
-    logger("%s sent to %s", subject, to);
+    logger("Sent %s to %s", subject, user.email);
     return data;
   }
 }
@@ -106,8 +109,8 @@ function initRedis() {
     subscriber.on("message", (channel: string, message: unknown) => {
       if (channel === "email:last")
         lastEmailSent = message
-          ? (JSON.parse(message as string) as LastEmail)
-          : undefined;
+          ? (JSON.parse(message as string) as typeof lastEmailSent)
+          : null;
     });
     subscriber.subscribe("email:last");
   } catch (error) {
@@ -122,14 +125,14 @@ function initRedis() {
  *
  * @returns The last email that was sent.
  */
-export async function getLastEmailSent(): Promise<LastEmail> {
+export async function getLastEmailSent(): Promise<typeof lastEmailSent> {
   initRedis();
   await withTimeout(async () => {
     while (!lastEmailSent) await delay(100);
   }, ms("1s"));
   invariant(lastEmailSent, "No email sent");
   const lastEmail = lastEmailSent;
-  lastEmailSent = undefined;
+  lastEmailSent = null;
   return lastEmail;
 }
 
@@ -141,7 +144,7 @@ export async function getLastEmailSent(): Promise<LastEmail> {
  * @param subject - The subject of the email.
  * @param to - The email address of the recipient.
  */
-async function captureLastEmail(lastEmail: LastEmail) {
+async function captureLastEmail(lastEmail: typeof lastEmailSent) {
   initRedis();
   if (publisher)
     await publisher.publish("email:last", JSON.stringify(lastEmail));

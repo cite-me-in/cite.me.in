@@ -19,7 +19,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   await prisma.user.update({
     where: { id: user.id },
-    data: { weeklyDigestEnabled: false },
+    data: { unsubscribed: true },
   });
 
   return new Response(

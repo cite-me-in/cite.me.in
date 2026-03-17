@@ -42,7 +42,14 @@ export async function action({ params, request }: Route.ActionArgs) {
   const record = await prisma.emailVerificationToken.findUnique({
     where: { token },
     select: {
-      user: { select: { id: true, email: true, emailVerifiedAt: true } },
+      user: {
+        select: {
+          id: true,
+          email: true,
+          emailVerifiedAt: true,
+          unsubscribed: true,
+        },
+      },
     },
   });
 
@@ -50,7 +57,7 @@ export async function action({ params, request }: Route.ActionArgs) {
     const newToken = await createEmailVerificationToken(record.user.id);
     try {
       await sendEmailVerificationEmail({
-        to: record.user.email,
+        email: record.user.email,
         url: new URL(`/verify-email/${newToken}`, request.url).toString(),
       });
     } catch (error) {
