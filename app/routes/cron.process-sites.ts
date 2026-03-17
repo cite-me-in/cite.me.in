@@ -80,7 +80,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       updateBotInsight(site),
     ]);
     const digestSent = await sendDigestEmails(site);
-    return { domain: site.domain, citationRun, botInsight, digestSent };
+    return { siteId: site.id, ok: citationRun, citationRun, botInsight, digestSent };
   });
 
   if (envVars.HEARTBEAT_CRON_PROCESS_SITES)
