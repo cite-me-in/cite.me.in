@@ -23,10 +23,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (request.headers.get("authorization") !== `Bearer ${envVars.CRON_SECRET}`)
     throw new Response("Unauthorized", { status: 401 });
 
-  const sevenDaysAgo = new Date(
-    Temporal.Now.instant().subtract({ hours: 24 * 7 }).epochMilliseconds,
+  const notRecentlyProcessed = new Date(
+    Temporal.Now.instant().subtract({ hours: 24 }).epochMilliseconds,
   );
-  const twentyFourDaysAgo = new Date(
+  const inFreeTrial = new Date(
     Temporal.Now.instant().subtract({ hours: 24 * 24 }).epochMilliseconds,
   );
 
@@ -38,6 +38,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       owner: {
         select: {
           id: true,
+          createdAt: true,
           email: true,
           weeklyDigestEnabled: true,
           account: { select: { status: true } },
@@ -56,14 +57,20 @@ export async function loader({ request }: Route.LoaderArgs) {
         select: { createdAt: true },
       },
     },
+    where: {
+      OR: [
+        // Site owner has an active (paid) account.
+        { owner: { account: { status: "active" } } },
+        // Site owner is still in their free trial period.
+        { owner: { createdAt: { gte: inFreeTrial } } },
+      ],
+    },
   });
 
   const qualifying = sites.filter((site) => {
+    // Sites that have not been processed in the last day.
     const lastRun = site.citationRuns[0];
-    if (lastRun && lastRun.createdAt >= sevenDaysAgo) return false;
-    const isPaid = site.owner.account?.status === "active";
-    const isFreeTrial = !isPaid && site.createdAt >= twentyFourDaysAgo;
-    return isPaid || isFreeTrial;
+    return !lastRun || lastRun.createdAt <= notRecentlyProcessed;
   });
 
   logger(
@@ -80,7 +87,13 @@ export async function loader({ request }: Route.LoaderArgs) {
       updateBotInsight(site),
     ]);
     const digestSent = await sendDigestEmails(site);
-    return { siteId: site.id, ok: citationRun, citationRun, botInsight, digestSent };
+    return {
+      siteId: site.id,
+      ok: citationRun,
+      citationRun,
+      botInsight,
+      digestSent,
+    };
   });
 
   if (envVars.HEARTBEAT_CRON_PROCESS_SITES)

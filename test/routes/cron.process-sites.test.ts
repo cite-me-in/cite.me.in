@@ -1,3 +1,4 @@
+import { Temporal } from "@js-temporal/polyfill";
 import { beforeEach, describe, expect, it } from "vitest";
 import prisma from "~/lib/prisma.server";
 import { port } from "../helpers/launchBrowser";
@@ -31,6 +32,10 @@ describe("cron.process-sites", () => {
   });
 
   describe("site filtering", () => {
+    beforeEach(async () => {
+      await prisma.user.deleteMany();
+    });
+
     it("should process a paid site with no citation run", async () => {
       await prisma.site.create({
         data: {
@@ -58,11 +63,7 @@ describe("cron.process-sites", () => {
       const body = await res.json();
       expect(res.status).toBe(200);
       expect(Array.isArray(body.results)).toBe(true);
-      expect(
-        body.results.find(
-          (r: { siteId: string }) => r.siteId === "site-process-1",
-        ),
-      ).toBeDefined();
+      expect(body.results.length).toBe(1);
     });
 
     it("should process a free trial site (created today)", async () => {
@@ -85,28 +86,24 @@ describe("cron.process-sites", () => {
       const body = await res.json();
       expect(res.status).toBe(200);
       expect(Array.isArray(body.results)).toBe(true);
-      expect(
-        body.results.find(
-          (r: { siteId: string }) => r.siteId === "site-process-2",
-        ),
-      ).toBeDefined();
+      expect(body.results.length).toBe(1);
     });
 
-    it("should skip a free site older than 24 days", async () => {
+    it("should skip a free site older than 25 days", async () => {
       const twentyFiveDaysAgo = new Date(
-        Date.now() - 25 * 24 * 60 * 60 * 1000,
+        Temporal.Now.instant().subtract({ hours: 24 * 25 }).epochMilliseconds,
       );
       await prisma.site.create({
         data: {
           id: "site-process-3",
           domain: "old-free.example.com",
           apiKey: "test-api-key-process-3",
-          createdAt: twentyFiveDaysAgo,
           owner: {
             create: {
               id: "user-process-3",
               email: "owner-process3@test.com",
               passwordHash: "test",
+              createdAt: twentyFiveDaysAgo,
             },
           },
         },
@@ -116,14 +113,10 @@ describe("cron.process-sites", () => {
       const body = await res.json();
       expect(res.status).toBe(200);
       expect(Array.isArray(body.results)).toBe(true);
-      expect(
-        body.results.find(
-          (r: { siteId: string }) => r.siteId === "site-process-3",
-        ),
-      ).toBeUndefined();
+      expect(body.results.length).toBe(0);
     });
 
-    it("should skip a paid site with a citation run within 7 days", async () => {
+    it("should skip a site with a citation run recently", async () => {
       await prisma.site.create({
         data: {
           id: "site-process-4",
@@ -153,11 +146,7 @@ describe("cron.process-sites", () => {
       const body = await res.json();
       expect(res.status).toBe(200);
       expect(Array.isArray(body.results)).toBe(true);
-      expect(
-        body.results.find(
-          (r: { siteId: string }) => r.siteId === "site-process-4",
-        ),
-      ).toBeUndefined();
+      expect(body.results.length).toBe(0);
     });
   });
 });
