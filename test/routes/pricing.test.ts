@@ -28,17 +28,20 @@ describe("pricing user flows", () => {
       expect(new URL(page.url()).pathname).toBe("/sites");
 
       // No account record means free tier
-      const user = await prisma.user.findUnique({ where: { email: EMAIL_A } });
-      expect(user).not.toBeNull();
+      const user = await prisma.user.findUniqueOrThrow({
+        where: { email: EMAIL_A },
+      });
       const account = await prisma.account.findUnique({
-        where: { userId: user!.id },
+        where: { userId: user.id },
       });
       expect(account).toBeNull();
     });
 
     it("should show the upgrade page after navigating to /upgrade", async () => {
-      const user = await prisma.user.findUnique({ where: { email: EMAIL_A } });
-      await signIn(user!.id);
+      const user = await prisma.user.findUniqueOrThrow({
+        where: { email: EMAIL_A },
+      });
+      await signIn(user.id);
       const page = await goto("/upgrade");
 
       await expect(
@@ -53,12 +56,18 @@ describe("pricing user flows", () => {
     });
 
     it("should show Subscribe buttons with correct form structure", async () => {
-      const user = await prisma.user.findUnique({ where: { email: EMAIL_A } });
-      await signIn(user!.id);
+      const user = await prisma.user.findUniqueOrThrow({
+        where: { email: EMAIL_A },
+      });
+      await signIn(user.id);
       const page = await goto("/upgrade");
 
-      await expect(page.getByRole("button", { name: "Subscribe — $29/month" })).toBeVisible();
-      await expect(page.getByRole("button", { name: "Subscribe — $249/year" })).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Subscribe — $29/month" }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Subscribe — $249/year" }),
+      ).toBeVisible();
 
       // Verify the monthly form posts interval=monthly
       const monthlyForm = page.locator("form", {
@@ -74,10 +83,12 @@ describe("pricing user flows", () => {
     });
 
     it("should redirect /upgrade to /sites once account is active", async () => {
-      const user = await prisma.user.findUnique({ where: { email: EMAIL_A } });
+      const user = await prisma.user.findUniqueOrThrow({
+        where: { email: EMAIL_A },
+      });
       await prisma.account.create({
         data: {
-          userId: user!.id,
+          userId: user.id,
           stripeCustomerId: "cus_test_fake",
           stripeSubscriptionId: "sub_test_fake",
           status: "active",
@@ -85,7 +96,7 @@ describe("pricing user flows", () => {
         },
       });
 
-      await signIn(user!.id);
+      await signIn(user.id);
       const page = await goto("/upgrade");
       await page.waitForURL(`http://localhost:${port}/sites`);
       expect(new URL(page.url()).pathname).toBe("/sites");
