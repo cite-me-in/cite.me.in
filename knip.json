@@ -12,7 +12,8 @@
     "app/**/*.ts",
     "app/**/*.tsx",
     "test/**/*.ts",
-    "scripts/**/*.ts"
+    "scripts/**/*.ts",
+    "!__screenshots__"
   ],
   "ignoreDependencies": [
     "@prisma/client",
