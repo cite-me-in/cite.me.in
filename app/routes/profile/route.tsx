@@ -1,10 +1,13 @@
-import { useLoaderData } from "react-router";
+import { Form, redirect, useLoaderData } from "react-router";
 import * as zod from "zod";
 import AuthForm from "~/components/ui/AuthForm";
+import { Button } from "~/components/ui/Button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/Tabs";
 import { hashPassword, requireUser, verifyPassword } from "~/lib/auth.server";
+import envVars from "~/lib/envVars";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
+import { getStripe } from "~/lib/stripe.server";
 import type { Route } from "./+types/route";
 import ProfileApiKeyForm from "./ProfileApiKeyForm";
 import ProfileEmailForm from "./ProfileEmailForm";
@@ -19,7 +22,11 @@ export function meta(): Route.MetaDescriptors {
 
 export async function loader({ request }: Route.LoaderArgs) {
   const user = await requireUser(request);
-  return { user };
+  const account = await prisma.account.findUnique({
+    where: { userId: user.id },
+    select: { status: true, interval: true },
+  });
+  return { user, account };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -27,6 +34,22 @@ export async function action({ request }: Route.ActionArgs) {
   const form = await request.formData();
 
   const intent = form.get("intent")?.toString();
+
+  if (intent === "billingPortal") {
+    const account = await prisma.account.findUnique({
+      where: { userId: user.id },
+      select: { stripeCustomerId: true },
+    });
+    if (!account) return { error: "No active subscription found" };
+
+    const stripe = getStripe();
+    const session = await stripe.billingPortal.sessions.create({
+      customer: account.stripeCustomerId,
+      return_url: `${envVars.VITE_APP_URL}/profile`,
+    });
+    return redirect(session.url);
+  }
+
   if (intent === "regenerateApiKey")
     return regenerateApiKey({ userId: user.id });
 
@@ -112,33 +135,48 @@ async function regenerateApiKey({ userId }: { userId: string }) {
 }
 
 export default function ProfilePage() {
-  const { user } = useLoaderData<typeof loader>();
+  const { user, account } = useLoaderData<typeof loader>();
 
   return (
     <AuthForm
       title="Update your profile"
       form={
-        <Tabs defaultValue="email" className="space-y-8">
-          <div className="flex justify-center">
-            <TabsList>
-              <TabsTrigger value="email">Email</TabsTrigger>
-              <TabsTrigger value="password">Password</TabsTrigger>
-              <TabsTrigger value="apiKey">API Key</TabsTrigger>
-            </TabsList>
-          </div>
+        <div className="space-y-8">
+          <Tabs defaultValue="email" className="space-y-8">
+            <div className="flex justify-center">
+              <TabsList>
+                <TabsTrigger value="email">Email</TabsTrigger>
+                <TabsTrigger value="password">Password</TabsTrigger>
+                <TabsTrigger value="apiKey">API Key</TabsTrigger>
+              </TabsList>
+            </div>
 
-          <TabsContent value="email">
-            <ProfileEmailForm user={user} />
-          </TabsContent>
+            <TabsContent value="email">
+              <ProfileEmailForm user={user} />
+            </TabsContent>
 
-          <TabsContent value="password">
-            <ProfilePasswordForm />
-          </TabsContent>
+            <TabsContent value="password">
+              <ProfilePasswordForm />
+            </TabsContent>
 
-          <TabsContent value="apiKey">
-            <ProfileApiKeyForm apiKey={user.apiKey ?? null} />
-          </TabsContent>
-        </Tabs>
+            <TabsContent value="apiKey">
+              <ProfileApiKeyForm apiKey={user.apiKey ?? null} />
+            </TabsContent>
+          </Tabs>
+
+          {account?.status === "active" && (
+            <section>
+              <h2 className="font-heading text-xl mb-4">Subscription</h2>
+              <p className="text-sm text-foreground/70 mb-4">
+                You're on Pro ({account.interval === "annual" ? "annual" : "monthly"} billing).
+              </p>
+              <Form method="post">
+                <input type="hidden" name="intent" value="billingPortal" />
+                <Button type="submit" variant="outline">Manage Subscription</Button>
+              </Form>
+            </section>
+          )}
+        </div>
       }
     />
   );
