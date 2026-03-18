@@ -25,6 +25,16 @@ describe("sites route", () => {
         id: "user-sites-test",
         email: "sites-test@example.com",
         passwordHash: await hashPassword("correct-password-123"),
+
+        account: {
+          create: {
+            id: "account-sites-test",
+            stripeCustomerId: "test-stripe-customer-id",
+            stripeSubscriptionId: "test-stripe-subscription-id",
+            status: "active",
+            interval: "monthly",
+          },
+        },
       },
     });
     await signIn(user.id);
