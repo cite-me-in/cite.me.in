@@ -1,6 +1,8 @@
 import { CheckIcon } from "lucide-react";
 import { Link } from "react-router";
-import { buttonVariants } from "~/components/ui/Button";
+import { twMerge } from "tailwind-merge";
+import { Badge } from "~/components/ui/Badge";
+import { type ButtonProps, buttonVariants } from "~/components/ui/Button";
 import {
   Card,
   CardContent,
@@ -8,7 +10,6 @@ import {
   CardHeader,
 } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
-import envVars from "~/lib/envVars";
 import type { Route } from "./+types/route";
 
 export function meta(): Route.MetaDescriptors {
@@ -24,19 +25,17 @@ export function meta(): Route.MetaDescriptors {
 
 export default function PricingPage() {
   return (
-    <Main>
-      <div className="mx-auto max-w-5xl px-4 py-16">
-        <h1 className="mb-4 text-center font-heading text-4xl">Pricing</h1>
-        <p className="mx-auto mb-12 max-w-xl text-center text-foreground/70">
-          Monitor your brand's AI citation visibility. Start free — no credit
-          card required.
-        </p>
+    <Main className="mx-auto max-w-5xl px-4 py-16">
+      <h1 className="mb-4 text-center font-heading text-4xl">Pricing</h1>
+      <p className="mx-auto mb-12 max-w-xl text-center text-foreground/70">
+        Monitor your brand's AI citation visibility. Start free — no credit card
+        required.
+      </p>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <FreeTierCard />
-          <ProTierCard />
-          <CustomTierCard />
-        </div>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <FreeTierCard />
+        <ProTierCard />
+        <CustomTierCard />
       </div>
     </Main>
   );
@@ -44,144 +43,168 @@ export default function PricingPage() {
 
 function FreeTierCard() {
   return (
-    <Card className="flex flex-col">
-      <CardHeader>
-        <p className="mb-1 font-bold text-foreground/60 text-sm uppercase tracking-wide">
-          Free Trial
-        </p>
-        <p className="mb-1 font-heading text-3xl">$0</p>
-        <p className="text-foreground/60 text-sm">for 25 days</p>
-      </CardHeader>
+    <TierCard>
+      <TierSummary title="Free Trial" price="$0" description="for 25 days" />
 
-      <CardContent>
-        <p className="mb-6 text-foreground/70 text-sm italic">
-          "Most tools give you a week. We give you enough time to actually see
-          results."
-        </p>
+      <TierFeatures
+        features={[
+          "1 domain",
+          "All 4 platforms: ChatGPT, Claude, Gemini, Perplexity",
+          "We'll monitor citations for you",
+        ]}
+        description="Most tools give you a week. We give you enough time to actually see results."
+        color="text-green-600"
+      />
 
-        <ul className="mb-8 flex-1 space-y-2 text-sm">
-          {[
-            "1 domain",
-            "All 4 platforms: ChatGPT, Claude, Gemini, Perplexity",
-            "We'll monitor citations for you",
-          ].map((feature) => (
-            <li key={feature} className="flex items-start gap-2">
-              <CheckIcon className="mt-0.5 size-4 shrink-0" />
-              {feature}
-            </li>
-          ))}
-        </ul>
-      </CardContent>
-
-      <CardFooter className="mt-auto flex">
-        <Link
-          to="/sign-up"
-          className={buttonVariants({
-            variant: "outline",
-            size: "sm",
-            className: "w-full justify-center",
-          })}
-        >
-          Start free
-        </Link>
-      </CardFooter>
-    </Card>
+      <TierCTA to="/sign-up" cta="Start free" variant="outline" />
+    </TierCard>
   );
 }
 
 function ProTierCard() {
   return (
-    <Card className="flex flex-col" variant="yellow">
-      <CardHeader>
-        <div className="mb-1 flex items-center justify-between">
-          <p className="font-bold text-foreground/60 text-sm uppercase tracking-wide">
-            Pro
-          </p>
-          <span className="rounded border border-black bg-amber-400 px-2 py-0.5 font-bold text-xs">
-            Popular
-          </span>
-        </div>
-        <p className="mb-1 font-heading text-3xl">
-          $29<span className="font-normal text-base">/mo</span>
-        </p>
-        <p className="text-foreground/60 text-sm">or $249/year (save $99)</p>
-      </CardHeader>
+    <TierCard variant="yellow">
+      <TierSummary
+        title="Pro"
+        badge="Popular"
+        price="$29/mo"
+        description="or $249/year (save $99)"
+      />
+      <TierFeatures
+        features={[
+          "Up to 3 domains",
+          "All 4 platforms",
+          "We'll monitor citations indefinitely",
+          "Full citation history",
+          "API access",
+          "Email digests and alerts",
+          "Benchmark data",
+        ]}
+        description="For founders building in public"
+        color="text-amber-600"
+      />
 
-      <CardContent>
-        <ul className="mb-8 flex-1 space-y-2 text-sm">
-          {[
-            "Up to 3 domains",
-            "All 4 platforms",
-            "We'll monitor citations indefinitely",
-            "Full citation history",
-            "API access",
-            "Email digests and alerts",
-            "Benchmark data",
-          ].map((feature) => (
-            <li key={feature} className="flex items-start gap-2">
-              <CheckIcon className="mt-0.5 size-4 shrink-0 text-amber-600" />
-              {feature}
-            </li>
-          ))}
-        </ul>
-      </CardContent>
-
-      <CardFooter className="mt-auto flex">
-        <Link
-          to="/sign-up?next=/upgrade"
-          className={buttonVariants({
-            variant: "default",
-            size: "sm",
-            className: "w-full justify-center",
-          })}
-        >
-          Get started
-        </Link>
-      </CardFooter>
-    </Card>
+      <TierCTA
+        to="/sign-up?next=/upgrade"
+        cta="Get started"
+        variant="default"
+      />
+    </TierCard>
   );
 }
 
 function CustomTierCard() {
   return (
-    <Card className="flex flex-col">
-      <CardHeader>
-        <p className="mb-1 font-bold text-foreground/60 text-sm uppercase tracking-wide">
-          Custom
-        </p>
-        <p className="mb-1 font-heading text-3xl">Let's talk</p>
-        <p className="text-foreground/60 text-sm">for agencies</p>
-      </CardHeader>
+    <TierCard>
+      <TierSummary
+        title="Custom"
+        price="Let's talk"
+        description="for agencies"
+      />
 
-      <CardContent>
-        <p className="mb-6 text-foreground/70 text-sm italic">
-          "For agencies tracking multiple clients."
-        </p>
+      <TierFeatures
+        features={[
+          "Unlimited domains",
+          "Everything in Pro",
+          "Priority support",
+        ]}
+        description="For agencies tracking multiple clients."
+        color="text-green-600"
+      />
 
-        <ul className="mb-8 flex-1 space-y-2 text-sm">
-          {["Unlimited domains", "Everything in Pro", "Priority support"].map(
-            (feature) => (
-              <li key={feature} className="flex items-start gap-2">
-                <CheckIcon className="mt-0.5 size-4 shrink-0" />
-                {feature}
-              </li>
-            ),
-          )}
-        </ul>
-      </CardContent>
+      <TierCTA
+        to="mailto:hello@cite.me.in"
+        cta="Contact us"
+        variant="outline"
+      />
+    </TierCard>
+  );
+}
 
-      <CardFooter className="mt-auto flex">
-        <Link
-          to={`mailto:${envVars.VITE_EMAIL_FROM}`}
-          className={buttonVariants({
-            variant: "outline",
-            size: "sm",
-            className: "w-full justify-center",
-          })}
-        >
-          Contact us
-        </Link>
-      </CardFooter>
+function TierCard({
+  children,
+  variant,
+}: {
+  children: React.ReactNode;
+  variant?: "yellow";
+}) {
+  return (
+    <Card className="flex flex-col" variant={variant}>
+      {children}
     </Card>
+  );
+}
+
+function TierSummary({
+  title,
+  badge,
+  price,
+  description,
+}: {
+  title: string;
+  badge?: string;
+  price: string;
+  description: string;
+}) {
+  return (
+    <CardHeader>
+      <div className="mb-1 flex items-center justify-between">
+        <p className="font-bold text-foreground/60 text-sm uppercase tracking-wide">
+          {title}
+        </p>
+        {badge && <Badge variant="yellow">{badge}</Badge>}
+      </div>
+      <p className="mb-1 font-heading text-3xl">{price}</p>
+      <p className="text-foreground/60 text-sm">{description}</p>
+    </CardHeader>
+  );
+}
+
+function TierFeatures({
+  features,
+  description,
+  color,
+}: {
+  features: string[];
+  description: string;
+  color: string;
+}) {
+  return (
+    <CardContent>
+      <p className="mb-6 text-foreground/70 text-sm italic">{description}</p>
+
+      <ul className="mb-8 flex-1 space-y-2 text-sm">
+        {features.map((feature) => (
+          <li key={feature} className="flex items-start gap-2">
+            <CheckIcon className={twMerge("mt-0.5 size-4 shrink-0", color)} />
+            {feature}
+          </li>
+        ))}
+      </ul>
+    </CardContent>
+  );
+}
+
+function TierCTA({
+  to,
+  cta,
+  variant,
+}: {
+  to: string;
+  cta: string;
+  variant: ButtonProps["variant"];
+}) {
+  return (
+    <CardFooter className="mt-auto flex">
+      <Link
+        to={to}
+        className={twMerge(
+          buttonVariants({ variant }),
+          "w-full justify-center",
+        )}
+      >
+        {cta}
+      </Link>
+    </CardFooter>
   );
 }
