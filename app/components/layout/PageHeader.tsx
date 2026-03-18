@@ -23,6 +23,7 @@ function HeaderLinks() {
   const navLinks = [];
   const siteMatch = matches.find((m) => m.handle?.siteNav);
   const siteDomain = siteMatch?.params.domain as string | undefined;
+  if (!siteMatch) navLinks.push({ to: "/pricing", label: "Pricing" });
   if (siteMatch) navLinks.push({ to: "/sites", label: "Dashboard" });
   if (siteDomain)
     navLinks.push(
