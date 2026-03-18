@@ -63,7 +63,6 @@ function LandingNav({ isSignedIn }: { isSignedIn: boolean }) {
     <nav className="flex items-center justify-between border-black border-b-2 bg-[hsl(60,100%,99%)] px-6 py-3">
       <CiteMeInLogo />
       <div className="flex items-center gap-6">
-        <ActiveLink to="/pricing">Pricing</ActiveLink>
         <div className="flex items-center gap-3">
         {isSignedIn ? (
           <ActiveLink variant="button" to="/sites" size="sm" bg="yellow">

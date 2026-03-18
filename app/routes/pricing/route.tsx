@@ -55,7 +55,7 @@ function FreeTierCard() {
         {[
           "1 domain",
           "All 4 platforms: ChatGPT, Claude, Gemini, Perplexity",
-          "Daily citation runs for 25 days",
+          "We'll monitor citations for you",
         ].map((feature) => (
           <li key={feature} className="flex items-start gap-2">
             <CheckIcon className="size-4 shrink-0 mt-0.5" />
@@ -93,7 +93,7 @@ function ProTierCard() {
         {[
           "Up to 3 domains",
           "All 4 platforms",
-          "Daily runs, indefinitely",
+          "We'll monitor citations indefinitely",
           "Full citation history",
           "API access",
           "Email digests and alerts",
@@ -106,14 +106,9 @@ function ProTierCard() {
         ))}
       </ul>
 
-      <div className="flex flex-col gap-2">
-        <Link to="/sign-up" className={buttonVariants({ variant: "default", size: "sm", className: "w-full justify-center" })}>
-          Subscribe monthly
-        </Link>
-        <Link to="/sign-up" className={buttonVariants({ variant: "outline", size: "sm", className: "w-full justify-center" })}>
-          Subscribe yearly
-        </Link>
-      </div>
+      <Link to="/sign-up" className={buttonVariants({ variant: "default", size: "sm", className: "w-full justify-center" })}>
+        Get started
+      </Link>
     </div>
   );
 }
