@@ -266,6 +266,7 @@ model Account {
   stripeCustomerId     String   @map("stripe_customer_id")
   stripeSubscriptionId String   @map("stripe_subscription_id")
   status               String   @map("status")
+  interval             String   @map("interval")               @default("monthly")
   createdAt            DateTime @map("created_at")             @default(now())
   updatedAt            DateTime @map("updated_at")             @updatedAt
 
