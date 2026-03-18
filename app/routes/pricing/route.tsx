@@ -1,8 +1,10 @@
 import { CheckIcon } from "lucide-react";
 import { Link } from "react-router";
+import { buttonVariants } from "~/components/ui/Button";
 import Main from "~/components/ui/Main";
+import type { Route } from "./+types/route";
 
-export function meta() {
+export function meta(): Route.MetaDescriptors {
   return [
     { title: "Pricing | Cite.me.in" },
     {
@@ -62,10 +64,7 @@ function FreeTierCard() {
         ))}
       </ul>
 
-      <Link
-        to="/sign-up"
-        className="block text-center rounded-base border-2 border-black bg-white px-4 py-2 font-bold text-sm shadow-[2px_2px_0px_0px_black] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
-      >
+      <Link to="/sign-up" className={buttonVariants({ variant: "outline", size: "sm", className: "w-full justify-center" })}>
         Start free
       </Link>
     </div>
@@ -108,16 +107,10 @@ function ProTierCard() {
       </ul>
 
       <div className="flex flex-col gap-2">
-        <Link
-          to="/sign-up"
-          className="block text-center rounded-base border-2 border-black bg-amber-400 px-4 py-2 font-bold text-sm shadow-[2px_2px_0px_0px_black] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
-        >
+        <Link to="/sign-up" className={buttonVariants({ variant: "default", size: "sm", className: "w-full justify-center" })}>
           Subscribe monthly
         </Link>
-        <Link
-          to="/sign-up"
-          className="block text-center rounded-base border-2 border-black bg-white px-4 py-2 font-bold text-sm shadow-[2px_2px_0px_0px_black] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
-        >
+        <Link to="/sign-up" className={buttonVariants({ variant: "outline", size: "sm", className: "w-full justify-center" })}>
           Subscribe yearly
         </Link>
       </div>
@@ -151,10 +144,7 @@ function CustomTierCard() {
         )}
       </ul>
 
-      <a
-        href="mailto:hello@cite.me.in"
-        className="block text-center rounded-base border-2 border-black bg-white px-4 py-2 font-bold text-sm shadow-[2px_2px_0px_0px_black] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
-      >
+      <a href="mailto:hello@cite.me.in" className={buttonVariants({ variant: "outline", size: "sm", className: "w-full justify-center" })}>
         Contact us
       </a>
     </div>
