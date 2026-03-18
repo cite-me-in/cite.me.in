@@ -31,6 +31,21 @@ export async function addSiteToUser(
   });
   if (existing) return { site: existing, existing: true };
 
+  const account = await prisma.account.findUnique({
+    where: { userId: user.id },
+    select: { status: true },
+  });
+  const isPro = account?.status === "active";
+  const limit = isPro ? 3 : 1;
+
+  const siteCount = await prisma.site.count({ where: { ownerId: user.id } });
+  if (siteCount >= limit) {
+    const limitMsg = isPro
+      ? "Pro plan supports up to 3 domains. Contact us if you need more."
+      : "Free trial supports 1 domain. Upgrade to Pro to add up to 3 domains.";
+    throw new Error(limitMsg);
+  }
+
   const content = await fetchSiteContent({
     domain,
     maxPages: 10,
