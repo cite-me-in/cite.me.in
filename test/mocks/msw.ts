@@ -23,6 +23,16 @@ const handlers = [
     HttpResponse.html("<html><body><p>Hello world</p></body></html>"),
   ),
 
+  // Mock Stripe checkout session creation
+  http.post("https://api.stripe.com/v1/checkout/sessions", () =>
+    HttpResponse.json({
+      id: "cs_test_fake123",
+      object: "checkout.session",
+      url: "https://checkout.stripe.com/c/pay/cs_test_fake123",
+      status: "open",
+    }),
+  ),
+
   // Allow all localhost requests to pass through (for dev server communication)
   http.all(
     ({ request }: { request: Request }) =>

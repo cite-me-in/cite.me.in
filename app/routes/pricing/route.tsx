@@ -1,7 +1,14 @@
 import { CheckIcon } from "lucide-react";
 import { Link } from "react-router";
 import { buttonVariants } from "~/components/ui/Button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
+import envVars from "~/lib/envVars";
 import type { Route } from "./+types/route";
 
 export function meta(): Route.MetaDescriptors {
@@ -18,14 +25,14 @@ export function meta(): Route.MetaDescriptors {
 export default function PricingPage() {
   return (
     <Main>
-      <div className="mx-auto max-w-5xl py-16 px-4">
-        <h1 className="font-heading text-4xl mb-4 text-center">Pricing</h1>
-        <p className="text-center text-foreground/70 mb-12 max-w-xl mx-auto">
+      <div className="mx-auto max-w-5xl px-4 py-16">
+        <h1 className="mb-4 text-center font-heading text-4xl">Pricing</h1>
+        <p className="mx-auto mb-12 max-w-xl text-center text-foreground/70">
           Monitor your brand's AI citation visibility. Start free — no credit
           card required.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           <FreeTierCard />
           <ProTierCard />
           <CustomTierCard />
@@ -37,111 +44,144 @@ export default function PricingPage() {
 
 function FreeTierCard() {
   return (
-    <div className="rounded-base border-2 border-black shadow-[4px_4px_0px_0px_black] p-6 flex flex-col">
-      <div className="mb-6">
-        <p className="font-bold text-sm uppercase tracking-wide text-foreground/60 mb-1">
+    <Card className="flex flex-col">
+      <CardHeader>
+        <p className="mb-1 font-bold text-foreground/60 text-sm uppercase tracking-wide">
           Free Trial
         </p>
-        <p className="font-heading text-3xl mb-1">$0</p>
-        <p className="text-sm text-foreground/60">for 25 days</p>
-      </div>
+        <p className="mb-1 font-heading text-3xl">$0</p>
+        <p className="text-foreground/60 text-sm">for 25 days</p>
+      </CardHeader>
 
-      <p className="text-sm text-foreground/70 mb-6 italic">
-        "Most tools give you a week. We give you enough time to actually see
-        results."
-      </p>
+      <CardContent>
+        <p className="mb-6 text-foreground/70 text-sm italic">
+          "Most tools give you a week. We give you enough time to actually see
+          results."
+        </p>
 
-      <ul className="space-y-2 mb-8 text-sm flex-1">
-        {[
-          "1 domain",
-          "All 4 platforms: ChatGPT, Claude, Gemini, Perplexity",
-          "We'll monitor citations for you",
-        ].map((feature) => (
-          <li key={feature} className="flex items-start gap-2">
-            <CheckIcon className="size-4 shrink-0 mt-0.5" />
-            {feature}
-          </li>
-        ))}
-      </ul>
+        <ul className="mb-8 flex-1 space-y-2 text-sm">
+          {[
+            "1 domain",
+            "All 4 platforms: ChatGPT, Claude, Gemini, Perplexity",
+            "We'll monitor citations for you",
+          ].map((feature) => (
+            <li key={feature} className="flex items-start gap-2">
+              <CheckIcon className="mt-0.5 size-4 shrink-0" />
+              {feature}
+            </li>
+          ))}
+        </ul>
+      </CardContent>
 
-      <Link to="/sign-up" className={buttonVariants({ variant: "outline", size: "sm", className: "w-full justify-center" })}>
-        Start free
-      </Link>
-    </div>
+      <CardFooter className="mt-auto flex">
+        <Link
+          to="/sign-up"
+          className={buttonVariants({
+            variant: "outline",
+            size: "sm",
+            className: "w-full justify-center",
+          })}
+        >
+          Start free
+        </Link>
+      </CardFooter>
+    </Card>
   );
 }
 
 function ProTierCard() {
   return (
-    <div className="rounded-base border-2 border-black shadow-[4px_4px_0px_0px_black] p-6 flex flex-col bg-amber-50">
-      <div className="mb-6">
-        <div className="flex items-center justify-between mb-1">
-          <p className="font-bold text-sm uppercase tracking-wide text-foreground/60">
+    <Card className="flex flex-col" variant="yellow">
+      <CardHeader>
+        <div className="mb-1 flex items-center justify-between">
+          <p className="font-bold text-foreground/60 text-sm uppercase tracking-wide">
             Pro
           </p>
-          <span className="text-xs font-bold bg-amber-400 border border-black rounded px-2 py-0.5">
+          <span className="rounded border border-black bg-amber-400 px-2 py-0.5 font-bold text-xs">
             Popular
           </span>
         </div>
-        <p className="font-heading text-3xl mb-1">
-          $29<span className="text-base font-normal">/mo</span>
+        <p className="mb-1 font-heading text-3xl">
+          $29<span className="font-normal text-base">/mo</span>
         </p>
-        <p className="text-sm text-foreground/60">or $249/year (save $99)</p>
-      </div>
+        <p className="text-foreground/60 text-sm">or $249/year (save $99)</p>
+      </CardHeader>
 
-      <ul className="space-y-2 mb-8 text-sm flex-1">
-        {[
-          "Up to 3 domains",
-          "All 4 platforms",
-          "We'll monitor citations indefinitely",
-          "Full citation history",
-          "API access",
-          "Email digests and alerts",
-          "Benchmark data",
-        ].map((feature) => (
-          <li key={feature} className="flex items-start gap-2">
-            <CheckIcon className="size-4 shrink-0 mt-0.5 text-amber-600" />
-            {feature}
-          </li>
-        ))}
-      </ul>
+      <CardContent>
+        <ul className="mb-8 flex-1 space-y-2 text-sm">
+          {[
+            "Up to 3 domains",
+            "All 4 platforms",
+            "We'll monitor citations indefinitely",
+            "Full citation history",
+            "API access",
+            "Email digests and alerts",
+            "Benchmark data",
+          ].map((feature) => (
+            <li key={feature} className="flex items-start gap-2">
+              <CheckIcon className="mt-0.5 size-4 shrink-0 text-amber-600" />
+              {feature}
+            </li>
+          ))}
+        </ul>
+      </CardContent>
 
-      <Link to="/sign-up" className={buttonVariants({ variant: "default", size: "sm", className: "w-full justify-center" })}>
-        Get started
-      </Link>
-    </div>
+      <CardFooter className="mt-auto flex">
+        <Link
+          to="/sign-up?next=/upgrade"
+          className={buttonVariants({
+            variant: "default",
+            size: "sm",
+            className: "w-full justify-center",
+          })}
+        >
+          Get started
+        </Link>
+      </CardFooter>
+    </Card>
   );
 }
 
 function CustomTierCard() {
   return (
-    <div className="rounded-base border-2 border-black shadow-[4px_4px_0px_0px_black] p-6 flex flex-col">
-      <div className="mb-6">
-        <p className="font-bold text-sm uppercase tracking-wide text-foreground/60 mb-1">
+    <Card className="flex flex-col">
+      <CardHeader>
+        <p className="mb-1 font-bold text-foreground/60 text-sm uppercase tracking-wide">
           Custom
         </p>
-        <p className="font-heading text-3xl mb-1">Let's talk</p>
-        <p className="text-sm text-foreground/60">for agencies</p>
-      </div>
+        <p className="mb-1 font-heading text-3xl">Let's talk</p>
+        <p className="text-foreground/60 text-sm">for agencies</p>
+      </CardHeader>
 
-      <p className="text-sm text-foreground/70 mb-6 italic">
-        "For agencies tracking multiple clients."
-      </p>
+      <CardContent>
+        <p className="mb-6 text-foreground/70 text-sm italic">
+          "For agencies tracking multiple clients."
+        </p>
 
-      <ul className="space-y-2 mb-8 text-sm flex-1">
-        {["Unlimited domains", "Everything in Pro", "Priority support"].map(
-          (feature) => (
-            <li key={feature} className="flex items-start gap-2">
-              <CheckIcon className="size-4 shrink-0 mt-0.5" />
-              {feature}
-            </li>
-          ),
-        )}
-      </ul>
+        <ul className="mb-8 flex-1 space-y-2 text-sm">
+          {["Unlimited domains", "Everything in Pro", "Priority support"].map(
+            (feature) => (
+              <li key={feature} className="flex items-start gap-2">
+                <CheckIcon className="mt-0.5 size-4 shrink-0" />
+                {feature}
+              </li>
+            ),
+          )}
+        </ul>
+      </CardContent>
 
-      <a href="mailto:hello@cite.me.in" className={buttonVariants({ variant: "outline", size: "sm", className: "w-full justify-center" })}>
-        Contact us
-      </a>
-    </div>
+      <CardFooter className="mt-auto flex">
+        <Link
+          to={`mailto:${envVars.VITE_EMAIL_FROM}`}
+          className={buttonVariants({
+            variant: "outline",
+            size: "sm",
+            className: "w-full justify-center",
+          })}
+        >
+          Contact us
+        </Link>
+      </CardFooter>
+    </Card>
   );
 }

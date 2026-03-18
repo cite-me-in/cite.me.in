@@ -22,7 +22,10 @@ import type { Route } from "./+types/route";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
-  return { inviteToken: url.searchParams.get("invite") ?? "" };
+  return {
+    inviteToken: url.searchParams.get("invite") ?? "",
+    next: url.searchParams.get("next") ?? "",
+  };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -31,6 +34,7 @@ export async function action({ request }: Route.ActionArgs) {
   const password = (form.get("password") ?? "").toString();
   const confirm = (form.get("confirm") ?? "").toString();
   const inviteToken = (form.get("inviteToken") ?? "").toString().trim();
+  const next = (form.get("next") ?? "").toString().trim();
 
   const errors: Record<string, string> = {};
 
@@ -66,14 +70,15 @@ export async function action({ request }: Route.ActionArgs) {
     logError(error);
   }
 
-  const redirectTo = inviteToken ? `/invite/${inviteToken}` : "/sites";
+  const redirectTo = inviteToken
+    ? `/invite/${inviteToken}`
+    : next.startsWith("/")
+      ? next
+      : "/sites";
   return redirect(redirectTo, { headers: { "Set-Cookie": setCookie } });
 }
 
-export default function SignUp({
-  actionData,
-  loaderData,
-}: Route.ComponentProps) {
+export default function SignUp({ actionData, loaderData }: Route.ComponentProps) {
   const errors = actionData?.errors ?? {};
 
   return (
@@ -82,11 +87,10 @@ export default function SignUp({
       form={
         <Form method="post">
           {loaderData.inviteToken && (
-            <input
-              type="hidden"
-              name="inviteToken"
-              value={loaderData.inviteToken}
-            />
+            <input type="hidden" name="inviteToken" value={loaderData.inviteToken} />
+          )}
+          {loaderData.next && (
+            <input type="hidden" name="next" value={loaderData.next} />
           )}
           <FieldSet>
             <FieldGroup>
