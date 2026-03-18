@@ -1,6 +1,6 @@
 import debug from "debug";
-import type Stripe from "stripe";
 import { data } from "react-router";
+import type Stripe from "stripe";
 import envVars from "~/lib/envVars";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
@@ -22,7 +22,11 @@ export async function action({ request }: Route.ActionArgs) {
 
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(body, sig, envVars.STRIPE_WEBHOOK_SECRET);
+    event = stripe.webhooks.constructEvent(
+      body,
+      sig,
+      envVars.STRIPE_WEBHOOK_SECRET,
+    );
   } catch (error) {
     logError(error);
     throw new Response("Invalid signature", { status: 400 });
@@ -41,7 +45,7 @@ export async function action({ request }: Route.ActionArgs) {
       await prisma.account.upsert({
         where: { userId },
         create: {
-          userId,
+          user: { connect: { id: userId } },
           stripeCustomerId,
           stripeSubscriptionId,
           status: "active",
@@ -55,7 +59,11 @@ export async function action({ request }: Route.ActionArgs) {
         },
       });
 
-      logger("[stripe] Activated account for user %s (interval: %s)", userId, interval);
+      logger(
+        "[stripe] Activated account for user %s (interval: %s)",
+        userId,
+        interval,
+      );
     }
 
     if (event.type === "customer.subscription.deleted") {
@@ -68,7 +76,10 @@ export async function action({ request }: Route.ActionArgs) {
           where: { id: account.id },
           data: { status: "cancelled" },
         });
-        logger("[stripe] Deactivated account for subscription %s", subscription.id);
+        logger(
+          "[stripe] Deactivated account for subscription %s",
+          subscription.id,
+        );
       }
     }
   } catch (error) {

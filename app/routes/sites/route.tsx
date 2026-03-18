@@ -26,7 +26,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   const user = await requireUser(request);
   const [sites, account] = await Promise.all([
     loadSitesWithMetrics(user.id),
-    prisma.account.findUnique({ where: { userId: user.id }, select: { status: true } }),
+    prisma.account.findUnique({
+      where: { userId: user.id },
+      select: { status: true },
+    }),
   ]);
 
   const trialEnd = new Date(user.createdAt);
@@ -100,14 +103,14 @@ export default function SitesPage({
 
       {trialExpired && (
         <div className="mb-6 rounded-base border-2 border-black bg-amber-100 p-4 shadow-[4px_4px_0px_0px_black]">
-          <p className="font-bold mb-1">Your free trial has ended.</p>
-          <p className="text-sm text-foreground/70 mb-3">
+          <p className="mb-1 font-bold">Your free trial has ended.</p>
+          <p className="mb-3 text-foreground/70 text-sm">
             Your daily runs have paused. Upgrade to keep your citation history
             and resume monitoring.
           </p>
           <Link
             to="/upgrade"
-            className="inline-block rounded-base border-2 border-black bg-amber-400 px-4 py-2 font-bold text-sm shadow-[2px_2px_0px_0px_black] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
+            className="inline-block rounded-base border-2 border-black bg-amber-400 px-4 py-2 font-bold text-sm shadow-[2px_2px_0px_0px_black] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none"
           >
             Upgrade to Pro — $29/mo
           </Link>

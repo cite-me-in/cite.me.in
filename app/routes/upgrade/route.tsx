@@ -5,7 +5,11 @@ import Main from "~/components/ui/Main";
 import { requireUser } from "~/lib/auth.server";
 import envVars from "~/lib/envVars";
 import prisma from "~/lib/prisma.server";
-import { getAnnualPriceId, getMonthlyPriceId, getStripe } from "~/lib/stripe.server";
+import {
+  getAnnualPriceId,
+  getMonthlyPriceId,
+  getStripe,
+} from "~/lib/stripe.server";
 import type { Route } from "./+types/route";
 
 export function meta(): Route.MetaDescriptors {
@@ -14,7 +18,9 @@ export function meta(): Route.MetaDescriptors {
 
 export async function loader({ request }: Route.LoaderArgs) {
   const user = await requireUser(request);
-  const account = await prisma.account.findUnique({ where: { userId: user.id } });
+  const account = await prisma.account.findUnique({
+    where: { userId: user.id },
+  });
   if (account?.status === "active") return redirect("/sites");
   return {};
 }
@@ -25,7 +31,8 @@ export async function action({ request }: Route.ActionArgs) {
   const interval = form.get("interval")?.toString() ?? "monthly";
 
   const stripe = getStripe();
-  const priceId = interval === "annual" ? getAnnualPriceId() : getMonthlyPriceId();
+  const priceId =
+    interval === "annual" ? getAnnualPriceId() : getMonthlyPriceId();
 
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
@@ -46,26 +53,32 @@ export default function UpgradePage() {
   return (
     <Main>
       <div className="mx-auto max-w-lg py-16">
-        <h1 className="font-heading text-4xl mb-2">Upgrade to Pro</h1>
-        <p className="text-foreground/70 mb-10">
+        <h1 className="mb-2 font-heading text-4xl">Upgrade to Pro</h1>
+        <p className="mb-10 text-foreground/70">
           25 days free, no credit card. Most tools give you a week — we give you
           enough time to actually see results. When you're ready, $29/mo keeps
           it all running.
         </p>
 
-        <div className="rounded-base border-2 border-black shadow-[4px_4px_0px_0px_black] p-8 mb-6">
-          <div className="flex justify-between items-start mb-6">
+        <div className="mb-6 rounded-base border-2 border-black p-8 shadow-[4px_4px_0px_0px_black]">
+          <div className="mb-6 flex items-start justify-between">
             <div>
               <h2 className="font-heading text-2xl">Pro</h2>
-              <p className="text-foreground/60">For founders building in public</p>
+              <p className="text-foreground/60">
+                For founders building in public
+              </p>
             </div>
             <div className="text-right">
-              <p className="font-heading text-3xl">$29<span className="text-base font-normal">/mo</span></p>
-              <p className="text-sm text-foreground/60">or $249/year (save $99)</p>
+              <p className="font-heading text-3xl">
+                $29<span className="font-normal text-base">/mo</span>
+              </p>
+              <p className="text-foreground/60 text-sm">
+                or $249/year (save $99)
+              </p>
             </div>
           </div>
 
-          <ul className="space-y-2 mb-8 text-sm">
+          <ul className="mb-8 space-y-2 text-sm">
             {[
               "All 4 platforms: ChatGPT, Claude, Gemini, Perplexity",
               "Daily citation runs, indefinitely",
@@ -98,12 +111,12 @@ export default function UpgradePage() {
           </div>
         </div>
 
-        <p className="text-center text-sm text-foreground/60">
+        <p className="text-center text-foreground/60 text-sm">
           cite.me.in is built by one person. Your $29/mo is what keeps it
-          independent, updated, and not acquired by someone with a worse product
+          independent, updated, and not acquired by someone with an alt product
           vision.
         </p>
-        <p className="text-center text-sm text-foreground/60 mt-2">
+        <p className="mt-2 text-center text-foreground/60 text-sm">
           cite.me.in is open-source. If we ever shut down, you take the code and
           run it yourself.
         </p>
