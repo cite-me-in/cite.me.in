@@ -1,11 +1,12 @@
 import { invariant } from "es-toolkit";
 import { useState } from "react";
-import { redirect, useFetcher } from "react-router";
+import { Link, redirect, useFetcher } from "react-router";
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
 import { requireUser } from "~/lib/auth.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
+import prisma from "~/lib/prisma.server";
 import {
   addSiteToUser,
   deleteSite,
@@ -23,8 +24,16 @@ export const handle = { siteNav: true };
 
 export async function loader({ request }: Route.LoaderArgs) {
   const user = await requireUser(request);
-  const sites = await loadSitesWithMetrics(user.id);
-  return { sites };
+  const [sites, account] = await Promise.all([
+    loadSitesWithMetrics(user.id),
+    prisma.account.findUnique({ where: { userId: user.id }, select: { status: true } }),
+  ]);
+
+  const trialEnd = new Date(user.createdAt);
+  trialEnd.setDate(trialEnd.getDate() + 25);
+  const trialExpired = !account && new Date() > trialEnd;
+
+  return { sites, trialExpired };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -70,7 +79,7 @@ export default function SitesPage({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
-  const { sites } = loaderData;
+  const { sites, trialExpired } = loaderData;
   const [isAddSiteFormOpen, setIsAddSiteFormOpen] = useState(
     sites.length === 0,
   );
@@ -87,6 +96,22 @@ export default function SitesPage({
 
       {isAddSiteFormOpen && (
         <AddSiteForm actionData={actionData} fetcher={fetcher} />
+      )}
+
+      {trialExpired && (
+        <div className="mb-6 rounded-base border-2 border-black bg-amber-100 p-4 shadow-[4px_4px_0px_0px_black]">
+          <p className="font-bold mb-1">Your free trial has ended.</p>
+          <p className="text-sm text-foreground/70 mb-3">
+            Your daily runs have paused. Upgrade to keep your citation history
+            and resume monitoring.
+          </p>
+          <Link
+            to="/upgrade"
+            className="inline-block rounded-base border-2 border-black bg-amber-400 px-4 py-2 font-bold text-sm shadow-[2px_2px_0px_0px_black] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none transition-all"
+          >
+            Upgrade to Pro — $29/mo
+          </Link>
+        </div>
       )}
 
       {sites.length > 0 && (
