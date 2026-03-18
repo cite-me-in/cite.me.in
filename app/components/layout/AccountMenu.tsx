@@ -1,6 +1,7 @@
 import {
   CornerDownRightIcon,
   LayoutDashboardIcon,
+  StarIcon,
   UnlockIcon,
   UserIcon,
 } from "lucide-react";
@@ -15,13 +16,18 @@ export default function AccountMenu({ className }: { className?: string }) {
   const data = useRouteLoaderData<typeof rootLoader>("root");
   const user = data?.user;
   const sites = data?.sites ?? [];
+  const isPro = data?.isPro ?? false;
 
   // Show sign-in link for non-authenticated users
   return (
     <div
       className={twMerge("inline-flex items-center justify-center", className)}
     >
-      {user ? <DropdownMenu user={user} sites={sites} /> : <SignInButton />}
+      {user ? (
+        <DropdownMenu user={user} sites={sites} isPro={isPro} />
+      ) : (
+        <SignInButton />
+      )}
     </div>
   );
 }
@@ -41,9 +47,11 @@ function SignInButton() {
 function DropdownMenu({
   user,
   sites,
+  isPro,
 }: {
   user: User;
   sites: { id: string; domain: string }[];
+  isPro: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -104,6 +112,16 @@ function DropdownMenu({
               />
             </li>
           ))}
+
+          {!isPro && (
+            <li>
+              <AccountMenuLink
+                to="/upgrade"
+                icon={<StarIcon className="mr-2 size-4 text-amber-500" />}
+                label="Upgrade to Pro"
+              />
+            </li>
+          )}
 
           <li>
             <AccountMenuLink

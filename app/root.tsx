@@ -15,19 +15,28 @@ import "./global.css";
 export async function loader({ request }: Route.LoaderArgs) {
   const baseUrl = new URL(request.url).origin;
   const user = await getCurrentUser(request);
-  const sites = user
-    ? await prisma.site.findMany({
-        where: {
-          OR: [
-            { ownerId: user.id },
-            { siteUsers: { some: { userId: user.id } } },
-          ],
-        },
-        select: { id: true, domain: true },
-        orderBy: { createdAt: "desc" },
-      })
-    : [];
-  return { user, baseUrl, sites };
+  const [sites, account] = await Promise.all([
+    user
+      ? prisma.site.findMany({
+          where: {
+            OR: [
+              { ownerId: user.id },
+              { siteUsers: { some: { userId: user.id } } },
+            ],
+          },
+          select: { id: true, domain: true },
+          orderBy: { createdAt: "desc" },
+        })
+      : [],
+    user
+      ? prisma.account.findUnique({
+          where: { userId: user.id },
+          select: { status: true },
+        })
+      : null,
+  ]);
+  const isPro = account?.status === "active";
+  return { user, baseUrl, sites, isPro };
 }
 
 export function meta({ loaderData }: Route.MetaArgs): Route.MetaDescriptors {
