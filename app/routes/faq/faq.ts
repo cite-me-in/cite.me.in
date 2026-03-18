@@ -80,12 +80,22 @@ export default [
       {
         question: "Is there a free plan?",
         answer:
-          "Yes. The Starter plan lets you monitor one domain across all four platforms at no cost.",
+          "Yes — 25 days free, no credit card required. Most tools give you a week; we give you enough time to actually see results. After 25 days, upgrade to Pro to keep your citation history and continue daily runs.",
+      },
+      {
+        question: "What's included in Pro?",
+        answer:
+          "Pro is $29/month or $249/year. You get unlimited daily runs, your full citation history, API access, email digests, network benchmarks, and up to 3 domains.",
+      },
+      {
+        question: "Why should I pay when it's open-source?",
+        answer:
+          "You're right — you can self-host for almost nothing. But running it yourself means keeping it updated, monitoring uptime, and managing LLM API keys. $29/mo gets you all of that handled, plus access to aggregate benchmark data that self-hosting can't give you. And it keeps the project funded and independent.",
       },
       {
         question: "Can I cancel anytime?",
         answer:
-          "Yes. No long-term commitments. Cancel at any time from your account settings.",
+          "Yes. Cancel from your billing portal — no long-term commitment, no cancellation fee. Your data stays accessible until the end of the billing period.",
       },
       {
         question: "How do I contact support?",
