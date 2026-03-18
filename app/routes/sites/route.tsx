@@ -36,7 +36,11 @@ export async function loader({ request }: Route.LoaderArgs) {
   trialEnd.setDate(trialEnd.getDate() + 25);
   const trialExpired = !account && new Date() > trialEnd;
 
-  return { sites, trialExpired };
+  const isPro = account?.status === "active";
+  const ownedSiteCount = sites.filter((s) => s.isOwner).length;
+  const canAddSite = ownedSiteCount < (isPro ? 3 : 1);
+
+  return { sites, trialExpired, canAddSite, isPro };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -82,9 +86,9 @@ export default function SitesPage({
   loaderData,
   actionData,
 }: Route.ComponentProps) {
-  const { sites, trialExpired } = loaderData;
+  const { sites, trialExpired, canAddSite, isPro } = loaderData;
   const [isAddSiteFormOpen, setIsAddSiteFormOpen] = useState(
-    sites.length === 0,
+    sites.length === 0 && canAddSite,
   );
   const fetcher = useFetcher<typeof action>();
 
@@ -92,12 +96,12 @@ export default function SitesPage({
     <Main variant="wide">
       <div className="flex flex-row items-center justify-between gap-4">
         <h1 className="font-heading text-3xl">Your Sites</h1>
-        {!isAddSiteFormOpen && (
+        {canAddSite && !isAddSiteFormOpen && (
           <Button onClick={() => setIsAddSiteFormOpen(true)}>Add Site</Button>
         )}
       </div>
 
-      {isAddSiteFormOpen && (
+      {canAddSite && isAddSiteFormOpen && (
         <AddSiteForm actionData={actionData} fetcher={fetcher} />
       )}
 
@@ -136,6 +140,22 @@ export default function SitesPage({
             ))}
           </CardContent>
         </Card>
+      )}
+
+      {!canAddSite && !isPro && (
+        <div className="rounded-base border-2 border-black bg-white p-5 shadow-[4px_4px_0px_0px_black]">
+          <p className="mb-1 font-bold">Want to track more sites?</p>
+          <p className="mb-3 text-foreground/70 text-sm">
+            Pro includes up to 3 domains, full citation history, and monitoring
+            that never stops.
+          </p>
+          <Link
+            to="/upgrade"
+            className="inline-block rounded-base border-2 border-black bg-amber-400 px-4 py-2 font-bold text-sm shadow-[2px_2px_0px_0px_black] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-none"
+          >
+            Upgrade to Pro — $29/mo
+          </Link>
+        </div>
       )}
     </Main>
   );
