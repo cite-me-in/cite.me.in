@@ -32,7 +32,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     Temporal.Now.instant().subtract({ hours: 24 }).epochMilliseconds,
   );
   const inFreeTrial = new Date(
-    Temporal.Now.instant().subtract({ hours: 24 * 24 }).epochMilliseconds,
+    Temporal.Now.instant().subtract({ hours: 25 * 24 }).epochMilliseconds,
   );
 
   const sites = await prisma.site.findMany({
