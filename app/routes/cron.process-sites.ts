@@ -3,6 +3,8 @@ import { ms } from "convert";
 import debug from "debug";
 import { delay, mapAsync } from "es-toolkit";
 import { data } from "react-router";
+import sendTrialEndedEmail from "~/emails/TrialEnded";
+import sendTrialEndingEmail from "~/emails/TrialEnding";
 import sendWeeklyDigestEmail from "~/emails/WeeklyDigest";
 import envVars from "~/lib/envVars";
 import generateBotInsight from "~/lib/llm-visibility/generateBotInsight";
@@ -99,6 +101,79 @@ export async function loader({ request }: Route.LoaderArgs) {
       siteId: site.id,
     };
   });
+
+  // Send trial-ending emails to users whose trial ends in ~2 days
+  const trialEndingSoon = new Date(
+    Temporal.Now.instant().subtract({ hours: 23 * 24 }).epochMilliseconds,
+  );
+  const trialEndingSoonCutoff = new Date(
+    Temporal.Now.instant().subtract({ hours: 22 * 24 }).epochMilliseconds,
+  );
+
+  const trialEndingUsers = await prisma.user.findMany({
+    where: {
+      createdAt: { gte: trialEndingSoonCutoff, lte: trialEndingSoon },
+      account: null,
+    },
+    include: {
+      ownedSites: {
+        take: 1,
+        select: {
+          id: true,
+          domain: true,
+          _count: { select: { citationRuns: true } },
+        },
+      },
+    },
+  });
+
+  for (const user of trialEndingUsers) {
+    const site = user.ownedSites[0];
+    if (!site || user.unsubscribed) continue;
+    const citationCount = await countSiteCitations(site.id);
+    await sendTrialEndingEmail({
+      user,
+      citationCount,
+      domain: site.domain,
+    });
+  }
+
+  // Send trial-ended email to users whose trial ended today
+  const trialEndedToday = new Date(
+    Temporal.Now.instant().subtract({ hours: 25 * 24 }).epochMilliseconds,
+  );
+  const trialEndedYesterday = new Date(
+    Temporal.Now.instant().subtract({ hours: 24 * 24 }).epochMilliseconds,
+  );
+
+  const trialEndedUsers = await prisma.user.findMany({
+    where: {
+      createdAt: { gte: trialEndedToday, lte: trialEndedYesterday },
+      account: null,
+    },
+    include: {
+      ownedSites: {
+        take: 1,
+        select: {
+          id: true,
+          domain: true,
+          _count: { select: { citationRuns: true } },
+        },
+      },
+    },
+  });
+
+  for (const user of trialEndedUsers) {
+    const site = user.ownedSites[0];
+    if (!site || user.unsubscribed) continue;
+    const citationCount = await countSiteCitations(site.id);
+    await sendTrialEndedEmail({
+      user,
+      citationCount,
+      domain: site.domain,
+      queryCount: site._count.citationRuns,
+    });
+  }
 
   if (envVars.HEARTBEAT_CRON_PROCESS_SITES)
     await fetch(envVars.HEARTBEAT_CRON_PROCESS_SITES);
@@ -247,4 +322,12 @@ async function sendDigestEmails(
     logError(error, { extra: { siteId: site.id, step: "digest" } });
     return [];
   }
+}
+
+async function countSiteCitations(siteId: string): Promise<number> {
+  const queries = await prisma.citationQuery.findMany({
+    where: { run: { siteId } },
+    select: { citations: true },
+  });
+  return queries.reduce((sum, q) => sum + q.citations.length, 0);
 }
