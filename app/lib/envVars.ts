@@ -26,15 +26,18 @@ const envVars = {
     .asUrlString(),
   REDIS_URL: env.get("REDIS_URL").required().asString(),
   RESEND_API_KEY: env.get("RESEND_API_KEY").required().asString(),
-  STRIPE_SECRET_KEY: env.get("STRIPE_SECRET_KEY").required().asString(),
-  STRIPE_WEBHOOK_SECRET: env.get("STRIPE_WEBHOOK_SECRET").required().asString(),
+  STRIPE_SECRET_KEY: env.get("STRIPE_SECRET_KEY").required(false).asString(),
+  STRIPE_WEBHOOK_SECRET: env
+    .get("STRIPE_WEBHOOK_SECRET")
+    .required(false)
+    .asString(),
   STRIPE_PRICE_MONTHLY_ID: env
     .get("STRIPE_PRICE_MONTHLY_ID")
-    .required()
+    .required(false)
     .asString(),
   STRIPE_PRICE_ANNUAL_ID: env
     .get("STRIPE_PRICE_ANNUAL_ID")
-    .required()
+    .required(false)
     .asString(),
   STRIPE_PUBLISHABLE_KEY: env
     .get("STRIPE_PUBLISHABLE_KEY")
