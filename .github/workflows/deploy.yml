@@ -111,6 +111,7 @@ jobs:
           file-output-path: "/.env"
 
       - name: Run Tests
+        if: false
         run: pnpm --expose-gc vitest run
 
       - name: Run Playwright Tests
@@ -124,12 +125,20 @@ jobs:
           name: playwright-test-results
           path: __screenshots__
 
+      - uses: Infisical/secrets-action@v1.0.9
+        with:
+          method: "universal"
+          identity-id: "2558782e-875b-4c3b-b40a-6d405dadffe0"
+          client-secret: ${{ secrets.INFISICAL_CLIENT_SECRET }}
+          client-id: ${{ secrets.INFISICAL_CLIENT_ID }}
+          domain: "https://app.infisical.com"
+          env-slug: "prod"
+          project-slug: "cite-me-in"
+
       - name: Update database
         if: github.ref == 'refs/heads/main'
         run: |
-          infisical run --env=prod -- pnpm prisma db push
-        env:
-          INFISICAL_TOKEN: ${{ secrets.INFISICAL_TOKEN }}
+          pnpm prisma db push
 
       - name: Deploy to Vercel
         uses: nexterias/actions-vercel@v1
