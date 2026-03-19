@@ -114,6 +114,7 @@ jobs:
         run: pnpm --expose-gc vitest run
 
       - name: Run Playwright Tests
+        if: github.ref == 'refs/heads/not-main'
         run: pnpm playwright test
 
       - name: Upload Playwright Test Results
