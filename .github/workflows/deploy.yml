@@ -149,7 +149,7 @@ jobs:
           prebuilt: false
           production: false
           project-id: ${{ env.VERCEL_PROJECT }}
-          token: ${{ secrets.VERCEL_TOKEN }}
+          token: ${{ env.VERCEL_TOKEN }}
         env:
           SENTRY_AUTH_TOKEN: "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"
           SENTRY_ORG: "labnotes"
