@@ -1,10 +1,11 @@
 /node_modules
 .env
-!.env.test
+.env.test
 .claude/
 prisma/generated
 backup.sql
 server.log
+.infisical.json
 
 # React Router
 /.react-router/
@@ -12,7 +13,6 @@ server.log
 
 # Vercel
 .vercel/*
-.env*
 
 # Ignore test results
 __screenshots__/*.diff.png
