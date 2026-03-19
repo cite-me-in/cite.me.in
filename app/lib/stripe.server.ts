@@ -1,23 +1,14 @@
 import Stripe from "stripe";
 import envVars from "~/lib/envVars";
 
-let _stripe: Stripe | null = null;
+const stripe = new Stripe(envVars.STRIPE_SECRET_KEY, {
+  httpClient:
+    // In test mode, use the fetch-based HTTP client so that MSW can intercept/bypass
+    // requests correctly. MSW's ClientRequest interceptor doesn't emit the 'secureConnect'
+    // event that the default NodeHttpClient waits for, causing a hang.
+    process.env.NODE_ENV === "test"
+      ? Stripe.createFetchHttpClient()
+      : undefined,
+});
 
-export function getStripe(): Stripe {
-  if (!envVars.STRIPE_SECRET_KEY)
-    throw new Error("STRIPE_SECRET_KEY is not configured");
-  if (!_stripe) _stripe = new Stripe(envVars.STRIPE_SECRET_KEY);
-  return _stripe;
-}
-
-export function getMonthlyPriceId(): string {
-  if (!envVars.STRIPE_PRICE_MONTHLY_ID)
-    throw new Error("STRIPE_PRICE_MONTHLY_ID is not configured");
-  return envVars.STRIPE_PRICE_MONTHLY_ID;
-}
-
-export function getAnnualPriceId(): string {
-  if (!envVars.STRIPE_PRICE_ANNUAL_ID)
-    throw new Error("STRIPE_PRICE_ANNUAL_ID is not configured");
-  return envVars.STRIPE_PRICE_ANNUAL_ID;
-}
+export default stripe;

@@ -1,8 +1,8 @@
 import { expect } from "@playwright/test";
 import { describe, it } from "vitest";
 import prisma from "~/lib/prisma.server";
-import { goto, port } from "../helpers/launchBrowser";
-import { signIn } from "../helpers/signIn";
+import { goto, port } from "~/test/helpers/launchBrowser";
+import { signIn } from "~/test/helpers/signIn";
 
 const EMAIL_A = "pricing-flow-a@example.com";
 const EMAIL_B = "pricing-flow-b@example.com";
@@ -50,9 +50,6 @@ describe("pricing user flows", () => {
       await expect(
         page.getByRole("button", { name: "Subscribe — $29/month" }),
       ).toBeVisible();
-      await expect(
-        page.getByRole("button", { name: "Subscribe — $249/year" }),
-      ).toBeVisible();
     });
 
     it("should show Subscribe buttons with correct form structure", async () => {
@@ -65,21 +62,12 @@ describe("pricing user flows", () => {
       await expect(
         page.getByRole("button", { name: "Subscribe — $29/month" }),
       ).toBeVisible();
-      await expect(
-        page.getByRole("button", { name: "Subscribe — $249/year" }),
-      ).toBeVisible();
 
       // Verify the monthly form posts interval=monthly
       const monthlyForm = page.locator("form", {
         has: page.locator('input[name="interval"][value="monthly"]'),
       });
       await expect(monthlyForm).toBeAttached();
-
-      // Verify the annual form posts interval=annual
-      const annualForm = page.locator("form", {
-        has: page.locator('input[name="interval"][value="annual"]'),
-      });
-      await expect(annualForm).toBeAttached();
     });
 
     it("should redirect /upgrade to /sites once account is active", async () => {

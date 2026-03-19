@@ -5,11 +5,7 @@ import Main from "~/components/ui/Main";
 import { requireUser } from "~/lib/auth.server";
 import envVars from "~/lib/envVars";
 import prisma from "~/lib/prisma.server";
-import {
-  getAnnualPriceId,
-  getMonthlyPriceId,
-  getStripe,
-} from "~/lib/stripe.server";
+import stripe from "~/lib/stripe.server";
 import type { Route } from "./+types/route";
 
 export function meta(): Route.MetaDescriptors {
@@ -30,9 +26,10 @@ export async function action({ request }: Route.ActionArgs) {
   const form = await request.formData();
   const interval = form.get("interval")?.toString() ?? "monthly";
 
-  const stripe = getStripe();
   const priceId =
-    interval === "annual" ? getAnnualPriceId() : getMonthlyPriceId();
+    interval === "annual"
+      ? envVars.STRIPE_PRICE_ANNUAL_ID
+      : envVars.STRIPE_PRICE_MONTHLY_ID;
 
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
@@ -40,7 +37,7 @@ export async function action({ request }: Route.ActionArgs) {
     line_items: [{ price: priceId, quantity: 1 }],
     customer_email: user.email,
     client_reference_id: user.id,
-    success_url: `${envVars.VITE_APP_URL}/upgrade/success`,
+    success_url: `${envVars.VITE_APP_URL}/upgrade/success?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${envVars.VITE_APP_URL}/upgrade`,
     metadata: { userId: user.id, interval },
   });
@@ -100,12 +97,6 @@ export default function UpgradePage() {
               <input type="hidden" name="interval" value="monthly" />
               <Button type="submit" className="w-full">
                 Subscribe — $29/month
-              </Button>
-            </form>
-            <form method="post">
-              <input type="hidden" name="interval" value="annual" />
-              <Button type="submit" variant="outline" className="w-full">
-                Subscribe — $249/year
               </Button>
             </form>
           </div>

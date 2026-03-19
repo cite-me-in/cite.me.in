@@ -5,6 +5,7 @@ import anthropic from "./mswAnthropic";
 import gemini from "./mswGemini";
 import openai from "./mswOpenAI";
 import perplexity from "./mswPerplexity";
+import stripe from "./mswStripe";
 
 const logger = debug("msw");
 
@@ -18,19 +19,10 @@ const handlers = [
   gemini,
   openai,
   perplexity,
+  stripe,
 
   http.get("https://example.com/", () =>
     HttpResponse.html("<html><body><p>Hello world</p></body></html>"),
-  ),
-
-  // Mock Stripe checkout session creation
-  http.post("https://api.stripe.com/v1/checkout/sessions", () =>
-    HttpResponse.json({
-      id: "cs_test_fake123",
-      object: "checkout.session",
-      url: "https://checkout.stripe.com/c/pay/cs_test_fake123",
-      status: "open",
-    }),
   ),
 
   // Allow all localhost requests to pass through (for dev server communication)
@@ -46,9 +38,17 @@ const handlers = [
     () => new HttpResponse(null, { status: 204 }), // No content
   ),
 
-  // Block any other external HTTP services not explicitly mocked
+  // Block any other external HTTP services not explicitly mocked.
+  // When STRIPE_SECRET_KEY is set, allow Stripe API calls through to the real network.
   http.all(
-    () => true,
+    ({ request }: { request: Request }) => {
+      if (process.env.STRIPE_SECRET_KEY) {
+        const host = new URL(request.url).hostname;
+        if (host === "api.stripe.com" || host.endsWith(".stripe.com"))
+          return false;
+      }
+      return true;
+    },
     ({ request }: { request: Request }) => {
       logger("Blocked %s request to: %s", request.method, request.url);
       return HttpResponse.json(
@@ -59,10 +59,10 @@ const handlers = [
   ),
 ];
 
-const msw = setupServer(...handlers);
+const server = setupServer(...handlers);
 
 // Add logging for debugging
-msw.events
+server.events
   .on("request:start", ({ request }: { request: Request }) =>
     logger("%s", request.method, request.url),
   )
@@ -91,5 +91,8 @@ msw.events
   );
 
 export default function listen() {
-  msw.listen({ onUnhandledRequest: "error" });
+  // When STRIPE_SECRET_KEY is set, bypass unhandled requests (real Stripe calls).
+  // Otherwise, block all unhandled external requests to catch accidental real API calls.
+  const onUnhandledRequest = process.env.STRIPE_SECRET_KEY ? "bypass" : "error";
+  server.listen({ onUnhandledRequest });
 }

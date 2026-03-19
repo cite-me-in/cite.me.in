@@ -8,6 +8,8 @@ import path from "node:path";
 import type { Locator, Page } from "playwright";
 import vitestConfig from "vitest.config";
 import type { HTMLNode } from "~/lib/html/HTMLNode";
+import "~/test/helpers/toMatchInnerHTML";
+import "~/test/helpers/toMatchScreenshot";
 
 declare global {
   namespace PlaywrightTest {

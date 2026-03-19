@@ -23,7 +23,6 @@ export default async function setup() {
 
   // Remove regression testing diff images
   await removeTemporaryFiles();
-  await removeTemporaryFiles();
 
   // Launch server and start test env MSW handlers
   await launchServer(port);

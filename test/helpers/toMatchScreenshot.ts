@@ -10,7 +10,7 @@ import {
   readFile,
   writeFile,
 } from "node:fs/promises";
-import path from "node:path";
+import path, { dirname } from "node:path";
 import type { Locator, Page } from "playwright";
 import vitestConfig from "vitest.config";
 
@@ -34,7 +34,7 @@ declare global {
   }
 }
 
-const dirname = path.resolve(
+const baseDir = path.resolve(
   vitestConfig.test?.browser?.screenshotDirectory ?? "",
 );
 const defaultTolerance = 10;
@@ -55,7 +55,7 @@ expect.extend({
     await page.waitForTimeout(500);
 
     const name = options?.name || getTestName();
-    const filename = path.resolve(dirname, `${name}.png`);
+    const filename = path.resolve(baseDir, `${name}.png`);
     const chartLocators = await locator.locator('[data-slot="chart"]').all();
     const screenshot = await locator.screenshot({
       animations: "disabled",
@@ -68,7 +68,7 @@ expect.extend({
     try {
       await access(filename, constants.R_OK);
     } catch {
-      await mkdir(dirname, { recursive: true });
+      await mkdir(dirname(filename), { recursive: true });
       await writeFile(filename, screenshot);
       return {
         message: () => `Baseline screenshot created at ${filename}.`,
@@ -88,9 +88,9 @@ expect.extend({
     );
 
     if (!equal) {
-      const diffFilename = path.resolve(dirname, `${name}.diff.png`);
+      const diffFilename = path.resolve(baseDir, `${name}.diff.png`);
       await diffImage.save(diffFilename);
-      await writeFile(path.resolve(dirname, `${name}.new.png`), screenshot);
+      await writeFile(path.resolve(baseDir, `${name}.new.png`), screenshot);
       return {
         message: () => `Image differs from baseline see ${diffFilename}`,
         pass: false,

@@ -1,10 +1,9 @@
 import dotenv from "dotenv";
 import env from "env-var";
 
-dotenv.config({
-  path: process.env.NODE_ENV === "test" ? ".env.test" : ".env",
-  quiet: true,
-});
+if (process.env.NODE_ENV === "test")
+  dotenv.config({ path: ".env.test", quiet: true });
+dotenv.config({ path: ".env", quiet: true });
 
 const envVars = {
   ADMIN_API_SECRET: env.get("ADMIN_API_SECRET").required(false).asString(),
@@ -27,11 +26,20 @@ const envVars = {
     .asUrlString(),
   REDIS_URL: env.get("REDIS_URL").required().asString(),
   RESEND_API_KEY: env.get("RESEND_API_KEY").required().asString(),
-  STRIPE_SECRET_KEY: env.get("STRIPE_SECRET_KEY").required(false).asString(),
-  STRIPE_WEBHOOK_SECRET: env.get("STRIPE_WEBHOOK_SECRET").required(false).asString(),
-  STRIPE_PRICE_MONTHLY_ID: env.get("STRIPE_PRICE_MONTHLY_ID").required(false).asString(),
-  STRIPE_PRICE_ANNUAL_ID: env.get("STRIPE_PRICE_ANNUAL_ID").required(false).asString(),
-  STRIPE_PUBLISHABLE_KEY: env.get("STRIPE_PUBLISHABLE_KEY").required(false).asString(),
+  STRIPE_SECRET_KEY: env.get("STRIPE_SECRET_KEY").required().asString(),
+  STRIPE_WEBHOOK_SECRET: env.get("STRIPE_WEBHOOK_SECRET").required().asString(),
+  STRIPE_PRICE_MONTHLY_ID: env
+    .get("STRIPE_PRICE_MONTHLY_ID")
+    .required()
+    .asString(),
+  STRIPE_PRICE_ANNUAL_ID: env
+    .get("STRIPE_PRICE_ANNUAL_ID")
+    .required()
+    .asString(),
+  STRIPE_PUBLISHABLE_KEY: env
+    .get("STRIPE_PUBLISHABLE_KEY")
+    .required(false)
+    .asString(),
   SESSION_SECRET: env.get("SESSION_SECRET").required().asString(),
   VITE_APP_URL: env.get("VITE_APP_URL").required().asUrlString(),
   VITE_EMAIL_FROM: env.get("VITE_EMAIL_FROM").required().asString(),

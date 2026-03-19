@@ -57,6 +57,8 @@ const blockElements = [
   "th",
 ];
 
+const NOISE_TAGS = new Set(["nav", "header", "footer", "aside", "form"]);
+
 /**
  * Parses an HTML string into a tree of elements and text nodes.  The HTML is
  * assumed to be valid, well-formed HTML (i.e., as returned by innerHTML).
@@ -148,7 +150,7 @@ export default function parseHTMLTree(html: string): HTMLNode[] {
       // Opening or self-closing tag
       const node: HTMLNode = {
         type: "element",
-        tag: tagName,
+        tag: tagName.toLowerCase(),
         attributes: parseAttributes(attrStr),
         children: [],
       };
@@ -328,8 +330,6 @@ export function getTextContent(html: HTMLNode[]): string {
     .join(" ");
 }
 
-const NOISE_TAGS = new Set(["nav", "header", "footer", "aside", "form"]);
-
 export function getMainContent(tree: HTMLNode[]): HTMLNode[] {
   // Strip noisy elements first (mutates a copy at top level)
   const filtered = tree.filter(
@@ -443,5 +443,8 @@ function decodeHTMLEntities(content: string): string {
     .replace(/&mdash;/g, "—")
     .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) =>
       String.fromCharCode(Number.parseInt(hex, 16)),
+    )
+    .replace(/&#([0-9]+);/g, (_, dec) =>
+      String.fromCharCode(Number.parseInt(dec, 10)),
     );
 }

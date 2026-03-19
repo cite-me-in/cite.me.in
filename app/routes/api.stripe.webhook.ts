@@ -4,7 +4,7 @@ import type Stripe from "stripe";
 import envVars from "~/lib/envVars";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
-import { getStripe } from "~/lib/stripe.server";
+import stripe from "~/lib/stripe.server";
 import type { Route } from "./+types/api.stripe.webhook";
 
 const logger = debug("server");
@@ -13,7 +13,6 @@ export async function action({ request }: Route.ActionArgs) {
   if (request.method !== "POST")
     throw new Response("Method not allowed", { status: 405 });
 
-  const stripe = getStripe();
   const sig = request.headers.get("stripe-signature");
   const body = await request.text();
 
