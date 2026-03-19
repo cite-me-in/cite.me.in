@@ -52,7 +52,7 @@ function TrialEndedEmail({
         </Text>
         <Text>
           Your free trial has ended and daily runs have paused. Upgrade to Pro
-          to keep your history and resume monitoring — $29/month or $249/year.
+          to keep your history and resume monitoring — $35/month or $320/year.
         </Text>
       </Section>
     </EmailLayout>

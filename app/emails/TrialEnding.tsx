@@ -48,7 +48,7 @@ function TrialEndingEmail({
         </Text>
         <Text>
           If you'd like to keep your history and continue daily runs, you can
-          upgrade at any time for $29/month.
+          upgrade at any time for $35/month.
         </Text>
       </Section>
     </EmailLayout>

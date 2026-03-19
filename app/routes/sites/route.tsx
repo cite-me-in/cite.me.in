@@ -116,7 +116,7 @@ export default function SitesPage({
             to="/upgrade"
             className="inline-block rounded-base border-2 border-black bg-amber-400 px-4 py-2 font-bold text-sm shadow-[2px_2px_0px_0px_black] transition-all hover:translate-x-px hover:translate-y-[1px] hover:shadow-none"
           >
-            Upgrade to Pro — $29/mo
+            Upgrade to Pro — $35/mo
           </Link>
         </div>
       )}
@@ -153,7 +153,7 @@ export default function SitesPage({
             to="/upgrade"
             className="inline-block rounded-base border-2 border-black bg-amber-400 px-4 py-2 font-bold text-sm shadow-[2px_2px_0px_0px_black] transition-all hover:translate-x-px hover:translate-y-[1px] hover:shadow-none"
           >
-            Upgrade to Pro — $29/mo
+            Upgrade to Pro — $35/mo
           </Link>
         </div>
       )}

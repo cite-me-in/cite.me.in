@@ -18,7 +18,7 @@ export function meta(): Route.MetaDescriptors {
     {
       name: "description",
       content:
-        "Start free for 25 days. Upgrade to Pro for $29/month to keep your citation history and continue monitoring.",
+        "Start free for 25 days. Upgrade to Pro for $35/month to keep your citation history and continue monitoring.",
     },
   ];
 }
@@ -67,8 +67,8 @@ function ProTierCard() {
       <TierSummary
         title="Pro"
         badge="Popular"
-        price="$29/mo"
-        description="or $249/year (save $99)"
+        price="$35/mo"
+        description="or $320/year (save $99)"
       />
       <TierFeatures
         features={[

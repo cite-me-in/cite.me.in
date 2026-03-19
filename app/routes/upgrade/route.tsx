@@ -53,7 +53,7 @@ export default function UpgradePage() {
         <h1 className="mb-2 font-heading text-4xl">Upgrade to Pro</h1>
         <p className="mb-10 text-foreground/70">
           25 days free, no credit card. Most tools give you a week — we give you
-          enough time to actually see results. When you're ready, $29/mo keeps
+          enough time to actually see results. When you're ready, $35/mo keeps
           it all running.
         </p>
 
@@ -67,10 +67,10 @@ export default function UpgradePage() {
             </div>
             <div className="text-right">
               <p className="font-heading text-3xl">
-                $29<span className="font-normal text-base">/mo</span>
+                $35<span className="font-normal text-base">/mo</span>
               </p>
               <p className="text-foreground/60 text-sm">
-                or $249/year (save $99)
+                or $320/year (save $99)
               </p>
             </div>
           </div>
@@ -96,14 +96,14 @@ export default function UpgradePage() {
             <form method="post">
               <input type="hidden" name="interval" value="monthly" />
               <Button type="submit" className="w-full">
-                Subscribe — $29/month
+                Subscribe — $35/month
               </Button>
             </form>
           </div>
         </div>
 
         <p className="text-center text-foreground/60 text-sm">
-          cite.me.in is built by one person. Your $29/mo is what keeps it
+          cite.me.in is built by one person. Your $35/mo is what keeps it
           independent, updated, and not acquired by someone with an alt product
           vision.
         </p>

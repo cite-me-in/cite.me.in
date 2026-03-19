@@ -85,12 +85,12 @@ export default [
       {
         question: "What's included in Pro?",
         answer:
-          "Pro is $29/month or $249/year. You get unlimited daily runs, your full citation history, API access, email digests, network benchmarks, and up to 3 domains.",
+          "Pro is $35/month or $320/year. You get unlimited daily runs, your full citation history, API access, email digests, network benchmarks, and up to 3 domains.",
       },
       {
         question: "Why should I pay when it's open-source?",
         answer:
-          "You're right — you can self-host for almost nothing. But running it yourself means keeping it updated, monitoring uptime, and managing LLM API keys. $29/mo gets you all of that handled, plus access to aggregate benchmark data that self-hosting can't give you. And it keeps the project funded and independent.",
+          "You're right — you can self-host for almost nothing. But running it yourself means keeping it updated, monitoring uptime, and managing LLM API keys. $35/mo gets you all of that handled, plus access to aggregate benchmark data that self-hosting can't give you. And it keeps the project funded and independent.",
       },
       {
         question: "Can I cancel anytime?",

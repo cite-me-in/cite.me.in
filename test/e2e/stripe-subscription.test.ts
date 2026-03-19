@@ -49,14 +49,14 @@ test("loads upgrade page", async () => {
     page.getByRole("heading", { name: /upgrade to pro/i }),
   ).toBeVisible();
   await expect(
-    page.getByRole("button", { name: /subscribe.*\$29\/month/i }),
+    page.getByRole("button", { name: /subscribe.*\$35\/month/i }),
   ).toBeVisible();
 });
 
 test("subscribe button creates Stripe checkout session", async () => {
   const [request] = await Promise.all([
     page.waitForRequest((req) => req.url().includes("checkout.stripe.com")),
-    page.getByRole("button", { name: /subscribe.*\$29\/month/i }).click(),
+    page.getByRole("button", { name: /subscribe.*\$35\/month/i }).click(),
   ]);
 
   expect(request.url()).toContain("checkout.stripe.com");
