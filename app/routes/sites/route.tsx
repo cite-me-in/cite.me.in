@@ -142,19 +142,25 @@ export default function SitesPage({
         </Card>
       )}
 
-      {!canAddSite && !isPro && (
-        <div className="rounded-base border-2 border-black bg-white p-5 shadow-[4px_4px_0px_0px_black]">
-          <p className="mb-1 font-bold">Want to track more sites?</p>
-          <p className="mb-3 text-foreground/70 text-sm">
-            Pro includes up to 5 sites, full citation history, and monitoring
-            that never stops.
+      {!isPro && (
+        <div className="rounded-base border-2 border-black bg-white p-6 shadow-[4px_4px_0px_0px_black]">
+          <h2 className="mb-1 font-heading text-xl">Upgrade to Pro</h2>
+          <p className="mb-5 text-foreground/70 text-sm">
+            Monitor all 4 AI platforms. Full citation history. Up to 5 sites.
           </p>
-          <Link
-            to="/upgrade"
-            className="inline-block rounded-base border-2 border-black bg-amber-400 px-4 py-2 font-bold text-sm shadow-[2px_2px_0px_0px_black] transition-all hover:translate-x-px hover:translate-y-[1px] hover:shadow-none"
-          >
-            Upgrade to Pro — $35/mo
-          </Link>
+          <div className="flex flex-wrap gap-3">
+            <form method="post" action="/upgrade">
+              <input type="hidden" name="interval" value="monthly" />
+              <Button type="submit">Subscribe — $35/month</Button>
+            </form>
+            <form method="post" action="/upgrade">
+              <input type="hidden" name="interval" value="annual" />
+              <Button type="submit" className="bg-emerald-400">
+                Subscribe — $320/year{" "}
+                <span className="font-normal">(save $99)</span>
+              </Button>
+            </form>
+          </div>
         </div>
       )}
     </Main>

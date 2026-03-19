@@ -5,21 +5,29 @@ import prisma from "~/lib/prisma.server";
 import { goto, port } from "~/test/helpers/launchBrowser";
 import "~/test/helpers/toMatchVisual";
 
+const TEST_EMAIL = "stripe-e2e@example.com";
+const TEST_PASSWORD = "password123";
+
+test.describe.configure({ mode: "serial" });
+
 let page: Page;
 let userId: string;
 
 test.beforeAll(async () => {
-  // Sign up via UI to establish an authenticated browser session
+  await prisma.user.deleteMany({ where: { email: TEST_EMAIL } });
+});
+
+test("should sign up for a new account", async () => {
   page = await goto("/sign-up");
   await page
     .getByRole("textbox", { name: "Email", exact: true })
-    .fill("stripe-e2e@example.com");
+    .fill(TEST_EMAIL);
   await page
     .getByRole("textbox", { name: "Password", exact: true })
-    .fill("password123");
+    .fill(TEST_PASSWORD);
   await page
     .getByRole("textbox", { name: "Confirm password", exact: true })
-    .fill("password123");
+    .fill(TEST_PASSWORD);
   await expect(page.locator("main")).toMatchVisual({
     name: "e2e-stripe/1.sign-up",
   });
@@ -31,29 +39,21 @@ test.beforeAll(async () => {
   });
 
   const user = await prisma.user.findUniqueOrThrow({
-    where: { email: "stripe-e2e@example.com" },
+    where: { email: TEST_EMAIL },
   });
   userId = user.id;
-
-  await page.goto(`http://localhost:${port}/upgrade`, { waitUntil: "load" });
-  await page.waitForFunction(
-    () => document.body.getAttribute("data-hydrated") === "true",
-  );
-  await expect(page.locator("main")).toMatchVisual({
-    name: "e2e-stripe/3.upgrade",
-  });
 });
 
-test("loads upgrade page", async () => {
-  await expect(
-    page.getByRole("heading", { name: /upgrade to pro/i }),
-  ).toBeVisible();
+test("should show monthly and annual subscription options on sites page", async () => {
   await expect(
     page.getByRole("button", { name: /subscribe.*\$35\/month/i }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: /subscribe.*\$320\/year/i }),
+  ).toBeVisible();
 });
 
-test("subscribe button creates Stripe checkout session", async () => {
+test("should start Stripe checkout for monthly plan", async () => {
   const [request] = await Promise.all([
     page.waitForRequest((req) => req.url().includes("checkout.stripe.com")),
     page.getByRole("button", { name: /subscribe.*\$35\/month/i }).click(),
@@ -61,22 +61,20 @@ test("subscribe button creates Stripe checkout session", async () => {
 
   expect(request.url()).toContain("checkout.stripe.com");
 
-  // The navigation to Stripe was blocked; restore page to a known state
-  await page.goto(`http://localhost:${port}/upgrade`, { waitUntil: "load" });
+  // Restore page after Stripe redirect
+  await page.goto(`http://localhost:${port}/sites`, { waitUntil: "load" });
   await page.waitForFunction(
     () => document.body.getAttribute("data-hydrated") === "true",
   );
 });
 
-test("webhook activates account", async () => {
+test("should activate account via webhook", async () => {
   const stripe = new Stripe(envVars.STRIPE_SECRET_KEY, {
     httpClient: Stripe.createFetchHttpClient(),
   });
 
   // Create customer, attach payment method, and create subscription via API
-  const customer = await stripe.customers.create({
-    email: "stripe-e2e@example.com",
-  });
+  const customer = await stripe.customers.create({ email: TEST_EMAIL });
   const paymentMethod = await stripe.paymentMethods.attach("pm_card_visa", {
     customer: customer.id,
   });
@@ -121,11 +119,22 @@ test("webhook activates account", async () => {
 
   const account = await prisma.account.findUnique({ where: { userId } });
   expect(account?.status).toBe("active");
+  expect(account?.interval).toBe("monthly");
   expect(account?.stripeCustomerId).toBe(customer.id);
   expect(account?.stripeSubscriptionId).toBe(subscription.id);
 });
 
-test("upgrade page redirects to /sites when account is active", async () => {
-  await page.goto(`http://localhost:${port}/upgrade`, { waitUntil: "load" });
-  await expect(page).toHaveURL("/sites");
+test("should show pro state on sites page after subscribing", async () => {
+  await page.goto(`http://localhost:${port}/sites`, { waitUntil: "load" });
+  await page.waitForFunction(
+    () => document.body.getAttribute("data-hydrated") === "true",
+  );
+
+  await expect(page.getByRole("button", { name: "Add Site" })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: /subscribe/i }),
+  ).not.toBeVisible();
+  await expect(page.locator("main")).toMatchVisual({
+    name: "e2e-stripe/3.sites-pro",
+  });
 });
