@@ -12,7 +12,7 @@ server.log
 
 # Vercel
 .vercel/*
-.env*.local
+.env*
 
 # Ignore test results
 __screenshots__/*.diff.png
