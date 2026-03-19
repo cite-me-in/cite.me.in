@@ -72,7 +72,7 @@ function ProTierCard() {
       />
       <TierFeatures
         features={[
-          "Up to 3 domains",
+          "Up to 5 sites",
           "All 4 platforms",
           "We'll monitor citations indefinitely",
           "Full citation history",
@@ -103,11 +103,7 @@ function CustomTierCard() {
       />
 
       <TierFeatures
-        features={[
-          "Unlimited domains",
-          "Everything in Pro",
-          "Priority support",
-        ]}
+        features={["Unlimited sites", "Everything in Pro", "Priority support"]}
         description="For agencies tracking multiple clients."
         color="text-green-600"
       />

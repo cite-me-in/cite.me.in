@@ -41,8 +41,8 @@ export async function addSiteToUser(
   const siteCount = await prisma.site.count({ where: { ownerId: user.id } });
   if (siteCount >= limit) {
     const limitMsg = isPro
-      ? "Pro plan supports up to 5 domains. Contact us if you need more."
-      : "Free trial supports 1 domain. Upgrade to Pro to add up to 5 domains.";
+      ? "Pro plan supports up to 5 sites. Contact us if you need more."
+      : "Free trial supports 1 site. Upgrade to Pro to add up to 5 sites.";
     throw new Error(limitMsg);
   }
 

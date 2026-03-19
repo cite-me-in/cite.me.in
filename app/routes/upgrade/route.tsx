@@ -80,7 +80,7 @@ export default function UpgradePage() {
               "All 4 platforms: ChatGPT, Claude, Gemini, Perplexity",
               "Daily citation runs, indefinitely",
               "Full citation history preserved and growing",
-              "Up to 3 domains",
+              "Up to 5 sites",
               "API access",
               "Email digests and alerts",
               "Benchmark data — see how you compare",

@@ -146,7 +146,7 @@ export default function SitesPage({
         <div className="rounded-base border-2 border-black bg-white p-5 shadow-[4px_4px_0px_0px_black]">
           <p className="mb-1 font-bold">Want to track more sites?</p>
           <p className="mb-3 text-foreground/70 text-sm">
-            Pro includes up to 3 domains, full citation history, and monitoring
+            Pro includes up to 5 sites, full citation history, and monitoring
             that never stops.
           </p>
           <Link

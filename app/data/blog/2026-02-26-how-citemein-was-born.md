@@ -49,7 +49,7 @@ The goal isn't to game the LLMs. It's to understand them. To make informed decis
 
 ## From Side Project to Standalone Tool
 
-Moving Cite.me.in from a Rentail debugging script into its own product was mostly about making it reliable and reusable. The core insight—query AI platforms with forced web search, extract citations, store them—stayed the same. What changed was wrapping it in proper infrastructure: scheduled runs, a database, a dashboard, and support for multiple domains and multiple users.
+Moving Cite.me.in from a Rentail debugging script into its own product was mostly about making it reliable and reusable. The core insight—query AI platforms with forced web search, extract citations, store them—stayed the same. What changed was wrapping it in proper infrastructure: scheduled runs, a database, a dashboard, and support for multiple sites and multiple users.
 
 The tech stack is intentionally boring: React Router, Postgres, Prisma, and the Vercel AI SDK to talk to the LLMs. Reliability matters more than novelty here.
 

@@ -85,7 +85,7 @@ export default [
       {
         question: "What's included in Pro?",
         answer:
-          "Pro is $35/month or $320/year. You get unlimited daily runs, your full citation history, API access, email digests, network benchmarks, and up to 3 domains.",
+          "Pro is $35/month or $320/year. You get unlimited daily runs, your full citation history, API access, email digests, network benchmarks, and up to 5 sites.",
       },
       {
         question: "Why should I pay when it's open-source?",
