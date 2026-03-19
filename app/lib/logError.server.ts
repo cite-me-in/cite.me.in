@@ -37,11 +37,11 @@ export default function logError(
     logger(error.stack);
     console.error(error.stack);
     if (logFile) logFile.write(`${error.stack}\n`);
-    if (logtail) logtail.error(error.message, hints);
+    if (logtail) logtail.error(error.message, hints).catch(() => {});
   } else {
     logger(error);
     console.error(error);
     if (logFile) logFile.write(`${error}\n`);
-    if (logtail) logtail.error(String(error), hints);
+    if (logtail) logtail.error(String(error), hints).catch(() => {});
   }
 }
