@@ -38,7 +38,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const isPro = account?.status === "active";
   const ownedSiteCount = sites.filter((s) => s.isOwner).length;
-  const canAddSite = ownedSiteCount < (isPro ? 3 : 1);
+  const canAddSite = ownedSiteCount < (isPro ? 5 : 1);
 
   return { sites, trialExpired, canAddSite, isPro };
 }
