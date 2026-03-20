@@ -27,7 +27,7 @@ beforeAll(async () => {
           domain: DOMAIN,
           citationRuns: {
             create: {
-              createdAt: new Date().toISOString().split("T")[0],
+              onDate: new Date().toISOString().split("T")[0],
               id: RUN_ID,
               platform: "chatgpt",
               model: "gpt-4o",

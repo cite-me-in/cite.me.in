@@ -31,7 +31,7 @@ export const RunSummarySchema = z
     id: z.string().openapi({ example: "clxyz456" }),
     platform: z.string().openapi({ example: "chatgpt" }),
     model: z.string().openapi({ example: "gpt-4o" }),
-    createdAt: z.iso.date().openapi({ example: "2024-01-01" }),
+    onDate: z.iso.date().openapi({ example: "2024-01-01" }),
     queryCount: z.number().int().openapi({ example: 5 }),
     citationCount: z.number().int().openapi({ example: 12 }),
   })
@@ -58,7 +58,7 @@ export const RunDetailSchema = z
     id: z.string().openapi({ example: "clxyz456" }),
     platform: z.string().openapi({ example: "chatgpt" }),
     model: z.string().openapi({ example: "gpt-4o" }),
-    completedAt: z.iso.date().openapi({ example: "2024-01-01" }),
+    onDate: z.iso.date().openapi({ example: "2024-01-01" }),
     queries: z.array(QuerySchema),
   })
   .openapi("RunDetail");

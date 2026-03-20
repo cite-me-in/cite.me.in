@@ -300,13 +300,13 @@ export async function loadSitesWithMetrics(userId: string): Promise<
     include: {
       citationRuns: {
         select: {
-          createdAt: true,
+          onDate: true,
           queries: {
             select: { citations: true, position: true, text: true },
           },
         },
-        orderBy: { createdAt: "desc" },
-        where: { createdAt: { gte: gte.toISOString() } },
+        orderBy: { onDate: "desc" },
+        where: { onDate: { gte: gte.toISOString() } },
       },
       botVisits: {
         select: { count: true, botType: true },
@@ -322,7 +322,7 @@ export async function loadSitesWithMetrics(userId: string): Promise<
   return sites.map((site) => {
     // Group all runs by date, so each date has all the platform runs for that date:
     // { "2026-03-12": runs, "2026-03-11": runs, ... }
-    const byDate = groupBy(site.citationRuns, ({ createdAt }) => createdAt);
+    const byDate = groupBy(site.citationRuns, ({ onDate }) => onDate);
 
     // Sort the dates in reverse chronological order, most recent is first:
     // [{ date: "2026-03-12", queries }, { date: "2026-03-11", queries }, ...]

@@ -330,9 +330,9 @@ describe("sites route", () => {
             siteId,
             platform: "chatgpt",
             model: "gpt-4o",
-            createdAt: new Date(
-              Date.now() - 2 * 24 * 60 * 60 * 1000,
-            ).toISOString(),
+            onDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+              .toISOString()
+              .split("T")[0],
             queries: {
               createMany: {
                 data: [
@@ -398,7 +398,7 @@ describe("sites route", () => {
             siteId,
             platform: "chatgpt",
             model: "gpt-4o",
-            createdAt: new Date().toISOString(),
+            onDate: new Date().toISOString().split("T")[0],
             queries: {
               createMany: {
                 data: [

@@ -175,7 +175,7 @@ describe("site page", () => {
             siteId: site.id,
             platform,
             model,
-            createdAt: daysAgo(runDays[runIdx]).toISOString(),
+            onDate: daysAgo(runDays[runIdx]).toISOString().split("T")[0],
             queries: { createMany: { data: queryData } },
           },
         });

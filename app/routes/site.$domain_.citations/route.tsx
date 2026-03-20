@@ -28,7 +28,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   const runs = await prisma.citationQueryRun.findMany({
     include: { queries: true },
-    orderBy: [{ platform: "asc" }, { createdAt: "desc" }],
+    orderBy: [{ platform: "asc" }, { onDate: "desc" }],
     where: { siteId: site.id },
   });
 

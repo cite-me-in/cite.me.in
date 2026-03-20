@@ -13,7 +13,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
       id: true,
       platform: true,
       model: true,
-      createdAt: true,
+      onDate: true,
       queries: {
         select: {
           id: true,
@@ -31,9 +31,9 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   return data(
     RunDetailSchema.parse({
       id: run.id,
-      platform: run.platform,
       model: run.model,
-      completedAt: run.createdAt,
+      onDate: run.onDate,
+      platform: run.platform,
       queries: run.queries.map((query) => ({
         id: query.id,
         query: query.query,

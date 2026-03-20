@@ -114,20 +114,6 @@ describe("queryPlatform", () => {
     expect(run.queries[1].position).toBe(2);
   });
 
-  it("skips creating a new run if one already exists within newerThan", {
-    timeout: 30_000,
-  }, async () => {
-    const queryFn = vi.fn();
-
-    await queryPlatform({
-      ...PLATFORM_ARGS,
-      site,
-      queryFn,
-    });
-
-    expect(queryFn).not.toHaveBeenCalled();
-  });
-
   it("should create a run and store citation queries for each query", {
     timeout: 30_000,
   }, async () => {

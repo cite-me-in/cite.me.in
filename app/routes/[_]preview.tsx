@@ -22,9 +22,9 @@ export async function loader() {
 
   const [currentRuns, prevRuns, currentVisits, prevVisits] = await Promise.all([
     prisma.citationQueryRun.findMany({
-      where: { siteId, createdAt: { gte: weekStart, lt: weekEnd } },
+      where: { siteId, onDate: { gte: weekStart, lt: weekEnd } },
       select: {
-        createdAt: true,
+        onDate: true,
         platform: true,
         queries: {
           select: { query: true, citations: true, position: true, text: true },
@@ -32,9 +32,9 @@ export async function loader() {
       },
     }),
     prisma.citationQueryRun.findMany({
-      where: { siteId, createdAt: { gte: prevWeekStart, lt: weekStart } },
+      where: { siteId, onDate: { gte: prevWeekStart, lt: weekStart } },
       select: {
-        createdAt: true,
+        onDate: true,
         platform: true,
         queries: {
           select: { query: true, citations: true, position: true, text: true },
@@ -72,7 +72,7 @@ export async function loader() {
 
   for (const run of currentRuns) {
     const dayIndex = Math.floor(
-      (new Date(run.createdAt).getTime() - new Date(weekStart).getTime()) /
+      (new Date(run.onDate).getTime() - new Date(weekStart).getTime()) /
         (1000 * 60 * 60 * 24),
     );
     if (dayIndex >= 0 && dayIndex < 7)
@@ -82,7 +82,7 @@ export async function loader() {
   }
   for (const run of prevRuns) {
     const dayIndex = Math.floor(
-      (new Date(run.createdAt).getTime() - new Date(prevWeekStart).getTime()) /
+      (new Date(run.onDate).getTime() - new Date(prevWeekStart).getTime()) /
         (1000 * 60 * 60 * 24),
     );
     if (dayIndex >= 0 && dayIndex < 7)

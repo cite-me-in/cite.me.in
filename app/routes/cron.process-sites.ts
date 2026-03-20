@@ -59,9 +59,9 @@ export async function loader({ request }: Route.LoaderArgs) {
         },
       },
       citationRuns: {
-        orderBy: { createdAt: "desc" },
+        orderBy: { onDate: "desc" },
         take: 1,
-        select: { createdAt: true },
+        select: { onDate: true },
       },
     },
     where: {
@@ -77,7 +77,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   const qualifying = sites.filter((site) => {
     // Sites that have not been processed in the last day.
     const lastRun = site.citationRuns[0];
-    return !lastRun || new Date(lastRun.createdAt) <= notRecentlyProcessed;
+    return (
+      !lastRun ||
+      new Date(lastRun.onDate).getTime() <= notRecentlyProcessed.getTime()
+    );
   });
 
   logger(

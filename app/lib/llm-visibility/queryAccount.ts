@@ -64,8 +64,8 @@ export default async function queryAccount({
   const all = await prisma.citationQueryRun.findMany({
     where: { siteId: site.id },
     include: { queries: true },
-    orderBy: { createdAt: "asc" },
+    orderBy: { onDate: "asc" },
   });
-  const byDate = Object.entries(groupBy(all, ({ createdAt }) => createdAt));
+  const byDate = Object.entries(groupBy(all, ({ onDate }) => onDate));
   return orderBy(byDate, [([date]) => date], ["asc"]);
 }

@@ -140,7 +140,7 @@ describe("cron.process-sites", () => {
             create: {
               platform: "chatgpt",
               model: "gpt-4o",
-              createdAt: new Date().toISOString(),
+              onDate: new Date().toISOString().split("T")[0],
             },
           },
         },

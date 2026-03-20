@@ -14,16 +14,16 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const runs = await prisma.citationQueryRun.findMany({
     where: {
       siteId: site.id,
-      ...(since ? { createdAt: { gte: since } } : {}),
+      ...(since ? { onDate: { gte: since } } : {}),
     },
     select: {
       id: true,
       platform: true,
       model: true,
-      createdAt: true,
+      onDate: true,
       queries: { select: { citations: true } },
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { onDate: "desc" },
   });
 
   return data(
@@ -32,7 +32,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
         id: run.id,
         platform: run.platform,
         model: run.model,
-        createdAt: run.createdAt,
+        onDate: run.onDate,
         queryCount: queries.length,
         citationCount: sumBy(queries, (q) => q.citations.length),
       })),

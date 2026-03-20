@@ -98,7 +98,7 @@ function runToPoint(
   });
 
   return {
-    date: run.createdAt.slice(0, 10),
+    date: run.onDate,
     citations: domainCitations,
     score: visibilityScore,
   };

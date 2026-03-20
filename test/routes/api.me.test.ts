@@ -30,7 +30,7 @@ beforeAll(async () => {
               id: RUN_ID,
               platform: "chatgpt",
               model: "gpt-4o",
-              createdAt: new Date().toISOString(),
+              onDate: new Date().toISOString().split("T")[0],
               queries: {
                 create: {
                   query: "best retail platforms",

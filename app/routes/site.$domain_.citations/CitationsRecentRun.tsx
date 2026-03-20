@@ -25,7 +25,7 @@ export default function RecentVisibility({
   lastRun: {
     id: string;
     model: string;
-    createdAt: string;
+    onDate: string;
     queries: {
       id: string;
       group: string;

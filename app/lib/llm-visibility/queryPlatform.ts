@@ -36,13 +36,11 @@ export default async function queryPlatform({
   site: { id: string; domain: string };
 }) {
   try {
-    const createdAt = new Date().toISOString();
+    const onDate = new Date().toISOString().split("T")[0];
     const run = await prisma.citationQueryRun.upsert({
-      where: {
-        siteId_platform_createdAt: { createdAt, platform, siteId: site.id },
-      },
+      where: { siteId_platform_onDate: { onDate, platform, siteId: site.id } },
       update: { model: modelId },
-      create: { createdAt, model: modelId, platform, siteId: site.id },
+      create: { onDate, model: modelId, platform, siteId: site.id },
     });
     logger("[%s:%s] Created citation query run %s", site.id, platform, run.id);
 

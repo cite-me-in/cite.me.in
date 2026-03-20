@@ -78,16 +78,16 @@ model CitationQuery {
 }
 
 model CitationQueryRun {
-  createdAt String          @map("created_at") // ISO 8601 date string
-  id        String                                                     @id @default(cuid())
-  model     String          @map("model")
-  platform  String          @map("platform")
-  queries   CitationQuery[]
-  site      Site            @relation(fields: [siteId], references: [id], onDelete: Cascade)
-  siteId    String          @map("site_id")
+  onDate   String          @map("on_date") // ISO 8601 date string
+  id       String                                                  @id @default(cuid())
+  model    String          @map("model")
+  platform String          @map("platform")
+  queries  CitationQuery[]
+  site     Site            @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId   String          @map("site_id")
 
   @@map("citation_query_runs")
-  @@unique([siteId, platform,createdAt])
+  @@unique([siteId, platform,onDate])
 }
 
 model EmailVerificationToken {
