@@ -1,6 +1,11 @@
 import { differenceBy, uniqBy } from "es-toolkit";
 import type { Site } from "~/prisma";
 import queryAccount from "./llm-visibility/queryAccount";
+import queryClaude from "./llm-visibility/claudeClient";
+import queryGemini from "./llm-visibility/geminiClient";
+import openaiClient from "./llm-visibility/openaiClient";
+import queryPerplexity from "./llm-visibility/perplexityClient";
+import { singleQueryRepetition } from "./llm-visibility/queryPlatform";
 import prisma from "./prisma.server";
 
 /**
@@ -80,6 +85,47 @@ export async function renameSiteQueryGroup({
     where: { siteId: site.id, group: trimQuery(oldGroup) },
     data: { group: trimQuery(newGroup) },
   });
+}
+
+const PLATFORMS = [
+  { platform: "chatgpt", modelId: "gpt-5-chat-latest", queryFn: openaiClient },
+  { platform: "perplexity", modelId: "sonar", queryFn: queryPerplexity },
+  { platform: "claude", modelId: "claude-haiku-4-5-20251001", queryFn: queryClaude },
+  { platform: "gemini", modelId: "gemini-2.5-flash", queryFn: queryGemini },
+] as const;
+
+export async function runQueryOnAllPlatforms({
+  site,
+  query,
+  group,
+}: {
+  site: { id: string; domain: string };
+  query: string;
+  group: string;
+}) {
+  await Promise.all(
+    PLATFORMS.map(async ({ platform, modelId, queryFn }) => {
+      const run =
+        (await prisma.citationQueryRun.findFirst({
+          where: { platform, siteId: site.id },
+          orderBy: { createdAt: "desc" },
+        })) ??
+        (await prisma.citationQueryRun.create({
+          data: { platform, model: modelId, siteId: site.id },
+        }));
+
+      await singleQueryRepetition({
+        siteId: site.id,
+        group,
+        modelId,
+        platform,
+        query,
+        queryFn,
+        runId: run.id,
+        site,
+      });
+    }),
+  );
 }
 
 /**

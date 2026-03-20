@@ -84,7 +84,7 @@ export default async function queryPlatform({
   }
 }
 
-async function singleQueryRepetition({
+export async function singleQueryRepetition({
   siteId,
   group,
   modelId,
