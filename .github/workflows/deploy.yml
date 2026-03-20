@@ -9,6 +9,10 @@ env:
   NODE_OPTIONS: "--max-old-space-size=3096"
   POSTGRES_URL_NON_POOLING: "postgresql://postgres:postgres@localhost:5432/citeup_test"
   POSTGRES_URL: "postgresql://postgres:postgres@localhost:5432/citeup_test?pgbouncer=true"
+  # These are populated during the workflow by the Infisical action.
+  VERCEL_ORG_ID: ""
+  VERCEL_PROJECT_ID: ""
+  VERCEL_TOKEN: ""
 
 jobs:
   deploy:
@@ -141,8 +145,8 @@ jobs:
         if: github.ref == 'refs/heads/main'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          org-id: ${{ secrets.VERCEL_ORG_ID }}
+          org-id: ${{ env.VERCEL_ORG_ID }}
           prebuilt: false
           production: false
-          project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          token: ${{ secrets.VERCEl_TOKEN }}
+          project-id: ${{ env.VERCEL_PROJECT_ID }}
+          token: ${{ env.VERCEL_TOKEN }}
