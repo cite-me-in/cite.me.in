@@ -1,6 +1,6 @@
 import debug from "debug";
 import { data } from "react-router";
-import type Stripe from "stripe";
+import Stripe from "stripe";
 import envVars from "~/lib/envVars";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
@@ -27,7 +27,8 @@ export async function action({ request }: Route.ActionArgs) {
       envVars.STRIPE_WEBHOOK_SECRET,
     );
   } catch (error) {
-    logError(error);
+    if (!(error instanceof Stripe.errors.StripeSignatureVerificationError))
+      logError(error);
     throw new Response("Invalid signature", { status: 400 });
   }
 
