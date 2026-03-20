@@ -3,7 +3,9 @@
 /**
  * Backfill citation runs for all existing queries of a site.
  *
- * Usage: ./scripts/run-queries.ts <domain>
+ * Usage:
+ *   ./scripts/run-queries.ts <domain>
+ *   NODE_ENV=production infisical --env prod run -- ./scripts/run-queries.ts <domain>
  */
 
 import { runQueryOnAllPlatforms } from "../app/lib/addSiteQueries";
