@@ -27,6 +27,12 @@ describe("api.admin.users", () => {
         id: string;
         email: string;
         createdAt: string;
+        stripe: {
+          status: string;
+          interval: string;
+          updatedAt: string;
+          customerId: string;
+        } | null;
         sites: {
           domain: string;
           createdAt: string;
@@ -35,16 +41,34 @@ describe("api.admin.users", () => {
     };
 
     beforeAll(async () => {
+      // User with a Stripe account (ordered first by createdAt desc)
       await prisma.user.create({
         data: {
           id: "admin-users-test-user-1",
           email: "admin-users-test@test.example",
           passwordHash: "test",
+          account: {
+            create: {
+              stripeCustomerId: "cus_test123",
+              stripeSubscriptionId: "sub_test123",
+              status: "active",
+              interval: "monthly",
+            },
+          },
           ownedSites: {
             create: {
               domain: "admin-users-test.example.com",
             },
           },
+        },
+      });
+
+      // User without a Stripe account
+      await prisma.user.create({
+        data: {
+          id: "admin-users-test-user-2",
+          email: "admin-users-test-no-stripe@test.example",
+          passwordHash: "test",
         },
       });
 
@@ -59,19 +83,30 @@ describe("api.admin.users", () => {
     it("should return the seeded user", async () => {
       expect(body).toHaveProperty("users");
       expect(Array.isArray(body.users)).toBe(true);
-      expect(body.users[0].id).toBe("admin-users-test-user-1");
-      expect(body.users[0].email).toBe("admin-users-test@test.example");
-      expect(body.users[0].createdAt).toBeDefined();
-      expect(Array.isArray(body.users[0].sites)).toBe(true);
+      const user = body.users.find((u) => u.id === "admin-users-test-user-1");
+      expect(user?.email).toBe("admin-users-test@test.example");
+      expect(user?.createdAt).toBeDefined();
+      expect(Array.isArray(user?.sites)).toBe(true);
     });
 
     it("should return the seeded user's sites", async () => {
-      expect(body.users[0].sites).toBeDefined();
-      expect(Array.isArray(body.users[0].sites)).toBe(true);
-      expect(body.users[0].sites[0].domain).toBe(
-        "admin-users-test.example.com",
-      );
-      expect(body.users[0].sites[0].createdAt).toBeDefined();
+      const user = body.users.find((u) => u.id === "admin-users-test-user-1");
+      expect(user?.sites[0].domain).toBe("admin-users-test.example.com");
+      expect(user?.sites[0].createdAt).toBeDefined();
+    });
+
+    it("should return stripe details for a user with an account", async () => {
+      const user = body.users.find((u) => u.id === "admin-users-test-user-1");
+      expect(user?.stripe).not.toBeNull();
+      expect(user?.stripe?.status).toBe("active");
+      expect(user?.stripe?.interval).toBe("monthly");
+      expect(user?.stripe?.updatedAt).toBeDefined();
+      expect(user?.stripe?.customerId).toBe("cus_test123");
+    });
+
+    it("should return null stripe for a user without an account", async () => {
+      const user = body.users.find((u) => u.id === "admin-users-test-user-2");
+      expect(user?.stripe).toBeNull();
     });
   });
 });
