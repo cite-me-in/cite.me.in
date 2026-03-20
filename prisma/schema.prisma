@@ -14,6 +14,33 @@ datasource db {
   relationMode = "foreignKeys"
 }
 
+model Account {
+  id                   String                                  @id @default(cuid())
+  userId               String   @map("user_id")                @unique
+  stripeCustomerId     String   @map("stripe_customer_id")
+  stripeSubscriptionId String   @map("stripe_subscription_id")
+  status               String   @map("status")
+  interval             String   @map("interval")               @default("monthly")
+  createdAt            DateTime @map("created_at")             @default(now())
+  updatedAt            DateTime @map("updated_at")             @updatedAt
+
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("accounts")
+}
+
+model BotInsight {
+  id          String                        @id @default(cuid())
+  createdAt   DateTime @map("created_at")   @default(now())
+  updatedAt   DateTime @map("updated_at")   @updatedAt
+  siteId      String   @map("site_id")      @unique
+  site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  content     String   @map("content")
+  generatedAt DateTime @map("generated_at")
+
+  @@map("bot_insights")
+}
+
 model BotVisit {
   id        String                      @id @default(cuid())
   createdAt DateTime @map("created_at") @default(now())
@@ -33,38 +60,6 @@ model BotVisit {
   @@unique([date, siteId, userAgent, path])
   @@index([siteId])
   @@map("bot_visits")
-}
-
-model HumanVisit {
-  id         String                       @id @default(cuid())
-  createdAt  DateTime @map("created_at")  @default(now())
-  updatedAt  DateTime @map("updated_at")  @updatedAt
-  date       DateTime @map("date")
-  siteId     String   @map("site_id")
-  site       Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
-  visitorId  String   @map("visitor_id")
-  browser    String   @map("browser")
-  deviceType String   @map("device_type")
-  aiReferral String?  @map("ai_referral")
-  count      Int      @map("count")       @default(1)
-  firstSeen  DateTime @map("first_seen")  @default(now())
-  lastSeen   DateTime @map("last_seen")   @default(now())
-
-  @@unique([date, siteId, visitorId])
-  @@index([siteId])
-  @@map("human_visits")
-}
-
-model BotInsight {
-  id          String                        @id @default(cuid())
-  createdAt   DateTime @map("created_at")   @default(now())
-  updatedAt   DateTime @map("updated_at")   @updatedAt
-  siteId      String   @map("site_id")      @unique
-  site        Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
-  content     String   @map("content")
-  generatedAt DateTime @map("generated_at")
-
-  @@map("bot_insights")
 }
 
 model CitationQuery {
@@ -106,6 +101,26 @@ model EmailVerificationToken {
 
   @@index([userId])
   @@map("email_verification_tokens")
+}
+
+model HumanVisit {
+  id         String                       @id @default(cuid())
+  createdAt  DateTime @map("created_at")  @default(now())
+  updatedAt  DateTime @map("updated_at")  @updatedAt
+  date       DateTime @map("date")
+  siteId     String   @map("site_id")
+  site       Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  visitorId  String   @map("visitor_id")
+  browser    String   @map("browser")
+  deviceType String   @map("device_type")
+  aiReferral String?  @map("ai_referral")
+  count      Int      @map("count")       @default(1)
+  firstSeen  DateTime @map("first_seen")  @default(now())
+  lastSeen   DateTime @map("last_seen")   @default(now())
+
+  @@unique([date, siteId, visitorId])
+  @@index([siteId])
+  @@map("human_visits")
 }
 
 model PasswordRecoveryToken {
@@ -164,24 +179,6 @@ model Site {
   @@map("sites")
 }
 
-model SiteUser {
-  siteId    String   @map("site_id")
-  userId    String   @map("user_id")
-  createdAt DateTime @map("created_at") @default(now())
-
-  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@id([siteId, userId])
-  @@map("site_users")
-}
-
-enum InvitationStatus {
-  PENDING
-  ACCEPTED
-  EXPIRED
-}
-
 model SiteInvitation {
   id          String                                 @id @default(cuid())
   siteId      String           @map("site_id")
@@ -226,6 +223,18 @@ model SiteQuerySuggestion {
   @@map("site_query_suggestions")
 }
 
+model SiteUser {
+  siteId    String   @map("site_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @map("created_at") @default(now())
+
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([siteId, userId])
+  @@map("site_users")
+}
+
 model UsageEvent {
   id           String                         @id @default(cuid())
   createdAt    DateTime @map("created_at")    @default(now())
@@ -260,17 +269,8 @@ model User {
   @@map("users")
 }
 
-model Account {
-  id                   String                                  @id @default(cuid())
-  userId               String   @map("user_id")                @unique
-  stripeCustomerId     String   @map("stripe_customer_id")
-  stripeSubscriptionId String   @map("stripe_subscription_id")
-  status               String   @map("status")
-  interval             String   @map("interval")               @default("monthly")
-  createdAt            DateTime @map("created_at")             @default(now())
-  updatedAt            DateTime @map("updated_at")             @updatedAt
-
-  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("accounts")
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
 }
