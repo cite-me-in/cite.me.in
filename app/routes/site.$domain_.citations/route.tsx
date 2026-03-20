@@ -7,6 +7,7 @@ import prisma from "~/lib/prisma.server";
 import { requireSiteAccess } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
 import CitationsRecentRun from "./CitationsRecentRun";
+import TopCompetitors from "./TopCompetitors";
 import VisibilityCharts from "./VisibilityCharts";
 
 export const handle = { siteNav: true };
@@ -71,6 +72,7 @@ export default function SiteCitationsPage({
       {run ? (
         <>
           <CitationsRecentRun lastRun={run} site={site} />
+          <TopCompetitors queries={run.queries} ownDomain={site.domain} />
           <VisibilityCharts recentRuns={recentRuns} site={site} />
         </>
       ) : (
