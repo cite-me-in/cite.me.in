@@ -12,7 +12,7 @@
 		"dev": "react-router dev",
 		"promote": "./scripts/promote.ts",
 		"start": "react-router-serve ./build/server/index.js",
-		"test:db:push": "POSTGRES_URL_NON_POOLING=postgresql://postgres:postgres@localhost:5432/citeup_test pnpm prisma db push",
+		"test:db:push": "infisical --env dev run -- pnpm prisma db push",
 		"test:typecheck": "react-router typegen && tsc --noEmit --strict",
 		"test:reset": "rm -rf __screenshots__/*.new.* __screenshots__/*.diff.png",
 		"test": "pnpm run check && pnpm test:db:push && pnpm test:reset && pnpm --expose-gc --max-old-space-size=3096 vitest run && playwright test",
