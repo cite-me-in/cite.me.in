@@ -7,6 +7,7 @@
  */
 
 import { runQueryOnAllPlatforms } from "../app/lib/addSiteQueries";
+import { isMeaningfulSentence } from "../app/lib/llm-visibility/queryValidation";
 import prisma from "../app/lib/prisma.server";
 
 const domain = process.argv[2];
@@ -26,9 +27,7 @@ const queries = await prisma.siteQuery.findMany({
   orderBy: [{ group: "asc" }, { createdAt: "asc" }],
 });
 
-const meaningful = queries.filter(
-  (q) => q.query.trim().split(/\s+/).filter(Boolean).length >= 3,
-);
+const meaningful = queries.filter((q) => isMeaningfulSentence(q.query));
 
 console.info(
   "Running %d queries for %s (skipping %d non-sentences)…",
