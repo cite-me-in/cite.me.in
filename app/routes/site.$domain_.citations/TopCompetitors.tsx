@@ -60,7 +60,7 @@ export default function TopCompetitors({
   );
 }
 
-function topCompetitors(
+export function topCompetitors(
   queries: { citations: string[] }[],
   ownDomain: string,
 ): {
