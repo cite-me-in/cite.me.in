@@ -77,7 +77,11 @@ export async function action({ request, params }: Route.ActionArgs) {
       const query = data.get("query")?.toString() ?? "";
       await addSiteQueries(site, [{ group, query }]);
       if (isMeaningfulSentence(query))
-        await runQueryOnAllPlatforms({ site, query: query.trim().replace(/\s+/g, " "), group });
+        try {
+          await runQueryOnAllPlatforms({ site, query: query.trim().replace(/\s+/g, " "), group });
+        } catch (error) {
+          logError(error, { extra: { siteId: site.id } });
+        }
       return { ok: true as const };
     }
     case "update-query": {
@@ -89,7 +93,11 @@ export async function action({ request, params }: Route.ActionArgs) {
       if (!existing) return { ok: false as const, error: "Query not found" };
       await updateSiteQuery(id, query);
       if (isMeaningfulSentence(query) && hasWordChanges(existing.query, query))
-        await runQueryOnAllPlatforms({ site, query: query.trim(), group: existing.group });
+        try {
+          await runQueryOnAllPlatforms({ site, query: query.trim().replace(/\s+/g, " "), group: existing.group });
+        } catch (error) {
+          logError(error, { extra: { siteId: site.id } });
+        }
       return { ok: true as const };
     }
     case "delete-query": {
