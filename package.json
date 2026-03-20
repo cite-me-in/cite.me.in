@@ -7,7 +7,7 @@
 		"check:format": "biome format --write",
 		"check:lint": "biome lint",
 		"check": "secretlint **/* --format stylish && pnpm check:lint && react-router typegen && tsc --noEmit --strict && knip",
-		"clean": "rm -rf node_modules/.vite .react-router build",
+		"clean": "pnpm install --force && rm -rf node_modules/.vite .react-router build",
 		"clone": "./scripts/clone.sh",
 		"dev": "react-router dev",
 		"promote": "./scripts/promote.ts",
