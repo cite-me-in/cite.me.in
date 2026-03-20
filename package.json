@@ -75,6 +75,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.8",
+		"@infisical/cli": "^0.43.40",
 		"@inquirer/prompts": "^8.3.2",
 		"@playwright/test": "^1.58.2",
 		"@react-router/dev": "^7.13.1",

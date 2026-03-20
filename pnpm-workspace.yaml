@@ -1,4 +1,3 @@
-
 ignoredBuiltDependencies:
   - libpq
 
@@ -8,6 +7,7 @@ minimumReleaseAgeExclude:
   - "@biomejs/*"
 
 onlyBuiltDependencies:
+  - '@infisical/cli'
   - "@prisma/client"
   - "@prisma/engines"
   - "@sentry/cli"
