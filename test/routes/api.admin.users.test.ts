@@ -1,3 +1,4 @@
+import { invariant } from "es-toolkit";
 import { beforeAll, describe, expect, it } from "vitest";
 import envVars from "~/lib/envVars";
 import prisma from "~/lib/prisma.server";
@@ -24,15 +25,13 @@ describe("api.admin.users", () => {
     let response: Response;
     let body: {
       users: {
-        id: string;
-        email: string;
         createdAt: string;
-        status: string;
+        email: string;
+        id: string;
         plan: string;
-        sites: {
-          domain: string;
-          createdAt: string;
-        }[];
+        sites: { domain: string; createdAt: string }[];
+        status: string;
+        updatedAt: string;
       }[];
     };
 
@@ -49,6 +48,7 @@ describe("api.admin.users", () => {
               stripeSubscriptionId: "sub_test123",
               status: "active",
               interval: "monthly",
+              updatedAt: new Date("2024-02-24"),
             },
           },
           ownedSites: {
@@ -56,6 +56,7 @@ describe("api.admin.users", () => {
               domain: "admin-users-test.example.com",
             },
           },
+          updatedAt: new Date("2024-01-01"),
         },
       });
 
@@ -65,6 +66,7 @@ describe("api.admin.users", () => {
           id: "admin-users-test-user-2",
           email: "admin-users-test-no-stripe@test.example",
           passwordHash: "test",
+          updatedAt: new Date("2024-01-01"),
         },
       });
 
@@ -93,14 +95,18 @@ describe("api.admin.users", () => {
 
     it("should return details for a user with an account", async () => {
       const user = body.users.find((u) => u.id === "admin-users-test-user-1");
-      expect(user?.status).toBe("active");
-      expect(user?.plan).toBe("monthly");
+      invariant(user, "User not found");
+      expect(user.status).toBe("active");
+      expect(user.plan).toBe("monthly");
+      expect(user.updatedAt).toBe("2024-02-24");
     });
 
     it("should return free trial details for a user without an account", async () => {
       const user = body.users.find((u) => u.id === "admin-users-test-user-2");
-      expect(user?.status).toBe("free_trial");
-      expect(user?.plan).toBeNull();
+      invariant(user, "User not found");
+      expect(user.status).toBe("free_trial");
+      expect(user.plan).toBeNull();
+      expect(user.updatedAt).toBe("2024-01-01");
     });
   });
 });

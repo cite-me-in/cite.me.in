@@ -24,6 +24,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         select: { domain: true, createdAt: true },
         orderBy: { createdAt: "asc" },
       },
+      updatedAt: true,
     },
     orderBy: { createdAt: "desc" },
   });
@@ -40,6 +41,15 @@ export async function loader({ request }: Route.LoaderArgs) {
           createdAt: createdAt.toISOString().split("T")[0],
           domain,
         })),
+        updatedAt: new Date(
+          Math.max(
+            ...[account?.updatedAt, user.updatedAt].map(
+              (date) => date?.getTime() ?? 0,
+            ),
+          ),
+        )
+          .toISOString()
+          .split("T")[0],
       })),
     }),
   );
@@ -50,12 +60,9 @@ const AdminUsersSchema = z.object({
     .array(
       z
         .object({
-          id: z.string().openapi({ example: "clxyz123" }),
-          email: z.email().openapi({ example: "user@example.com" }),
           createdAt: z.iso.date().openapi({ example: "2024-01-01" }),
-          status: z
-            .enum(["free_trial", "active", "cancelled"])
-            .openapi({ example: "free_trial" }),
+          email: z.email().openapi({ example: "user@example.com" }),
+          id: z.string().openapi({ example: "clxyz123" }),
           plan: z
             .enum(["monthly", "yearly"])
             .nullable()
@@ -63,11 +70,15 @@ const AdminUsersSchema = z.object({
           sites: z.array(
             z
               .object({
-                domain: z.string().openapi({ example: "example.com" }),
                 createdAt: z.iso.date().openapi({ example: "2024-01-01" }),
+                domain: z.string().openapi({ example: "example.com" }),
               })
               .openapi("Site"),
           ),
+          status: z
+            .enum(["free_trial", "active", "cancelled"])
+            .openapi({ example: "free_trial" }),
+          updatedAt: z.iso.date().openapi({ example: "2024-01-01" }),
         })
         .openapi("User"),
     )
