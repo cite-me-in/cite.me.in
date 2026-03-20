@@ -5,6 +5,7 @@ on:
   - workflow_dispatch
 
 env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
   NODE_OPTIONS: "--max-old-space-size=3096"
   POSTGRES_URL_NON_POOLING: "postgresql://postgres:postgres@localhost:5432/citeup_test"
   POSTGRES_URL: "postgresql://postgres:postgres@localhost:5432/citeup_test?pgbouncer=true"
