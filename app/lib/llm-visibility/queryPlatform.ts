@@ -7,6 +7,7 @@ import {
   checkUsageLimits,
   recordUsageEvent,
 } from "~/lib/usage/usageLimit.server";
+import analyzeSentiment from "./analyzeSentiment";
 import type { QueryFn } from "./queryFn";
 
 const logger = debug("server");
@@ -57,6 +58,30 @@ export default async function queryPlatform({
         site,
       });
     });
+
+    try {
+      const completedQueries = await prisma.citationQuery.findMany({
+        where: { runId: run.id },
+      });
+      const { label, summary } = await analyzeSentiment({
+        domain: site.domain,
+        queries: completedQueries,
+      });
+      await prisma.citationQueryRun.update({
+        where: { id: run.id },
+        data: { sentimentLabel: label, sentimentSummary: summary },
+      });
+      logger(
+        "[%s:%s] Sentiment analysis complete: %s",
+        site.id,
+        platform,
+        label,
+      );
+    } catch (sentimentError) {
+      logError(sentimentError, {
+        extra: { siteId: site.id, platform, runId: run.id },
+      });
+    }
   } catch (error) {
     logError(error, {
       extra: { siteId: site.id, platform },

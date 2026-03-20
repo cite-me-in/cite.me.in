@@ -6,6 +6,7 @@ import { requireUser } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
 import { requireSiteAccess } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
+import BrandSentiment from "./BrandSentiment";
 import CitationsRecentRun from "./CitationsRecentRun";
 import TopCompetitors from "./TopCompetitors";
 import VisibilityCharts from "./VisibilityCharts";
@@ -72,6 +73,7 @@ export default function SiteCitationsPage({
       {run ? (
         <>
           <CitationsRecentRun lastRun={run} site={site} />
+          <BrandSentiment run={run} />
           <TopCompetitors queries={run.queries} ownDomain={site.domain} />
           <VisibilityCharts recentRuns={recentRuns} site={site} />
         </>

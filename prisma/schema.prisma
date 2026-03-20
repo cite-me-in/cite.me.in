@@ -78,13 +78,15 @@ model CitationQuery {
 }
 
 model CitationQueryRun {
-  onDate   String          @map("on_date") // ISO 8601 date string
-  id       String                                                  @id @default(cuid())
-  model    String          @map("model")
-  platform String          @map("platform")
-  queries  CitationQuery[]
-  site     Site            @relation(fields: [siteId], references: [id], onDelete: Cascade)
-  siteId   String          @map("site_id")
+  onDate           String          @map("on_date") // ISO 8601 date string
+  id               String                                                  @id @default(cuid())
+  model            String          @map("model")
+  platform         String          @map("platform")
+  queries          CitationQuery[]
+  sentimentLabel   SentimentLabel? @map("sentiment_label")
+  sentimentSummary String?         @map("sentiment_summary")
+  site             Site            @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId           String          @map("site_id")
 
   @@map("citation_query_runs")
   @@unique([siteId, platform,onDate])
@@ -271,4 +273,11 @@ enum InvitationStatus {
   PENDING
   ACCEPTED
   EXPIRED
+}
+
+enum SentimentLabel {
+  positive
+  negative
+  neutral
+  mixed
 }
