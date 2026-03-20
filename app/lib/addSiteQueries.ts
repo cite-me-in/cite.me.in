@@ -1,4 +1,4 @@
-import { differenceBy, uniqBy } from "es-toolkit";
+import { differenceBy, forEachAsync, uniqBy } from "es-toolkit";
 import type { Site } from "~/prisma";
 import queryClaude from "./llm-visibility/claudeClient";
 import queryGemini from "./llm-visibility/geminiClient";
@@ -84,7 +84,11 @@ export async function renameSiteQueryGroup({
 const PLATFORMS = [
   { platform: "chatgpt", modelId: "gpt-5-chat-latest", queryFn: openaiClient },
   { platform: "perplexity", modelId: "sonar", queryFn: queryPerplexity },
-  { platform: "claude", modelId: "claude-haiku-4-5-20251001", queryFn: queryClaude },
+  {
+    platform: "claude",
+    modelId: "claude-haiku-4-5-20251001",
+    queryFn: queryClaude,
+  },
   { platform: "gemini", modelId: "gemini-2.5-flash", queryFn: queryGemini },
 ] as const;
 
@@ -97,29 +101,27 @@ export async function runQueryOnAllPlatforms({
   query: string;
   group: string;
 }) {
-  await Promise.all(
-    PLATFORMS.map(async ({ platform, modelId, queryFn }) => {
-      const run =
-        (await prisma.citationQueryRun.findFirst({
-          where: { platform, siteId: site.id },
-          orderBy: { createdAt: "desc" },
-        })) ??
-        (await prisma.citationQueryRun.create({
-          data: { platform, model: modelId, siteId: site.id },
-        }));
+  await forEachAsync(PLATFORMS, async ({ platform, modelId, queryFn }) => {
+    const run =
+      (await prisma.citationQueryRun.findFirst({
+        where: { platform, siteId: site.id },
+        orderBy: { createdAt: "desc" },
+      })) ??
+      (await prisma.citationQueryRun.create({
+        data: { platform, model: modelId, siteId: site.id },
+      }));
 
-      await singleQueryRepetition({
-        siteId: site.id,
-        group,
-        modelId,
-        platform,
-        query,
-        queryFn,
-        runId: run.id,
-        site,
-      });
-    }),
-  );
+    await singleQueryRepetition({
+      siteId: site.id,
+      group,
+      modelId,
+      platform,
+      query: query.trim().replace(/\s+/g, " "),
+      queryFn,
+      runId: run.id,
+      site,
+    });
+  });
 }
 
 /**

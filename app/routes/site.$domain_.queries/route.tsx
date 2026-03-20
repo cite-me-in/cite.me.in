@@ -6,12 +6,12 @@ import addSiteQueries, {
   runQueryOnAllPlatforms,
   updateSiteQuery,
 } from "~/lib/addSiteQueries";
+import { requireUser } from "~/lib/auth.server";
+import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import {
   hasWordChanges,
   isMeaningfulSentence,
 } from "~/lib/llm-visibility/queryValidation";
-import { requireUser } from "~/lib/auth.server";
-import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import { requireSiteAccess } from "~/lib/sites.server";
@@ -78,7 +78,7 @@ export async function action({ request, params }: Route.ActionArgs) {
       await addSiteQueries(site, [{ group, query }]);
       if (isMeaningfulSentence(query))
         try {
-          await runQueryOnAllPlatforms({ site, query: query.trim().replace(/\s+/g, " "), group });
+          await runQueryOnAllPlatforms({ site, query, group });
         } catch (error) {
           logError(error, { extra: { siteId: site.id } });
         }
@@ -91,10 +91,10 @@ export async function action({ request, params }: Route.ActionArgs) {
         where: { id, siteId: site.id },
       });
       if (!existing) return { ok: false as const, error: "Query not found" };
-      await updateSiteQuery(id, query);
+      await updateSiteQuery(id, query.trim().replace(/\s+/g, " "));
       if (isMeaningfulSentence(query) && hasWordChanges(existing.query, query))
         try {
-          await runQueryOnAllPlatforms({ site, query: query.trim().replace(/\s+/g, " "), group: existing.group });
+          await runQueryOnAllPlatforms({ site, query, group: existing.group });
         } catch (error) {
           logError(error, { extra: { siteId: site.id } });
         }
