@@ -40,10 +40,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
 
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: "package.json"
           cache: "pnpm"
@@ -98,7 +98,7 @@ jobs:
         env:
           NODE_OPTIONS: "--max-old-space-size=3096"
 
-      - uses: Infisical/secrets-action@v1.0.9
+      - uses: Infisical/secrets-action@v1.0.15
         with:
           method: "universal"
           identity-id: "2558782e-875b-4c3b-b40a-6d405dadffe0"
@@ -119,13 +119,13 @@ jobs:
         run: pnpm playwright test
 
       - name: Upload Playwright Test Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         continue-on-error: true
         with:
           name: playwright-test-results
           path: __screenshots__
 
-      - uses: Infisical/secrets-action@v1.0.9
+      - uses: Infisical/secrets-action@v1.0.15
         with:
           method: "universal"
           identity-id: "2558782e-875b-4c3b-b40a-6d405dadffe0"
