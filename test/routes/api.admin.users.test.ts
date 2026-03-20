@@ -27,12 +27,8 @@ describe("api.admin.users", () => {
         id: string;
         email: string;
         createdAt: string;
-        stripe: {
-          status: string;
-          interval: string;
-          updatedAt: string;
-          customerId: string;
-        } | null;
+        status: string;
+        plan: string;
         sites: {
           domain: string;
           createdAt: string;
@@ -89,24 +85,22 @@ describe("api.admin.users", () => {
       expect(Array.isArray(user?.sites)).toBe(true);
     });
 
-    it("should return the seeded user's sites", async () => {
+    it("should return the user's sites", async () => {
       const user = body.users.find((u) => u.id === "admin-users-test-user-1");
       expect(user?.sites[0].domain).toBe("admin-users-test.example.com");
       expect(user?.sites[0].createdAt).toBeDefined();
     });
 
-    it("should return stripe details for a user with an account", async () => {
+    it("should return details for a user with an account", async () => {
       const user = body.users.find((u) => u.id === "admin-users-test-user-1");
-      expect(user?.stripe).not.toBeNull();
-      expect(user?.stripe?.status).toBe("active");
-      expect(user?.stripe?.interval).toBe("monthly");
-      expect(user?.stripe?.updatedAt).toBeDefined();
-      expect(user?.stripe?.customerId).toBe("cus_test123");
+      expect(user?.status).toBe("active");
+      expect(user?.plan).toBe("monthly");
     });
 
-    it("should return null stripe for a user without an account", async () => {
+    it("should return free trial details for a user without an account", async () => {
       const user = body.users.find((u) => u.id === "admin-users-test-user-2");
-      expect(user?.stripe).toBeNull();
+      expect(user?.status).toBe("free_trial");
+      expect(user?.plan).toBeNull();
     });
   });
 });
