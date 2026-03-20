@@ -108,7 +108,6 @@ jobs:
           file-output-path: "/.env"
 
       - name: Run Tests
-        if: false
         run: pnpm --expose-gc vitest run
 
       - name: Run Playwright Tests
@@ -142,8 +141,8 @@ jobs:
         if: github.ref == 'refs/heads/main'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          org-id: ${{ env.VERCEL_ORG_ID }}
+          org-id: ${{ secrets.VERCEL_ORG_ID }}
           prebuilt: false
           production: false
-          project-id: ${{ env.VERCEL_PROJECT }}
-          token: ${{ env.VERCEL_TOKEN }}
+          project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          token: ${{ secrets.VERCEl_TOKEN }}
