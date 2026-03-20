@@ -102,7 +102,7 @@ export async function runQueryOnAllPlatforms({
   group: string;
 }) {
   await forEachAsync(PLATFORMS, async ({ platform, modelId, queryFn }) => {
-    const onDate = new Date().toISOString();
+    const onDate = new Date().toISOString().split("T")[0];
     const run = await prisma.citationQueryRun.upsert({
       where: {
         siteId_platform_onDate: { onDate, platform, siteId: site.id },
