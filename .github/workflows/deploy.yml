@@ -134,7 +134,7 @@ jobs:
       - name: Update database
         if: github.ref == 'refs/heads/main'
         run: |
-          pnpm prisma db push --url ${{ env.POSTGRES_URL }}
+          pnpm prisma db push --url ${{ env.POSTGRES_URL_NON_POOLING }}
 
       - name: Deploy to Vercel
         uses: nexterias/actions-vercel@v1.2.3
