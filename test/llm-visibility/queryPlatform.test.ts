@@ -1,4 +1,3 @@
-import { Temporal } from "@js-temporal/polyfill";
 import { invariant } from "es-toolkit";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import queryPlatform from "~/lib/llm-visibility/queryPlatform";
@@ -54,13 +53,6 @@ const PLATFORM_ARGS = {
   queries: QUERIES,
 } as const;
 
-function newerThan24h() {
-  return Temporal.Now.instant()
-    .subtract({ hours: 24 })
-    .toZonedDateTimeISO("UTC")
-    .toPlainDateTime();
-}
-
 describe("queryPlatform", () => {
   let site: { id: string; domain: string; createdAt: Date };
 
@@ -78,110 +70,102 @@ describe("queryPlatform", () => {
     });
   });
 
-  it(
-    "should create a run and store citation queries for each query",
-    { timeout: 30_000 },
-    async () => {
-      let callIndex = 0;
-      const queryFn = vi.fn(async () => CITATION_SETS[callIndex++ % 3]);
+  it("should create a run and store citation queries for each query", {
+    timeout: 30_000,
+  }, async () => {
+    let callIndex = 0;
+    const queryFn = vi.fn(async () => CITATION_SETS[callIndex++ % 3]);
 
-      await queryPlatform({
-        ...PLATFORM_ARGS,
-        site,
-        newerThan: newerThan24h(),
-        queryFn,
-      });
+    await queryPlatform({
+      ...PLATFORM_ARGS,
+      site,
+      queryFn,
+    });
 
-      const run = await prisma.citationQueryRun.findFirst({
-        where: { siteId: site.id, platform: "claude" },
-        include: {
-          queries: {
-            orderBy: [{ group: "asc" }, { query: "asc" }],
-          },
+    const run = await prisma.citationQueryRun.findFirst({
+      where: { siteId: site.id, platform: "claude" },
+      include: {
+        queries: {
+          orderBy: [{ group: "asc" }, { query: "asc" }],
         },
-      });
+      },
+    });
 
-      invariant(run, "run is not null");
-      expect(run.model).toBe("claude-haiku-4-5-20251001");
-      expect(run.queries).toHaveLength(2);
-      expect(run.queries[0].citations).toHaveLength(2);
-      expect(run.queries[1].citations).toHaveLength(3);
-      expect(queryFn).toHaveBeenCalledTimes(2);
+    invariant(run, "run is not null");
+    expect(run.model).toBe("claude-haiku-4-5-20251001");
+    expect(run.queries).toHaveLength(2);
+    expect(run.queries[0].citations).toHaveLength(2);
+    expect(run.queries[1].citations).toHaveLength(3);
+    expect(queryFn).toHaveBeenCalledTimes(2);
 
-      // Ordered alphabetically: "Find..." before "How..."
-      // "Find..." reps 1-3 map to citationSets 3,4,5 (indices 0,1,2)
+    // Ordered alphabetically: "Find..." before "How..."
+    // "Find..." reps 1-3 map to citationSets 3,4,5 (indices 0,1,2)
 
-      expect(run.queries[0].group).toBe("1. discovery");
-      expect(run.queries[0].query).toBe(
-        "How do I find short-term retail space in shopping malls?",
-      );
-      expect(run.queries[0].position).toBe(0);
+    expect(run.queries[0].group).toBe("1. discovery");
+    expect(run.queries[0].query).toBe(
+      "How do I find short-term retail space in shopping malls?",
+    );
+    expect(run.queries[0].position).toBe(0);
 
-      expect(run.queries[1].group).toBe("2. active_search");
-      expect(run.queries[1].query).toBe(
-        "Find available temporary retail space in shopping centers",
-      );
-      expect(run.queries[1].position).toBe(2);
-    },
-  );
+    expect(run.queries[1].group).toBe("2. active_search");
+    expect(run.queries[1].query).toBe(
+      "Find available temporary retail space in shopping centers",
+    );
+    expect(run.queries[1].position).toBe(2);
+  });
 
-  it(
-    "skips creating a new run if one already exists within newerThan",
-    { timeout: 30_000 },
-    async () => {
-      const queryFn = vi.fn();
+  it("skips creating a new run if one already exists within newerThan", {
+    timeout: 30_000,
+  }, async () => {
+    const queryFn = vi.fn();
 
-      await queryPlatform({
-        ...PLATFORM_ARGS,
-        site,
-        newerThan: newerThan24h(),
-        queryFn,
-      });
+    await queryPlatform({
+      ...PLATFORM_ARGS,
+      site,
+      queryFn,
+    });
 
-      expect(queryFn).not.toHaveBeenCalled();
-    },
-  );
+    expect(queryFn).not.toHaveBeenCalled();
+  });
 
-  it(
-    "should create a run and store citation queries for each query",
-    { timeout: 30_000 },
-    async () => {
-      const runs = await prisma.citationQueryRun.findMany({
-        where: { siteId: site.id },
-        include: {
-          queries: { orderBy: [{ group: "asc" }, { query: "asc" }] },
-        },
-      });
+  it("should create a run and store citation queries for each query", {
+    timeout: 30_000,
+  }, async () => {
+    const runs = await prisma.citationQueryRun.findMany({
+      where: { siteId: site.id },
+      include: {
+        queries: { orderBy: [{ group: "asc" }, { query: "asc" }] },
+      },
+    });
 
-      expect(runs).toHaveLength(1);
+    expect(runs).toHaveLength(1);
 
-      const [run] = runs;
-      expect(run.platform).toBe("claude");
-      expect(run.model).toBe("claude-haiku-4-5-20251001");
-      expect(run.siteId).toBe(site.id);
-      expect(run.queries).toHaveLength(2);
-      expect(run.queries[0].citations).toHaveLength(2);
-      expect(run.queries[1].citations).toHaveLength(3);
+    const [run] = runs;
+    expect(run.platform).toBe("claude");
+    expect(run.model).toBe("claude-haiku-4-5-20251001");
+    expect(run.siteId).toBe(site.id);
+    expect(run.queries).toHaveLength(2);
+    expect(run.queries[0].citations).toHaveLength(2);
+    expect(run.queries[1].citations).toHaveLength(3);
 
-      expect(run.queries[0]).toMatchObject({
-        citations: ["https://rentail.space/listings", "https://other.com"],
-        text: "You can find short-term retail space on rentail.space.",
-        position: 0,
-        extraQueries: [],
-      });
+    expect(run.queries[0]).toMatchObject({
+      citations: ["https://rentail.space/listings", "https://other.com"],
+      text: "You can find short-term retail space on rentail.space.",
+      position: 0,
+      extraQueries: [],
+    });
 
-      expect(run.queries[1]).toMatchObject({
-        query: "Find available temporary retail space in shopping centers",
-        group: "2. active_search",
-        citations: [
-          "https://other.com",
-          "https://example.com",
-          "https://rentail.space/faq",
-        ],
-        text: "Platforms like rentail.space offer temporary retail options.",
-        position: 2,
-        extraQueries: [],
-      });
-    },
-  );
+    expect(run.queries[1]).toMatchObject({
+      query: "Find available temporary retail space in shopping centers",
+      group: "2. active_search",
+      citations: [
+        "https://other.com",
+        "https://example.com",
+        "https://rentail.space/faq",
+      ],
+      text: "Platforms like rentail.space offer temporary retail options.",
+      position: 2,
+      extraQueries: [],
+    });
+  });
 });

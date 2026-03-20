@@ -137,7 +137,11 @@ describe("cron.process-sites", () => {
             },
           },
           citationRuns: {
-            create: { platform: "chatgpt", model: "gpt-4o" },
+            create: {
+              platform: "chatgpt",
+              model: "gpt-4o",
+              createdAt: new Date().toISOString(),
+            },
           },
         },
       });

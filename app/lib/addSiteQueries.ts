@@ -102,14 +102,14 @@ export async function runQueryOnAllPlatforms({
   group: string;
 }) {
   await forEachAsync(PLATFORMS, async ({ platform, modelId, queryFn }) => {
-    const run =
-      (await prisma.citationQueryRun.findFirst({
-        where: { platform, siteId: site.id },
-        orderBy: { createdAt: "desc" },
-      })) ??
-      (await prisma.citationQueryRun.create({
-        data: { platform, model: modelId, siteId: site.id },
-      }));
+    const createdAt = new Date().toISOString();
+    const run = await prisma.citationQueryRun.upsert({
+      where: {
+        siteId_platform_createdAt: { createdAt, platform, siteId: site.id },
+      },
+      update: { model: modelId },
+      create: { createdAt, model: modelId, platform, siteId: site.id },
+    });
 
     await singleQueryRepetition({
       siteId: site.id,

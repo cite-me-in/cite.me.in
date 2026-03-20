@@ -17,13 +17,22 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/Table";
-import type { Prisma } from "~/prisma";
 
 export default function RecentVisibility({
   lastRun,
   site,
 }: {
-  lastRun: Prisma.CitationQueryRunGetPayload<{ include: { queries: true } }>;
+  lastRun: {
+    id: string;
+    model: string;
+    createdAt: string;
+    queries: {
+      id: string;
+      group: string;
+      query: string;
+      citations: string[];
+    }[];
+  };
   site: { id: string; domain: string };
 }) {
   const queries = sortBy(lastRun.queries, ["group", "query"]);

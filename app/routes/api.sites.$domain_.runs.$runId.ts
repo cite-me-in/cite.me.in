@@ -33,7 +33,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
       id: run.id,
       platform: run.platform,
       model: run.model,
-      completedAt: run.createdAt.toISOString().split("T")[0],
+      completedAt: run.createdAt,
       queries: run.queries.map((query) => ({
         id: query.id,
         query: query.query,

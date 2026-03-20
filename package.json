@@ -4,16 +4,18 @@
 	"license": "AGPL-3.0-only",
 	"scripts": {
 		"build": "prisma generate && react-router build --force",
-		"check": "secretlint **/* --format stylish && biome lint && react-router typegen && tsc --noEmit --strict && knip",
+		"check:format": "biome format --write",
+		"check:lint": "biome lint",
+		"check": "secretlint **/* --format stylish && pnpm check:lint && react-router typegen && tsc --noEmit --strict && knip",
 		"clean": "rm -rf node_modules/.vite .react-router build",
 		"clone": "./scripts/clone.sh",
 		"dev": "react-router dev",
-		"format": "biome format --write",
-		"lint": "biome lint",
 		"promote": "./scripts/promote.ts",
 		"start": "react-router-serve ./build/server/index.js",
-		"test": "pnpm run check && pnpm --expose-gc --max-old-space-size=3096 vitest run && playwright test",
-		"typecheck": "react-router typegen && tsc --noEmit --strict",
+		"test:db:push": "POSTGRES_URL_NON_POOLING=postgresql://postgres:postgres@localhost:5432/citeup_test pnpm prisma db push",
+		"test:typecheck": "react-router typegen && tsc --noEmit --strict",
+		"test:reset": "rm -rf __screenshots__/*.new.* __screenshots__/*.diff.png",
+		"test": "pnpm run check && pnpm test:db:push && pnpm test:reset && pnpm --expose-gc --max-old-space-size=3096 vitest run && playwright test",
 		"upgrade": "./scripts/upgrade.sh"
 	},
 	"dependencies": {

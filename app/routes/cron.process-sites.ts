@@ -77,7 +77,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const qualifying = sites.filter((site) => {
     // Sites that have not been processed in the last day.
     const lastRun = site.citationRuns[0];
-    return !lastRun || lastRun.createdAt <= notRecentlyProcessed;
+    return !lastRun || new Date(lastRun.createdAt) <= notRecentlyProcessed;
   });
 
   logger(

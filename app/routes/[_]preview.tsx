@@ -12,13 +12,13 @@ export async function loader() {
     .startOfDay()
     .toInstant();
 
-  const weekEnd = new Date(todayMidnight.epochMilliseconds);
+  const weekEnd = new Date(todayMidnight.epochMilliseconds).toISOString();
   const weekStart = new Date(
     todayMidnight.subtract({ hours: 24 * 7 }).epochMilliseconds,
-  );
+  ).toISOString();
   const prevWeekStart = new Date(
     todayMidnight.subtract({ hours: 24 * 14 }).epochMilliseconds,
-  );
+  ).toISOString();
 
   const [currentRuns, prevRuns, currentVisits, prevVisits] = await Promise.all([
     prisma.citationQueryRun.findMany({
@@ -72,7 +72,8 @@ export async function loader() {
 
   for (const run of currentRuns) {
     const dayIndex = Math.floor(
-      (run.createdAt.getTime() - weekStart.getTime()) / (1000 * 60 * 60 * 24),
+      (new Date(run.createdAt).getTime() - new Date(weekStart).getTime()) /
+        (1000 * 60 * 60 * 24),
     );
     if (dayIndex >= 0 && dayIndex < 7)
       dailyCitations[dayIndex] += run.queries.flatMap(
@@ -81,7 +82,7 @@ export async function loader() {
   }
   for (const run of prevRuns) {
     const dayIndex = Math.floor(
-      (run.createdAt.getTime() - prevWeekStart.getTime()) /
+      (new Date(run.createdAt).getTime() - new Date(prevWeekStart).getTime()) /
         (1000 * 60 * 60 * 24),
     );
     if (dayIndex >= 0 && dayIndex < 7)

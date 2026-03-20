@@ -16,8 +16,8 @@ export default async function sendWeeklyDigestEmail({
   domain: string;
   metrics: {
     domain: string;
-    weekStart: Date;
-    weekEnd: Date;
+    weekStart: string;
+    weekEnd: string;
     citations: {
       total: number;
       delta: number;
@@ -47,10 +47,10 @@ export default async function sendWeeklyDigestEmail({
   });
 }
 
-function formatWeekRange(start: Date, end: Date): string {
+function formatWeekRange(start: string, end: string): string {
   const opts: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
-  const s = start.toLocaleDateString("en-US", opts);
-  const e = new Date(end.getTime() - 1).toLocaleDateString("en-US", opts);
+  const s = new Date(start).toLocaleDateString("en-US", opts);
+  const e = new Date(end).toLocaleDateString("en-US", opts);
   return `${s} — ${e}`;
 }
 
@@ -75,8 +75,8 @@ export function WeeklyDigestEmail({
   unsubscribeURL?: string;
   metrics: {
     domain: string;
-    weekStart: Date;
-    weekEnd: Date;
+    weekStart: string;
+    weekEnd: string;
     citations: {
       total: number;
       delta: number;

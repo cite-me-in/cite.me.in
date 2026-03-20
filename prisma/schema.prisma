@@ -78,8 +78,8 @@ model CitationQuery {
 }
 
 model CitationQueryRun {
-  createdAt DateTime        @map("created_at") @default(now())
-  id        String                             @id @default(cuid())
+  createdAt String          @map("created_at") // ISO 8601 date string
+  id        String                                                     @id @default(cuid())
   model     String          @map("model")
   platform  String          @map("platform")
   queries   CitationQuery[]
@@ -87,6 +87,7 @@ model CitationQueryRun {
   siteId    String          @map("site_id")
 
   @@map("citation_query_runs")
+  @@unique([siteId, platform,createdAt])
 }
 
 model EmailVerificationToken {

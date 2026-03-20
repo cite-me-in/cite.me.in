@@ -1,4 +1,3 @@
-import type { Temporal } from "@js-temporal/polyfill";
 import { ms } from "convert";
 import debug from "debug";
 import { delay, forEachAsync } from "es-toolkit";
@@ -16,8 +15,6 @@ const logger = debug("server");
  * Query a given platform for a given account and queries.
  *
  * @param modelId - The model to use for the queries.
- * @param newerThan - The date to start querying from. If the last run is *
- *  newer than this date, the queries will not be queried again.
  * @param platform - The platform to query.
  * @param queries - The queries to query.
  * @param queryFn - The function to use to query the LLM.
@@ -26,7 +23,6 @@ const logger = debug("server");
 export default async function queryPlatform({
   siteId,
   modelId,
-  newerThan,
   platform,
   queries,
   queryFn,
@@ -34,33 +30,19 @@ export default async function queryPlatform({
 }: {
   siteId: string;
   modelId: string;
-  newerThan: Temporal.PlainDateTime;
   platform: string;
   queries: { query: string; group: string }[];
   queryFn: QueryFn;
   site: { id: string; domain: string };
 }) {
   try {
-    const existing = await prisma.citationQueryRun.findFirst({
+    const createdAt = new Date().toISOString();
+    const run = await prisma.citationQueryRun.upsert({
       where: {
-        platform,
-        siteId: site.id,
-        createdAt: { gte: new Date(`${newerThan.toString()}Z`) },
+        siteId_platform_createdAt: { createdAt, platform, siteId: site.id },
       },
-      orderBy: { createdAt: "desc" },
-    });
-    if (existing) {
-      logger(
-        "[%s:%s] Skipping — citation query run already exists: %s",
-        site.id,
-        platform,
-        existing.id,
-      );
-      return;
-    }
-
-    const run = await prisma.citationQueryRun.create({
-      data: { platform, model: modelId, siteId: site.id },
+      update: { model: modelId },
+      create: { createdAt, model: modelId, platform, siteId: site.id },
     });
     logger("[%s:%s] Created citation query run %s", site.id, platform, run.id);
 

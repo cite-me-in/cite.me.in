@@ -9,13 +9,12 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const site = await verifySiteAccess({ domain: params.domain, request });
 
   const url = new URL(request.url);
-  const since = url.searchParams.get("since");
-  const sinceDate = since ? new Date(since) : undefined;
+  const since = url.searchParams.get("since") ?? undefined;
 
   const runs = await prisma.citationQueryRun.findMany({
     where: {
       siteId: site.id,
-      ...(sinceDate ? { createdAt: { gte: sinceDate } } : {}),
+      ...(since ? { createdAt: { gte: since } } : {}),
     },
     select: {
       id: true,
@@ -33,7 +32,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
         id: run.id,
         platform: run.platform,
         model: run.model,
-        completedAt: run.createdAt.toISOString().split("T")[0],
+        createdAt: run.createdAt,
         queryCount: queries.length,
         citationCount: sumBy(queries, (q) => q.citations.length),
       })),
