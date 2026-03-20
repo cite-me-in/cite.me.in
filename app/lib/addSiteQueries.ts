@@ -1,6 +1,5 @@
 import { differenceBy, uniqBy } from "es-toolkit";
 import type { Site } from "~/prisma";
-import queryAccount from "./llm-visibility/queryAccount";
 import queryClaude from "./llm-visibility/claudeClient";
 import queryGemini from "./llm-visibility/geminiClient";
 import openaiClient from "./llm-visibility/openaiClient";
@@ -39,8 +38,6 @@ export default async function addSiteQueries(
   await prisma.siteQuery.createMany({
     data: unique.map(({ group, query }) => ({ siteId: site.id, group, query })),
   });
-  // Inspect LLM visibility for the new queries we just added.
-  await queryAccount({ site, queries: unique });
 }
 
 export async function addSiteQueryGroup(site: Site, group: string) {
@@ -57,12 +54,10 @@ export async function addSiteQueryGroup(site: Site, group: string) {
  * @returns The updated query.
  */
 export async function updateSiteQuery(id: string, query: string) {
-  const updated = await prisma.siteQuery.update({
+  await prisma.siteQuery.update({
     data: { query: trimQuery(query) },
-    include: { site: true },
     where: { id },
   });
-  await queryAccount({ queries: [updated], site: updated.site });
 }
 
 /**

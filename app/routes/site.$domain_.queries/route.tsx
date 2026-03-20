@@ -3,8 +3,13 @@ import SitePageHeader from "~/components/ui/SitePageHeader";
 import addSiteQueries, {
   addSiteQueryGroup,
   renameSiteQueryGroup,
+  runQueryOnAllPlatforms,
   updateSiteQuery,
 } from "~/lib/addSiteQueries";
+import {
+  hasWordChanges,
+  isMeaningfulSentence,
+} from "~/lib/llm-visibility/queryValidation";
 import { requireUser } from "~/lib/auth.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import logError from "~/lib/logError.server";
@@ -71,7 +76,9 @@ export async function action({ request, params }: Route.ActionArgs) {
       const group = data.get("group")?.toString() ?? "";
       const query = data.get("query")?.toString() ?? "";
       await addSiteQueries(site, [{ group, query }]);
-      return { ok: true };
+      if (isMeaningfulSentence(query))
+        await runQueryOnAllPlatforms({ site, query: query.trim(), group });
+      return { ok: true as const };
     }
     case "update-query": {
       const id = data.get("id")?.toString() ?? "";
@@ -79,9 +86,11 @@ export async function action({ request, params }: Route.ActionArgs) {
       const existing = await prisma.siteQuery.findFirst({
         where: { id, siteId: site.id },
       });
-      if (!existing) return { ok: false, error: "Query not found" };
+      if (!existing) return { ok: false as const, error: "Query not found" };
       await updateSiteQuery(id, query);
-      return { ok: true };
+      if (isMeaningfulSentence(query) && hasWordChanges(existing.query, query))
+        await runQueryOnAllPlatforms({ site, query: query.trim(), group: existing.group });
+      return { ok: true as const };
     }
     case "delete-query": {
       const id = data.get("id")?.toString();
