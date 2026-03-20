@@ -15,6 +15,7 @@ import Spinner from "~/components/ui/Spinner";
 import addSiteQueries from "~/lib/addSiteQueries";
 import { requireUser } from "~/lib/auth.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
+import queryAccount from "~/lib/llm-visibility/queryAccount";
 import queryGroups from "~/lib/llm-visibility/queryGroups";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
@@ -64,6 +65,7 @@ export async function action({ params, request }: Route.ActionArgs) {
           .array(z.object({ group: z.string(), query: z.string() }))
           .parse(raw);
         await addSiteQueries(site, queries);
+        await queryAccount({ site, queries: queries.filter((q) => q.query.trim()) });
         return redirect(`/site/${params.domain}/citations`);
       }
     }
