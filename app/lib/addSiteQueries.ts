@@ -8,8 +8,8 @@ import { singleQueryRepetition } from "./llm-visibility/queryPlatform";
 import prisma from "./prisma.server";
 
 /**
- * Add queries to a site. Only adds queries that are not already present,
- * removes duplicates, and does a citation query run on the new queries.
+ * Add queries to a site. Only adds queries that are not already present
+ * and removes duplicates.
  *
  * @param site - The site to add queries to.
  * @param queries - The queries to add.
@@ -47,11 +47,10 @@ export async function addSiteQueryGroup(site: Site, group: string) {
 }
 
 /**
- * Update a query for a site. Does a citation query run on the new query.
+ * Update a query for a site.
  *
  * @param id - The id of the query to update.
  * @param query - The new query.
- * @returns The updated query.
  */
 export async function updateSiteQuery(id: string, query: string) {
   await prisma.siteQuery.update({

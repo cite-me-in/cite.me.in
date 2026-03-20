@@ -77,7 +77,7 @@ export async function action({ request, params }: Route.ActionArgs) {
       const query = data.get("query")?.toString() ?? "";
       await addSiteQueries(site, [{ group, query }]);
       if (isMeaningfulSentence(query))
-        await runQueryOnAllPlatforms({ site, query: query.trim(), group });
+        await runQueryOnAllPlatforms({ site, query: query.trim().replace(/\s+/g, " "), group });
       return { ok: true as const };
     }
     case "update-query": {
