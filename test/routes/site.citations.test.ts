@@ -177,10 +177,28 @@ describe("site page", () => {
             model,
             onDate: daysAgo(runDays[runIdx]).toISOString().split("T")[0],
             queries: { createMany: { data: queryData } },
+            // Only the most recent run has sentiment analysis (older runs are historical)
+            ...(runIdx === 2 && {
+              sentimentLabel: "positive",
+              sentimentSummary:
+                "Rentail.space is cited positively across multiple queries, frequently appearing as a top recommendation for finding short-term retail space. It ranks prominently in citations and is described as a reliable marketplace for pop-up and kiosk leasing.",
+            }),
           },
         });
       }
     }
+  });
+
+  it("should show brand sentiment card with label and summary", async () => {
+    await signIn(user.id);
+    const page = await goto(`/site/${siteDomain}/citations`);
+    await expect(
+      page.getByText("Brand Sentiment", { exact: true }),
+    ).toBeVisible();
+    await expect(page.getByText("Positive", { exact: true })).toBeVisible();
+    await expect(
+      page.getByText(/Rentail\.space is cited positively/),
+    ).toBeVisible();
   });
 
   it("should match visually", async () => {
