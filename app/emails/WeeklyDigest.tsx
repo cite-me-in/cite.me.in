@@ -1,225 +1,32 @@
-import { Temporal } from "@js-temporal/polyfill";
 import { Column, Img, Link, Row, Section, Text } from "@react-email/components";
-import { sample, sortBy, sumBy } from "es-toolkit";
+import { sample, sortBy } from "es-toolkit";
 import { twMerge } from "tailwind-merge";
-import calculateVisibilityScore from "~/lib/llm-visibility/calculateVisibilityScore";
-import prisma from "~/lib/prisma.server";
-import { formatDateMed } from "~/lib/temporal";
-import { generateCitationChart } from "~/lib/weeklyDigest.server";
+import { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
 import type { SentimentLabel } from "~/prisma";
 import EmailLayout from "./EmailLayout";
 import { sendEmail } from "./sendEmails";
 
-type WeeklyDigestEmailProps = {
-  botVisits: { total: number; delta: number };
-  byPlatform: {
-    [k: string]: {
-      count: number;
-      sentimentLabel: SentimentLabel;
-      sentimentSummary: string;
-    };
-  };
-  chartBase64: string;
-  citations: { delta: number; total: number; domain: number };
-  domain: string;
-  score: { current: number; delta: number };
-  subject: string;
-  topQueries: { query: string; count: number; delta: number }[];
-  unsubscribeURL?: string;
-};
-
-export async function loadWeeklyDigestMetrics(
+export async function sendSiteDigestEmails(
   siteId: string,
-): Promise<WeeklyDigestEmailProps & { to: string[]; subject: string }> {
-  const { domain, owner, siteUsers } = await prisma.site.findUniqueOrThrow({
-    where: { id: siteId },
-    select: {
-      domain: true,
-      owner: { select: { email: true } },
-      siteUsers: { select: { user: { select: { email: true } } } },
-    },
-  });
-
-  const todayMidnight = Temporal.Now.zonedDateTimeISO("UTC")
-    .startOfDay()
-    .toInstant();
-  const prevWeekStart = new Date(
-    todayMidnight.subtract({ hours: 24 * 14 }).epochMilliseconds,
-  ).toISOString();
-  const weekStart = new Date(
-    todayMidnight.subtract({ hours: 24 * 7 }).epochMilliseconds,
-  ).toISOString();
-  const weekEnd = new Date(todayMidnight.epochMilliseconds).toISOString();
-
-  const [currentRuns, prevRuns, currentVisits, prevVisits] = await Promise.all([
-    prisma.citationQueryRun.findMany({
-      where: { siteId, onDate: { gte: weekStart, lt: weekEnd } },
-      select: {
-        onDate: true,
-        platform: true,
-        queries: {
-          select: { query: true, citations: true, position: true, text: true },
-        },
-        sentimentLabel: true,
-        sentimentSummary: true,
-      },
-    }),
-    prisma.citationQueryRun.findMany({
-      where: { siteId, onDate: { gte: prevWeekStart, lt: weekStart } },
-      select: {
-        onDate: true,
-        platform: true,
-        queries: {
-          select: { query: true, citations: true, position: true, text: true },
-        },
-      },
-    }),
-    prisma.botVisit.aggregate({
-      _sum: { count: true },
-      where: { siteId, date: { gte: weekStart, lt: weekEnd } },
-    }),
-    prisma.botVisit.aggregate({
-      _sum: { count: true },
-      where: { siteId, date: { gte: prevWeekStart, lt: weekStart } },
-    }),
-  ]);
-
-  const currentMetrics = calculateVisibilityScore({
-    domain,
-    queries: currentRuns.flatMap((r) => r.queries),
-  });
-  const prevMetrics = calculateVisibilityScore({
-    domain,
-    queries: prevRuns.flatMap((r) => r.queries),
-  });
-
-  const byPlatform = Object.fromEntries(
-    currentRuns.map((r) => [
-      r.platform,
-      {
-        count: sumBy(r.queries, (q) => q.citations.length),
-        sentimentLabel: r.sentimentLabel ?? "neutral",
-        sentimentSummary: r.sentimentSummary ?? "",
-      },
-    ]),
-  );
-
-  // Daily citations: Mon=0 through Sun=6 (day-of-week relative to weekStart)
-  const dailyCitations = Array(7).fill(0) as number[];
-  const prevDailyCitations = Array(7).fill(0) as number[];
-
-  for (const run of currentRuns) {
-    const dayIndex = Math.floor(
-      (new Date(run.onDate).getTime() - new Date(weekStart).getTime()) /
-        (1000 * 60 * 60 * 24),
-    );
-    if (dayIndex >= 0 && dayIndex < 7)
-      dailyCitations[dayIndex] += run.queries.flatMap(
-        (q) => q.citations,
-      ).length;
-  }
-  for (const run of prevRuns) {
-    const dayIndex = Math.floor(
-      (new Date(run.onDate).getTime() - new Date(prevWeekStart).getTime()) /
-        (1000 * 60 * 60 * 24),
-    );
-    if (dayIndex >= 0 && dayIndex < 7)
-      prevDailyCitations[dayIndex] += run.queries.flatMap(
-        (q) => q.citations,
-      ).length;
-  }
-
-  // Top queries
-  const queryCounts: Record<string, { current: number; prev: number }> = {};
-  for (const run of currentRuns)
-    for (const q of run.queries) {
-      queryCounts[q.query] ??= { current: 0, prev: 0 };
-      queryCounts[q.query].current += q.citations.length;
-    }
-  for (const run of prevRuns)
-    for (const q of run.queries) {
-      queryCounts[q.query] ??= { current: 0, prev: 0 };
-      queryCounts[q.query].prev += q.citations.length;
-    }
-
-  const topQueries = Object.entries(queryCounts)
-    .sort(([, a], [, b]) => b.current - a.current)
-    .slice(0, 5)
-    .map(([query, { current, prev }]) => ({
-      query,
-      count: current,
-      delta: current - prev,
-    }));
-
-  const botVisitsTotal = currentVisits._sum.count ?? 0;
-  const botVisitsPrev = prevVisits._sum.count ?? 0;
-
-  const chartBase64 = await generateCitationChart(
-    dailyCitations,
-    prevDailyCitations,
-  );
-
-  const to = [owner.email, ...siteUsers.map((su) => su.user.email)];
-  const subject = `Weekly Digest · ${formatDateMed(
-    new Date(weekStart),
-  )} — ${formatDateMed(new Date(weekEnd))}`;
-
-  return {
-    domain,
-    to,
-    subject,
-    citations: {
-      delta: currentMetrics.domainCitations - prevMetrics.domainCitations,
-      total: currentMetrics.totalCitations,
-      domain: currentMetrics.domainCitations,
-    },
-    byPlatform,
-    score: {
-      current: Math.round(currentMetrics.visibilityScore),
-      delta: Math.round(
-        currentMetrics.visibilityScore - prevMetrics.visibilityScore,
+): Promise<{ id: string }[]> {
+  const data = await loadWeeklyDigestMetrics(siteId);
+  const emailIds = [];
+  for (const to of data.to) {
+    const emailId = await sendEmail({
+      canUnsubscribe: true,
+      render: ({ subject, unsubscribeURL }) => (
+        <WeeklyDigestEmail
+          {...data}
+          subject={subject}
+          unsubscribeURL={unsubscribeURL}
+        />
       ),
-    },
-    botVisits: {
-      total: botVisitsTotal,
-      delta: botVisitsTotal - botVisitsPrev,
-    },
-    topQueries,
-    chartBase64,
-  };
-}
-
-export default async function sendWeeklyDigestEmail({
-  chartBase64,
-  domain,
-  citations,
-  score,
-  botVisits,
-  topQueries,
-  user,
-  subject,
-  byPlatform,
-}: WeeklyDigestEmailProps & {
-  user: { id: string; email: string; unsubscribed: boolean };
-}): Promise<{ id: string } | null> {
-  return await sendEmail({
-    canUnsubscribe: true,
-    render: ({ subject, unsubscribeURL }) => (
-      <WeeklyDigestEmail
-        botVisits={botVisits}
-        byPlatform={byPlatform}
-        chartBase64={chartBase64}
-        citations={citations}
-        domain={domain}
-        score={score}
-        subject={subject}
-        topQueries={topQueries}
-        unsubscribeURL={unsubscribeURL}
-      />
-    ),
-    subject,
-    user,
-  });
+      subject: data.subject,
+      user: { email: to, unsubscribed: false },
+    });
+    if (emailId) emailIds.push(emailId);
+  }
+  return emailIds;
 }
 
 export function WeeklyDigestEmail({
@@ -232,7 +39,7 @@ export function WeeklyDigestEmail({
   subject,
   topQueries,
   unsubscribeURL,
-}: WeeklyDigestEmailProps) {
+}: Awaited<ReturnType<typeof loadWeeklyDigestMetrics>>) {
   return (
     <EmailLayout subject={subject} unsubscribeURL={unsubscribeURL}>
       <Text className="mb-4 text-center font-bold font-mono text-dark">

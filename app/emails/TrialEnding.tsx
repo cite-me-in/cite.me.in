@@ -1,8 +1,50 @@
+import { Temporal } from "@js-temporal/polyfill";
 import { Section, Text } from "@react-email/components";
+import prisma from "~/lib/prisma.server";
 import EmailLayout from "./EmailLayout";
 import { sendEmail } from "./sendEmails";
 
-export default async function sendTrialEndingEmail({
+export default async function sendTrialEndingEmails(trialDays: number) {
+  // Send trial-ending emails to users whose trial ends in ~2 days
+  const trialEndingSoon = new Date(
+    Temporal.Now.instant().subtract({ hours: (trialDays - 2) * 24 })
+      .epochMilliseconds,
+  );
+  const trialEndingSoonCutoff = new Date(
+    Temporal.Now.instant().subtract({ hours: (trialDays - 3) * 24 })
+      .epochMilliseconds,
+  );
+
+  const trialEndingUsers = await prisma.user.findMany({
+    where: {
+      createdAt: { gte: trialEndingSoonCutoff, lte: trialEndingSoon },
+      account: null,
+    },
+    include: {
+      ownedSites: {
+        take: 1,
+        select: {
+          id: true,
+          domain: true,
+          _count: { select: { citationRuns: true } },
+        },
+      },
+    },
+  });
+
+  for (const user of trialEndingUsers) {
+    const site = user.ownedSites[0];
+    if (!site || user.unsubscribed) continue;
+    const citationCount = await countSiteCitations(site.id);
+    await sendTrialEndingEmail({
+      user,
+      citationCount,
+      domain: site.domain,
+    });
+  }
+}
+
+async function sendTrialEndingEmail({
   user,
   citationCount,
   domain,
@@ -53,4 +95,12 @@ function TrialEndingEmail({
       </Section>
     </EmailLayout>
   );
+}
+
+async function countSiteCitations(siteId: string): Promise<number> {
+  const queries = await prisma.citationQuery.findMany({
+    where: { run: { siteId } },
+    select: { citations: true },
+  });
+  return queries.reduce((sum, q) => sum + q.citations.length, 0);
 }

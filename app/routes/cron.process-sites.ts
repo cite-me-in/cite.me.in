@@ -1,22 +1,16 @@
 import { Temporal } from "@js-temporal/polyfill";
-import { ms } from "convert";
 import debug from "debug";
-import { delay, mapAsync } from "es-toolkit";
+import { mapAsync } from "es-toolkit";
 import { data } from "react-router";
-import sendTrialEndedEmail from "~/emails/TrialEnded";
-import sendTrialEndingEmail from "~/emails/TrialEnding";
-import sendWeeklyDigestEmail from "~/emails/WeeklyDigest";
+import sendTrialEndedEmails from "~/emails/TrialEnded";
+import sendTrialEndingEmails from "~/emails/TrialEnding";
+import { sendSiteDigestEmails } from "~/emails/WeeklyDigest";
 import envVars from "~/lib/envVars";
 import generateBotInsight from "~/lib/llm-visibility/generateBotInsight";
 import queryAccount from "~/lib/llm-visibility/queryAccount";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import { UsageLimitExceededError } from "~/lib/usage/UsageLimitExceededError";
-import {
-  generateCitationChart,
-  getWeeklyMetrics,
-} from "~/lib/weeklyDigest.server";
-import type { Prisma } from "~/prisma";
 import type { Route } from "./+types/cron.process-sites";
 
 const logger = debug("server");
@@ -30,11 +24,42 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (request.headers.get("authorization") !== `Bearer ${envVars.CRON_SECRET}`)
     throw new Response("Unauthorized", { status: 401 });
 
+  const trialDays = 25;
+  const sitesForDigest = await getSitesForDigest(trialDays);
+  logger(
+    "[cron:process-sites] Processing %d sites: %s",
+    sitesForDigest.length,
+    sitesForDigest.map((s) => s.domain).join(", "),
+  );
+
+  const results: { emailIds: string[]; domain: string }[] = [];
+  await mapAsync(sitesForDigest, async (site) => {
+    // NOTE Always run updates first and then send the digest email.
+    await Promise.all([nextCitationRun(site), updateBotInsight(site)]);
+    const sent = await sendSiteDigestEmails(site.id);
+    results.push({ emailIds: sent.map((e) => e.id), domain: site.domain });
+  });
+
+  // Send trial-ending and trial-ended emails after all sites have been processed.
+  await Promise.all([
+    sendTrialEndingEmails(trialDays),
+    sendTrialEndedEmails(trialDays),
+  ]);
+
+  if (envVars.HEARTBEAT_CRON_PROCESS_SITES)
+    await fetch(envVars.HEARTBEAT_CRON_PROCESS_SITES);
+  return data({ ok: true, results });
+}
+
+async function getSitesForDigest(
+  trialDays: number,
+): Promise<{ id: string; domain: string }[]> {
   const notRecentlyProcessed = new Date(
     Temporal.Now.instant().subtract({ hours: 24 }).epochMilliseconds,
   );
   const inFreeTrial = new Date(
-    Temporal.Now.instant().subtract({ hours: 25 * 24 }).epochMilliseconds,
+    Temporal.Now.instant().subtract({ hours: trialDays * 24 })
+      .epochMilliseconds,
   );
 
   const sites = await prisma.site.findMany({
@@ -82,105 +107,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       new Date(lastRun.onDate).getTime() <= notRecentlyProcessed.getTime()
     );
   });
-
-  logger(
-    "[cron:process-sites] Processing %d/%d sites: %s",
-    qualifying.length,
-    sites.length,
-    qualifying.map((s) => s.domain).join(", "),
-  );
-
-  const results = await mapAsync(qualifying, async (site) => {
-    // NOTE Always run updates first and then send the digest email.
-    const [citationRun, botInsight] = await Promise.all([
-      nextCitationRun(site),
-      updateBotInsight(site),
-    ]);
-    const emailIds = await sendDigestEmails(site);
-    return {
-      botInsight,
-      citationRun,
-      emailIds,
-      siteId: site.id,
-    };
-  });
-
-  // Send trial-ending emails to users whose trial ends in ~2 days
-  const trialEndingSoon = new Date(
-    Temporal.Now.instant().subtract({ hours: 23 * 24 }).epochMilliseconds,
-  );
-  const trialEndingSoonCutoff = new Date(
-    Temporal.Now.instant().subtract({ hours: 22 * 24 }).epochMilliseconds,
-  );
-
-  const trialEndingUsers = await prisma.user.findMany({
-    where: {
-      createdAt: { gte: trialEndingSoonCutoff, lte: trialEndingSoon },
-      account: null,
-    },
-    include: {
-      ownedSites: {
-        take: 1,
-        select: {
-          id: true,
-          domain: true,
-          _count: { select: { citationRuns: true } },
-        },
-      },
-    },
-  });
-
-  for (const user of trialEndingUsers) {
-    const site = user.ownedSites[0];
-    if (!site || user.unsubscribed) continue;
-    const citationCount = await countSiteCitations(site.id);
-    await sendTrialEndingEmail({
-      user,
-      citationCount,
-      domain: site.domain,
-    });
-  }
-
-  // Send trial-ended email to users whose trial ended today
-  const trialEndedToday = new Date(
-    Temporal.Now.instant().subtract({ hours: 25 * 24 }).epochMilliseconds,
-  );
-  const trialEndedYesterday = new Date(
-    Temporal.Now.instant().subtract({ hours: 24 * 24 }).epochMilliseconds,
-  );
-
-  const trialEndedUsers = await prisma.user.findMany({
-    where: {
-      createdAt: { gte: trialEndedToday, lte: trialEndedYesterday },
-      account: null,
-    },
-    include: {
-      ownedSites: {
-        take: 1,
-        select: {
-          id: true,
-          domain: true,
-          _count: { select: { citationRuns: true } },
-        },
-      },
-    },
-  });
-
-  for (const user of trialEndedUsers) {
-    const site = user.ownedSites[0];
-    if (!site || user.unsubscribed) continue;
-    const citationCount = await countSiteCitations(site.id);
-    await sendTrialEndedEmail({
-      user,
-      citationCount,
-      domain: site.domain,
-      queryCount: site._count.citationRuns,
-    });
-  }
-
-  if (envVars.HEARTBEAT_CRON_PROCESS_SITES)
-    await fetch(envVars.HEARTBEAT_CRON_PROCESS_SITES);
-  return data({ ok: true, results });
+  return qualifying;
 }
 
 async function nextCitationRun(site: {
@@ -263,74 +190,4 @@ async function updateBotInsight(site: {
     logError(error, { extra: { siteId: site.id, step: "bot-insight" } });
     return false;
   }
-}
-
-async function sendDigestEmails(
-  site: Prisma.SiteGetPayload<{
-    select: {
-      id: true;
-      domain: true;
-      owner: {
-        select: {
-          id: true;
-          email: true;
-          unsubscribed: true;
-        };
-        where: { unsubscribed: false };
-      };
-      siteUsers: {
-        select: {
-          user: {
-            select: {
-              id: true;
-              email: true;
-              unsubscribed: true;
-            };
-            where: { user: { unsubscribed: false } };
-          };
-        };
-      };
-    };
-  }>,
-): Promise<{ id: string }[]> {
-  try {
-    const metrics = await getWeeklyMetrics(site.id, site.domain);
-    const chartBase64 = await generateCitationChart(
-      metrics.dailyCitations,
-      metrics.prevDailyCitations,
-    );
-    const recipients = [site.owner, ...site.siteUsers.map((su) => su.user)];
-
-    const emailIds = [];
-    for (const user of recipients) {
-      const emailId = await sendWeeklyDigestEmail({
-        user,
-        domain: site.domain,
-        metrics,
-        chartBase64,
-      });
-      if (emailId) emailIds.push(emailId);
-      await delay(ms("1s"));
-    }
-
-    logger(
-      "[cron:process-sites] Digest done — %s, sent %d",
-      site.domain,
-      emailIds.length,
-    );
-    return emailIds;
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    logger("[cron:process-sites] Digest failed — %s: %s", site.domain, message);
-    logError(error, { extra: { siteId: site.id, step: "digest" } });
-    return [];
-  }
-}
-
-async function countSiteCitations(siteId: string): Promise<number> {
-  const queries = await prisma.citationQuery.findMany({
-    where: { run: { siteId } },
-    select: { citations: true },
-  });
-  return queries.reduce((sum, q) => sum + q.citations.length, 0);
 }

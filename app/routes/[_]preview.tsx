@@ -1,12 +1,10 @@
-import {
-  WeeklyDigestEmail,
-  loadWeeklyDigestMetrics,
-} from "~/emails/WeeklyDigest";
+import { WeeklyDigestEmail } from "~/emails/WeeklyDigest";
+import { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
 import type { Route } from "./+types/[_]preview";
 
 export async function loader() {
   const siteId = "cmmi2yfwi000404l9qcci3j0x";
-  return loadWeeklyDigestMetrics(siteId);
+  return await loadWeeklyDigestMetrics(siteId);
 }
 
 export default function WeeklyDigest({ loaderData }: Route.MetaArgs) {

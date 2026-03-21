@@ -1,36 +1,49 @@
 import { Temporal } from "@js-temporal/polyfill";
+import { sumBy } from "es-toolkit";
 import calculateVisibilityScore from "~/lib/llm-visibility/calculateVisibilityScore";
 import prisma from "~/lib/prisma.server";
+import type { SentimentLabel } from "~/prisma";
+import { formatDateMed } from "./temporal";
 
-export async function getWeeklyMetrics(
-  siteId: string,
-  domain: string,
-): Promise<{
-  domain: string;
-  weekStart: string;
-  weekEnd: string;
-  citations: {
-    total: number;
-    delta: number;
-    byPlatform: Record<string, number>;
-  };
-  score: { current: number; delta: number };
+export async function loadWeeklyDigestMetrics(siteId: string): Promise<{
   botVisits: { total: number; delta: number };
+  byPlatform: {
+    [k: string]: {
+      count: number;
+      sentimentLabel: SentimentLabel;
+      sentimentSummary: string;
+    };
+  };
+  chartBase64: string;
+  citations: { delta: number; total: number; domain: number };
+  domain: string;
+  score: { current: number; delta: number };
+  subject: string;
+  to: string[];
   topQueries: { query: string; count: number; delta: number }[];
-  dailyCitations: number[];
-  prevDailyCitations: number[];
+  unsubscribeURL?: string;
 }> {
+  const { domain, owner, siteUsers } = await prisma.site.findUniqueOrThrow({
+    where: { id: siteId },
+    select: {
+      domain: true,
+      owner: { select: { email: true, unsubscribed: true } },
+      siteUsers: {
+        select: { user: { select: { email: true, unsubscribed: true } } },
+      },
+    },
+  });
+
   const todayMidnight = Temporal.Now.zonedDateTimeISO("UTC")
     .startOfDay()
     .toInstant();
-
-  const weekEnd = new Date(todayMidnight.epochMilliseconds).toISOString();
-  const weekStart = new Date(
-    todayMidnight.subtract({ hours: 24 * 7 }).epochMilliseconds,
-  ).toISOString();
   const prevWeekStart = new Date(
     todayMidnight.subtract({ hours: 24 * 14 }).epochMilliseconds,
   ).toISOString();
+  const weekStart = new Date(
+    todayMidnight.subtract({ hours: 24 * 7 }).epochMilliseconds,
+  ).toISOString();
+  const weekEnd = new Date(todayMidnight.epochMilliseconds).toISOString();
 
   const [currentRuns, prevRuns, currentVisits, prevVisits] = await Promise.all([
     prisma.citationQueryRun.findMany({
@@ -41,6 +54,8 @@ export async function getWeeklyMetrics(
         queries: {
           select: { query: true, citations: true, position: true, text: true },
         },
+        sentimentLabel: true,
+        sentimentSummary: true,
       },
     }),
     prisma.citationQueryRun.findMany({
@@ -72,11 +87,16 @@ export async function getWeeklyMetrics(
     queries: prevRuns.flatMap((r) => r.queries),
   });
 
-  const byPlatform: Record<string, number> = {};
-  for (const run of currentRuns) {
-    const count = run.queries.flatMap((q) => q.citations).length;
-    byPlatform[run.platform] = (byPlatform[run.platform] ?? 0) + count;
-  }
+  const byPlatform = Object.fromEntries(
+    currentRuns.map((r) => [
+      r.platform,
+      {
+        count: sumBy(r.queries, (q) => q.citations.length),
+        sentimentLabel: r.sentimentLabel ?? "neutral",
+        sentimentSummary: r.sentimentSummary ?? "",
+      },
+    ]),
+  );
 
   // Daily citations: Mon=0 through Sun=6 (day-of-week relative to weekStart)
   const dailyCitations = Array(7).fill(0) as number[];
@@ -128,15 +148,28 @@ export async function getWeeklyMetrics(
   const botVisitsTotal = currentVisits._sum.count ?? 0;
   const botVisitsPrev = prevVisits._sum.count ?? 0;
 
+  const chartBase64 = await generateCitationChart(
+    dailyCitations,
+    prevDailyCitations,
+  );
+
+  const to = [owner, ...siteUsers.map((su) => su.user)]
+    .filter(({ unsubscribed }) => !unsubscribed)
+    .map(({ email }) => email);
+  const subject = `Weekly Digest · ${formatDateMed(
+    new Date(weekStart),
+  )} — ${formatDateMed(new Date(weekEnd))}`;
+
   return {
     domain,
-    weekStart,
-    weekEnd,
+    to,
+    subject,
     citations: {
-      total: currentMetrics.domainCitations,
       delta: currentMetrics.domainCitations - prevMetrics.domainCitations,
-      byPlatform,
+      total: currentMetrics.totalCitations,
+      domain: currentMetrics.domainCitations,
     },
+    byPlatform,
     score: {
       current: Math.round(currentMetrics.visibilityScore),
       delta: Math.round(
@@ -148,12 +181,11 @@ export async function getWeeklyMetrics(
       delta: botVisitsTotal - botVisitsPrev,
     },
     topQueries,
-    dailyCitations,
-    prevDailyCitations,
+    chartBase64,
   };
 }
 
-export async function generateCitationChart(
+async function generateCitationChart(
   daily: number[],
   prevDaily: number[],
 ): Promise<string> {

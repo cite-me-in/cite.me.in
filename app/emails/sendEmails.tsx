@@ -86,6 +86,7 @@ export async function sendEmail({
     });
     if (error) throw error;
     logger("Sent %s to %s", subject, user.email);
+    await delay(ms("1s"));
     return data;
   }
 }
