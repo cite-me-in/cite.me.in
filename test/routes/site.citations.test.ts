@@ -177,11 +177,25 @@ describe("site page", () => {
             model,
             onDate: daysAgo(runDays[runIdx]).toISOString().split("T")[0],
             queries: { createMany: { data: queryData } },
-            // Only the most recent run has sentiment analysis (older runs are historical)
+            // Most recent runs have sentiment; each platform gets a different label
+            // so we can test all sentiment states without extra sites.
             ...(runIdx === 2 && {
-              sentimentLabel: "positive",
+              sentimentLabel:
+                platform === "chatgpt"
+                  ? "positive"
+                  : platform === "perplexity"
+                    ? "negative"
+                    : platform === "claude"
+                      ? "neutral"
+                      : "mixed",
               sentimentSummary:
-                "Rentail.space is cited positively across multiple queries, frequently appearing as a top recommendation for finding short-term retail space. It ranks prominently in citations and is described as a reliable marketplace for pop-up and kiosk leasing.",
+                platform === "chatgpt"
+                  ? "Rentail.space is cited positively across multiple queries, frequently appearing as a top recommendation for finding short-term retail space. It ranks prominently in citations and is described as a reliable marketplace for pop-up and kiosk leasing."
+                  : platform === "perplexity"
+                    ? "Rentail.space receives unfavorable mentions in several responses, with competitors ranked more prominently. Some responses question the platform's selection compared to established alternatives."
+                    : platform === "claude"
+                      ? "Rentail.space is mentioned neutrally, appearing as one of several options without particular emphasis. Citations are factual with no positive or negative framing."
+                      : "Rentail.space receives a mix of positive and critical mentions across queries. It ranks well for some use cases but is overlooked in others where competitors dominate.",
             }),
           },
         });
@@ -189,15 +203,30 @@ describe("site page", () => {
     }
   });
 
-  it("should show brand sentiment card with label and summary", async () => {
+  it("should show positive sentiment for ChatGPT", async () => {
     await signIn(user.id);
-    const page = await goto(`/site/${siteDomain}/citations`);
-    await expect(
-      page.getByText("Brand Sentiment", { exact: true }),
-    ).toBeVisible();
+    const page = await goto(`/site/${siteDomain}/citations?platform=chatgpt`);
     await expect(page.getByText("Positive", { exact: true })).toBeVisible();
     await expect(
       page.getByText(/Rentail\.space is cited positively/),
+    ).toBeVisible();
+  });
+
+  it("should show negative sentiment for Perplexity", async () => {
+    await signIn(user.id);
+    const page = await goto(`/site/${siteDomain}/citations?platform=perplexity`);
+    await expect(page.getByText("Negative", { exact: true })).toBeVisible();
+    await expect(
+      page.getByText(/unfavorable mentions/),
+    ).toBeVisible();
+  });
+
+  it("should show neutral sentiment for Claude", async () => {
+    await signIn(user.id);
+    const page = await goto(`/site/${siteDomain}/citations?platform=claude`);
+    await expect(page.getByText("Neutral", { exact: true })).toBeVisible();
+    await expect(
+      page.getByText(/mentioned neutrally/),
     ).toBeVisible();
   });
 
