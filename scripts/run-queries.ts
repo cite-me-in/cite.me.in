@@ -9,6 +9,7 @@
  */
 
 import { runQueryOnAllPlatforms } from "../app/lib/addSiteQueries";
+import { updateRunSentiment } from "../app/lib/llm-visibility/queryPlatform";
 import { isMeaningfulSentence } from "../app/lib/llm-visibility/queryValidation";
 import prisma from "../app/lib/prisma.server";
 
@@ -41,6 +42,17 @@ console.info(
 for (const q of meaningful) {
   console.info("  [%s] %s", q.group, q.query);
   await runQueryOnAllPlatforms({ site, query: q.query, group: q.group });
+}
+
+// Run sentiment analysis for each platform's run after all queries complete.
+const onDate = new Date().toISOString().split("T")[0];
+const runs = await prisma.citationQueryRun.findMany({
+  where: { siteId: site.id, onDate },
+});
+console.info("Analyzing sentiment for %d runs…", runs.length);
+for (const run of runs) {
+  await updateRunSentiment({ site, platform: run.platform, runId: run.id });
+  console.info("  [%s] sentiment done", run.platform);
 }
 
 console.info("Done.");

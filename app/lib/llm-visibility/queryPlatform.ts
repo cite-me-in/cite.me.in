@@ -59,32 +59,39 @@ export default async function queryPlatform({
       });
     });
 
-    try {
-      const completedQueries = await prisma.citationQuery.findMany({
-        where: { runId: run.id },
-      });
-      const { label, summary } = await analyzeSentiment({
-        domain: site.domain,
-        queries: completedQueries,
-      });
-      await prisma.citationQueryRun.update({
-        where: { id: run.id },
-        data: { sentimentLabel: label, sentimentSummary: summary },
-      });
-      logger(
-        "[%s:%s] Sentiment analysis complete: %s",
-        site.id,
-        platform,
-        label,
-      );
-    } catch (sentimentError) {
-      logError(sentimentError, {
-        extra: { siteId: site.id, platform, runId: run.id },
-      });
-    }
+    await updateRunSentiment({ site, platform, runId: run.id });
   } catch (error) {
     logError(error, {
       extra: { siteId: site.id, platform },
+    });
+  }
+}
+
+export async function updateRunSentiment({
+  site,
+  platform,
+  runId,
+}: {
+  site: { id: string; domain: string };
+  platform: string;
+  runId: string;
+}) {
+  try {
+    const completedQueries = await prisma.citationQuery.findMany({
+      where: { runId },
+    });
+    const { label, summary } = await analyzeSentiment({
+      domain: site.domain,
+      queries: completedQueries,
+    });
+    await prisma.citationQueryRun.update({
+      where: { id: runId },
+      data: { sentimentLabel: label, sentimentSummary: summary },
+    });
+    logger("[%s:%s] Sentiment analysis complete: %s", site.id, platform, label);
+  } catch (sentimentError) {
+    logError(sentimentError, {
+      extra: { siteId: site.id, platform, runId },
     });
   }
 }
