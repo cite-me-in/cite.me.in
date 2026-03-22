@@ -1,5 +1,6 @@
 import { ArrowRightIcon } from "lucide-react";
 import { Link, type useFetcher } from "react-router";
+import { Streamdown } from "streamdown";
 import { ActiveLink } from "~/components/ui/ActiveLink";
 import type { Site } from "~/prisma";
 import DeleteSiteDialog from "./DeleteSiteDialog";
@@ -120,6 +121,12 @@ export default function SiteEntry({
           <p className="font-bold text-3xl">{uniqueBots.toLocaleString()}</p>
         </div>
       </Link>
+      <Streamdown
+        mode="static"
+        className="prose prose-sm mt-4 line-clamp-2 max-w-none text-foreground/60"
+      >
+        {site.summary}
+      </Streamdown>
       <div>
         <DeleteSiteDialog
           domain={site.domain}

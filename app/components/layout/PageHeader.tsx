@@ -1,4 +1,5 @@
 import { last } from "es-toolkit";
+import { SettingsIcon } from "lucide-react";
 import { NavLink, type UIMatch, useMatches } from "react-router";
 import { twMerge } from "tailwind-merge";
 import AccountMenu from "./AccountMenu";
@@ -29,7 +30,7 @@ function HeaderLinks() {
       { to: `/site/${siteDomain}/citations`, label: "Citations" },
       { to: `/site/${siteDomain}/queries`, label: "Queries" },
       { to: `/site/${siteDomain}/bots`, label: "Bot Traffic" },
-      { to: `/site/${siteDomain}/settings`, label: "Settings" },
+      { to: `/site/${siteDomain}/settings`, label: <SettingsIcon size={20} /> },
     );
 
   return (
