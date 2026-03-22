@@ -18,25 +18,23 @@ const logger = debug("crawl");
  * @returns The discovered URLs and the disallowed URLs.
  */
 export async function discoverURLs({
-  baseURL,
+  url,
   homepage,
   signal,
 }: {
-  baseURL: string;
+  url: URL;
   homepage: string;
   signal: AbortSignal;
-}): Promise<string[]> {
-  const hostname = new URL(baseURL).hostname;
+}): Promise<URL[]> {
+  const { hostname } = new URL(url);
   const probe = () => AbortSignal.any([signal, AbortSignal.timeout(ms("3s"))]);
   const tree = parseHTMLTree(homepage);
 
   const [sitemapURLs, rssURLs] = await Promise.all([
-    fetchSitemapURLs(baseURL, tree, probe()),
-    fetchRSS(baseURL, tree, probe()),
+    fetchSitemapURLs(url, tree, probe()),
+    fetchRSS(url, tree, probe()),
   ]);
-
-  const navURLs = extractNavURLs({ baseURL, tree });
-
+  const navURLs = extractNavURLs({ baseURL: url, tree });
   const urls = dedup([...sitemapURLs, ...rssURLs, ...navURLs]).filter(
     (url) => new URL(url).hostname === hostname,
   );
@@ -55,10 +53,10 @@ export async function discoverURLs({
  * @returns A list of URLs from the sitemap.
  */
 async function fetchSitemapURLs(
-  baseURL: string,
+  baseURL: URL,
   tree: ReturnType<typeof parseHTMLTree>,
   signal: AbortSignal,
-): Promise<string[]> {
+): Promise<URL[]> {
   const links = getElementsByTagName(tree, "link");
 
   const url = links.find(
@@ -74,13 +72,14 @@ async function fetchSitemapURLs(
       logger("[crawl] Fetched %s: %d sitemap URLs", url, text.length);
       return text
         .split("\n")
-        .map((l) => l.trim())
-        .filter((l) => /^https?:\/\//.test(l));
+        .map((link) => link.trim())
+        .filter((link) => /^https?:\/\//.test(link))
+        .map((link) => new URL(link, baseURL));
     } else {
       const response = await fetch(new URL(url, baseURL), { signal });
       if (!response.ok) return [];
       const xml = await response.text();
-      const urls = await parseSitemapXML(xml, baseURL);
+      const urls = await parseSitemapXML({ xml, baseURL });
       logger("[crawl] Fetched %s: %d sitemap URLs", url, urls.length);
       return urls;
     }
@@ -97,16 +96,19 @@ async function fetchSitemapURLs(
  * @param domain - The domain of the URLs in the sitemap.
  * @returns A list of URLs from the sitemap.
  */
-async function parseSitemapXML(
-  xml: string,
-  baseURL: string,
-): Promise<string[]> {
-  const locs: string[] = [];
+async function parseSitemapXML({
+  xml,
+  baseURL,
+}: {
+  xml: string;
+  baseURL: URL;
+}): Promise<URL[]> {
+  const locs: URL[] = [];
   const locRegex = /<loc>(.*?)<\/loc>/g;
   let match = locRegex.exec(xml);
   while (match !== null) {
     const url = match[1]?.trim();
-    if (url) locs.push(new URL(url, baseURL).href);
+    if (url) locs.push(new URL(url, baseURL));
     match = locRegex.exec(xml);
   }
   return locs;
@@ -122,10 +124,10 @@ async function parseSitemapXML(
  * @returns A list of URLs from the RSS/Atom feed.
  */
 async function fetchRSS(
-  baseURL: string,
+  baseURL: URL,
   tree: ReturnType<typeof parseHTMLTree>,
   signal: AbortSignal,
-): Promise<string[]> {
+): Promise<URL[]> {
   const links = getElementsByTagName(tree, "link");
   const url = links.find(
     (link) =>
@@ -158,7 +160,7 @@ async function fetchRSS(
     }
 
     const urls = [...rssLinks, ...atomLinks].map(
-      (url) => new URL(url, baseURL).href,
+      (url) => new URL(url, baseURL),
     );
     logger("[crawl] Fetched %s: %d RSS/Atom URLs", url, urls.length);
     return urls;
@@ -181,9 +183,9 @@ function extractNavURLs({
   baseURL,
   tree,
 }: {
-  baseURL: string;
+  baseURL: URL;
   tree: ReturnType<typeof parseHTMLTree>;
-}): string[] {
+}): URL[] {
   const navs = getElementsByTagName(tree, "nav");
   const anchors =
     navs.length > 0
@@ -196,16 +198,16 @@ function extractNavURLs({
       if (!href || href.startsWith("#") || href.startsWith("mailto:"))
         return null;
       if (MEDIA_EXTENSIONS.test(href)) return null;
-      return new URL(href, baseURL).href;
+      return new URL(href, baseURL);
     })
     .filter((url) => url !== null);
   logger("[crawl] Extracted %d navigation anchor `href`s", urls.length);
   return urls;
 }
 
-function dedup(urls: string[]): string[] {
+function dedup(urls: URL[]): URL[] {
   const seen = new Set<string>();
-  const result: string[] = [];
+  const result: URL[] = [];
   for (const url of urls) {
     try {
       const { origin, pathname } = new URL(url);

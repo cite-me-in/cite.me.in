@@ -1,3 +1,4 @@
+import { ms } from "convert";
 import { describe, expect, it, vi } from "vitest";
 import { fetchAndExtract } from "~/lib/scrape/extract";
 import {
@@ -19,15 +20,17 @@ describe("fetchAndExtract", () => {
         "https://acme.com/about": {
           ok: true,
           status: 200,
-          headers: { get: (h: string) => (h === "content-type" ? "text/markdown" : null) },
+          headers: {
+            get: (h: string) => (h === "content-type" ? "text/markdown" : null),
+          },
           text: async () => MARKDOWN_RESPONSE,
         },
       }),
     );
-    const result = await fetchAndExtract(
-      "https://acme.com/about",
-      AbortSignal.timeout(5000),
-    );
+    const result = await fetchAndExtract({
+      url: new URL("https://acme.com/about"),
+      signal: AbortSignal.timeout(ms("5s")),
+    });
     expect(result).not.toBeNull();
     expect(result?.text).toContain("We build great things");
     expect(result?.text).toContain("Our Mission");
@@ -40,26 +43,30 @@ describe("fetchAndExtract", () => {
         "https://acme.com/article": {
           ok: true,
           status: 200,
-          headers: { get: (h: string) => (h === "content-type" ? "text/html" : null) },
+          headers: {
+            get: (h: string) => (h === "content-type" ? "text/html" : null),
+          },
           text: async () => JSON_LD_HTML,
         },
       }),
     );
-    const result = await fetchAndExtract(
-      "https://acme.com/article",
-      AbortSignal.timeout(5000),
-    );
+    const result = await fetchAndExtract({
+      url: new URL("https://acme.com/article"),
+      signal: AbortSignal.timeout(ms("5s")),
+    });
     expect(result).not.toBeNull();
-    expect(result?.text).toContain("main article content extracted from JSON-LD");
+    expect(result?.text).toContain(
+      "main article content extracted from JSON-LD",
+    );
     expect(result?.text).not.toContain("noisy sidebar");
   });
 
   it("should return null when fetch response is not ok", async () => {
     vi.stubGlobal("fetch", mockFetch({}));
-    const result = await fetchAndExtract(
-      "https://acme.com/missing",
-      AbortSignal.timeout(5000),
-    );
+    const result = await fetchAndExtract({
+      url: new URL("https://acme.com/missing"),
+      signal: AbortSignal.timeout(ms("5s")),
+    });
     expect(result).toBeNull();
   });
 
@@ -70,15 +77,18 @@ describe("fetchAndExtract", () => {
         "https://acme.com/file.pdf": {
           ok: true,
           status: 200,
-          headers: { get: (h: string) => (h === "content-type" ? "application/pdf" : null) },
+          headers: {
+            get: (h: string) =>
+              h === "content-type" ? "application/pdf" : null,
+          },
           text: async () => "binary content",
         },
       }),
     );
-    const result = await fetchAndExtract(
-      "https://acme.com/file.pdf",
-      AbortSignal.timeout(5000),
-    );
+    const result = await fetchAndExtract({
+      url: new URL("https://acme.com/file.pdf"),
+      signal: AbortSignal.timeout(ms("5s")),
+    });
     expect(result).toBeNull();
   });
 
@@ -89,15 +99,17 @@ describe("fetchAndExtract", () => {
         "https://acme.com/page": {
           ok: true,
           status: 200,
-          headers: { get: (h: string) => (h === "content-type" ? "text/html" : null) },
+          headers: {
+            get: (h: string) => (h === "content-type" ? "text/html" : null),
+          },
           text: async () => HTML_MAIN_CONTENT,
         },
       }),
     );
-    const result = await fetchAndExtract(
-      "https://acme.com/page",
-      AbortSignal.timeout(5000),
-    );
+    const result = await fetchAndExtract({
+      url: new URL("https://acme.com/page"),
+      signal: AbortSignal.timeout(ms("5s")),
+    });
     expect(result?.text).toContain("main content of the page");
     expect(result?.text).not.toContain("Nav stuff");
     expect(result?.text).not.toContain("Footer stuff");
@@ -110,15 +122,17 @@ describe("fetchAndExtract", () => {
         "https://acme.com/blog/post": {
           ok: true,
           status: 200,
-          headers: { get: (h: string) => (h === "content-type" ? "text/html" : null) },
+          headers: {
+            get: (h: string) => (h === "content-type" ? "text/html" : null),
+          },
           text: async () => HTML_ARTICLE_CONTENT,
         },
       }),
     );
-    const result = await fetchAndExtract(
-      "https://acme.com/blog/post",
-      AbortSignal.timeout(5000),
-    );
+    const result = await fetchAndExtract({
+      url: new URL("https://acme.com/blog/post"),
+      signal: AbortSignal.timeout(ms("5s")),
+    });
     expect(result?.text).toContain("article content that should be extracted");
     expect(result?.text).not.toContain("Navigation ignored");
   });
@@ -130,15 +144,17 @@ describe("fetchAndExtract", () => {
         "https://acme.com/app": {
           ok: true,
           status: 200,
-          headers: { get: (h: string) => (h === "content-type" ? "text/html" : null) },
+          headers: {
+            get: (h: string) => (h === "content-type" ? "text/html" : null),
+          },
           text: async () => HTML_ROLE_MAIN,
         },
       }),
     );
-    const result = await fetchAndExtract(
-      "https://acme.com/app",
-      AbortSignal.timeout(5000),
-    );
+    const result = await fetchAndExtract({
+      url: new URL("https://acme.com/app"),
+      signal: AbortSignal.timeout(ms("5s")),
+    });
     expect(result?.text).toContain("Content inside role=main");
   });
 
@@ -149,15 +165,17 @@ describe("fetchAndExtract", () => {
         "https://acme.com/app": {
           ok: true,
           status: 200,
-          headers: { get: (h: string) => (h === "content-type" ? "text/html" : null) },
+          headers: {
+            get: (h: string) => (h === "content-type" ? "text/html" : null),
+          },
           text: async () => HTML_ID_ROOT,
         },
       }),
     );
-    const result = await fetchAndExtract(
-      "https://acme.com/app",
-      AbortSignal.timeout(5000),
-    );
+    const result = await fetchAndExtract({
+      url: new URL("https://acme.com/app"),
+      signal: AbortSignal.timeout(ms("5s")),
+    });
     expect(result?.text).toContain("Content inside #root");
   });
 
@@ -168,15 +186,17 @@ describe("fetchAndExtract", () => {
         "https://acme.com/duplicate": {
           ok: true,
           status: 200,
-          headers: { get: (h: string) => (h === "content-type" ? "text/html" : null) },
+          headers: {
+            get: (h: string) => (h === "content-type" ? "text/html" : null),
+          },
           text: async () => CANONICAL_SKIP_HTML,
         },
       }),
     );
-    const result = await fetchAndExtract(
-      "https://acme.com/duplicate",
-      AbortSignal.timeout(5000),
-    );
+    const result = await fetchAndExtract({
+      url: new URL("https://acme.com/duplicate"),
+      signal: AbortSignal.timeout(ms("5s")),
+    });
     expect(result?.text).toBe("");
   });
 });

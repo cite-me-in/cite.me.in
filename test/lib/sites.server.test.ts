@@ -45,7 +45,7 @@ describe("fetchSiteContent", () => {
       }),
     );
     const content = await crawl({
-      baseURL: "https://example.com",
+      domain: "example.com",
       maxPages: 5,
       maxWords: 1000,
       maxSeconds: 10,
@@ -64,23 +64,23 @@ describe("fetchSiteContent", () => {
     );
     await expect(
       crawl({
-        baseURL: "https://example.com",
+        domain: "example.com",
         maxPages: 5,
         maxWords: 1000,
         maxSeconds: 10,
       }),
-    ).rejects.toThrow("I couldn't fetch the main page of example.com");
+    ).rejects.toThrow("HTTP error fetching example.com");
   });
 
   it("should return null on network error", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network")));
     await expect(
       crawl({
-        baseURL: "https://example.com",
+        domain: "example.com",
         maxPages: 5,
         maxWords: 1000,
         maxSeconds: 10,
       }),
-    ).rejects.toThrow("I couldn't fetch the main page of example.com");
+    ).rejects.toThrow("HTTP error fetching example.com");
   });
 });

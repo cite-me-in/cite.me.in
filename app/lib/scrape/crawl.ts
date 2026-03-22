@@ -7,33 +7,30 @@ const logger = debug("crawl");
 const CONCURRENCY = 3;
 
 export async function crawl({
-  baseURL,
+  domain,
   maxWords = 5_000,
   maxPages = 20,
   maxSeconds = 10,
 }: {
-  baseURL: string;
+  domain: string;
   maxWords?: number;
   maxPages?: number;
   maxSeconds?: number;
 }): Promise<string> {
   const signal = AbortSignal.timeout(maxSeconds * ms("1s"));
-  const results: { url: string; title: string; text: string }[] = [];
+  const baseURL = new URL(`https://${domain}/`);
+  const results: { url: URL; title: string; text: string }[] = [];
 
-  const llmsText = await fetchLLMsText(baseURL, signal);
+  const llmsText = await fetchLLMsText({ baseURL, signal });
   if (llmsText)
-    results.push({
-      url: baseURL,
-      title: new URL(baseURL).hostname,
-      text: llmsText,
-    });
+    results.push({ url: baseURL, title: baseURL.hostname, text: llmsText });
 
-  const homepage = await fetchAndExtract(baseURL, signal);
-  if (!homepage) throw new Error(`HTTP error fetching ${baseURL}`);
+  const homepage = await fetchAndExtract({ url: baseURL, signal });
+  if (!homepage) throw new Error(`HTTP error fetching ${domain}`);
   results.push({ url: baseURL, ...homepage });
 
   const urls = await discoverURLs({
-    baseURL,
+    url: baseURL,
     homepage: homepage?.html ?? "",
     signal,
   });
@@ -51,7 +48,7 @@ export async function crawl({
 
       pagesFetched++;
       try {
-        const result = await fetchAndExtract(url, signal);
+        const result = await fetchAndExtract({ url: new URL(url), signal });
         if (result?.text.trim()) {
           wordCount += countWords(result.text);
           results.push({ url, ...result });
@@ -68,7 +65,7 @@ export async function crawl({
     .join("\n\n---\n\n");
   logger(
     "[crawl] Crawled %s => %d pages — %d words",
-    new URL(baseURL).hostname,
+    baseURL.hostname,
     results.length,
     combined.split(/\s+/).filter(Boolean).length,
   );
@@ -95,13 +92,16 @@ export async function crawl({
  * @param signal - The abort signal to use to cancel the fetch.
  * @returns The llms.txt file content if available
  */
-async function fetchLLMsText(
-  base: string,
-  signal: AbortSignal,
-): Promise<string> {
+async function fetchLLMsText({
+  baseURL,
+  signal,
+}: {
+  baseURL: URL;
+  signal: AbortSignal;
+}): Promise<string> {
   try {
-    const url = new URL("/llms.txt", base);
-    const res = await fetch(new URL("/llms.txt", base), { signal });
+    const url = new URL("/llms.txt", baseURL);
+    const res = await fetch(url, { signal });
     if (!res.ok) return "";
     const text = await res.text();
     logger("[crawl] Fetched %s: %d bytes", url.href, text.length);

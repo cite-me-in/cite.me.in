@@ -22,16 +22,19 @@ const logger = debug("crawl");
  * @param signal - The abort signal to use to cancel the fetch.
  * @returns The title, text, and HTML of the document or null if the fetch or extraction fails.
  */
-export async function fetchAndExtract(
-  url: string,
-  signal: AbortSignal,
-): Promise<{
+export async function fetchAndExtract({
+  url,
+  signal,
+}: {
+  url: URL;
+  signal: AbortSignal;
+}): Promise<{
   title: string;
   text: string;
   html?: string;
 } | null> {
   try {
-    const response = await fetch(new URL(url), {
+    const response = await fetch(url, {
       headers: { Accept: "text/markdown, text/html;q=0.9" },
       redirect: "follow",
       signal: AbortSignal.any([signal, AbortSignal.timeout(ms("5s"))]),
@@ -67,7 +70,7 @@ export async function fetchAndExtract(
  */
 function extractFromMarkdown(
   body: string,
-  url: string,
+  url: URL,
 ): {
   title: string;
   text: string;
@@ -88,7 +91,7 @@ function extractFromMarkdown(
  */
 function extractFromHtml(
   html: string,
-  url: string,
+  url: URL,
 ): {
   title: string;
   text: string;
@@ -112,8 +115,8 @@ function extractFromHtml(
       const canonical = link.attributes.href;
       if (
         canonical &&
-        canonical !== url &&
-        new URL(canonical, url).pathname !== new URL(url).pathname
+        canonical !== url.toString() &&
+        new URL(canonical, url).pathname !== url.pathname
       )
         return { title, text: "", html };
     }

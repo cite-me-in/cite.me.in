@@ -14,12 +14,12 @@ describe("discoverUrls", () => {
   it("should put llms.txt URLs first in the queue", async () => {
     vi.stubGlobal("fetch", mockFetch(llmsTxtSite()));
     const urls = await discoverURLs({
-      baseURL: "https://acme.com",
+      url: new URL("https://acme.com"),
       homepage: HOMEPAGE_HTML,
       signal: AbortSignal.timeout(5000),
     });
-    expect(urls).toContain("https://acme.com/about");
-    expect(urls).toContain("https://acme.com/pricing");
+    expect(urls.map((url) => url.href)).toContain("https://acme.com/about");
+    expect(urls.map((url) => url.href)).toContain("https://acme.com/pricing");
   });
 
   it("should filter URLs matching robots.txt Disallow rules", async () => {
@@ -39,12 +39,14 @@ describe("discoverUrls", () => {
       }),
     );
     const urls = await discoverURLs({
-      baseURL: "https://acme.com",
+      url: new URL("https://acme.com"),
       homepage: HOMEPAGE_HTML,
       signal: AbortSignal.timeout(5000),
     });
-    expect(urls).toContain("https://acme.com/about");
-    expect(urls).not.toContain("https://acme.com/admin/secret");
+    expect(urls.map((url) => url.href)).toContain("https://acme.com/about");
+    expect(urls.map((url) => url.href)).not.toContain(
+      "https://acme.com/admin/secret",
+    );
   });
 
   it("should use sitemap.txt when available (not sitemap.xml)", async () => {
@@ -65,33 +67,35 @@ describe("discoverUrls", () => {
       }),
     );
     const urls = await discoverURLs({
-      baseURL: "https://acme.com",
+      url: new URL("https://acme.com"),
       homepage: HOMEPAGE_HTML,
       signal: AbortSignal.timeout(5000),
     });
-    expect(urls).toContain("https://acme.com/about");
-    expect(urls).not.toContain("https://acme.com/xml-only-page");
+    expect(urls.map((url) => url.href)).toContain("https://acme.com/about");
+    expect(urls.map((url) => url.href)).not.toContain(
+      "https://acme.com/xml-only-page",
+    );
   });
 
   it("should fall back to sitemap.xml when no sitemap.txt exists", async () => {
     vi.stubGlobal("fetch", mockFetch(sitemapXmlSite()));
     const urls = await discoverURLs({
-      baseURL: "https://acme.com",
+      url: new URL("https://acme.com"),
       homepage: HOMEPAGE_HTML.replace(
         'href="/sitemap.txt"',
         'href="/sitemap.xml"',
       ),
       signal: AbortSignal.timeout(5000),
     });
-    expect(urls).toContain("https://acme.com/about");
-    expect(urls).toContain("https://acme.com/pricing");
+    expect(urls.map((url) => url.href)).toContain("https://acme.com/about");
+    expect(urls.map((url) => url.href)).toContain("https://acme.com/pricing");
   });
 
   it("should fall back to nav links when no sitemap exists", async () => {
     const site = navOnlySite();
     vi.stubGlobal("fetch", mockFetch(site));
     const urls = await discoverURLs({
-      baseURL: "https://acme.com",
+      url: new URL("https://acme.com"),
       homepage: HOMEPAGE_HTML.replace(
         '<link rel="sitemap" href="/sitemap.txt" />',
         "",
@@ -101,8 +105,8 @@ describe("discoverUrls", () => {
       ),
       signal: AbortSignal.timeout(5000),
     });
-    expect(urls).toContain("https://acme.com/about");
-    expect(urls).toContain("https://acme.com/pricing");
+    expect(urls.map((url) => url.href)).toContain("https://acme.com/about");
+    expect(urls.map((url) => url.href)).toContain("https://acme.com/pricing");
   });
 
   it("should extract URLs from RSS feed link in homepage head", async () => {
@@ -131,11 +135,15 @@ describe("discoverUrls", () => {
       }),
     );
     const urls = await discoverURLs({
-      baseURL: "https://acme.com",
+      url: new URL("https://acme.com"),
       homepage: HOMEPAGE_HTML,
       signal: AbortSignal.timeout(5000),
     });
-    expect(urls).toContain("https://acme.com/blog/post-1");
-    expect(urls).toContain("https://acme.com/blog/post-2");
+    expect(urls.map((url) => url.href)).toContain(
+      "https://acme.com/blog/post-1",
+    );
+    expect(urls.map((url) => url.href)).toContain(
+      "https://acme.com/blog/post-2",
+    );
   });
 });

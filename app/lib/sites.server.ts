@@ -37,7 +37,7 @@ export async function addSiteToUser(
   }
 
   const content = await crawl({
-    baseURL: url,
+    domain,
     maxPages: 10,
     maxWords: 5_000,
     maxSeconds: 15,
@@ -47,7 +47,7 @@ export async function addSiteToUser(
       owner: { connect: { id: user.id } },
       apiKey: `cite.me.in_${generateApiKey(16)}`,
       content,
-      domain: new URL(url).hostname,
+      domain,
     },
   });
   return { site, existing: false };
