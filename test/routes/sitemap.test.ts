@@ -35,12 +35,6 @@ describe("sitemap.xml", () => {
     });
   });
 
-  it("should include /blog", () => {
-    expect(xml.urlset.url).toContainEqual({
-      loc: "http://localhost:9222/blog",
-    });
-  });
-
   it("should include /privacy", () => {
     expect(xml.urlset.url).toContainEqual({
       loc: "http://localhost:9222/privacy",

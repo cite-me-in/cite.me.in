@@ -6,23 +6,56 @@ import {
   Search,
   TrendingUp,
 } from "lucide-react";
-import { Link } from "react-router";
 import CiteMeInLogo from "~/components/layout/CiteMeInLogo";
 import { ActiveLink } from "~/components/ui/ActiveLink";
-import BlogPostsGrid from "~/components/ui/BlogPostsGrid";
 import Main from "~/components/ui/Main";
 import { getCurrentUser } from "~/lib/auth.server";
-import { type BlogPost, recentBlogPosts } from "~/lib/blogPosts.server";
 import type { Route } from "./+types/route";
+
+const PERSONAS = [
+  {
+    icon: TrendingUp,
+    title: "Solo founders",
+    body: "You're building an audience and want to know if AI platforms are sending you traffic — or ignoring you.",
+  },
+  {
+    icon: MessageSquare,
+    title: "Small businesses",
+    body: "Your customers use ChatGPT and Perplexity to find services like yours. Are you in those answers?",
+  },
+  {
+    icon: LineChart,
+    title: "Marketing teams",
+    body: "Track AI citation visibility as a channel. See trends, compare platforms, and report on progress.",
+  },
+] as const;
+
+const STEPS = [
+  {
+    number: "1",
+    title: "Add your website",
+    body: "Enter your domain. We read your content and instantly suggest 9 ready-to-run queries — covering discovery, comparison, and direct searches — so you're tracking in under a minute. No setup required.",
+    icon: Globe,
+  },
+  {
+    number: "2",
+    title: "We run the queries",
+    body: "Each week we run your queries across every major AI platform with web search enabled — the same experience your potential customers have.",
+    icon: Search,
+  },
+  {
+    number: "3",
+    title: "You see the citations",
+    body: "Every URL that appears in an AI response gets recorded. You see which platforms cite you, how often, and for which queries.",
+    icon: BarChart2,
+  },
+] as const;
 
 export const handle = { hideHeader: true };
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const [user, posts] = await Promise.all([
-    getCurrentUser(request),
-    recentBlogPosts(),
-  ]);
-  return { user, posts: posts.slice(0, 3) };
+  const user = await getCurrentUser(request);
+  return { user };
 }
 
 export function meta(): Route.MetaDescriptors {
@@ -36,12 +69,8 @@ export function meta(): Route.MetaDescriptors {
   ];
 }
 
-export default function HomePage({
-  loaderData,
-}: {
-  loaderData: { user: { id: string } | null; posts: BlogPost[] };
-}) {
-  const { user, posts } = loaderData;
+export default function HomePage({ loaderData }: Route.ComponentProps) {
+  const { user } = loaderData;
 
   return (
     <Main className="w-full bg-[hsl(60,100%,99%)]">
@@ -49,14 +78,9 @@ export default function HomePage({
       <HeroSection isSignedIn={!!user} />
       <HowItWorksSection />
       <ForWhoSection />
-      {posts.length > 0 && <BlogSection posts={posts} />}
     </Main>
   );
 }
-
-// ---------------------------------------------------------------------------
-// Nav
-// ---------------------------------------------------------------------------
 
 function LandingNav({ isSignedIn }: { isSignedIn: boolean }) {
   return (
@@ -64,29 +88,25 @@ function LandingNav({ isSignedIn }: { isSignedIn: boolean }) {
       <CiteMeInLogo />
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-3">
-        {isSignedIn ? (
-          <ActiveLink variant="button" to="/sites" size="sm" bg="yellow">
-            Dashboard
-          </ActiveLink>
-        ) : (
-          <>
-            <ActiveLink variant="button" to="/sign-in" size="sm">
-              Sign in
+          {isSignedIn ? (
+            <ActiveLink variant="button" to="/sites" size="sm" bg="yellow">
+              Dashboard
             </ActiveLink>
-            <ActiveLink variant="button" to="/sign-up" size="sm" bg="yellow">
-              Get started
-            </ActiveLink>
-          </>
-        )}
+          ) : (
+            <>
+              <ActiveLink variant="button" to="/sign-in" size="sm">
+                Sign in
+              </ActiveLink>
+              <ActiveLink variant="button" to="/sign-up" size="sm" bg="yellow">
+                Get started
+              </ActiveLink>
+            </>
+          )}
         </div>
       </div>
     </nav>
   );
 }
-
-// ---------------------------------------------------------------------------
-// Hero
-// ---------------------------------------------------------------------------
 
 function HeroSection({ isSignedIn }: { isSignedIn: boolean }) {
   return (
@@ -131,31 +151,6 @@ function HeroSection({ isSignedIn }: { isSignedIn: boolean }) {
   );
 }
 
-// ---------------------------------------------------------------------------
-// How it works
-// ---------------------------------------------------------------------------
-
-const STEPS = [
-  {
-    number: "1",
-    title: "Add your website",
-    body: "Enter your domain. We read your content and instantly suggest 9 ready-to-run queries — covering discovery, comparison, and direct searches — so you're tracking in under a minute. No setup required.",
-    icon: Globe,
-  },
-  {
-    number: "2",
-    title: "We run the queries",
-    body: "Each week we run your queries across every major AI platform with web search enabled — the same experience your potential customers have.",
-    icon: Search,
-  },
-  {
-    number: "3",
-    title: "You see the citations",
-    body: "Every URL that appears in an AI response gets recorded. You see which platforms cite you, how often, and for which queries.",
-    icon: BarChart2,
-  },
-] as const;
-
 function HowItWorksSection() {
   return (
     <section className="border-black border-b-2 px-6 py-20">
@@ -185,28 +180,6 @@ function HowItWorksSection() {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Who it's for
-// ---------------------------------------------------------------------------
-
-const PERSONAS = [
-  {
-    icon: TrendingUp,
-    title: "Solo founders",
-    body: "You're building an audience and want to know if AI platforms are sending you traffic — or ignoring you.",
-  },
-  {
-    icon: MessageSquare,
-    title: "Small businesses",
-    body: "Your customers use ChatGPT and Perplexity to find services like yours. Are you in those answers?",
-  },
-  {
-    icon: LineChart,
-    title: "Marketing teams",
-    body: "Track AI citation visibility as a channel. See trends, compare platforms, and report on progress.",
-  },
-] as const;
-
 function ForWhoSection() {
   return (
     <section className="border-black border-b-2 bg-[hsl(47,100%,95%)] px-6 py-20">
@@ -233,31 +206,6 @@ function ForWhoSection() {
           ))}
         </div>
       </div>
-    </section>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Blog
-// ---------------------------------------------------------------------------
-
-function BlogSection({ posts }: { posts: BlogPost[] }) {
-  return (
-    <section className="px-6 py-20">
-      <div className="mx-auto max-w-5xl">
-        <div className="mb-12 flex items-baseline justify-between">
-          <h2 className="font-bold text-3xl text-black md:text-4xl">
-            From the blog
-          </h2>
-          <Link
-            to="/blog"
-            className="font-bold text-[#F59E0B] text-base underline underline-offset-4 hover:text-black"
-          >
-            View all →
-          </Link>
-        </div>
-      </div>
-      <BlogPostsGrid posts={posts} limit={3} />
     </section>
   );
 }

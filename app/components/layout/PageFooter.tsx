@@ -15,7 +15,7 @@ const links = [
     title: "Resources",
     links: [
       { to: "/about", label: "About" },
-      { to: "/blog", label: "Blog" },
+      { to: "https://blog.cite.me.in", label: "Blog" },
       {
         to: `mailto:${import.meta.env.VITE_EMAIL_FROM}`,
         label: "Contact",
