@@ -44,23 +44,23 @@ export const HOMEPAGE_HTML = `<!DOCTYPE html>
 </body>
 </html>`;
 
-export const LLMS_TXT = `# Acme Corp LLM Context
+const LLMS_TXT = `# Acme Corp LLM Context
 https://acme.com/about
 https://acme.com/pricing
 `;
 
-export const ROBOTS_TXT = `User-agent: *
+const ROBOTS_TXT = `User-agent: *
 Disallow: /admin/
 Disallow: /private/
 `;
 
-export const SITEMAP_TXT = `https://acme.com/about
+const SITEMAP_TXT = `https://acme.com/about
 https://acme.com/pricing
 https://acme.com/blog
 https://acme.com/blog/post-1
 `;
 
-export const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>
+const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://acme.com/about</loc></url>
   <url><loc>https://acme.com/pricing</loc></url>

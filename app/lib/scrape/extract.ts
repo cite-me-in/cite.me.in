@@ -86,7 +86,7 @@ function extractFromMarkdown(
  * @param url - The URL of the document.
  * @returns The title and text.
  */
-export function extractFromHtml(
+function extractFromHtml(
   html: string,
   url: string,
 ): {
