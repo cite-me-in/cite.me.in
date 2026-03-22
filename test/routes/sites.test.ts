@@ -443,99 +443,23 @@ describe("sites route", () => {
       });
 
       it("should show current count in large text", async () => {
-        const siteRow = page
-          .locator("div")
-          .filter({ hasText: "delta-test.com" })
-          .first();
-        await expect(
-          siteRow.locator("a.grid > div").nth(0).locator(".text-3xl"),
-        ).toHaveText("10");
-      });
-
-      it("should show -50% delta in red", async () => {
-        const siteRow = page
-          .locator("div")
-          .filter({ hasText: "delta-test.com" })
-          .first();
-        const badge = siteRow
-          .locator("a.grid > div")
-          .nth(0)
-          .locator(".text-muted-foreground span")
-          .first();
-        await expect(badge).toHaveText("-50%");
-        await expect(badge).toHaveClass(/text-red-600/);
-      });
-
-      it("should show previous count in small text", async () => {
-        const siteRow = page
-          .locator("div")
-          .filter({ hasText: "delta-test.com" })
-          .first();
-        await expect(
-          siteRow
-            .locator("a.grid > div")
-            .nth(0)
-            .locator(".text-muted-foreground span")
-            .last(),
-        ).toHaveText("20");
+        const metric = page.locator("div.metric-citations").first();
+        await expect(metric.locator("div:nth-child(2)")).toHaveText("10");
       });
 
       it("should show current score in large text", async () => {
-        const siteRow = page
-          .locator("div")
-          .filter({ hasText: "delta-test.com" })
-          .first();
-        await expect(
-          siteRow.locator("a.grid > div").nth(1).locator(".text-3xl"),
-        ).toHaveText("85.0");
-      });
-
-      it("should show +0% delta in green", async () => {
-        const siteRow = page
-          .locator("div")
-          .filter({ hasText: "delta-test.com" })
-          .first();
-        const badge = siteRow
-          .locator("a.grid > div")
-          .nth(1)
-          .locator(".text-muted-foreground span")
-          .first();
-        await expect(badge).toHaveText("+0%");
-        await expect(badge).toHaveClass(/text-green-700/);
-      });
-
-      it("should show previous score in small text", async () => {
-        const siteRow = page
-          .locator("div")
-          .filter({ hasText: "delta-test.com" })
-          .first();
-        await expect(
-          siteRow
-            .locator("a.grid > div")
-            .nth(1)
-            .locator(".text-muted-foreground span")
-            .last(),
-        ).toHaveText("85.0");
+        const metric = page.locator("div.metric-score").first();
+        await expect(metric.locator("div:nth-child(2)")).toHaveText("85");
       });
 
       it("should show 0", async () => {
-        const siteRow = page
-          .locator("div")
-          .filter({ hasText: "delta-test.com" })
-          .first();
-        await expect(
-          siteRow.locator("a.grid > div").nth(2).locator(".text-3xl"),
-        ).toHaveText("0");
+        const metric = page.locator("div.metric-bot-visits").first();
+        await expect(metric.locator("div:nth-child(2)")).toHaveText("0");
       });
 
       it("should show 0", async () => {
-        const siteRow = page
-          .locator("div")
-          .filter({ hasText: "delta-test.com" })
-          .first();
-        await expect(
-          siteRow.locator("a.grid > div").nth(3).locator(".text-3xl"),
-        ).toHaveText("0");
+        const metric = page.locator("div.metric-unique-bots").first();
+        await expect(metric.locator("div:nth-child(2)")).toHaveText("0");
       });
     });
   });

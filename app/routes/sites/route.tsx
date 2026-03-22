@@ -1,6 +1,6 @@
 import { invariant } from "es-toolkit";
 import { useState } from "react";
-import { Link, redirect, useFetcher } from "react-router";
+import { redirect, useFetcher } from "react-router";
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
@@ -14,7 +14,9 @@ import {
 } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
 import AddSiteForm from "./AddSiteForm";
+import OfferSubscription from "./OfferSubscription";
 import SiteEntry from "./SiteEntry";
+import TrialExpired from "./TrialExpired";
 
 export function meta(): Route.MetaDescriptors {
   return [{ title: "Your Sites | Cite.me.in" }];
@@ -32,13 +34,17 @@ export async function loader({ request }: Route.LoaderArgs) {
     }),
   ]);
 
-  const trialEnd = new Date(user.createdAt);
-  trialEnd.setDate(trialEnd.getDate() + 25);
-  const trialExpired = !account && new Date() > trialEnd;
-
+  // isPro is true if the user has an active account
+  // ownedSiteCount is the number of sites the user owns
+  // canAddSite is true if the user can add a site (5 if pro, 1 if not)
   const isPro = account?.status === "active";
   const ownedSiteCount = sites.filter((s) => s.isOwner).length;
   const canAddSite = ownedSiteCount < (isPro ? 5 : 1);
+
+  // trialExpired is true if the user's trial has ended (isPro is false)
+  const trialEnd = new Date(user.createdAt);
+  trialEnd.setDate(trialEnd.getDate() + 25);
+  const trialExpired = !account && new Date() > trialEnd;
 
   return { sites, trialExpired, canAddSite, isPro };
 }
@@ -101,24 +107,12 @@ export default function SitesPage({
         )}
       </div>
 
-      {canAddSite && isAddSiteFormOpen && (
-        <AddSiteForm actionData={actionData} fetcher={fetcher} />
-      )}
-
-      {trialExpired && (
-        <div className="mb-6 rounded-base border-2 border-black bg-amber-100 p-4 shadow-[4px_4px_0px_0px_black]">
-          <p className="mb-1 font-bold">Your free trial has ended.</p>
-          <p className="mb-3 text-foreground/70 text-sm">
-            Your daily runs have paused. Upgrade to keep your citation history
-            and resume monitoring.
-          </p>
-          <Link
-            to="/upgrade"
-            className="inline-block rounded-base border-2 border-black bg-amber-400 px-4 py-2 font-bold text-sm shadow-[2px_2px_0px_0px_black] transition-all hover:translate-x-px hover:translate-y-[1px] hover:shadow-none"
-          >
-            Upgrade to Pro — $35/mo
-          </Link>
-        </div>
+      {trialExpired ? (
+        <TrialExpired />
+      ) : (
+        isAddSiteFormOpen && (
+          <AddSiteForm actionData={actionData} fetcher={fetcher} />
+        )
       )}
 
       {sites.length > 0 && (
@@ -128,7 +122,6 @@ export default function SitesPage({
               <SiteEntry
                 citationsToDmain={item.citationsToDomain}
                 fetcher={fetcher}
-                isOwner={item.isOwner}
                 key={item.site.id}
                 previousCitationsToDomain={item.previousCitationsToDomain}
                 previousScore={item.previousScore}
@@ -142,27 +135,7 @@ export default function SitesPage({
         </Card>
       )}
 
-      {!isPro && (
-        <div className="rounded-base border-2 border-black bg-white p-6 shadow-[4px_4px_0px_0px_black]">
-          <h2 className="mb-1 font-heading text-xl">Upgrade to Pro</h2>
-          <p className="mb-5 text-foreground/70 text-sm">
-            Monitor all 4 AI platforms. Full citation history. Up to 5 sites.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <form method="post" action="/upgrade">
-              <input type="hidden" name="interval" value="monthly" />
-              <Button type="submit">Subscribe — $35/month</Button>
-            </form>
-            <form method="post" action="/upgrade">
-              <input type="hidden" name="interval" value="annual" />
-              <Button type="submit" className="bg-emerald-400">
-                Subscribe — $320/year{" "}
-                <span className="font-normal">(save $99)</span>
-              </Button>
-            </form>
-          </div>
-        </div>
-      )}
+      {!isPro && <OfferSubscription />}
     </Main>
   );
 }

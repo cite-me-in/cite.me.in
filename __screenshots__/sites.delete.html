@@ -8,16 +8,11 @@
 </div>
 <div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
   <div class="px-6 space-y-4 divide-y-2 divide-black/10" data-slot="card-content">
-    <div class="block py-4 first:pt-0 last:pb-0">
-      <p class="flex flex-row items-center justify-between">
-        <span class="flex flex-row items-center gap-2">
-          <a class="font-bold font-mono text-lg" data-discover="true" href="/site/id">
-            dashboard-test.com
-          </a>
-          <span class="text-muted-foreground text-xs">
-            Owner
-          </span>
-        </span>
+    <div class="space-y-4">
+      <div class="flex flex-row items-center justify-between">
+        <a class="font-bold font-mono text-lg" data-discover="true" href="/site/id">
+          dashboard-test.com
+        </a>
         <a aria-label="View site" class="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-black bg-[hsl(120,100%,97%)] text-black shadow-[3px_3px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_black] px-4 py-2" data-discover="true" href="/site/id" rel="noopener noreferrer">
           View Site
           <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -25,41 +20,43 @@
             <path d="m12 5 7 7-7 7"></path>
           </svg>
         </a>
-      </p>
-      <a class="mt-4 grid grid-cols-4 gap-4 text-center" data-discover="true" href="/site/id">
-        <div>
-          <p class="font-light">
+      </div>
+      <a class="grid grid-cols-4 gap-4 text-center" data-discover="true" href="/site/id">
+        <div class="metric-citations">
+          <div class="font-light">
             Citations
-          </p>
-          <p class="font-bold text-3xl">
+          </div>
+          <div class="font-bold text-3xl tabular-nums">
             0
-          </p>
+          </div>
           <div class="flex items-center justify-center gap-1 text-muted-foreground text-sm"></div>
         </div>
-        <div>
-          <p class="font-light">
+        <div class="metric-score">
+          <div class="font-light">
             Score
-          </p>
-          <p class="font-bold text-3xl">
-            0.0
-          </p>
+          </div>
+          <div class="font-bold text-3xl tabular-nums">
+            0
+          </div>
           <div class="flex items-center justify-center gap-1 text-muted-foreground text-sm"></div>
         </div>
-        <div>
-          <p class="font-light">
+        <div class="metric-bot-visits">
+          <div class="font-light">
             Bot Visits
-          </p>
-          <p class="font-bold text-3xl">
+          </div>
+          <div class="font-bold text-3xl tabular-nums">
             0
-          </p>
+          </div>
+          <div class="flex items-center justify-center gap-1 text-muted-foreground text-sm"></div>
         </div>
-        <div>
-          <p class="font-light">
+        <div class="metric-unique-bots">
+          <div class="font-light">
             Unique Bots
-          </p>
-          <p class="font-bold text-3xl">
+          </div>
+          <div class="font-bold text-3xl tabular-nums">
             0
-          </p>
+          </div>
+          <div class="flex items-center justify-center gap-1 text-muted-foreground text-sm"></div>
         </div>
       </a>
       <div class="space-y-4 whitespace-normal [&amp;&gt;*:first-child]:mt-0 [&amp;&gt;*:last-child]:mb-0 prose prose-sm mt-4 line-clamp-2 max-w-none text-foreground/60">
@@ -67,22 +64,18 @@
           Test summary
         </p>
       </div>
-      <div>
-        <button aria-controls="_R_13635_" aria-expanded="true" aria-haspopup="dialog" aria-label="Delete site" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-transparent hover:border-black hover:bg-white h-10 rounded-sm px-4 text-xs text-destructive" data-slot="dialog-trigger" tabindex="0" type="button">
+      <div class="flex justify-between">
+        <button aria-controls="_R_12u35_" aria-expanded="true" aria-haspopup="dialog" aria-label="Delete site" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-transparent hover:border-black hover:bg-white h-10 rounded-sm px-4 text-xs text-destructive" data-slot="dialog-trigger" tabindex="0" type="button">
           Delete Site
         </button>
       </div>
+      <div class="mt-4"></div>
     </div>
-    <div class="block py-4 first:pt-0 last:pb-0">
-      <p class="flex flex-row items-center justify-between">
-        <span class="flex flex-row items-center gap-2">
-          <a class="font-bold font-mono text-lg" data-discover="true" href="/site/id">
-            example.com
-          </a>
-          <span class="text-muted-foreground text-xs">
-            Owner
-          </span>
-        </span>
+    <div class="space-y-4">
+      <div class="flex flex-row items-center justify-between">
+        <a class="font-bold font-mono text-lg" data-discover="true" href="/site/id">
+          example.com
+        </a>
         <a aria-label="View site" class="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-black bg-[hsl(120,100%,97%)] text-black shadow-[3px_3px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_black] px-4 py-2" data-discover="true" href="/site/id" rel="noopener noreferrer">
           View Site
           <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -90,41 +83,43 @@
             <path d="m12 5 7 7-7 7"></path>
           </svg>
         </a>
-      </p>
-      <a class="mt-4 grid grid-cols-4 gap-4 text-center" data-discover="true" href="/site/id">
-        <div>
-          <p class="font-light">
+      </div>
+      <a class="grid grid-cols-4 gap-4 text-center" data-discover="true" href="/site/id">
+        <div class="metric-citations">
+          <div class="font-light">
             Citations
-          </p>
-          <p class="font-bold text-3xl">
+          </div>
+          <div class="font-bold text-3xl tabular-nums">
             0
-          </p>
+          </div>
           <div class="flex items-center justify-center gap-1 text-muted-foreground text-sm"></div>
         </div>
-        <div>
-          <p class="font-light">
+        <div class="metric-score">
+          <div class="font-light">
             Score
-          </p>
-          <p class="font-bold text-3xl">
-            0.0
-          </p>
+          </div>
+          <div class="font-bold text-3xl tabular-nums">
+            0
+          </div>
           <div class="flex items-center justify-center gap-1 text-muted-foreground text-sm"></div>
         </div>
-        <div>
-          <p class="font-light">
+        <div class="metric-bot-visits">
+          <div class="font-light">
             Bot Visits
-          </p>
-          <p class="font-bold text-3xl">
+          </div>
+          <div class="font-bold text-3xl tabular-nums">
             0
-          </p>
+          </div>
+          <div class="flex items-center justify-center gap-1 text-muted-foreground text-sm"></div>
         </div>
-        <div>
-          <p class="font-light">
+        <div class="metric-unique-bots">
+          <div class="font-light">
             Unique Bots
-          </p>
-          <p class="font-bold text-3xl">
+          </div>
+          <div class="font-bold text-3xl tabular-nums">
             0
-          </p>
+          </div>
+          <div class="flex items-center justify-center gap-1 text-muted-foreground text-sm"></div>
         </div>
       </a>
       <div class="space-y-4 whitespace-normal [&amp;&gt;*:first-child]:mt-0 [&amp;&gt;*:last-child]:mb-0 prose prose-sm mt-4 line-clamp-2 max-w-none text-foreground/60">
@@ -132,11 +127,12 @@
           Summar of the content of example.com
         </p>
       </div>
-      <div>
+      <div class="flex justify-between">
         <button aria-expanded="false" aria-haspopup="dialog" aria-label="Delete site" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-transparent hover:border-black hover:bg-white h-10 rounded-sm px-4 text-xs text-destructive" data-slot="dialog-trigger" tabindex="0" type="button">
           Delete Site
         </button>
       </div>
+      <div class="mt-4"></div>
     </div>
   </div>
 </div>
