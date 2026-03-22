@@ -1,28 +1,13 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { sumBy } from "es-toolkit";
+import type { WeeklyDigestEmailProps } from "~/emails/WeeklyDigest";
 import calculateVisibilityScore from "~/lib/llm-visibility/calculateVisibilityScore";
 import prisma from "~/lib/prisma.server";
-import type { SentimentLabel } from "~/prisma";
 import { formatDateMed } from "./temporal";
 
-export async function loadWeeklyDigestMetrics(siteId: string): Promise<{
-  botVisits: { total: number; delta: number };
-  byPlatform: {
-    [k: string]: {
-      count: number;
-      sentimentLabel: SentimentLabel;
-      sentimentSummary: string;
-    };
-  };
-  chartBase64: string;
-  citations: { delta: number; total: number; domain: number };
-  domain: string;
-  score: { current: number; delta: number };
-  subject: string;
-  to: string[];
-  topQueries: { query: string; count: number; delta: number }[];
-  unsubscribeURL?: string;
-}> {
+export async function loadWeeklyDigestMetrics(
+  siteId: string,
+): Promise<WeeklyDigestEmailProps> {
   const { domain, owner, siteUsers } = await prisma.site.findUniqueOrThrow({
     where: { id: siteId },
     select: {

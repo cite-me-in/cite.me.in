@@ -1,15 +1,33 @@
 import { Column, Img, Link, Row, Section, Text } from "@react-email/components";
 import { sample, sortBy } from "es-toolkit";
 import { twMerge } from "tailwind-merge";
-import { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
+import type { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
 import type { SentimentLabel } from "~/prisma";
 import EmailLayout from "./EmailLayout";
 import { sendEmail } from "./sendEmails";
 
+export type WeeklyDigestEmailProps = {
+  botVisits: { total: number; delta: number };
+  byPlatform: {
+    [k: string]: {
+      count: number;
+      sentimentLabel: SentimentLabel;
+      sentimentSummary: string;
+    };
+  };
+  chartBase64: string;
+  citations: { delta: number; total: number; domain: number };
+  domain: string;
+  score: { current: number; delta: number };
+  subject: string;
+  to: string[];
+  topQueries: { query: string; count: number; delta: number }[];
+  unsubscribeURL?: string;
+};
+
 export async function sendSiteDigestEmails(
-  siteId: string,
+  data: WeeklyDigestEmailProps,
 ): Promise<{ id: string }[]> {
-  const data = await loadWeeklyDigestMetrics(siteId);
   const emailIds = [];
   for (const to of data.to) {
     const emailId = await sendEmail({

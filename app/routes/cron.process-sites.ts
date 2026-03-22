@@ -11,6 +11,7 @@ import queryAccount from "~/lib/llm-visibility/queryAccount";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import { UsageLimitExceededError } from "~/lib/usage/UsageLimitExceededError";
+import { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
 import type { Route } from "./+types/cron.process-sites";
 
 const logger = debug("server");
@@ -36,7 +37,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   await mapAsync(sitesForDigest, async (site) => {
     // NOTE Always run updates first and then send the digest email.
     await Promise.all([nextCitationRun(site), updateBotInsight(site)]);
-    const sent = await sendSiteDigestEmails(site.id);
+    const data = await loadWeeklyDigestMetrics(site.id);
+    const sent = await sendSiteDigestEmails(data);
     results.push({ emailIds: sent.map((e) => e.id), domain: site.domain });
   });
 
