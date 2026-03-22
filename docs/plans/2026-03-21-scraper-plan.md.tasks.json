@@ -1,0 +1,14 @@
+{
+  "planPath": "docs/plans/2026-03-21-scraper-plan.md",
+  "tasks": [
+    {"id": 5, "subject": "Task 1: Module skeleton — create files and migrate import", "status": "pending"},
+    {"id": 6, "subject": "Task 2: Test fixtures and mock fetch helper", "status": "pending", "blockedBy": [5]},
+    {"id": 7, "subject": "Task 3: extract.ts — Markdown passthrough and JSON-LD extraction", "status": "pending", "blockedBy": [6]},
+    {"id": 8, "subject": "Task 4: extract.ts — semantic HTML selectors and canonical skip", "status": "pending", "blockedBy": [6]},
+    {"id": 9, "subject": "Task 5: discover.ts — llms.txt, robots.txt, sitemap", "status": "pending", "blockedBy": [6]},
+    {"id": 10, "subject": "Task 6: discover.ts — RSS feed test", "status": "pending", "blockedBy": [9]},
+    {"id": 11, "subject": "Task 7: crawl.ts — bounded-concurrency queue with limits", "status": "pending", "blockedBy": [8, 10]},
+    {"id": 12, "subject": "Task 8: Clean up sites.server.ts and run full test suite", "status": "pending", "blockedBy": [11]}
+  ],
+  "lastUpdated": "2026-03-21T00:00:00Z"
+}

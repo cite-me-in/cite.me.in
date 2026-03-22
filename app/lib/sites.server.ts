@@ -4,9 +4,7 @@ import { generateApiKey } from "random-password-toolkit";
 import type { Site } from "~/prisma";
 import calculateVisibilityScore from "./llm-visibility/calculateVisibilityScore";
 import prisma from "./prisma.server";
-
-import { fetchSiteContent } from "~/lib/scrape";
-export { fetchSiteContent };
+import { crawl } from "./scrape/crawl";
 
 export async function addSiteToUser(
   user: { id: string },
@@ -38,8 +36,8 @@ export async function addSiteToUser(
     throw new Error(limitMsg);
   }
 
-  const content = await fetchSiteContent({
-    domain,
+  const content = await crawl({
+    baseURL: url,
     maxPages: 10,
     maxWords: 5_000,
     maxSeconds: 15,
@@ -49,7 +47,7 @@ export async function addSiteToUser(
       owner: { connect: { id: user.id } },
       apiKey: `cite.me.in_${generateApiKey(16)}`,
       content,
-      domain,
+      domain: new URL(url).hostname,
     },
   });
   return { site, existing: false };

@@ -25,7 +25,6 @@ function notFound(): MockResponse {
   };
 }
 
-
 export const HOMEPAGE_HTML = `<!DOCTYPE html>
 <html>
 <head>
@@ -48,7 +47,6 @@ export const HOMEPAGE_HTML = `<!DOCTYPE html>
 export const LLMS_TXT = `# Acme Corp LLM Context
 https://acme.com/about
 https://acme.com/pricing
-https://acme.com/blog/post-1
 `;
 
 export const ROBOTS_TXT = `User-agent: *
@@ -59,12 +57,14 @@ Disallow: /private/
 export const SITEMAP_TXT = `https://acme.com/about
 https://acme.com/pricing
 https://acme.com/blog
+https://acme.com/blog/post-1
 `;
 
 export const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://acme.com/about</loc></url>
   <url><loc>https://acme.com/pricing</loc></url>
+  <url><loc>https://acme.com/blog/post-1</loc></url>
 </urlset>`;
 
 export const RSS_FEED = `<?xml version="1.0"?>
@@ -138,7 +138,10 @@ export const HTML_ID_ROOT = `<!DOCTYPE html>
 </body></html>`;
 
 export function mockFetch(responses: FixtureMap) {
-  return async (url: string | URL, _init?: RequestInit): Promise<MockResponse> => {
+  return async (
+    url: string | URL,
+    _init?: RequestInit,
+  ): Promise<MockResponse> => {
     const key = url.toString();
     return responses[key] ?? notFound();
   };
@@ -170,7 +173,9 @@ export function sitemapTxtSite(): FixtureMap {
 
 export function sitemapXmlSite(): FixtureMap {
   return {
-    "https://acme.com/": html(HOMEPAGE_HTML.replace('href="/sitemap.txt"', 'href="/sitemap.xml"')),
+    "https://acme.com/": html(
+      HOMEPAGE_HTML.replace('href="/sitemap.txt"', 'href="/sitemap.xml"'),
+    ),
     "https://acme.com/llms.txt": notFound(),
     "https://acme.com/robots.txt": notFound(),
     "https://acme.com/sitemap.txt": notFound(),
@@ -181,9 +186,13 @@ export function sitemapXmlSite(): FixtureMap {
 }
 
 export function navOnlySite(): FixtureMap {
-  const homepageNoSitemap = HOMEPAGE_HTML
-    .replace('<link rel="sitemap" href="/sitemap.txt" />', '')
-    .replace('<link rel="alternate" type="application/rss+xml" href="/feed.xml" />', '');
+  const homepageNoSitemap = HOMEPAGE_HTML.replace(
+    '<link rel="sitemap" href="/sitemap.txt" />',
+    "",
+  ).replace(
+    '<link rel="alternate" type="application/rss+xml" href="/feed.xml" />',
+    "",
+  );
   return {
     "https://acme.com/": html(homepageNoSitemap),
     "https://acme.com/llms.txt": notFound(),

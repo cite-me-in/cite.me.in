@@ -1,57 +1,108 @@
+import { ms } from "convert";
+import debug from "debug";
+import type { HTMLNode } from "~/lib/html/HTMLNode";
 import parseHTMLTree, {
   getElementsByTagName,
   getMainContent,
   htmlToMarkdown,
 } from "~/lib/html/parseHTML";
-import type { HTMLNode } from "~/lib/html/HTMLNode";
-
-export type ExtractionResult = {
-  title: string;
-  text: string;
-};
+import logError from "../logError.server";
 
 const SUPPORTED_CONTENT_TYPES = ["text/html", "text/markdown"];
 
+const logger = debug("crawl");
+
+/**
+ * Fetches a document and extracts the title, text, and HTML from it. If the
+ * document is Markdown returns the title and text directly. If the document is
+ * HTML returns the title, text, and raw HTML. If the document is not HTML or
+ * Markdown returns null.
+ *
+ * @param url - The URL of the document to fetch and extract.
+ * @param signal - The abort signal to use to cancel the fetch.
+ * @returns The title, text, and HTML of the document or null if the fetch or extraction fails.
+ */
 export async function fetchAndExtract(
   url: string,
   signal: AbortSignal,
-): Promise<ExtractionResult | null> {
-  let response: Response;
+): Promise<{
+  title: string;
+  text: string;
+  html?: string;
+} | null> {
   try {
-    response = await fetch(url, {
-      signal: AbortSignal.any([signal, AbortSignal.timeout(5_000)]),
-      redirect: "follow",
+    const response = await fetch(new URL(url), {
       headers: { Accept: "text/markdown, text/html;q=0.9" },
+      redirect: "follow",
+      signal: AbortSignal.any([signal, AbortSignal.timeout(ms("5s"))]),
     });
-  } catch {
+    if (!response.ok) return null;
+
+    const contentType = response.headers.get("content-type") ?? "";
+    if (!SUPPORTED_CONTENT_TYPES.some((type) => contentType.includes(type)))
+      return null;
+
+    const body = await response.text();
+    logger(
+      "[crawl] Fetched %s => %s — %d bytes",
+      url,
+      contentType,
+      body.length,
+    );
+    return contentType.includes("text/markdown")
+      ? extractFromMarkdown(body, url)
+      : extractFromHtml(body, url);
+  } catch (error) {
+    logError(`Error fetching ${url}: ${error}`, { extra: { url } });
     return null;
   }
-
-  if (!response.ok) return null;
-
-  const contentType = response.headers.get("content-type") ?? "";
-  if (!SUPPORTED_CONTENT_TYPES.some((t) => contentType.includes(t))) return null;
-
-  const body = await response.text();
-
-  if (contentType.includes("text/markdown")) return extractFromMarkdown(body, url);
-  return extractFromHtml(body, url);
 }
 
-function extractFromMarkdown(body: string, url: string): ExtractionResult {
+/**
+ * Extracts the title and text from a Markdown document.
+ *
+ * @param body - The markdown document.
+ * @param url - The URL of the document.
+ * @returns The title and text.
+ */
+function extractFromMarkdown(
+  body: string,
+  url: string,
+): {
+  title: string;
+  text: string;
+} {
   const firstLine = body.split("\n").find((l) => l.startsWith("# "));
-  const title = firstLine ? firstLine.replace(/^#\s+/, "") : new URL(url).pathname;
+  const title = firstLine
+    ? firstLine.replace(/^#\s+/, "")
+    : new URL(url).pathname;
   return { title, text: body };
 }
 
-export function extractFromHtml(html: string, url: string): ExtractionResult {
+/**
+ * Extracts the title and text from an HTML document.
+ *
+ * @param html - The HTML document.
+ * @param url - The URL of the document.
+ * @returns The title and text.
+ */
+export function extractFromHtml(
+  html: string,
+  url: string,
+): {
+  title: string;
+  text: string;
+  html: string;
+} {
   const tree = parseHTMLTree(html);
 
   const titleNodes = getElementsByTagName(tree, "title");
   const title =
     titleNodes[0]?.children
-      .filter((n): n is HTMLNode & { type: "text" } => n.type === "text")
-      .map((n) => n.content)
+      .filter(
+        (node): node is HTMLNode & { type: "text" } => node.type === "text",
+      )
+      .map((node) => node.content)
       .join("") ?? new URL(url).pathname;
 
   // Check rel=canonical — if points elsewhere, return empty text (caller skips)
@@ -64,26 +115,51 @@ export function extractFromHtml(html: string, url: string): ExtractionResult {
         canonical !== url &&
         new URL(canonical, url).pathname !== new URL(url).pathname
       )
-        return { title, text: "" };
+        return { title, text: "", html };
     }
   }
 
   // JSON-LD articleBody — must extract from raw HTML because parseHTMLTree strips <script> tags
-  const jsonLdText = extractJsonLdArticleBody(html);
-  if (jsonLdText) return { title, text: jsonLdText };
+  const jsonText = extractArticleBody(html);
+  if (jsonText) return { title, text: jsonText, html };
 
   const text = extractSemanticContent(tree);
-  return { title, text };
+  return { title, text, html };
 }
 
-function extractJsonLdArticleBody(html: string): string | null {
-  const scriptRegex = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+/**
+ * Extracts the article body from a JSON-LD script tag in an HTML document.
+ * Expects the script tag to have a type attribute of "application/ld+json"
+ * and to contain a JSON object with an "articleBody" field and a @type field
+ * of "Article", "NewsArticle", or "BlogPosting" per schema.org.
+ *
+ * @param html - The HTML document.
+ * @returns The article body or null if not found.
+ */
+function extractArticleBody(html: string): string | null {
+  const scriptRegex =
+    /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
   let match: RegExpExecArray | null;
   while (true) {
     match = scriptRegex.exec(html);
     if (match === null) break;
     try {
       const ld = JSON.parse(match[1]) as Record<string, unknown>;
+      // Check if ld is an Article or NewsArticle or BlogPosting per schema.org
+      const type =
+        typeof ld["@type"] === "string"
+          ? ld["@type"]
+          : Array.isArray(ld["@type"]) && ld["@type"].length > 0
+            ? ld["@type"][0]
+            : null;
+      if (
+        !type ||
+        !["Article", "NewsArticle", "BlogPosting"].includes(
+          type.replace(/^schema:/i, ""),
+        )
+      ) {
+        continue; // skip if not an Article type
+      }
       const articleBody = ld.articleBody as string | undefined;
       if (articleBody && articleBody.length > 50) return articleBody;
     } catch {
@@ -93,6 +169,21 @@ function extractJsonLdArticleBody(html: string): string | null {
   return null;
 }
 
+/**
+ * Extracts the semantic content from an HTML tree.
+ * Uses the following selectors in priority order:
+ * - <main>
+ * - <article>
+ * - [role="main"]
+ * - #content
+ * - #main
+ * - #root
+ * - <body>
+ * - fallback to getMainContent()
+ *
+ * @param tree - The HTML tree.
+ * @returns The semantic content.
+ */
 function extractSemanticContent(tree: HTMLNode[]): string {
   const mainEl = getElementsByTagName(tree, "main")[0];
   if (mainEl) return htmlToMarkdown(mainEl.children);
@@ -115,9 +206,13 @@ function extractSemanticContent(tree: HTMLNode[]): string {
   return htmlToMarkdown(getMainContent(tree));
 }
 
-function getAllElements(
-  nodes: HTMLNode[],
-): (HTMLNode & { type: "element" })[] {
+/**
+ * Gets all elements from an HTML tree.
+ *
+ * @param nodes - The HTML tree.
+ * @returns All elements.
+ */
+function getAllElements(nodes: HTMLNode[]): (HTMLNode & { type: "element" })[] {
   const result: (HTMLNode & { type: "element" })[] = [];
   for (const node of nodes) {
     if (node.type === "element") {

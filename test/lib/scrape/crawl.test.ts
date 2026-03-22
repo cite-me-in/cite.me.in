@@ -11,7 +11,7 @@ describe("crawl", () => {
   it("should return content from crawled pages", async () => {
     vi.stubGlobal("fetch", mockFetch(navOnlySite()));
     const content = await crawl({
-      domain: "acme.com",
+      baseURL: "https://acme.com",
       maxWords: 5_000,
       maxPages: 5,
       maxSeconds: 10,
@@ -22,7 +22,7 @@ describe("crawl", () => {
   it("should include content from llms.txt URLs first", async () => {
     vi.stubGlobal("fetch", mockFetch(llmsTxtSite()));
     const content = await crawl({
-      domain: "acme.com",
+      baseURL: "https://acme.com",
       maxWords: 5_000,
       maxPages: 5,
       maxSeconds: 10,
@@ -44,7 +44,9 @@ describe("crawl", () => {
         return {
           ok: true,
           status: 200,
-          headers: { get: (h: string) => (h === "content-type" ? "text/plain" : null) },
+          headers: {
+            get: (h: string) => (h === "content-type" ? "text/plain" : null),
+          },
           text: async () => manyUrls,
         };
       }
@@ -52,13 +54,15 @@ describe("crawl", () => {
       return {
         ok: true,
         status: 200,
-        headers: { get: (h: string) => (h === "content-type" ? "text/html" : null) },
+        headers: {
+          get: (h: string) => (h === "content-type" ? "text/html" : null),
+        },
         text: async () => HTML_MAIN_CONTENT,
       };
     });
 
     await crawl({
-      domain: "acme.com",
+      baseURL: "https://acme.com",
       maxWords: 50_000,
       maxPages: 5,
       maxSeconds: 10,
@@ -76,7 +80,7 @@ describe("crawl", () => {
     // Each page has ~20 words — with maxWords=30, should stop early
     vi.stubGlobal("fetch", mockFetch(navOnlySite()));
     const content = await crawl({
-      domain: "acme.com",
+      baseURL: "https://acme.com",
       maxWords: 30,
       maxPages: 20,
       maxSeconds: 10,

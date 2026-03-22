@@ -1,171 +1,144 @@
+import { ms } from "convert";
+import debug from "debug";
 import parseHTMLTree, { getElementsByTagName } from "~/lib/html/parseHTML";
+import logError from "../logError.server";
 
 const MEDIA_EXTENSIONS = /\.(pdf|jpg|jpeg|png|gif|svg|webp|mp4|mp3|zip|exe)$/i;
 
-export type DiscoveryResult = {
-  urls: string[];
-  disallowedPaths: Set<string>;
-};
+const logger = debug("crawl");
 
-export async function discoverUrls({
-  domain,
-  homepageHtml,
+/**
+ * Discovers URLs from the given domain. Looks at robots.txt, sitemap.txt,
+ * sitemap.xml, and RSS/Atom feeds. Also looks at nav links in the homepage
+ * HTML. Only returns URLs that are on the same domain as the base URL.
+ *
+ * @param baseURL - The base URL of the domain to discover URLs from.
+ * @param homepage - The HTML of the homepage.
+ * @param signal - The abort signal to use to cancel the discovery.
+ * @returns The discovered URLs and the disallowed URLs.
+ */
+export async function discoverURLs({
+  baseURL,
+  homepage,
   signal,
 }: {
-  domain: string;
-  homepageHtml: string;
+  baseURL: string;
+  homepage: string;
   signal: AbortSignal;
-}): Promise<DiscoveryResult> {
-  const base = `https://${domain}`;
-  const probe = () => AbortSignal.any([signal, AbortSignal.timeout(3_000)]);
-  const tree = parseHTMLTree(homepageHtml);
+}): Promise<string[]> {
+  const hostname = new URL(baseURL).hostname;
+  const probe = () => AbortSignal.any([signal, AbortSignal.timeout(ms("3s"))]);
+  const tree = parseHTMLTree(homepage);
 
-  const [llmsUrls, disallowedPaths, sitemapUrls, rssUrls] = await Promise.all([
-    fetchLlmsTxt(base, probe()),
-    fetchRobotsTxt(base, probe()),
-    fetchSitemapUrls(base, domain, tree, probe()),
-    fetchRssUrls(base, domain, tree, probe()),
+  const [sitemapURLs, rssURLs] = await Promise.all([
+    fetchSitemapURLs(baseURL, tree, probe()),
+    fetchRSS(baseURL, tree, probe()),
   ]);
 
-  const navUrls = extractNavUrls({ domain, tree });
+  const navURLs = extractNavURLs({ baseURL, tree });
 
-  const all = dedup([...llmsUrls, ...sitemapUrls, ...rssUrls, ...navUrls]);
-  const filtered = all.filter((url) => !isDisallowed(url, disallowedPaths));
+  const urls = dedup([...sitemapURLs, ...rssURLs, ...navURLs]).filter(
+    (url) => new URL(url).hostname === hostname,
+  );
+  logger("[crawl] Discovered %s => %d URLs", hostname, urls.length);
 
-  return { urls: filtered, disallowedPaths };
+  return urls;
 }
 
-async function fetchLlmsTxt(base: string, signal: AbortSignal): Promise<string[]> {
-  try {
-    const res = await fetch(`${base}/llms.txt`, { signal });
-    if (!res.ok) return [];
-    const text = await res.text();
-    return text
-      .split("\n")
-      .map((l) => l.trim())
-      .filter((l) => /^https?:\/\//.test(l));
-  } catch {
-    return [];
-  }
-}
-
-async function fetchRobotsTxt(base: string, signal: AbortSignal): Promise<Set<string>> {
-  try {
-    const res = await fetch(`${base}/robots.txt`, { signal });
-    if (!res.ok) return new Set();
-    const text = await res.text();
-    const disallowed = new Set<string>();
-    for (const line of text.split("\n")) {
-      const match = line.match(/^Disallow:\s*(.+)/i);
-      if (match?.[1]) disallowed.add(match[1].trim());
-    }
-    return disallowed;
-  } catch {
-    return new Set();
-  }
-}
-
-async function fetchSitemapUrls(
-  base: string,
-  domain: string,
+/**
+ * Fetches the sitemap.txt or sitemap.xml file from the homepage HTML and
+ * returns a list of URLs from it.
+ *
+ * @param baseURL - The base URL of the domain to fetch sitemap URLs from.
+ * @param tree - The HTML tree of the homepage.
+ * @param signal - The abort signal to use to cancel the fetch.
+ * @returns A list of URLs from the sitemap.
+ */
+async function fetchSitemapURLs(
+  baseURL: string,
   tree: ReturnType<typeof parseHTMLTree>,
   signal: AbortSignal,
 ): Promise<string[]> {
   const links = getElementsByTagName(tree, "link");
 
-  let hintedSitemapUrl: string | null = null;
-  for (const link of links) {
-    if (link.attributes.rel === "sitemap" && link.attributes.href) {
-      hintedSitemapUrl = new URL(link.attributes.href, base).href;
-      break;
-    }
-  }
+  const url = links.find(
+    (link) => link.attributes.rel === "sitemap" && link.attributes.href,
+  )?.attributes.href;
+  if (!url) return [];
 
-  const txtUrl = hintedSitemapUrl?.endsWith(".txt") ? hintedSitemapUrl : `${base}/sitemap.txt`;
-  const txtResult = await tryFetchSitemapTxt(txtUrl, domain, signal);
-  if (txtResult.length > 0) return txtResult;
-
-  const xmlUrl = hintedSitemapUrl?.endsWith(".xml") ? hintedSitemapUrl : `${base}/sitemap.xml`;
-  return tryFetchSitemapXml(xmlUrl, domain, signal);
-}
-
-async function tryFetchSitemapTxt(
-  url: string,
-  domain: string,
-  signal: AbortSignal,
-): Promise<string[]> {
   try {
-    const res = await fetch(url, { signal });
-    if (!res.ok) return [];
-    const text = await res.text();
-    return text
-      .split("\n")
-      .map((l) => l.trim())
-      .filter((l) => {
-        if (!/^https?:\/\//.test(l)) return false;
-        try {
-          const u = new URL(l);
-          return u.hostname === domain && !MEDIA_EXTENSIONS.test(u.pathname);
-        } catch {
-          return false;
-        }
-      });
-  } catch {
+    if (url?.endsWith(".txt")) {
+      const response = await fetch(new URL(url, baseURL), { signal });
+      if (!response.ok) return [];
+      const text = await response.text();
+      logger("[crawl] Fetched %s: %d sitemap URLs", url, text.length);
+      return text
+        .split("\n")
+        .map((l) => l.trim())
+        .filter((l) => /^https?:\/\//.test(l));
+    } else {
+      const response = await fetch(new URL(url, baseURL), { signal });
+      if (!response.ok) return [];
+      const xml = await response.text();
+      const urls = await parseSitemapXML(xml, baseURL);
+      logger("[crawl] Fetched %s: %d sitemap URLs", url, urls.length);
+      return urls;
+    }
+  } catch (error) {
+    logError(`Error fetching sitemap URLs: ${error}`, { extra: { url } });
     return [];
   }
 }
 
-async function tryFetchSitemapXml(
-  url: string,
-  domain: string,
-  signal: AbortSignal,
+/**
+ * Parses the XML of the sitemap and returns a list of URLs from it.
+ *
+ * @param xml - The XML of the sitemap.
+ * @param domain - The domain of the URLs in the sitemap.
+ * @returns A list of URLs from the sitemap.
+ */
+async function parseSitemapXML(
+  xml: string,
+  baseURL: string,
 ): Promise<string[]> {
-  try {
-    const res = await fetch(url, { signal });
-    if (!res.ok) return [];
-    const xml = await res.text();
-    const locs: string[] = [];
-    const locRegex = /<loc>(.*?)<\/loc>/g;
-    let match = locRegex.exec(xml);
-    while (match !== null) {
-      const u = match[1]?.trim();
-      if (u) {
-        try {
-          const parsed = new URL(u);
-          if (parsed.hostname === domain && !MEDIA_EXTENSIONS.test(parsed.pathname))
-            locs.push(u);
-        } catch {}
-      }
-      match = locRegex.exec(xml);
-    }
-    return locs;
-  } catch {
-    return [];
+  const locs: string[] = [];
+  const locRegex = /<loc>(.*?)<\/loc>/g;
+  let match = locRegex.exec(xml);
+  while (match !== null) {
+    const url = match[1]?.trim();
+    if (url) locs.push(new URL(url, baseURL).href);
+    match = locRegex.exec(xml);
   }
+  return locs;
 }
 
-async function fetchRssUrls(
-  base: string,
-  domain: string,
+/**
+ * Fetches the RSS/Atom feed link from the homepage HTML and returns a list of
+ * URLs from it.
+ *
+ * @param baseURL - The base URL of the domain to fetch RSS/Atom feed from.
+ * @param tree - The HTML tree of the homepage.
+ * @param signal - The abort signal to use to cancel the fetch.
+ * @returns A list of URLs from the RSS/Atom feed.
+ */
+async function fetchRSS(
+  baseURL: string,
   tree: ReturnType<typeof parseHTMLTree>,
   signal: AbortSignal,
 ): Promise<string[]> {
+  const links = getElementsByTagName(tree, "link");
+  const url = links.find(
+    (link) =>
+      link.attributes.type?.includes("rss") ||
+      link.attributes.type?.includes("atom"),
+  )?.attributes.href;
+  if (!url) return [];
+
   try {
-    const links = getElementsByTagName(tree, "link");
-    let feedUrl: string | null = null;
-    for (const link of links) {
-      const type = link.attributes.type ?? "";
-      if (type.includes("rss") || type.includes("atom")) {
-        feedUrl = link.attributes.href ? new URL(link.attributes.href, base).href : null;
-        break;
-      }
-    }
-    if (!feedUrl) return [];
-
-    const res = await fetch(feedUrl, { signal });
+    const res = await fetch(new URL(url, baseURL), { signal });
     if (!res.ok) return [];
-    const xml = await res.text();
 
+    const xml = await res.text();
     const rssLinks: string[] = [];
     const rssRegex = /<link>(.*?)<\/link>/g;
     let rssMatch = rssRegex.exec(xml);
@@ -184,24 +157,31 @@ async function fetchRssUrls(
       atomMatch = atomRegex.exec(xml);
     }
 
-    const urls: string[] = [];
-    for (const u of [...rssLinks, ...atomLinks]) {
-      try {
-        const parsed = new URL(u);
-        if (parsed.hostname === domain) urls.push(u);
-      } catch {}
-    }
+    const urls = [...rssLinks, ...atomLinks].map(
+      (url) => new URL(url, baseURL).href,
+    );
+    logger("[crawl] Fetched %s: %d RSS/Atom URLs", url, urls.length);
     return urls;
-  } catch {
+  } catch (error) {
+    logError(`Error fetching RSS: ${error}`, { extra: { url } });
     return [];
   }
 }
 
-function extractNavUrls({
-  domain,
+/**
+ * Extracts the navigation anchor `href`s from the homepage HTML and returns a list of
+ * URLs from them.
+ *
+ * @param baseURL - The base URL of the domain to extract navigation anchor `href`s from.
+ * @param tree - The HTML tree of the homepage.
+ * @returns A list of navigation anchor `href`s, deduplicated and filtered
+ * against the disallowed URLs, normalized to the base URL.
+ */
+function extractNavURLs({
+  baseURL,
   tree,
 }: {
-  domain: string;
+  baseURL: string;
   tree: ReturnType<typeof parseHTMLTree>;
 }): string[] {
   const navs = getElementsByTagName(tree, "nav");
@@ -210,39 +190,17 @@ function extractNavUrls({
       ? navs.flatMap((nav) => getElementsByTagName(nav.children, "a"))
       : getElementsByTagName(tree, "a");
 
-  const seen = new Set<string>();
-  const urls: string[] = [];
-
-  for (const anchor of anchors) {
-    const href = anchor.attributes.href;
-    if (!href || href.startsWith("#") || href.startsWith("mailto:")) continue;
-    if (MEDIA_EXTENSIONS.test(href)) continue;
-    let url: URL;
-    try {
-      url = new URL(href.startsWith("http") ? href : `https://${domain}${href}`);
-    } catch {
-      continue;
-    }
-    if (url.hostname !== domain) continue;
-    if (url.pathname === "/" || url.pathname === "") continue;
-    const depth = url.pathname.split("/").filter(Boolean).length;
-    if (depth > 3) continue;
-    const key = url.origin + url.pathname;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    urls.push(url.href);
-  }
-
+  const urls = anchors
+    .map((anchor) => {
+      const href = anchor.attributes.href;
+      if (!href || href.startsWith("#") || href.startsWith("mailto:"))
+        return null;
+      if (MEDIA_EXTENSIONS.test(href)) return null;
+      return new URL(href, baseURL).href;
+    })
+    .filter((url) => url !== null);
+  logger("[crawl] Extracted %d navigation anchor `href`s", urls.length);
   return urls;
-}
-
-function isDisallowed(url: string, disallowedPaths: Set<string>): boolean {
-  try {
-    const { pathname } = new URL(url);
-    for (const pattern of disallowedPaths)
-      if (pathname.startsWith(pattern)) return true;
-  } catch {}
-  return false;
 }
 
 function dedup(urls: string[]): string[] {
