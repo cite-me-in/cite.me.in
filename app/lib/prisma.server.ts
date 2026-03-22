@@ -17,7 +17,9 @@ export default new PrismaClient({
     idleTimeoutMillis: 0,
     connectionTimeoutMillis: 0,
     allowExitOnIdle: true,
-    ssl: process.env.NODE_ENV === "production" && {
+    ssl:
+    envVars.POSTGRES_URL.includes("localhost") ? false :
+     {
       ca: readFileSync(resolve("prisma/prod-ca-2021.crt")),
       rejectUnauthorized: false,
     },

@@ -67,7 +67,7 @@ export default async function queryPlatform({
   }
 }
 
-export async function updateRunSentiment({
+async function updateRunSentiment({
   site,
   platform,
   runId,

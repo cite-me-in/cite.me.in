@@ -1,7 +1,7 @@
 import debug from "debug";
 import { HttpResponse, http } from "msw";
 
-const logger = debug("anthropic");
+const logger = debug("msw");
 
 export default http.post(
   "https://api.anthropic.com/v1/messages",
@@ -41,7 +41,32 @@ export default http.post(
           output_tokens: 10,
         },
       });
+    } else if (
+      body.includes(
+        "You are a summary generator. You are given the content of example.com and you need to summarize it.",
+      )
+    ) {
+      logger("Mocking LLM response for summary generation");
+      return HttpResponse.json({
+        id: `msg_test_${crypto.randomUUID()}`,
+        type: "message",
+        role: "assistant",
+        content: [
+          {
+            type: "text",
+            text: "Summar of the content of example.com",
+          },
+        ],
+        model: "claude-3-5-sonnet-20241022",
+        stop_reason: "end_turn",
+        usage: {
+          input_tokens: 5,
+          output_tokens: 10,
+        },
+      });
     } else {
+      logger(body);
+
       // Citation query — return a minimal valid response with no sources.
       logger("Mocking LLM response for citation query");
       return HttpResponse.json({

@@ -49,9 +49,11 @@ describe("verifySiteAccess", () => {
         apiKey: userApiKey,
         ownedSites: {
           create: {
-            id: siteId,
-            domain: "test.example",
             apiKey: userApiKey,
+            content: "Test content",
+            domain: "test.example",
+            id: siteId,
+            summary: "Test summary",
           },
         },
       },

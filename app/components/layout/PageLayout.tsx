@@ -1,5 +1,4 @@
 import { CSPProvider } from "@base-ui/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Links, Meta, Scripts, ScrollRestoration } from "react-router";
@@ -56,20 +55,18 @@ export default function PageLayout({
         <Links />
       </head>
       <body className="relative">
-        <QueryClientProvider client={new QueryClient()}>
-          {hideLayout ? (
-            children
-          ) : (
-            <CSPProvider disableStyleElements>
-              {/* @see https://base-ui.com/react/overview/quick-start */}
-              <div className="relative isolate flex min-h-screen flex-col">
-                <PageHeader />
-                {children}
-                <PageFooter />
-              </div>
-            </CSPProvider>
-          )}
-        </QueryClientProvider>
+        {hideLayout ? (
+          children
+        ) : (
+          <CSPProvider disableStyleElements>
+            {/* @see https://base-ui.com/react/overview/quick-start */}
+            <div className="relative isolate flex min-h-screen flex-col">
+              <PageHeader />
+              {children}
+              <PageFooter />
+            </div>
+          </CSPProvider>
+        )}
         <DevTag />
         <PageLoadingBouncer />
         <ScrollRestoration />

@@ -105,10 +105,12 @@ describe("sites route", () => {
     beforeAll(async () => {
       await prisma.site.create({
         data: {
-          id: "site-1",
-          domain: "duplicate-test.com",
-          ownerId: user.id,
           apiKey: "test-api-key-sites-1",
+          content: "Test content",
+          domain: "duplicate-test.com",
+          id: "site-1",
+          ownerId: user.id,
+          summary: "Test summary",
         },
       });
       page = await goto("/sites");
@@ -204,10 +206,12 @@ describe("sites route", () => {
     beforeAll(async () => {
       await prisma.site.create({
         data: {
-          id: "site-dashboard-test",
-          domain: "dashboard-test.com",
-          ownerId: user.id,
           apiKey: "test-api-key-sites-dashboard",
+          content: "Test content",
+          domain: "dashboard-test.com",
+          id: "site-dashboard-test",
+          ownerId: user.id,
+          summary: "Test summary",
         },
       });
       page = await goto("/sites");
@@ -301,10 +305,12 @@ describe("sites route", () => {
     beforeAll(async () => {
       await prisma.site.create({
         data: {
-          id: siteId,
-          domain: "delta-test.com",
-          ownerId: user.id,
           apiKey: "test-api-key-sites-delta",
+          content: "Test content",
+          domain: "delta-test.com",
+          id: siteId,
+          ownerId: user.id,
+          summary: "Test summary",
         },
       });
     });

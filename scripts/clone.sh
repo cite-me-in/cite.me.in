@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-set -eo pipefail
 
 # Clone production database to local development database
+#
 # Usage: ./scripts/clone.sh
+
+set -eo pipefail
 
 # Dump the database to a file
 echo -e "\033[32m  Dumping database to backup.sql …\033[0m"

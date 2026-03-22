@@ -38,7 +38,6 @@
 		"@sentry/react-router": "^10.45.0",
 		"@tailwindcss/forms": "^0.5.11",
 		"@tailwindcss/typography": "^0.5.19",
-		"@tanstack/react-query": "^5.94.4",
 		"@vercel/analytics": "^2.0.1",
 		"@vercel/config": "^0.0.40",
 		"@vercel/react-router": "^1.2.6",

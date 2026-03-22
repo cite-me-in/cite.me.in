@@ -67,7 +67,6 @@ async function startServer() {
           "usehooks-ts",
           "lucide-react",
           "@base-ui/react",
-          "@tanstack/react-query",
           "@sentry/react-router",
         ],
       },

@@ -48,7 +48,9 @@ for (const level of ["debug", "error", "info", "log", "trace", "warn"]) {
       if (sentryFunction)
         sentryFunction.call(sentry, formattedMessage, ...metadata);
       if (logtailFunction)
-        logtailFunction.call(logtail, formattedMessage, ...metadata).catch(() => {});
+        logtailFunction
+          .call(logtail, formattedMessage, ...metadata)
+          .catch(() => {});
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);

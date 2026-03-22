@@ -53,7 +53,9 @@ describe("api.admin.users", () => {
           },
           ownedSites: {
             create: {
+              content: "Test content",
               domain: "admin-users-test.example.com",
+              summary: "Test summary",
             },
           },
           updatedAt: new Date("2024-01-01"),

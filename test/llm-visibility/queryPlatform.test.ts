@@ -62,10 +62,12 @@ describe("queryPlatform", () => {
     });
     site = await prisma.site.create({
       data: {
-        id: "site-1",
-        domain: "rentail.space",
-        ownerId: user.id,
         apiKey: "test-api-key-qp-1",
+        content: "Test content",
+        domain: "rentail.space",
+        id: "site-1",
+        ownerId: user.id,
+        summary: "Test summary",
       },
     });
   });

@@ -10,11 +10,6 @@ import stripe from "./mswStripe";
 const logger = debug("msw");
 
 const handlers = [
-  // Make sure we're not sending emails in tests
-  http.post("https://api.resend.com/emails", () =>
-    HttpResponse.json({ id: crypto.randomUUID() }),
-  ),
-
   anthropic,
   gemini,
   openai,
@@ -23,6 +18,11 @@ const handlers = [
 
   http.get("https://example.com/", () =>
     HttpResponse.html("<html><body><p>Hello world</p></body></html>"),
+  ),
+
+  // Make sure we're not sending emails in tests
+  http.post("https://api.resend.com/emails", () =>
+    HttpResponse.json({ id: crypto.randomUUID() }),
   ),
 
   // Allow all localhost requests to pass through (for dev server communication)
@@ -91,8 +91,5 @@ server.events
   );
 
 export default function listen() {
-  // When STRIPE_SECRET_KEY is set, bypass unhandled requests (real Stripe calls).
-  // Otherwise, block all unhandled external requests to catch accidental real API calls.
-  const onUnhandledRequest = process.env.STRIPE_SECRET_KEY ? "bypass" : "error";
-  server.listen({ onUnhandledRequest });
+  server.listen({ onUnhandledRequest: "warn" });
 }

@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { crawl } from "~/lib/scrape/crawl";
+import { summarize } from "~/lib/scrape/summarize";
 import { extractDomain } from "~/lib/sites.server";
 
 vi.mock("node:dns", () => ({
@@ -34,16 +35,6 @@ describe("extractDomain", () => {
 
 describe("fetchSiteContent", () => {
   it("should return extracted text from HTML", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        ok: true,
-        headers: {
-          get: (name: string) => (name === "content-type" ? "text/html" : null),
-        },
-        text: async () => "<html><body><p>Hello world</p></body></html>",
-      }),
-    );
     const content = await crawl({
       domain: "example.com",
       maxPages: 5,
@@ -51,6 +42,19 @@ describe("fetchSiteContent", () => {
       maxSeconds: 10,
     });
     expect(content).toContain("Hello world");
+  });
+
+  it("should return summary from crawled content", async () => {
+    const domain = "example.com";
+    const content = await crawl({
+      domain,
+      maxPages: 5,
+      maxWords: 1000,
+      maxSeconds: 10,
+    });
+    vi.clearAllMocks();
+    const summary = await summarize({ domain, content });
+    expect(summary).toContain("Summar of the content of example.com");
   });
 
   it("should return null when response is not ok", async () => {

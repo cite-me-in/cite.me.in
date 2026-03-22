@@ -83,10 +83,12 @@ describe("site bots page", () => {
     });
     const site = await prisma.site.create({
       data: {
-        id: "site-bots-1",
-        domain: "bots-test.example.com",
-        ownerId: user.id,
         apiKey: "test-api-key-bots-1",
+        content: "Test content",
+        domain: "bots-test.example.com",
+        id: "site-bots-1",
+        ownerId: user.id,
+        summary: "Test summary",
       },
     });
     siteId = site.id;

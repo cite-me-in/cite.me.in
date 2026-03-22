@@ -34,11 +34,12 @@ describe("generateSiteQueries", () => {
     });
     site = await prisma.site.create({
       data: {
-        ownerId: user.id,
-        id: "site-1",
-        domain: "rentail.space",
         apiKey: "test-api-key-gsq-1",
-        content: "Rentail helps brands find pop-up retail space.",
+        content: "Test content",
+        domain: "rentail.space",
+        id: "site-1",
+        ownerId: user.id,
+        summary: "Test summary",
       },
     });
   });

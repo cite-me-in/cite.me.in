@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+
+# Upgrade dependencies and run tests
+#
+# Usage: ./scripts/upgrade.sh
+
 set -eo pipefail
 
 echo -e "\033[32m  Upgrading dependencies …\033[0m"

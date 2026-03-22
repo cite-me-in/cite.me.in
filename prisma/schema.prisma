@@ -162,7 +162,7 @@ model Site {
   botInsight           BotInsight?
   botVisits            BotVisit[]
   citationRuns         CitationQueryRun[]
-  content              String?               @map("content")
+  content              String                @map("content")
   createdAt            DateTime              @map("created_at") @default(now())
   domain               String                @map("domain")
   humanVisits          HumanVisit[]
@@ -173,6 +173,7 @@ model Site {
   siteQueries          SiteQuery[]
   siteQuerySuggestions SiteQuerySuggestion[]
   siteUsers            SiteUser[]
+  summary              String                @map("summary")
   updatedAt            DateTime              @map("updated_at") @updatedAt
   usageEvents          UsageEvent[]
 

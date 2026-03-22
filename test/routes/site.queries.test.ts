@@ -33,10 +33,12 @@ describe("site queries page", () => {
     });
     const site = await prisma.site.create({
       data: {
-        id: "site-queries-1",
-        domain: "queries-test.example.com",
-        ownerId: user.id,
         apiKey: "test-api-key-queries-1",
+        content: "Test content",
+        domain: "queries-test.example.com",
+        id: "site-queries-1",
+        ownerId: user.id,
+        summary: "Test summary",
       },
     });
     siteId = site.id;
@@ -142,11 +144,12 @@ describe("site queries page", () => {
     it("should complete gracefully when site has content", async () => {
       const siteWithContent = await prisma.site.create({
         data: {
-          id: "site-suggest-1",
-          domain: "suggest-test.example.com",
-          ownerId: user.id,
           apiKey: "test-api-key-suggest-1",
-          content: "Rentail helps brands find short-term retail space.",
+          content: "Test content",
+          domain: "suggest-test.example.com",
+          id: "site-suggest-1",
+          ownerId: user.id,
+          summary: "Test summary",
         },
       });
 

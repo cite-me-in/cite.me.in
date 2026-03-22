@@ -5,6 +5,7 @@ import type { Site } from "~/prisma";
 import calculateVisibilityScore from "./llm-visibility/calculateVisibilityScore";
 import prisma from "./prisma.server";
 import { crawl } from "./scrape/crawl";
+import { summarize } from "./scrape/summarize";
 
 export async function addSiteToUser(
   user: { id: string },
@@ -42,12 +43,15 @@ export async function addSiteToUser(
     maxWords: 5_000,
     maxSeconds: 15,
   });
+  const summary = await summarize({ domain, content });
+
   const site = await prisma.site.create({
     data: {
-      owner: { connect: { id: user.id } },
       apiKey: `cite.me.in_${generateApiKey(16)}`,
       content,
       domain,
+      owner: { connect: { id: user.id } },
+      summary,
     },
   });
   return { site, existing: false };

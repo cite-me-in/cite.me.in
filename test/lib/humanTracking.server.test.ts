@@ -242,9 +242,11 @@ describe("recordHumanVisit", () => {
     });
     await prisma.site.create({
       data: {
-        ownerId: user.id,
         apiKey: "test-api-key-human-tracking-1",
+        content: "Test content",
         domain: DOMAIN,
+        ownerId: user.id,
+        summary: "Test summary",
       },
     });
   });

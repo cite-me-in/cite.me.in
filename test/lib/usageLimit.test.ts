@@ -14,8 +14,10 @@ beforeEach(async () => {
     where: { id: SITE_ID },
     create: {
       apiKey: "cite.me.in_21945ffb0342eb204b60aaf28c7bdca9",
-      id: SITE_ID,
+      content: "Test content",
       domain: "test-usage.example.com",
+      id: SITE_ID,
+      summary: "Test summary",
       owner: {
         create: {
           id: "test-usage-user-1",

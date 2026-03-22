@@ -24,7 +24,9 @@ beforeAll(async () => {
       apiKey: API_KEY,
       ownedSites: {
         create: {
+          content: "Test content",
           domain: DOMAIN,
+          summary: "Test summary",
           citationRuns: {
             create: {
               onDate: new Date().toISOString().split("T")[0],

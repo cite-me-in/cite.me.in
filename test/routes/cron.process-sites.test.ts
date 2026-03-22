@@ -39,9 +39,11 @@ describe("cron.process-sites", () => {
     it("should process a paid site with no citation run", async () => {
       await prisma.site.create({
         data: {
-          id: "site-process-1",
-          domain: "paid-site.example.com",
           apiKey: "test-api-key-process-1",
+          content: "Test content",
+          domain: "paid-site.example.com",
+          id: "site-process-1",
+          summary: "Test summary",
           owner: {
             create: {
               id: "user-process-1",
@@ -69,9 +71,11 @@ describe("cron.process-sites", () => {
     it("should process a free trial site (created today)", async () => {
       await prisma.site.create({
         data: {
-          id: "site-process-2",
-          domain: "free-trial.example.com",
           apiKey: "test-api-key-process-2",
+          content: "Test content",
+          domain: "free-trial.example.com",
+          id: "site-process-2",
+          summary: "Test summary",
           owner: {
             create: {
               id: "user-process-2",
@@ -95,9 +99,11 @@ describe("cron.process-sites", () => {
       );
       await prisma.site.create({
         data: {
-          id: "site-process-3",
-          domain: "old-free.example.com",
           apiKey: "test-api-key-process-3",
+          content: "Test content",
+          domain: "old-free.example.com",
+          id: "site-process-3",
+          summary: "Test summary",
           owner: {
             create: {
               id: "user-process-3",
@@ -119,9 +125,11 @@ describe("cron.process-sites", () => {
     it("should skip a site with a citation run recently", async () => {
       await prisma.site.create({
         data: {
-          id: "site-process-4",
-          domain: "recent-run.example.com",
           apiKey: "test-api-key-process-4",
+          content: "Test content",
+          domain: "recent-run.example.com",
+          id: "site-process-4",
+          summary: "Test summary",
           owner: {
             create: {
               id: "user-process-4",

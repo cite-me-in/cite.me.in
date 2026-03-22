@@ -25,9 +25,11 @@ describe("api.track", () => {
         passwordHash: "test",
         ownedSites: {
           create: {
-            id: "site-apitrack-1",
-            domain: "apitrack.example.com",
             apiKey: "test-api-key-apitrack-1",
+            content: "Test content",
+            domain: "apitrack.example.com",
+            id: "site-apitrack-1",
+            summary: "Test summary",
           },
         },
       },
@@ -40,9 +42,11 @@ describe("api.track", () => {
         passwordHash: "test",
         ownedSites: {
           create: {
-            id: "site-apitrack-2",
-            domain: "other-apitrack.example.com",
             apiKey: "test-api-key-apitrack-2",
+            content: "Test content",
+            domain: "other-apitrack.example.com",
+            id: "site-apitrack-2",
+            summary: "Test summary",
           },
         },
       },

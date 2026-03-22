@@ -143,10 +143,12 @@ describe("site page", () => {
     });
     const site = await prisma.site.create({
       data: {
-        id: "site-1",
-        domain: HOSTNAME,
-        ownerId: user.id,
         apiKey: "test-api-key-citations-1",
+        content: "Test content",
+        domain: HOSTNAME,
+        id: "site-1",
+        ownerId: user.id,
+        summary: "Test summary",
       },
     });
     siteDomain = site.domain;
@@ -214,20 +216,18 @@ describe("site page", () => {
 
   it("should show negative sentiment for Perplexity", async () => {
     await signIn(user.id);
-    const page = await goto(`/site/${siteDomain}/citations?platform=perplexity`);
+    const page = await goto(
+      `/site/${siteDomain}/citations?platform=perplexity`,
+    );
     await expect(page.getByText("Negative", { exact: true })).toBeVisible();
-    await expect(
-      page.getByText(/unfavorable mentions/),
-    ).toBeVisible();
+    await expect(page.getByText(/unfavorable mentions/)).toBeVisible();
   });
 
   it("should show neutral sentiment for Claude", async () => {
     await signIn(user.id);
     const page = await goto(`/site/${siteDomain}/citations?platform=claude`);
     await expect(page.getByText("Neutral", { exact: true })).toBeVisible();
-    await expect(
-      page.getByText(/mentioned neutrally/),
-    ).toBeVisible();
+    await expect(page.getByText(/mentioned neutrally/)).toBeVisible();
   });
 
   it("should match visually", async () => {
