@@ -13,8 +13,13 @@ export const SiteUserSchema = z
 
 export const SiteSchema = z
   .object({
-    domain: z.string().openapi({ example: "example.com" }),
+    content: z
+      .string()
+      .describe("The content of the site")
+      .openapi({ example: "Test content" }),
     createdAt: z.iso.date().openapi({ example: "2024-01-01" }),
+    domain: z.string().openapi({ example: "example.com" }),
+    summary: z.string().openapi({ example: "Test summary" }),
     users: z.array(SiteUserSchema),
   })
   .openapi("Site");
@@ -22,7 +27,9 @@ export const SiteSchema = z
 export const UserSchema = z
   .object({
     email: z.email().openapi({ example: "user@example.com" }),
-    sites: z.array(SiteSchema.omit({ users: true })),
+    sites: z.array(
+      SiteSchema.omit({ users: true, content: true, summary: true }),
+    ),
   })
   .openapi("User");
 

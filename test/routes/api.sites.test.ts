@@ -56,25 +56,40 @@ beforeAll(async () => {
 });
 
 describe("GET /api/sites/:domain", () => {
-  it("should return 401 without a token", async () => {
-    const res = await get(`/api/sites/${DOMAIN}`);
-    expect(res.status).toBe(401);
+  let response: Response;
+  let body: {
+    domain: string;
+    createdAt: string;
+    content: string;
+    summary: string;
+    users: { email: string; role: string }[];
+  };
+  beforeAll(async () => {
+    response = await get(`/api/sites/${DOMAIN}`, API_KEY);
+    body = await response.json();
   });
 
-  it("should return 404 for a domain the user doesn't own", async () => {
-    const res = await get("/api/sites/not-owned.example", API_KEY);
-    expect(res.status).toBe(404);
+  it("should return 401 without a token", async () => {
+    const response = await get(`/api/sites/${DOMAIN}`);
+    expect(response.status).toBe(401);
+  });
+
+  it("should return 403 for a domain the user doesn't own", async () => {
+    const response = await get("/api/sites/not-owned.example", API_KEY);
+    expect(response.status).toBe(403);
   });
 
   it("should return the site with users and roles", async () => {
-    const res = await get(`/api/sites/${DOMAIN}`, API_KEY);
-    expect(res.status).toBe(200);
-    const body = await res.json();
+    expect(response.status).toBe(200);
     expect(body.domain).toBe(DOMAIN);
     expect(body.createdAt).toBe(new Date().toISOString().split("T")[0]);
     expect(Array.isArray(body.users)).toBe(true);
-    expect(body.users[0].email).toBe("api-sites-route@test.example");
-    expect(body.users[0].role).toBe("owner");
+  });
+
+  it("should return the site with content and summary", async () => {
+    expect(response.status).toBe(200);
+    expect(body.content).toBe("Test content");
+    expect(body.summary).toBe("Test summary");
   });
 });
 

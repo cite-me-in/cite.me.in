@@ -6,14 +6,14 @@ import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/api.sites.$domain_.runs";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const site = await verifySiteAccess({ domain: params.domain, request });
+  const { id } = await verifySiteAccess({ domain: params.domain, request });
 
   const url = new URL(request.url);
   const since = url.searchParams.get("since") ?? undefined;
 
   const runs = await prisma.citationQueryRun.findMany({
     where: {
-      siteId: site.id,
+      siteId: id,
       ...(since ? { onDate: { gte: since } } : {}),
     },
     select: {

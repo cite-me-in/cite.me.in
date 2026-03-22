@@ -49,7 +49,7 @@ export default function ApiDocs({ loaderData }: Route.ComponentProps) {
               </h3>
             ),
             pre: ({ children }) => (
-              <pre className="overflow-x-auto bg-gray-100 p-4 text-black text-mono">
+              <pre className="overflow-x-auto bg-gray-100 p-4 font-light font-mono text-black">
                 {children}
               </pre>
             ),
@@ -58,7 +58,7 @@ export default function ApiDocs({ loaderData }: Route.ComponentProps) {
               <thead className="border-b-2 border-b-gray-600">{children}</thead>
             ),
             code: ({ children }) => (
-              <code className="text-mono before:hidden after:hidden">
+              <code className="font-light font-mono before:hidden after:hidden">
                 {children}
               </code>
             ),

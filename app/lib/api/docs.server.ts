@@ -8,11 +8,6 @@ type SchemaProperty = {
   description?: string;
 };
 
-type Schema = {
-  properties?: Record<string, SchemaProperty>;
-  description?: string;
-};
-
 type OpenApiSpec = {
   info: { description?: string };
   servers: { url: string }[];
@@ -42,139 +37,23 @@ type OpenApiSpec = {
       };
     }
   >;
-  components: { schemas: Record<string, Schema> };
+  components: {
+    schemas: Record<
+      string,
+      {
+        properties?: Record<string, SchemaProperty>;
+        description?: string;
+      }
+    >;
+  };
 };
 
-type TableRow = { field: string; type: string; example: string };
-
-function resolveType(prop: SchemaProperty): string {
-  if (prop.enum) return prop.enum.map((v) => `"${v}"`).join(" | ");
-  if (Array.isArray(prop.type)) {
-    const nonNull = prop.type.filter((t) => t !== "null");
-    return `${nonNull.join(" | ")} | null`;
-  }
-  if (prop.type === "array" && prop.items) {
-    if (prop.items.$ref) {
-      const name = prop.items.$ref.replace("#/components/schemas/", "");
-      return `${name}[]`;
-    }
-    return `${prop.items.type ?? "unknown"}[]`;
-  }
-  return prop.type ?? "unknown";
-}
-
-function exampleValue(prop: SchemaProperty): string {
-  if (prop.example !== undefined) return String(prop.example);
-  if (prop.enum) return `"${prop.enum[0]}"`;
-  if (prop.type === "array") return "[]";
-  return "";
-}
-
-function schemaRows(
-  spec: OpenApiSpec,
-  schemaName: string,
-  prefix = "",
-): TableRow[] {
-  const schema = spec.components.schemas[schemaName];
-  if (!schema?.properties) return [];
-
-  const rows: TableRow[] = [];
-  for (const [name, prop] of Object.entries(schema.properties)) {
-    const field = prefix ? `${prefix}.${name}` : name;
-
-    if (prop.type === "array" && prop.items?.$ref) {
-      const subName = prop.items.$ref.replace("#/components/schemas/", "");
-      rows.push({ field, type: `${subName}[]`, example: "" });
-      for (const sub of schemaRows(spec, subName, `${field}[]`)) rows.push(sub);
-    } else {
-      rows.push({
-        field,
-        type: resolveType(prop),
-        example: exampleValue(prop),
-      });
-    }
-  }
-  return rows;
-}
-
-function responseTable(spec: OpenApiSpec, ref: string): string {
-  const name = ref.replace("#/components/schemas/", "");
-  const rows = schemaRows(spec, name);
-  if (!rows.length) return "";
-
-  const lines = ["| Field | Type | Example |", "| --- | --- | --- |"];
-  for (const row of rows)
-    lines.push(
-      `| \`${row.field}\` | \`${row.type}\` | ${row.example ? `\`${row.example}\`` : ""} |`,
-    );
-  return lines.join("\n");
-}
-
-function pathParamsTable(
-  params: NonNullable<
-    NonNullable<OpenApiSpec["paths"][string]["get"]>["parameters"]
-  >,
-): string {
-  const pathParams = params.filter((p) => p.in === "path");
-  if (!pathParams.length) return "";
-  const lines = [
-    "#### Path Parameters",
-    "| Parameter | Type | Description |",
-    "| --- | --- | --- |",
-  ];
-  for (const p of pathParams)
-    lines.push(
-      `| \`${p.name}\` | \`${p.schema?.type ?? "string"}\` | ${p.description ?? ""} |`,
-    );
-  return lines.join("\n");
-}
-
-function queryParamsTable(
-  params: NonNullable<
-    NonNullable<OpenApiSpec["paths"][string]["get"]>["parameters"]
-  >,
-): string {
-  const queryParams = params.filter((p) => p.in === "query");
-  if (!queryParams.length) return "";
-  const lines = [
-    "#### Query Parameters",
-    "| Parameter | Type | Required | Description |",
-    "| --- | --- | --- | --- |",
-  ];
-  for (const p of queryParams)
-    lines.push(
-      `| \`${p.name}\` | \`${p.schema?.type ?? "string"}\` | ${p.required ? "Yes" : "No"} | ${p.description ?? ""} |`,
-    );
-  return lines.join("\n");
-}
-
-function fetchExample(baseUrl: string, path: string): string {
-  const url =
-    baseUrl +
-    path.replace("{domain}", "example.com").replace("{runId}", "clxyz456");
-
-  const hasQuery = path.includes("/runs") && !path.includes("{runId}");
-  const fullUrl = hasQuery ? `${url}?since=2024-01-01T00:00:00.000Z` : url;
-
-  return `\`\`\`js
-const response = await fetch("${fullUrl}", {
-  headers: { Authorization: "Bearer YOUR_API_KEY" }
-});
-const data = await response.json();
-\`\`\``;
-}
-
-function statusCodesTable(
-  responses: NonNullable<
-    NonNullable<OpenApiSpec["paths"][string]["get"]>["responses"]
-  >,
-): string {
-  const lines = ["#### Status Codes", "| Code | Meaning |", "| --- | --- |"];
-  for (const [code, resp] of Object.entries(responses))
-    lines.push(`| ${code} | ${resp.description ?? ""} |`);
-  return lines.join("\n");
-}
-
+/**
+ * Generate Markdown documentation for the entire OpenAPI spec.
+ *
+ * @param spec - The OpenAPI spec to generate documentation for.
+ * @returns The generated Markdown documentation as a string
+ */
 export function generateApiDocsMarkdown(spec: OpenApiSpec): string {
   const baseUrl = spec.servers[0]?.url;
   const sections: string[] = [];
@@ -224,4 +103,189 @@ Retrieve your API key from your [profile page](/profile).`);
   }
 
   return sections.join("\n\n");
+}
+
+/**
+ * Generate Markdown table of path parameters from the given OpenAPI spec.
+ *
+ * @param params - The path parameters to generate the table from.
+ * @returns The generated Markdown table of path parameters as a string.
+ */
+function pathParamsTable(
+  params: NonNullable<
+    NonNullable<OpenApiSpec["paths"][string]["get"]>["parameters"]
+  >,
+): string {
+  const pathParams = params.filter((p) => p.in === "path");
+  if (!pathParams.length) return "";
+  const lines = [
+    "#### Path Parameters",
+    "| Parameter | Type | Description |",
+    "| --- | --- | --- |",
+  ];
+  for (const p of pathParams)
+    lines.push(
+      `| \`${p.name}\` | \`${p.schema?.type ?? "string"}\` | ${p.description ?? ""} |`,
+    );
+  return lines.join("\n");
+}
+
+/**
+ * Generate Markdown table of query parameters from the given OpenAPI spec.
+ *
+ * @param params - The query parameters to generate the table from.
+ * @returns The generated Markdown table of query parameters as a string.
+ */
+function queryParamsTable(
+  params: NonNullable<
+    NonNullable<OpenApiSpec["paths"][string]["get"]>["parameters"]
+  >,
+): string {
+  const queryParams = params.filter((p) => p.in === "query");
+  if (!queryParams.length) return "";
+  const lines = [
+    "#### Query Parameters",
+    "| Parameter | Type | Required | Description |",
+    "| --- | --- | --- | --- |",
+  ];
+  for (const p of queryParams)
+    lines.push(
+      `| \`${p.name}\` | \`${p.schema?.type ?? "string"}\` | ${p.required ? "Yes" : "No"} | ${p.description ?? ""} |`,
+    );
+  return lines.join("\n");
+}
+
+/**
+ * Generate Markdown table of response fields from the given OpenAPI spec.
+ *
+ * @param spec - The OpenAPI spec to generate the table from.
+ * @param ref - The reference to the schema to generate the table from.
+ * @returns The generated Markdown table of response fields as a string.
+ */
+function responseTable(spec: OpenApiSpec, ref: string): string {
+  const name = ref.replace("#/components/schemas/", "");
+  const rows = schemaRows(spec, name);
+  if (!rows.length) return "";
+
+  const lines = ["| Field | Type | Example |", "| --- | --- | --- |"];
+  for (const row of rows)
+    lines.push(
+      `| \`${row.field}\` | \`${encodeForMarkdown(row.type)}\` | ${row.example ? `\`${encodeForMarkdown(row.example)}\`` : ""} |`,
+    );
+  return lines.join("\n");
+}
+
+/**
+ * Turn OpenAPI schema into a table of rows for the response table.
+ *
+ * @param spec - The OpenAPI spec to turn into a table of rows.
+ * @param schemaName - The name of the schema to turn into a table of rows.
+ * @param prefix - The prefix to add to the field name.
+ * @returns The generated table of rows as an array of TableRow objects.
+ */
+function schemaRows(spec: OpenApiSpec, schemaName: string, prefix = "") {
+  const schema = spec.components.schemas[schemaName];
+  if (!schema?.properties) return [];
+
+  const rows: {
+    field: string;
+    type: string;
+    example: string;
+    description?: string;
+  }[] = [];
+  for (const [name, prop] of Object.entries(schema.properties)) {
+    const field = prefix ? `${prefix}.${name}` : name;
+
+    if (prop.type === "array" && prop.items?.$ref) {
+      const subName = prop.items.$ref.replace("#/components/schemas/", "");
+      rows.push({ field, type: `${subName}[]`, example: "" });
+      for (const sub of schemaRows(spec, subName, `${field}[]`)) rows.push(sub);
+    } else {
+      rows.push({
+        field,
+        type: resolveType(prop),
+        example: exampleValue(prop),
+        description: prop.description,
+      });
+    }
+  }
+  return rows;
+}
+
+/**
+ * Generate Markdown table of status codes for the given OpenAPI spec.
+ *
+ * @param responses - The status codes and descriptions to generate the table for.
+ * @returns The generated Markdown table of status codes and descriptions as a string.
+ */
+function statusCodesTable(
+  responses: NonNullable<
+    NonNullable<OpenApiSpec["paths"][string]["get"]>["responses"]
+  >,
+): string {
+  const lines = ["#### Status Codes", "| Code | Meaning |", "| --- | --- |"];
+  for (const [code, resp] of Object.entries(responses))
+    lines.push(`| ${code} | ${resp.description ?? ""} |`);
+  return lines.join("\n");
+}
+
+/**
+ * Generate a fetch example for the given base URL and path.
+ *
+ * @param baseUrl - The base URL to generate the fetch example from.
+ * @param path - The path to generate the fetch example from.
+ * @returns The generated fetch example as a string.
+ */
+function fetchExample(baseUrl: string, path: string): string {
+  const url =
+    baseUrl +
+    path.replace("{domain}", "example.com").replace("{runId}", "clxyz456");
+
+  const hasQuery = path.includes("/runs") && !path.includes("{runId}");
+  const fullUrl = hasQuery ? `${url}?since=2024-01-01T00:00:00.000Z` : url;
+
+  return `\`\`\`js
+const response = await fetch("${fullUrl}", {
+  headers: { Authorization: "Bearer YOUR_API_KEY" }
+});
+const data = await response.json();
+\`\`\``;
+}
+
+function exampleValue(prop: SchemaProperty): string {
+  if (prop.example !== undefined) return String(prop.example);
+  if (prop.enum) return `"${prop.enum[0]}"`;
+  if (prop.type === "array") return "[]";
+  return "";
+}
+
+function resolveType(prop: SchemaProperty): string {
+  if (prop.enum) return prop.enum.map((v) => `"${v}"`).join(" | ");
+  if (Array.isArray(prop.type)) {
+    const nonNull = prop.type.filter((t) => t !== "null");
+    return `${nonNull.join(" | ")} | null`;
+  }
+  if (prop.type === "array" && prop.items) {
+    if (prop.items.$ref) {
+      const name = prop.items.$ref.replace("#/components/schemas/", "");
+      return `${name}[]`;
+    }
+    return `${prop.items.type ?? "unknown"}[]`;
+  }
+  return prop.type ?? "unknown";
+}
+
+/**
+ * Encodes a value string so it is not interpreted as Markdown.
+ * Escapes pipe "|" and backtick "`" characters, and wraps in backticks as needed.
+ *
+ * @param value - The value to encode.
+ * @returns The encoded value as a string safe for Markdown tables.
+ */
+function encodeForMarkdown(value: string): string {
+  if (!value) return "";
+  // Escape pipe and backtick, and replace common issues
+  const v = String(value).replace(/\|/g, "\\|").replace(/`/g, "\\`");
+  // Optionally add extra escaping if needed for newlines
+  return `\`${v}\``;
 }

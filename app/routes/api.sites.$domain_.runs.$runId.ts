@@ -5,10 +5,10 @@ import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/api.sites.$domain_.runs.$runId";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const site = await verifySiteAccess({ domain: params.domain, request });
+  const { id } = await verifySiteAccess({ domain: params.domain, request });
 
   const run = await prisma.citationQueryRun.findFirst({
-    where: { id: params.runId, siteId: site.id },
+    where: { id: params.runId, siteId: id },
     select: {
       id: true,
       platform: true,
