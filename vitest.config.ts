@@ -24,6 +24,7 @@ export default defineConfig({
       "test/routes/*.test.ts",
       "test/llm-visibility/*.test.ts",
       "test/lib/*.test.ts",
+      "test/lib/**/*.test.ts",
     ],
     maxConcurrency: 1, // Run tests sequentially to reduce memory pressure
     maxWorkers: 1, // Use only 1 worker to minimize memory usage

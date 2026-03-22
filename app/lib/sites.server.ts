@@ -1,20 +1,12 @@
 import { Temporal } from "@js-temporal/polyfill";
-import { ms } from "convert";
-import debug from "debug";
 import { groupBy, sortBy, sumBy, uniqBy } from "es-toolkit";
 import { generateApiKey } from "random-password-toolkit";
-import parseHTMLTree, {
-  getElementsByTagName,
-  getMainContent,
-  htmlToMarkdown,
-} from "~/lib/html/parseHTML";
 import type { Site } from "~/prisma";
 import calculateVisibilityScore from "./llm-visibility/calculateVisibilityScore";
 import prisma from "./prisma.server";
 
-const MEDIA_EXTENSIONS = /\.(pdf|jpg|jpeg|png|gif|svg|webp|mp4|mp3|zip|exe)$/i;
-const CRAWL_BUDGET_MS = ms("15s");
-const logger = debug("fetch");
+import { fetchSiteContent } from "~/lib/scrape";
+export { fetchSiteContent };
 
 export async function addSiteToUser(
   user: { id: string },
@@ -50,6 +42,7 @@ export async function addSiteToUser(
     domain,
     maxPages: 10,
     maxWords: 5_000,
+    maxSeconds: 15,
   });
   const site = await prisma.site.create({
     data: {
@@ -62,12 +55,6 @@ export async function addSiteToUser(
   return { site, existing: false };
 }
 
-/**
- * Extract the domain from a URL.
- *
- * @param url - The URL to extract the domain from.
- * @returns The domain, or null if the URL is not valid.
- */
 export function extractDomain(url: string): string | null {
   try {
     const href = url.startsWith("http") ? url : `https://${url}`;
@@ -78,206 +65,6 @@ export function extractDomain(url: string): string | null {
   } catch {
     return null;
   }
-}
-
-/**
- * Fetch the page content for a given domain. Crawls up to maxPages pages
- * (homepage + additional pages discovered via sitemap.xml or nav links),
- * converts HTML to Markdown, and returns the combined text up to maxWords
- * words.
- */
-export async function fetchSiteContent({
-  domain,
-  maxPages,
-  maxWords,
-}: {
-  domain: string;
-  maxPages: number;
-  maxWords: number;
-}): Promise<string> {
-  try {
-    return await crawlSiteCustom({ domain, maxPages, maxWords });
-  } catch (error) {
-    if (error instanceof Response) throw error;
-    throw new Error(`I couldn't fetch the main page of ${domain}`);
-  }
-}
-
-async function crawlSiteCustom({
-  domain,
-  maxPages,
-  maxWords,
-}: {
-  domain: string;
-  maxPages: number;
-  maxWords: number;
-}): Promise<string> {
-  logger("Crawling %s", domain);
-  const budget = AbortSignal.timeout(CRAWL_BUDGET_MS);
-
-  // Step 1: fetch homepage
-  const homepageRes = await fetch(`https://${domain}/`, {
-    signal: AbortSignal.any([budget, AbortSignal.timeout(ms("5s"))]),
-    redirect: "follow",
-  });
-  if (!homepageRes.ok)
-    throw new Error(
-      `HTTP ${homepageRes.status} fetching ${domain}: ${await homepageRes.text()}`,
-    );
-  const homepageHtml = await homepageRes.text();
-  const homepageTree = parseHTMLTree(homepageHtml);
-
-  // Step 2: discover additional URLs
-  const additionalUrls = await discoverUrls({
-    budget,
-    domain,
-    maxPages: maxPages - 1,
-    tree: homepageTree,
-  });
-
-  // Step 3: fetch additional pages concurrently; budget abort cancels remaining fetches
-  const additionalHtmls = await Promise.all(
-    additionalUrls.map(async (url) => {
-      try {
-        const res = await fetch(url, {
-          signal: AbortSignal.any([budget, AbortSignal.timeout(ms("5s"))]),
-          redirect: "follow",
-        });
-        if (!res.ok) return null;
-        return { url, html: await res.text() };
-      } catch {
-        return null;
-      }
-    }),
-  );
-
-  // Step 4: convert each page to markdown
-  const pages = [
-    { url: `https://${domain}/`, html: homepageHtml },
-    ...additionalHtmls.filter((p) => p !== null),
-  ];
-
-  const markdowns = pages.map(({ url, html }) => {
-    const tree = parseHTMLTree(html);
-    const content = getMainContent(tree);
-    const md = htmlToMarkdown(content);
-
-    const titleNodes = getElementsByTagName(tree, "title");
-    const title =
-      titleNodes[0]?.children
-        .filter((n) => n.type === "text")
-        .map((n) => (n.type === "text" ? n.content : ""))
-        .join("") ?? new URL(url).pathname;
-
-    return `## ${title}\n\n${md}`;
-  });
-
-  // Step 5: combine and limit
-  const combined = markdowns.join("\n\n---\n\n");
-  const words = combined.split(/\s+/);
-  logger("Crawled %s pages => %s words", pages.length, words.length);
-  return words.slice(0, maxWords).join(" ");
-}
-
-async function discoverUrls({
-  budget,
-  domain,
-  maxPages,
-  tree,
-}: {
-  budget: AbortSignal;
-  domain: string;
-  maxPages: number;
-  tree: ReturnType<typeof parseHTMLTree>;
-}): Promise<string[]> {
-  const sitemapUrls = await fetchSitemapUrls(domain, budget);
-  if (sitemapUrls.length >= maxPages) return sitemapUrls.slice(0, maxPages);
-
-  const navUrls = extractNavUrls({ domain, tree });
-  const combined = [
-    ...sitemapUrls,
-    ...navUrls.filter((u) => !sitemapUrls.includes(u)),
-  ];
-  return combined.slice(0, maxPages);
-}
-
-async function fetchSitemapUrls(
-  domain: string,
-  budget: AbortSignal,
-): Promise<string[]> {
-  try {
-    const res = await fetch(`https://${domain}/sitemap.xml`, {
-      signal: AbortSignal.any([budget, AbortSignal.timeout(ms("3s"))]),
-    });
-    if (!res.ok) return [];
-    const xml = await res.text();
-    const locs: string[] = [];
-    const locRegex = /<loc>(.*?)<\/loc>/g;
-    for (
-      let match = locRegex.exec(xml);
-      match !== null;
-      match = locRegex.exec(xml)
-    ) {
-      const url = match[1]?.trim();
-      if (!url) continue;
-      try {
-        const parsed = new URL(url);
-        if (parsed.hostname !== domain) continue;
-        if (parsed.pathname === "/" || parsed.pathname === "") continue;
-        if (MEDIA_EXTENSIONS.test(parsed.pathname)) continue;
-        locs.push(url);
-      } catch {
-        // ignore malformed URLs
-      }
-    }
-    return locs.slice(0, 4);
-  } catch {
-    return [];
-  }
-}
-
-function extractNavUrls({
-  domain,
-  tree,
-}: {
-  domain: string;
-  tree: ReturnType<typeof parseHTMLTree>;
-}): string[] {
-  const navs = getElementsByTagName(tree, "nav");
-  const anchors =
-    navs.length > 0
-      ? navs.flatMap((nav) => getElementsByTagName(nav.children, "a"))
-      : getElementsByTagName(tree, "a");
-
-  const seen = new Set<string>();
-  const urls: string[] = [];
-
-  for (const anchor of anchors) {
-    const href = anchor.attributes.href;
-    if (!href || href.startsWith("#") || href.startsWith("mailto:")) continue;
-    if (MEDIA_EXTENSIONS.test(href)) continue;
-
-    let url: URL;
-    try {
-      url = new URL(
-        href.startsWith("http") ? href : `https://${domain}${href}`,
-      );
-    } catch {
-      continue;
-    }
-
-    if (url.hostname !== domain) continue;
-    if (url.pathname === "/" || url.pathname === "") continue;
-    const depth = url.pathname.split("/").filter(Boolean).length;
-    if (depth > 3) continue;
-
-    const key = url.origin + url.pathname;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    urls.push(url.href);
-  }
-
-  return urls;
 }
 
 export async function loadSitesWithMetrics(userId: string): Promise<
