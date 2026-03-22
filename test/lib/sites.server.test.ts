@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { extractDomain, fetchSiteContent } from "~/lib/sites.server";
+import { crawl } from "~/lib/scrape/crawl";
+import { extractDomain } from "~/lib/sites.server";
 
 vi.mock("node:dns", () => ({
   default: {
@@ -37,14 +38,17 @@ describe("fetchSiteContent", () => {
       "fetch",
       vi.fn().mockResolvedValue({
         ok: true,
-        headers: { get: (name: string) => (name === "content-type" ? "text/html" : null) },
+        headers: {
+          get: (name: string) => (name === "content-type" ? "text/html" : null),
+        },
         text: async () => "<html><body><p>Hello world</p></body></html>",
       }),
     );
-    const content = await fetchSiteContent({
-      domain: "example.com",
+    const content = await crawl({
+      baseURL: "https://example.com",
       maxPages: 5,
       maxWords: 1000,
+      maxSeconds: 10,
     });
     expect(content).toContain("Hello world");
   });
@@ -59,14 +63,24 @@ describe("fetchSiteContent", () => {
       }),
     );
     await expect(
-      fetchSiteContent({ domain: "example.com", maxPages: 5, maxWords: 1000 }),
+      crawl({
+        baseURL: "https://example.com",
+        maxPages: 5,
+        maxWords: 1000,
+        maxSeconds: 10,
+      }),
     ).rejects.toThrow("I couldn't fetch the main page of example.com");
   });
 
   it("should return null on network error", async () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network")));
     await expect(
-      fetchSiteContent({ domain: "example.com", maxPages: 5, maxWords: 1000 }),
+      crawl({
+        baseURL: "https://example.com",
+        maxPages: 5,
+        maxWords: 1000,
+        maxSeconds: 10,
+      }),
     ).rejects.toThrow("I couldn't fetch the main page of example.com");
   });
 });
