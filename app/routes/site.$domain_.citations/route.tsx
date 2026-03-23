@@ -26,23 +26,41 @@ export function meta({ loaderData }: Route.MetaArgs) {
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { site } = await requireSiteAccess({ domain: params.domain, request });
 
-  const runs = await prisma.citationQueryRun.findMany({
-    include: { queries: true },
-    orderBy: [{ platform: "asc" }, { onDate: "desc" }],
-    where: { siteId: site.id },
-  });
+  const [runs, siteQueries] = await Promise.all([
+    prisma.citationQueryRun.findMany({
+      include: { queries: true },
+      orderBy: [{ platform: "asc" }, { onDate: "desc" }],
+      where: { siteId: site.id },
+    }),
+    prisma.siteQuery.findMany({
+      where: { siteId: site.id },
+      orderBy: [{ group: "asc" }, { query: "asc" }],
+    }),
+  ]);
 
-  return { site, runs };
+  return { site, runs, siteQueries };
 }
 
 export default function SiteCitationsPage({
   loaderData,
 }: Route.ComponentProps) {
-  const { site, runs } = loaderData;
+  const { site, runs, siteQueries } = loaderData;
   const [searchParams, setSearchParams] = useSearchParams();
   const platform = searchParams.get("platform") ?? PLATFORMS[0].name;
   const recentRuns = runs.filter((r) => r.platform === platform);
   const run = recentRuns[0];
+
+  const mergedQueries = siteQueries
+    .map((sq) => {
+      for (const r of recentRuns) {
+        const found = r.queries.find((q) => q.query === sq.query);
+        if (found) return { ...found, onDate: r.onDate };
+      }
+      return null;
+    })
+    .filter((q) => q !== null);
+
+  const sentimentRun = recentRuns.find((r) => r.sentimentLabel !== null) ?? run;
 
   return (
     <Main variant="wide">
@@ -70,9 +88,9 @@ export default function SiteCitationsPage({
 
       {run ? (
         <>
-          <CitationsRecentRun lastRun={run} site={site} />
-          <BrandSentiment run={run} />
-          <TopCompetitors queries={run.queries} ownDomain={site.domain} />
+          <CitationsRecentRun queries={mergedQueries} meta={run} site={site} />
+          <BrandSentiment run={sentimentRun} />
+          <TopCompetitors queries={mergedQueries} ownDomain={site.domain} />
           <VisibilityCharts recentRuns={recentRuns} site={site} />
         </>
       ) : (

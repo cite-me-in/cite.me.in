@@ -1,4 +1,3 @@
-import { sortBy } from "es-toolkit";
 import { ArrowRightIcon } from "lucide-react";
 import { Link } from "react-router";
 import { twMerge } from "tailwind-merge";
@@ -19,30 +18,26 @@ import {
 } from "~/components/ui/Table";
 
 export default function RecentVisibility({
-  lastRun,
+  queries,
+  meta,
   site,
 }: {
-  lastRun: {
+  queries: {
     id: string;
-    model: string;
+    group: string;
+    query: string;
+    citations: string[];
     onDate: string;
-    queries: {
-      id: string;
-      group: string;
-      query: string;
-      citations: string[];
-    }[];
-  };
+  }[];
+  meta: { model: string } | undefined;
   site: { id: string; domain: string };
 }) {
-  const queries = sortBy(lastRun.queries, ["group", "query"]);
-
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Most Recent Run</CardTitle>
+        <CardTitle>Latest Results</CardTitle>
         <CardDescription>
-          {lastRun.model} · {queries.length} checks
+          {meta?.model} · {queries.length} queries
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -53,6 +48,9 @@ export default function RecentVisibility({
               <TableHead className="font-bold text-foreground">Query</TableHead>
               <TableHead className="text-right font-bold text-foreground">
                 Positions
+              </TableHead>
+              <TableHead className="text-right font-bold text-foreground">
+                Date
               </TableHead>
               <TableHead />
             </TableRow>
@@ -76,6 +74,9 @@ export default function RecentVisibility({
                 <TableCell className="text-right">
                   {positions(query.citations, site.domain)}
                 </TableCell>
+                <TableCell className="text-right text-foreground/60 text-xs">
+                  {formatDate(query.onDate)}
+                </TableCell>
                 <TableCell className="text-right">
                   <Link to={`/site/${site.domain}/citation/${query.id}`}>
                     <ArrowRightIcon className="size-4" />
@@ -88,6 +89,13 @@ export default function RecentVisibility({
       </CardContent>
     </Card>
   );
+}
+
+function formatDate(dateStr: string) {
+  return new Date(dateStr).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
 }
 
 function positions(citations: string[], domain: string) {
