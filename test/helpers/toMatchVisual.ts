@@ -6,10 +6,10 @@ import { readdirSync, unlinkSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import type { Locator, Page } from "playwright";
-import vitestConfig from "vitest.config";
 import type { HTMLNode } from "~/lib/html/HTMLNode";
 import "~/test/helpers/toMatchInnerHTML";
 import "~/test/helpers/toMatchScreenshot";
+import vitestConfig from "../../vitest.config";
 
 declare global {
   namespace PlaywrightTest {

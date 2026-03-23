@@ -7,7 +7,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import debug from "debug";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { PrismaClient } from "prisma/generated/client";
+import { PrismaClient } from "~/prisma";
 import envVars from "./envVars";
 
 export default new PrismaClient({
@@ -17,12 +17,12 @@ export default new PrismaClient({
     idleTimeoutMillis: 0,
     connectionTimeoutMillis: 0,
     allowExitOnIdle: true,
-    ssl:
-    envVars.POSTGRES_URL.includes("localhost") ? false :
-     {
-      ca: readFileSync(resolve("prisma/prod-ca-2021.crt")),
-      rejectUnauthorized: false,
-    },
+    ssl: envVars.POSTGRES_URL.includes("localhost")
+      ? false
+      : {
+          ca: readFileSync(resolve("prisma/prod-ca-2021.crt")),
+          rejectUnauthorized: false,
+        },
   }),
   errorFormat: "pretty",
   log: debug.enabled("prisma") ? ["error", "warn", "query", "info"] : ["error"],

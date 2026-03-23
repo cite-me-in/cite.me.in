@@ -11,11 +11,11 @@ import {
 } from "node:fs/promises";
 import path from "node:path";
 import type { Locator, Page } from "playwright";
-import vitestConfig from "vitest.config";
 import diffHTMLs from "~/lib/html/diffHTMLs";
 import formatHTMLTree from "~/lib/html/formatHTML";
 import type { HTMLNode } from "~/lib/html/HTMLNode";
 import parseHTMLTree from "~/lib/html/parseHTML";
+import vitestConfig from "../../vitest.config";
 
 declare global {
   namespace PlaywrightTest {

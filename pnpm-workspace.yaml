@@ -5,9 +5,10 @@ minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - "@biomejs/biome"
   - "@biomejs/*"
+  - "typescript"
 
 onlyBuiltDependencies:
-  - '@infisical/cli'
+  - "@infisical/cli"
   - "@prisma/client"
   - "@prisma/engines"
   - "@sentry/cli"

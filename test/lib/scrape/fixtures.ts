@@ -1,11 +1,11 @@
-export type MockResponse = {
+type MockResponse = {
   ok: boolean;
   status?: number;
   headers: { get: (name: string) => string | null };
   text: () => Promise<string>;
 };
 
-export type FixtureMap = Record<string, MockResponse>;
+type FixtureMap = Record<string, MockResponse>;
 
 function html(body: string, contentType = "text/html"): MockResponse {
   return {

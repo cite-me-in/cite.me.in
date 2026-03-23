@@ -12,7 +12,7 @@ import {
 } from "node:fs/promises";
 import path, { dirname } from "node:path";
 import type { Locator, Page } from "playwright";
-import vitestConfig from "vitest.config";
+import vitestConfig from "../../vitest.config";
 
 declare global {
   namespace PlaywrightTest {
