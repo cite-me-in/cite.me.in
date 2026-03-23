@@ -179,7 +179,7 @@ export async function loadWeeklyDigestMetrics(
   };
 }
 
-async function generateCitationChart(
+export async function generateCitationChart(
   daily: number[],
   prevDaily: number[],
 ): Promise<string> {
