@@ -1,8 +1,8 @@
 import { redirect } from "react-router";
-import { requireUser } from "~/lib/auth.server";
+import { requireUserAccess } from "~/lib/auth.server";
 import type { Route } from "./+types/route";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  await requireUser(request);
+  await requireUserAccess(request);
   return redirect(`/site/${params.domain}/citations`);
 }

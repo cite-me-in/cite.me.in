@@ -9,15 +9,6 @@ export const sessionCookie = createCookie("session", {
   secrets: [envVars.SESSION_SECRET],
 });
 
-export type UtmCookieData = {
-  referrer: string | null;
-  utmSource: string | null;
-  utmMedium: string | null;
-  utmCampaign: string | null;
-  utmTerm: string | null;
-  utmContent: string | null;
-};
-
 export const utmCookie = createCookie("utm", {
   httpOnly: true,
   secure: import.meta.env.PROD,

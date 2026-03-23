@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import Main from "~/components/ui/Main";
-import { requireUser } from "~/lib/auth.server";
+import { requireUserAccess } from "~/lib/auth.server";
 import type { Route } from "./+types/route";
 
 export function meta(): Route.MetaDescriptors {
@@ -8,7 +8,7 @@ export function meta(): Route.MetaDescriptors {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  await requireUser(request);
+  await requireUserAccess(request);
   return {};
 }
 

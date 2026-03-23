@@ -56,7 +56,7 @@ const ActiveLink = React.forwardRef<HTMLAnchorElement, ActiveLinkProps>(
         activeLinkVariants({ variant, size, disabled, className, bg }),
       )}
       to={to}
-      rel="noopener noreferrer"
+      rel="noopener noreferer"
       viewTransition={viewTransition}
       {...props}
     />

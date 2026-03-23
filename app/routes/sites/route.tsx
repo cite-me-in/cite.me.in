@@ -4,7 +4,7 @@ import { redirect, useFetcher } from "react-router";
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
-import { requireUser } from "~/lib/auth.server";
+import { requireUserAccess } from "~/lib/auth.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import prisma from "~/lib/prisma.server";
 import {
@@ -25,7 +25,7 @@ export function meta(): Route.MetaDescriptors {
 export const handle = { siteNav: true };
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const user = await requireUser(request);
+  const user = await requireUserAccess(request);
   const [sites, account] = await Promise.all([
     loadSitesWithMetrics(user.id),
     prisma.account.findUnique({
@@ -50,7 +50,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  const user = await requireUser(request);
+  const user = await requireUserAccess(request);
   const formData = await request.formData();
 
   switch (request.method) {

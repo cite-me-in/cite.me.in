@@ -3,7 +3,11 @@ import * as zod from "zod";
 import AuthForm from "~/components/ui/AuthForm";
 import { Button } from "~/components/ui/Button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/Tabs";
-import { hashPassword, requireUser, verifyPassword } from "~/lib/auth.server";
+import {
+  hashPassword,
+  requireUserAccess,
+  verifyPassword,
+} from "~/lib/auth.server";
 import envVars from "~/lib/envVars";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
@@ -21,7 +25,7 @@ export function meta(): Route.MetaDescriptors {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const user = await requireUser(request);
+  const user = await requireUserAccess(request);
   const account = await prisma.account.findUnique({
     where: { userId: user.id },
     select: { status: true, interval: true },
@@ -30,7 +34,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  const user = await requireUser(request);
+  const user = await requireUserAccess(request);
   const form = await request.formData();
 
   const intent = form.get("intent")?.toString();

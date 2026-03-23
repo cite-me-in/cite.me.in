@@ -5,7 +5,7 @@ import DateRangeSelector, {
 } from "~/components/ui/DateRangeSelector";
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SitePageHeader";
-import { requireUser } from "~/lib/auth.server";
+import { requireUserAccess } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
 import { requireSiteAccess } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
@@ -24,7 +24,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const user = await requireUser(request);
+  const user = await requireUserAccess(request);
   const site = await requireSiteAccess(params.domain, user.id);
 
   const { from, until, period } = parseDateRange(

@@ -13,7 +13,7 @@ import Main from "~/components/ui/Main";
 import ProgressIndicator from "~/components/ui/ProgressIndicator";
 import Spinner from "~/components/ui/Spinner";
 import addSiteQueries from "~/lib/addSiteQueries";
-import { requireUser } from "~/lib/auth.server";
+import { requireUserAccess } from "~/lib/auth.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import queryAccount from "~/lib/llm-visibility/queryAccount";
 import queryGroups from "~/lib/llm-visibility/queryGroups";
@@ -32,7 +32,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const user = await requireUser(request);
+  const user = await requireUserAccess(request);
   const site = await requireSiteAccess(params.domain, user.id);
   const suggestions = await prisma.siteQuerySuggestion.findMany({
     where: { siteId: site.id },
@@ -44,7 +44,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
 export async function action({ params, request }: Route.ActionArgs) {
   try {
-    const user = await requireUser(request);
+    const user = await requireUserAccess(request);
     const site = await requireSiteAccess(params.domain, user.id);
 
     switch (request.method) {
@@ -65,7 +65,10 @@ export async function action({ params, request }: Route.ActionArgs) {
           .array(z.object({ group: z.string(), query: z.string() }))
           .parse(raw);
         await addSiteQueries(site, queries);
-        await queryAccount({ site, queries: queries.filter((q) => q.query.trim()) });
+        await queryAccount({
+          site,
+          queries: queries.filter((q) => q.query.trim()),
+        });
         return redirect(`/site/${params.domain}/citations`);
       }
     }

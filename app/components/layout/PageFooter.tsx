@@ -76,7 +76,7 @@ function SocialLinks() {
     <div className="flex items-center gap-2">
       <Link
         className="inline-flex items-center gap-1 font-medium transition-colors hover:text-[#F59E0B]"
-        rel="noopener noreferrer"
+        rel="noopener noreferer"
         target="_blank"
         to="https://github.com/cite-me-in/cite.me.in"
       >

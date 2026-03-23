@@ -10,7 +10,7 @@ import {
 } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SitePageHeader";
-import { requireUser } from "~/lib/auth.server";
+import { requireUserAccess } from "~/lib/auth.server";
 import externalLink from "~/lib/externalLink";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
@@ -26,7 +26,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const user = await requireUser(request);
+  const user = await requireUserAccess(request);
   const citation = await prisma.citationQuery.findFirst({
     where: {
       id: params.citeId,
@@ -57,7 +57,10 @@ export default function SiteCitationsPage({
       <SitePageHeader
         site={site}
         title="Citations"
-        backTo={{ label: "All citations", path: `/site/${site.domain}/citations` }}
+        backTo={{
+          label: "All citations",
+          path: `/site/${site.domain}/citations`,
+        }}
       />
 
       <Card>

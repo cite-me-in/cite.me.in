@@ -1,10 +1,6 @@
 import bcrypt from "bcryptjs";
 import { redirect } from "react-router";
-import {
-  type UtmCookieData,
-  sessionCookie,
-  utmCookie,
-} from "~/lib/cookies.server";
+import { sessionCookie, utmCookie } from "~/lib/cookies.server";
 import prisma from "~/lib/prisma.server";
 import type { User } from "~/prisma";
 
@@ -59,7 +55,7 @@ export async function createSession(
       userId,
       ipAddress: ip,
       userAgent: request.headers.get("user-agent"),
-      referrer: utm?.referrer ?? null,
+      referer: utm?.referer ?? null,
       utmSource: utm?.utmSource ?? null,
       utmMedium: utm?.utmMedium ?? null,
       utmCampaign: utm?.utmCampaign ?? null,
@@ -110,20 +106,29 @@ export async function getCurrentUser(request: Request): Promise<User | null> {
   return session?.user ?? null;
 }
 
-export async function requireUser(request: Request): Promise<User> {
+/**
+ * Requires the user to be authenticated.  If the user is not authenticated, it
+ * redirects to the sign-in page. The UTM cookie holds the referrer and UTM
+ * query string parameters.
+ *
+ * @param request - The request object
+ * @returns The user (User)
+ * @throws {Response} - Redirects to the sign-in page if the user is not authenticated
+ */
+export async function requireUserAccess(request: Request): Promise<User> {
   const user = await getCurrentUser(request);
   if (user) return user;
 
   const url = new URL(request.url);
-  const utmData: UtmCookieData = {
-    referrer: request.headers.get("Referer") ?? null,
+  const cookie = await utmCookie.serialize({
+    referer: request.headers.get("referer") ?? null,
     utmSource: url.searchParams.get("utm_source"),
     utmMedium: url.searchParams.get("utm_medium"),
     utmCampaign: url.searchParams.get("utm_campaign"),
     utmTerm: url.searchParams.get("utm_term"),
     utmContent: url.searchParams.get("utm_content"),
-  };
+  });
   throw redirect("/sign-in", {
-    headers: { "Set-Cookie": await utmCookie.serialize(utmData) },
+    headers: { "Set-Cookie": cookie },
   });
 }

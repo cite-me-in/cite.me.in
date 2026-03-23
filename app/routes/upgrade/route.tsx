@@ -2,7 +2,7 @@ import { StarIcon } from "lucide-react";
 import { redirect } from "react-router";
 import { Button } from "~/components/ui/Button";
 import Main from "~/components/ui/Main";
-import { requireUser } from "~/lib/auth.server";
+import { requireUserAccess } from "~/lib/auth.server";
 import envVars from "~/lib/envVars";
 import prisma from "~/lib/prisma.server";
 import stripe from "~/lib/stripe.server";
@@ -13,7 +13,7 @@ export function meta(): Route.MetaDescriptors {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const user = await requireUser(request);
+  const user = await requireUserAccess(request);
   const account = await prisma.account.findUnique({
     where: { userId: user.id },
   });
@@ -22,7 +22,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  const user = await requireUser(request);
+  const user = await requireUserAccess(request);
   const form = await request.formData();
   const interval = form.get("interval")?.toString() ?? "monthly";
 

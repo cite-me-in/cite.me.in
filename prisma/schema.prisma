@@ -139,11 +139,11 @@ model PasswordRecoveryToken {
 }
 
 model Session {
-  createdAt   DateTime @map("created_at")   @default(now())
-  id          String                        @id @default(cuid())
+  createdAt   DateTime @map("created_at")                                        @default(now())
+  id          String                                                             @id @default(cuid())
   ipAddress   String?  @map("ip_address")
-  referrer    String?  @map("referrer")
-  token       String   @map("token")        @unique
+  referer     String?  @map("referer") // misspelled for backwards compatibility
+  token       String   @map("token")                                             @unique
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userAgent   String?  @map("user_agent")
   userId      String   @map("user_id")

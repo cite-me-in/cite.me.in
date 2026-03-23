@@ -1,13 +1,13 @@
 import { redirect } from "react-router";
 import sendSiteInvitationEmail from "~/emails/SiteInvitation";
-import { requireUser } from "~/lib/auth.server";
+import { requireUserAccess } from "~/lib/auth.server";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import { requireSiteOwner } from "~/lib/sites.server";
 import type { Route } from "./+types/site.$domain_.invite";
 
 export async function action({ request, params }: Route.ActionArgs) {
-  const user = await requireUser(request);
+  const user = await requireUserAccess(request);
   const site = await requireSiteOwner(params.domain, user.id);
 
   const formData = await request.formData();

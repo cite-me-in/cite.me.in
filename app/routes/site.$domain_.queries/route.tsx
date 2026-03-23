@@ -6,7 +6,7 @@ import addSiteQueries, {
   runQueryOnAllPlatforms,
   updateSiteQuery,
 } from "~/lib/addSiteQueries";
-import { requireUser } from "~/lib/auth.server";
+import { requireUserAccess } from "~/lib/auth.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import {
   hasWordChanges,
@@ -29,7 +29,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const user = await requireUser(request);
+  const user = await requireUserAccess(request);
   const site = await requireSiteAccess(params.domain, user.id);
 
   const rows = await prisma.siteQuery.findMany({
@@ -48,7 +48,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
-  const user = await requireUser(request);
+  const user = await requireUserAccess(request);
   const site = await requireSiteAccess(params.domain, user.id);
 
   const data = await request.formData();
