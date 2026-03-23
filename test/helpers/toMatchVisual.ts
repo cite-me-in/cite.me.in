@@ -34,6 +34,10 @@ declare global {
   }
 }
 
+export const baseDir = path.resolve(
+  vitestConfig.test?.browser?.screenshotDirectory ?? "",
+);
+
 expect.extend({
   async toMatchVisual(
     locator: Locator | Page,
@@ -67,13 +71,9 @@ function getTestName(): string {
   return testFile.replace(/\.test\.(ts|tsx)$/, "");
 }
 
-const dirname = path.resolve(
-  vitestConfig.test?.browser?.screenshotDirectory ?? "",
-);
-
 export async function removeTemporaryFiles() {
-  await mkdir(dirname, { recursive: true });
-  const list = readdirSync(dirname);
+  await mkdir(baseDir, { recursive: true });
+  const list = readdirSync(baseDir);
   for (const file of list) {
     if (
       file.endsWith(".diff.png") ||
@@ -81,6 +81,6 @@ export async function removeTemporaryFiles() {
       file.endsWith(".new.html") ||
       file.endsWith(".html.diff")
     )
-      unlinkSync(path.resolve(dirname, file));
+      unlinkSync(path.resolve(baseDir, file));
   }
 }

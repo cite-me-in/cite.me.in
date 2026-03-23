@@ -32,7 +32,7 @@
     "app/lib/relativeTime.ts": [
       "exports"
     ],
-    "app/lib/temporal.ts": [
+    "app/lib/formatDate.ts": [
       "exports"
     ],
     "app/lib/truncateWords.ts": [

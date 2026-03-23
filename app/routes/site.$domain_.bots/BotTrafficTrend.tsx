@@ -9,6 +9,7 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import { ChartContainer } from "~/components/ui/Chart";
+import { formatDateMed, formatDateShort } from "~/lib/formatDate";
 
 const colors = [
   "#111111",
@@ -22,11 +23,6 @@ const colors = [
   "#6a4c93",
   "#c77dff",
 ] as const;
-
-const format = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "numeric",
-});
 
 export default function BotTrafficTrend({
   topBots,
@@ -54,15 +50,11 @@ export default function BotTrafficTrend({
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis
               dataKey="date"
-              tickFormatter={(v) => format.format(new Date(v))}
+              tickFormatter={(v) => formatDateShort(new Date(v))}
             />
             <YAxis />
             <Tooltip
-              labelFormatter={(v) =>
-                new Intl.DateTimeFormat("en-US", {
-                  dateStyle: "long",
-                }).format(new Date(v as string))
-              }
+              labelFormatter={(value) => formatDateMed(new Date(value))}
             />
             <Legend />
             <Line

@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/Table";
-import { formatDateShort } from "~/lib/temporal";
+import { formatDateShort } from "~/lib/formatDate";
 
 export default function RecentVisibility({
   queries,

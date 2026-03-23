@@ -12,7 +12,7 @@ import {
 } from "node:fs/promises";
 import path, { dirname } from "node:path";
 import type { Locator, Page } from "playwright";
-import vitestConfig from "../../vitest.config";
+import { baseDir } from "./toMatchVisual";
 
 declare global {
   namespace PlaywrightTest {
@@ -34,9 +34,6 @@ declare global {
   }
 }
 
-const baseDir = path.resolve(
-  vitestConfig.test?.browser?.screenshotDirectory ?? "",
-);
 const defaultTolerance = 10;
 
 expect.extend({

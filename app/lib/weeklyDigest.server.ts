@@ -3,7 +3,7 @@ import { sumBy } from "es-toolkit";
 import type { WeeklyDigestEmailProps } from "~/emails/WeeklyDigest";
 import calculateVisibilityScore from "~/lib/llm-visibility/calculateVisibilityScore";
 import prisma from "~/lib/prisma.server";
-import { formatDateMed } from "./temporal";
+import { formatDateMed } from "./formatDate";
 
 export async function loadWeeklyDigestMetrics(
   siteId: string,

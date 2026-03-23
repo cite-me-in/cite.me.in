@@ -5,6 +5,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "~/components/ui/Chart";
+import { formatDateMed } from "~/lib/formatDate";
 import calculateVisibilityScore from "~/lib/llm-visibility/calculateVisibilityScore";
 import type { Prisma } from "~/prisma";
 
@@ -54,11 +55,7 @@ export default function VisibilityCharts({
                 <CartesianGrid vertical={false} />
                 <XAxis
                   dataKey="date"
-                  tickFormatter={(v) =>
-                    new Intl.DateTimeFormat("en-US", {
-                      dateStyle: "long",
-                    }).format(new Date(v as string))
-                  }
+                  tickFormatter={(value) => formatDateMed(new Date(value))}
                 />
                 <YAxis />
                 <ChartTooltip content={<ChartTooltipContent />} />

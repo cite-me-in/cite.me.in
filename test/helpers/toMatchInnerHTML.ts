@@ -9,13 +9,14 @@ import {
   readFile,
   writeFile,
 } from "node:fs/promises";
-import path from "node:path";
+import path, { dirname } from "node:path";
 import type { Locator, Page } from "playwright";
 import diffHTMLs from "~/lib/html/diffHTMLs";
 import formatHTMLTree from "~/lib/html/formatHTML";
 import type { HTMLNode } from "~/lib/html/HTMLNode";
 import parseHTMLTree from "~/lib/html/parseHTML";
 import vitestConfig from "../../vitest.config";
+import { baseDir } from "./toMatchVisual";
 
 declare global {
   namespace PlaywrightTest {
@@ -37,17 +38,13 @@ declare global {
   }
 }
 
-const dirname = path.resolve(
-  vitestConfig.test?.browser?.screenshotDirectory ?? "",
-);
-
 expect.extend({
   async toMatchInnerHTML(
     locator: Locator | Page,
     options?: { name?: string; modify?: (html: HTMLNode[]) => void },
   ): Promise<{ message: () => string; pass: boolean }> {
     const name = options?.name || getTestName();
-    const filename = path.resolve(dirname, `${name}.html`);
+    const filename = path.resolve(baseDir, `${name}.html`);
     const rawHtml =
       "content" in locator
         ? await (locator as unknown as Page).innerHTML("body")
@@ -61,7 +58,7 @@ expect.extend({
       if (vitestConfig.test?.update) throw new Error("Update is enabled");
       await access(filename, constants.R_OK);
     } catch {
-      await mkdir(dirname, { recursive: true });
+      await mkdir(dirname(filename), { recursive: true });
       await writeFile(filename, formattedHtml);
       return {
         message: () => `Baseline HTML created at ${filename}.`,
@@ -71,11 +68,11 @@ expect.extend({
 
     const original = await readFile(filename, "utf-8");
     if (formattedHtml !== original) {
-      const newFilename = path.resolve(dirname, `${name}.new.html`);
+      const newFilename = path.resolve(baseDir, `${name}.new.html`);
       await writeFile(newFilename, formattedHtml);
 
       const diff = diffHTMLs(original, formattedHtml);
-      await writeFile(path.resolve(dirname, `${name}.html.diff`), diff);
+      await writeFile(path.resolve(baseDir, `${name}.html.diff`), diff);
 
       return {
         message: () => `HTML differs from baseline see ${newFilename}\n${diff}`,

@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/Card";
+import { formatDateShort } from "~/lib/formatDate";
 
 export default function BotInsights({
   insight,
@@ -15,11 +16,6 @@ export default function BotInsights({
     generatedAt: Date;
   };
 }) {
-  const format = new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-  });
-
   return (
     <Card variant="yellow">
       <CardHeader>
@@ -30,7 +26,7 @@ export default function BotInsights({
       </CardHeader>
       <CardContent>{insight.content}</CardContent>
       <CardFooter className="text-foreground/50 text-xs">
-        Updated {format.format(new Date(insight.generatedAt))}
+        Updated {formatDateShort(insight.generatedAt)}
       </CardFooter>
     </Card>
   );
