@@ -67,7 +67,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 export default function SiteCitationsPage({
   loaderData,
 }: Route.ComponentProps) {
-  const { site, runs, siteQueries } = loaderData;
+  const { site, runs, siteQueries, competitors } = loaderData;
   const [searchParams, setSearchParams] = useSearchParams();
   const platform = searchParams.get("platform") ?? PLATFORMS[0].name;
   const recentRuns = runs.filter((r) => r.platform === platform);
@@ -113,7 +113,7 @@ export default function SiteCitationsPage({
         <>
           <CitationsRecentRun queries={mergedQueries} meta={run} site={site} />
           <BrandSentiment run={sentimentRun} />
-          <TopCompetitors queries={mergedQueries} ownDomain={site.domain} />
+          <TopCompetitors competitors={competitors} />
           <VisibilityCharts recentRuns={recentRuns} site={site} />
         </>
       ) : (

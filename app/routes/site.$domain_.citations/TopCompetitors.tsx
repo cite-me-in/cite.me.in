@@ -49,13 +49,10 @@ export const NON_COMPETITOR_DOMAINS = new Set([
 ]);
 
 export default function TopCompetitors({
-  queries,
-  ownDomain,
+  competitors,
 }: {
-  queries: { citations: string[] }[];
-  ownDomain: string;
+  competitors: { domain: string; brandName: string; url: string; count: number; pct: number }[];
 }) {
-  const { competitors } = topCompetitors(queries, ownDomain);
   return (
     <Card>
       <CardHeader>
@@ -71,17 +68,17 @@ export default function TopCompetitors({
           </p>
         ) : (
           <div className="flex flex-col gap-2">
-            {competitors.map(({ domain, count, pct }) => (
+            {competitors.map(({ domain, brandName, url, count, pct }) => (
               <div
                 key={domain}
                 className="flex items-center justify-between gap-4"
               >
                 <Link
                   className="truncate font-medium"
-                  to={externalLink(`https://${domain}`)}
+                  to={externalLink(url)}
                   target="_blank"
                 >
-                  {domain}
+                  {brandName}
                 </Link>
                 <div className="flex shrink-0 items-center gap-2">
                   <span className="text-foreground/60">
