@@ -1,0 +1,11 @@
+{
+  "planPath": "docs/plans/2026-03-22-competitor-brand-names.md",
+  "tasks": [
+    {"id": 1, "subject": "Task 1: Add non-competitor blocklist to topCompetitors()", "status": "pending"},
+    {"id": 2, "subject": "Task 2: Create app/lib/domainMeta.server.ts", "status": "pending", "blockedBy": [1]},
+    {"id": 3, "subject": "Task 3: Move competitor computation to loader", "status": "pending", "blockedBy": [2]},
+    {"id": 4, "subject": "Task 4: Update TopCompetitors component to use enriched data", "status": "pending", "blockedBy": [3]},
+    {"id": 5, "subject": "Task 5: Reset visual baselines and verify all tests pass", "status": "pending", "blockedBy": [4]}
+  ],
+  "lastUpdated": "2026-03-22"
+}
