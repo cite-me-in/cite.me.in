@@ -6,13 +6,41 @@
  * ./scripts/crawl.ts <domain> [maxPages] [maxWords] [maxSeconds]
  */
 
+import { execSync } from "node:child_process";
+import prisma from "../app/lib/prisma.server";
 import { crawl } from "../app/lib/scrape/crawl";
+import { summarize } from "../app/lib/scrape/summarize";
 
-const domain = process.argv[2];
+let domain = process.argv[2];
 if (!domain) {
-  console.error("Usage: ./scripts/crawl.ts <domain> [maxPages] [maxWords] [maxSeconds]");
+  console.error(
+    "Usage: ./scripts/crawl.ts <domain> [maxPages] [maxWords] [maxSeconds]",
+  );
+  process.exit(1);
+}
+if (/^https?:\/\//.test(domain)) domain = new URL(domain).hostname;
+
+const email = execSync("git config user.email", { encoding: "utf-8" }).trim();
+if (!email) {
+  console.error("No git user email is set.");
   process.exit(1);
 }
 
-const content = await crawl({ domain, maxPages: 20, maxWords: 5_000, });
+console.info(`Looking for site: ${domain} for email: ${email}`);
+const site = await prisma.site.findFirst({
+  where: { domain, owner: { email: email } },
+});
+if (!site) {
+  console.error(`Site not found: ${domain} for email: ${email}`);
+  process.exit(1);
+}
+
+const content = await crawl({ domain, maxPages: 20, maxWords: 5_000 });
 console.info(content);
+const summary = await summarize({ domain, content });
+console.info(summary);
+
+await prisma.site.update({
+  where: { id: site.id },
+  data: { content, summary },
+});
