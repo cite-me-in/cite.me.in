@@ -4,7 +4,7 @@ export async function loader() {
   const sitemap = await generateRemixSitemap({
     domain: import.meta.env.VITE_APP_URL,
     ignore: ["*/\\*", "/error", "/.well-known/*"],
-    routes: { ...routes, ...(await allOtherRoutes()) },
+    routes,
   });
   return new Response(sitemap, {
     headers: { "Content-Type": "application/xml" },
@@ -21,23 +21,14 @@ const routes = {
     path: "/privacy",
   },
   "/terms": { id: "routes/terms/route.tsx", module: "terms", path: "/terms" },
-  "/api-docs": {
-    id: "routes/api-docs/route.tsx",
-    module: "api-docs",
-    path: "/api-docs",
+  "/docs": {
+    id: "routes/docs/route.tsx",
+    module: "docs",
+    path: "/docs",
+  },
+  "/pricing": {
+    id: "routes/pricing/route.tsx",
+    module: "pricing",
+    path: "/pricing",
   },
 };
-
-async function allOtherRoutes(): Promise<
-  Record<string, { id: string; module: string; path: string }>
-> {
-  const all = await Promise.all([]);
-  return Object.fromEntries(
-    all
-      .flat()
-      .map((path) => [
-        `routes/${path}`,
-        { id: `routes/${path}`, module: path, path: `/${path}` },
-      ]),
-  );
-}
