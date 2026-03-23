@@ -1,8 +1,10 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { sumBy } from "es-toolkit";
 import type { WeeklyDigestEmailProps } from "~/emails/WeeklyDigest";
+import { getDomainMeta } from "~/lib/domainMeta.server";
 import calculateVisibilityScore from "~/lib/llm-visibility/calculateVisibilityScore";
 import prisma from "~/lib/prisma.server";
+import { topCompetitors } from "~/routes/site.$domain_.citations/TopCompetitors";
 import { formatDateMed } from "./formatDate";
 
 export async function loadWeeklyDigestMetrics(
@@ -133,6 +135,12 @@ export async function loadWeeklyDigestMetrics(
   const botVisitsTotal = currentVisits._sum.count ?? 0;
   const botVisitsPrev = prevVisits._sum.count ?? 0;
 
+  const allQueries = currentRuns.flatMap((r) => r.queries);
+  const { competitors: rawCompetitors } = topCompetitors(allQueries, domain);
+  const competitors = await Promise.all(
+    rawCompetitors.map(async (c) => ({ ...c, ...(await getDomainMeta(c.domain)) })),
+  );
+
   const chartBase64 = await generateCitationChart(
     dailyCitations,
     prevDailyCitations,
@@ -166,6 +174,7 @@ export async function loadWeeklyDigestMetrics(
       delta: botVisitsTotal - botVisitsPrev,
     },
     topQueries,
+    competitors,
     chartBase64,
   };
 }
