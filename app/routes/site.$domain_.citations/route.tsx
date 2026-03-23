@@ -3,11 +3,12 @@ import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SitePageHeader";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/Tabs";
 import { requireSiteAccess } from "~/lib/auth.server";
+import { getDomainMeta } from "~/lib/domainMeta.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 import BrandSentiment from "./BrandSentiment";
 import CitationsRecentRun from "./CitationsRecentRun";
-import TopCompetitors from "./TopCompetitors";
+import TopCompetitors, { topCompetitors } from "./TopCompetitors";
 import VisibilityCharts from "./VisibilityCharts";
 
 export const handle = { siteNav: true };
@@ -38,7 +39,29 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     }),
   ]);
 
-  return { site, runs, siteQueries };
+  const url = new URL(request.url);
+  const platform = url.searchParams.get("platform") ?? PLATFORMS[0].name;
+
+  const recentRuns = runs.filter((r) => r.platform === platform);
+  const queriesForCompetitors = siteQueries
+    .map((sq) => {
+      for (const r of recentRuns) {
+        const found = r.queries.find((q) => q.query === sq.query);
+        if (found) return found;
+      }
+      return null;
+    })
+    .filter((q) => q !== null);
+
+  const { competitors: rawCompetitors } = topCompetitors(
+    queriesForCompetitors,
+    site.domain,
+  );
+  const competitors = await Promise.all(
+    rawCompetitors.map(async (c) => ({ ...c, ...(await getDomainMeta(c.domain)) })),
+  );
+
+  return { site, runs, siteQueries, competitors };
 }
 
 export default function SiteCitationsPage({
