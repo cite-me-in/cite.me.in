@@ -27,7 +27,7 @@ describe("getDomainMeta", () => {
       vi.fn().mockResolvedValue({
         url: "https://example-b.com/",
         text: async () =>
-          `<html><head><title>Acme Corp - Home</title></head></html>`,
+          "<html><head><title>Acme Corp - Home</title></head></html>",
       }),
     );
     const meta = await getDomainMeta("example-b.com");

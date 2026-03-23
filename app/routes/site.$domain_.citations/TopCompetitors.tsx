@@ -8,50 +8,18 @@ import {
   CardTitle,
 } from "~/components/ui/Card";
 import externalLink from "~/lib/externalLink";
-
-export const NON_COMPETITOR_DOMAINS = new Set([
-  // Community / Q&A
-  "reddit.com",
-  "quora.com",
-  "stackoverflow.com",
-  // Encyclopedias
-  "wikipedia.org",
-  "en.wikipedia.org",
-  "wikimedia.org",
-  // Social media
-  "linkedin.com",
-  "twitter.com",
-  "x.com",
-  "facebook.com",
-  "instagram.com",
-  "tiktok.com",
-  "pinterest.com",
-  // Video
-  "youtube.com",
-  "vimeo.com",
-  // News & media
-  "nytimes.com",
-  "wsj.com",
-  "bloomberg.com",
-  "reuters.com",
-  "ft.com",
-  "forbes.com",
-  "businessinsider.com",
-  "techcrunch.com",
-  "theguardian.com",
-  "bbc.com",
-  "bbc.co.uk",
-  "cnn.com",
-  // General content platforms
-  "medium.com",
-  "substack.com",
-  "wordpress.com",
-]);
+import nonCompetitors from "./nonCompetitors";
 
 export default function TopCompetitors({
   competitors,
 }: {
-  competitors: { domain: string; brandName: string; url: string; count: number; pct: number }[];
+  competitors: {
+    domain: string;
+    brandName: string;
+    url: string;
+    count: number;
+    pct: number;
+  }[];
 }) {
   return (
     <Card>
@@ -110,7 +78,12 @@ export function topCompetitors(
       try {
         const hostname = new URL(url).hostname.replace(/^www\./, "");
         total++;
-        if (hostname !== ownDomain && !NON_COMPETITOR_DOMAINS.has(hostname))
+        if (
+          hostname !== ownDomain &&
+          !nonCompetitors.has(hostname) &&
+          // Also check if nonCompetitors contains the hostname with first subdomain stripped (e.g. "en.wikipedia.org" -> "wikipedia.org")
+          !nonCompetitors.has(hostname.split(".").slice(1).join("."))
+        )
           counts.set(hostname, (counts.get(hostname) ?? 0) + 1);
       } catch {
         /* skip invalid URLs */
@@ -121,7 +94,7 @@ export function topCompetitors(
     total,
     competitors: [...counts.entries()]
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
+      .slice(0, 8)
       .map(([domain, count]) => ({
         domain,
         count,

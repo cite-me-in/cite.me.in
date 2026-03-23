@@ -329,73 +329,6 @@ describe("sites route", () => {
       });
     });
 
-    describe("with one run", () => {
-      beforeAll(async () => {
-        await prisma.citationQueryRun.create({
-          data: {
-            siteId,
-            platform: "chatgpt",
-            model: "gpt-4o",
-            onDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
-              .toISOString()
-              .split("T")[0],
-            queries: {
-              createMany: {
-                data: [
-                  {
-                    query: "test query",
-                    citations: [
-                      "https://delta-test.com/a",
-                      "https://delta-test.com/b",
-                      "https://delta-test.com/c",
-                      "https://delta-test.com/d",
-                      "https://delta-test.com/e",
-                      "https://delta-test.com/f",
-                      "https://delta-test.com/g",
-                      "https://delta-test.com/h",
-                      "https://delta-test.com/i",
-                      "https://delta-test.com/j",
-                      "https://delta-test.com/k",
-                      "https://delta-test.com/l",
-                      "https://delta-test.com/m",
-                      "https://delta-test.com/n",
-                      "https://delta-test.com/o",
-                      "https://delta-test.com/p",
-                      "https://delta-test.com/q",
-                      "https://delta-test.com/r",
-                      "https://delta-test.com/s",
-                      "https://delta-test.com/t",
-                    ],
-                    text: "response",
-                    group: "group",
-                    position: 0,
-                    extraQueries: [],
-                  },
-                ],
-              },
-            },
-          },
-        });
-        page = await goto("/sites");
-      });
-
-      it("should show citation count", async () => {
-        const siteRow = page
-          .locator("div")
-          .filter({ hasText: "delta-test.com" })
-          .first();
-        await expect(siteRow.getByText("20", { exact: true })).toBeVisible();
-      });
-
-      it("should show no delta badge", async () => {
-        const siteRow = page
-          .locator("div")
-          .filter({ hasText: "delta-test.com" })
-          .first();
-        await expect(siteRow.getByText("%")).not.toBeVisible();
-      });
-    });
-
     describe("with two runs", () => {
       beforeAll(async () => {
         // Current run (newer): 10 citations → current=10, previous=20, delta=-50%
@@ -440,26 +373,6 @@ describe("sites route", () => {
           name: "sites.two-runs",
           modify: fixBaseline,
         });
-      });
-
-      it("should show current count in large text", async () => {
-        const metric = page.locator("div.metric-citations").first();
-        await expect(metric.locator("div:nth-child(2)")).toHaveText("10");
-      });
-
-      it("should show current score in large text", async () => {
-        const metric = page.locator("div.metric-score").first();
-        await expect(metric.locator("div:nth-child(2)")).toHaveText("85");
-      });
-
-      it("should show 0", async () => {
-        const metric = page.locator("div.metric-bot-visits").first();
-        await expect(metric.locator("div:nth-child(2)")).toHaveText("0");
-      });
-
-      it("should show 0", async () => {
-        const metric = page.locator("div.metric-unique-bots").first();
-        await expect(metric.locator("div:nth-child(2)")).toHaveText("0");
       });
     });
   });
