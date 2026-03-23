@@ -55,10 +55,10 @@
     <div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
       <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
         <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
-          Most Recent Run
+          Latest Results
         </div>
         <div class="font-base text-base" data-slot="card-description">
-          gpt-5-chat-latest · 3 checks
+          gpt-5-chat-latest · 3 queries
         </div>
       </div>
       <div class="px-6" data-slot="card-content">
@@ -75,6 +75,9 @@
                 <th class="h-10 px-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right font-bold text-foreground">
                   Positions
                 </th>
+                <th class="h-10 px-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right font-bold text-foreground">
+                  Date
+                </th>
                 <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px]"></th>
               </tr>
             </thead>
@@ -89,6 +92,9 @@
                 <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
                   2
                 </td>
+                <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+                  Feb 25
+                </td>
                 <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
               </tr>
               <tr class="border-b transition-colors data-[state=selected]:bg-muted bg-green-100 hover:bg-green-100/80">
@@ -101,6 +107,9 @@
                 <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
                   3
                 </td>
+                <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+                  Feb 25
+                </td>
                 <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
               </tr>
               <tr class="border-b transition-colors data-[state=selected]:bg-muted bg-green-100 hover:bg-green-100/80">
@@ -112,6 +121,9 @@
                 </td>
                 <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
                   1
+                </td>
+                <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+                  Feb 25
                 </td>
                 <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
               </tr>

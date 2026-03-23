@@ -183,7 +183,7 @@ describe("sites route", () => {
         await page.waitForURL(/\/site\/[^/]+\/citations/);
 
         await page
-          .locator('text="Most Recent Run"')
+          .locator('text="Latest Results"')
           .waitFor({ state: "visible" });
       });
 

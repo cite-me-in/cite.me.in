@@ -38,10 +38,10 @@
 <div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
   <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
     <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
-      Most Recent Run
+      Latest Results
     </div>
     <div class="font-base text-base" data-slot="card-description">
-      gpt-5-chat-latest · 9 checks
+      gpt-5-chat-latest · 9 queries
     </div>
   </div>
   <div class="px-6" data-slot="card-content">
@@ -58,6 +58,9 @@
             <th class="h-10 px-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right font-bold text-foreground">
               Positions
             </th>
+            <th class="h-10 px-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right font-bold text-foreground">
+              Date
+            </th>
             <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px]"></th>
           </tr>
         </thead>
@@ -70,6 +73,9 @@
               Query 1
             </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+              Mar 22
+            </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
               <a data-discover="true" href="/site/id">
                 <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -87,6 +93,9 @@
               Query 2
             </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+              Mar 22
+            </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
               <a data-discover="true" href="/site/id">
                 <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -104,6 +113,9 @@
               Query 3
             </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+              Mar 22
+            </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
               <a data-discover="true" href="/site/id">
                 <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -121,6 +133,9 @@
               Query 4
             </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+              Mar 22
+            </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
               <a data-discover="true" href="/site/id">
                 <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -138,6 +153,9 @@
               Query 5
             </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+              Mar 22
+            </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
               <a data-discover="true" href="/site/id">
                 <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -155,6 +173,9 @@
               Query 6
             </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+              Mar 22
+            </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
               <a data-discover="true" href="/site/id">
                 <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -172,6 +193,9 @@
               Query 7
             </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+              Mar 22
+            </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
               <a data-discover="true" href="/site/id">
                 <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -189,6 +213,9 @@
               Query 8
             </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+              Mar 22
+            </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
               <a data-discover="true" href="/site/id">
                 <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -206,6 +233,9 @@
               Query 9
             </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+              Mar 22
+            </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
               <a data-discover="true" href="/site/id">
                 <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">

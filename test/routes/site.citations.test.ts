@@ -153,6 +153,15 @@ describe("site page", () => {
     });
     siteDomain = site.domain;
 
+    // Create SiteQuery records so the citations page can build mergedQueries.
+    await prisma.siteQuery.createMany({
+      data: QUERIES.map(({ query, group }) => ({
+        siteId: site.id,
+        query,
+        group,
+      })),
+    });
+
     // Three runs per platform (oldest → newest) so charts have ≥2 data points.
     const runDays = [14, 7, 0];
 
