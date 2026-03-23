@@ -1,5 +1,4 @@
 import { differenceBy, forEachAsync, uniqBy } from "es-toolkit";
-import type { Site } from "~/prisma";
 import queryClaude from "./llm-visibility/claudeClient";
 import queryGemini from "./llm-visibility/geminiClient";
 import openaiClient from "./llm-visibility/openaiClient";
@@ -16,7 +15,7 @@ import prisma from "./prisma.server";
  * @returns The created queries.
  */
 export default async function addSiteQueries(
-  site: Site,
+  site: { id: string; domain: string },
   queries: { group: string; query: string }[],
 ) {
   // Get existing queries for the site so we can ignore them.
@@ -40,7 +39,10 @@ export default async function addSiteQueries(
   });
 }
 
-export async function addSiteQueryGroup(site: Site, group: string) {
+export async function addSiteQueryGroup(
+  site: { id: string; domain: string },
+  group: string,
+) {
   await prisma.siteQuery.create({
     data: { siteId: site.id, group: trimQuery(group), query: "" },
   });
@@ -71,7 +73,7 @@ export async function renameSiteQueryGroup({
   oldGroup,
   newGroup,
 }: {
-  site: Site;
+  site: { id: string; domain: string };
   oldGroup: string;
   newGroup: string;
 }) {

@@ -1,8 +1,7 @@
-import { redirect } from "react-router";
-import { Link } from "react-router";
+import { Link, redirect } from "react-router";
 import AuthForm from "~/components/ui/AuthForm";
 import { Button } from "~/components/ui/Button";
-import { getCurrentUser } from "~/lib/auth.server";
+import { requireUserAccess } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 
@@ -29,16 +28,17 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     return { status: "expired" as const };
   }
 
-  const user = await getCurrentUser(request);
-
-  if (user) {
+  try {
+    const { user } = await requireUserAccess(request);
     if (user.email.toLowerCase() !== invitation.email.toLowerCase())
       return { status: "wrong-user" as const, invitedEmail: invitation.email };
 
     // Accept immediately
     await prisma.$transaction([
       prisma.siteUser.upsert({
-        where: { siteId_userId: { siteId: invitation.siteId, userId: user.id } },
+        where: {
+          siteId_userId: { siteId: invitation.siteId, userId: user.id },
+        },
         create: { siteId: invitation.siteId, userId: user.id },
         update: {},
       }),
@@ -48,20 +48,20 @@ export async function loader({ request, params }: Route.LoaderArgs) {
       }),
     ]);
     throw redirect(`/site/${invitation.site.domain}/citations`);
+  } catch {
+    // Not logged in — check if user exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email: invitation.email },
+    });
+
+    return {
+      status: "pending" as const,
+      email: invitation.email,
+      siteDomain: invitation.site.domain,
+      hasAccount: !!existingUser,
+      token: params.token,
+    };
   }
-
-  // Not logged in — check if user exists
-  const existingUser = await prisma.user.findUnique({
-    where: { email: invitation.email },
-  });
-
-  return {
-    status: "pending" as const,
-    email: invitation.email,
-    siteDomain: invitation.site.domain,
-    hasAccount: !!existingUser,
-    token: params.token,
-  };
 }
 
 export default function InvitePage({ loaderData }: Route.ComponentProps) {
@@ -78,7 +78,11 @@ export default function InvitePage({ loaderData }: Route.ComponentProps) {
     return (
       <AuthForm
         title="Invitation expired"
-        form={<p>This invitation has expired. Ask the site owner to send a new one.</p>}
+        form={
+          <p>
+            This invitation has expired. Ask the site owner to send a new one.
+          </p>
+        }
         footer={<Link to="/sign-in">Sign in</Link>}
       />
     );
@@ -89,8 +93,8 @@ export default function InvitePage({ loaderData }: Route.ComponentProps) {
         title="Wrong account"
         form={
           <p>
-            This invitation was sent to {loaderData.invitedEmail}. Sign in with that account to
-            accept it.
+            This invitation was sent to {loaderData.invitedEmail}. Sign in with
+            that account to accept it.
           </p>
         }
         footer={<Link to="/sign-in">Sign in</Link>}
@@ -99,7 +103,9 @@ export default function InvitePage({ loaderData }: Route.ComponentProps) {
 
   // status === "pending"
   const { email, siteDomain, hasAccount, token } = loaderData;
-  const authPath = hasAccount ? `/sign-in?invite=${token}` : `/sign-up?invite=${token}`;
+  const authPath = hasAccount
+    ? `/sign-in?invite=${token}`
+    : `/sign-up?invite=${token}`;
 
   return (
     <AuthForm
@@ -107,7 +113,8 @@ export default function InvitePage({ loaderData }: Route.ComponentProps) {
       form={
         <div className="space-y-4">
           <p>
-            You've been invited to join <strong>{siteDomain}</strong> on Cite.me.in.
+            You've been invited to join <strong>{siteDomain}</strong> on
+            Cite.me.in.
           </p>
           <p className="text-gray-600">This invite was sent to {email}.</p>
           <Button render={<Link to={authPath} />} className="w-full">

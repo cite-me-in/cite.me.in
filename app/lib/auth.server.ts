@@ -2,7 +2,6 @@ import bcrypt from "bcryptjs";
 import { redirect } from "react-router";
 import { sessionCookie, utmCookie } from "~/lib/cookies.server";
 import prisma from "~/lib/prisma.server";
-import type { User } from "~/prisma";
 
 /**
  * Hashes a password using bcrypt.
@@ -95,29 +94,57 @@ export async function signOut(): Promise<Headers> {
   });
 }
 
-export async function getCurrentUser(request: Request): Promise<User | null> {
-  const cookieHeader = request.headers.get("Cookie");
-  const token = await sessionCookie.parse(cookieHeader);
-  if (!token) return null;
-  const session = await prisma.session.findUnique({
-    where: { token },
-    include: { user: true },
-  });
-  return session?.user ?? null;
-}
-
 /**
  * Requires the user to be authenticated.  If the user is not authenticated, it
  * redirects to the sign-in page. The UTM cookie holds the referrer and UTM
  * query string parameters.
  *
  * @param request - The request object
- * @returns The user (User)
+ * @returns The user object with the email, account, owned sites, and site users
  * @throws {Response} - Redirects to the sign-in page if the user is not authenticated
  */
-export async function requireUserAccess(request: Request): Promise<User> {
-  const user = await getCurrentUser(request);
-  if (user) return user;
+export async function requireUserAccess(request: Request): Promise<{
+  user: {
+    apiKey: string | null;
+    createdAt: Date;
+    email: string;
+    id: string;
+    passwordHash: string;
+  };
+  account: { status: string; interval: string } | null;
+  ownedSites: { id: string; domain: string }[];
+  siteUsers: { site: { id: string; domain: string } }[];
+}> {
+  const cookieHeader = request.headers.get("Cookie");
+  const token = await sessionCookie.parse(cookieHeader);
+  if (token) {
+    const session = await prisma.session.findUnique({
+      where: { token },
+      select: {
+        user: {
+          select: {
+            apiKey: true,
+            createdAt: true,
+            email: true,
+            id: true,
+            passwordHash: true,
+            account: { select: { status: true, interval: true } },
+            ownedSites: { select: { domain: true, id: true } },
+            siteUsers: {
+              select: { site: { select: { domain: true, id: true } } },
+            },
+          },
+        },
+      },
+    });
+    if (session)
+      return {
+        user: session.user,
+        account: session.user.account,
+        ownedSites: session.user.ownedSites,
+        siteUsers: session.user.siteUsers,
+      };
+  }
 
   const url = new URL(request.url);
   const cookie = await utmCookie.serialize({
@@ -131,4 +158,58 @@ export async function requireUserAccess(request: Request): Promise<User> {
   throw redirect("/sign-in", {
     headers: { "Set-Cookie": cookie },
   });
+}
+
+/**
+ * Requires the user to have access to the site with the given domain. If the
+ * user does not have access, it throws a 404 response.
+ *
+ * @param domain - The domain of the site to check access for
+ * @param request - The request object
+ * @returns The site with the given domain if the user has access and the user
+ * object with the email
+ * @throws {Response} - Throws a 404 response if the user does not have access
+ */
+export async function requireSiteAccess({
+  domain,
+  request,
+}: {
+  domain: string;
+  request: Request;
+}): Promise<{
+  site: { id: string; domain: string };
+  user: { id: string; email: string };
+}> {
+  const { user, ownedSites, siteUsers } = await requireUserAccess(request);
+  const site =
+    ownedSites.find((s) => s.domain === domain) ||
+    siteUsers.find((s) => s.site.domain === domain)?.site;
+  if (site) return { site, user };
+  else throw new Response("Not found", { status: 404 });
+}
+
+/**
+ * Requires the user to be the owner of the site with the given domain. If the
+ * user is not the owner, it throws a 403 response.
+ *
+ * @param domain - The domain of the site to check access for
+ * @param request - The request object
+ * @returns The site with the given domain if the user is the owner and the user
+ * object
+ * @throws {Response} - Throws a 404 response if the site is not found
+ */
+export async function requireSiteOwner({
+  domain,
+  request,
+}: {
+  domain: string;
+  request: Request;
+}): Promise<{
+  site: { id: string; domain: string };
+  user: { id: string; email: string };
+}> {
+  const { user, ownedSites } = await requireUserAccess(request);
+  const site = ownedSites.find((s) => s.domain === domain);
+  if (site) return { site, user };
+  else throw new Response("Not found", { status: 404 });
 }

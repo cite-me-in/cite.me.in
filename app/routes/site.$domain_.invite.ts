@@ -1,14 +1,15 @@
 import { redirect } from "react-router";
 import sendSiteInvitationEmail from "~/emails/SiteInvitation";
-import { requireUserAccess } from "~/lib/auth.server";
+import { requireSiteOwner } from "~/lib/auth.server";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
-import { requireSiteOwner } from "~/lib/sites.server";
 import type { Route } from "./+types/site.$domain_.invite";
 
 export async function action({ request, params }: Route.ActionArgs) {
-  const user = await requireUserAccess(request);
-  const site = await requireSiteOwner(params.domain, user.id);
+  const { site, user } = await requireSiteOwner({
+    domain: params.domain,
+    request,
+  });
 
   const formData = await request.formData();
   const email = formData.get("email")?.toString().trim().toLowerCase() ?? "";
@@ -20,7 +21,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     const alreadyMember = await prisma.siteUser.findUnique({
       where: { siteId_userId: { siteId: site.id, userId: existingUser.id } },
     });
-    if (alreadyMember || existingUser.id === site.ownerId)
+    if (alreadyMember || existingUser.id === user.id)
       return redirect(`/site/${site.domain}/settings`);
   }
 

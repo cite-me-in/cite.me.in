@@ -25,16 +25,12 @@ export function meta(): Route.MetaDescriptors {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const user = await requireUserAccess(request);
-  const account = await prisma.account.findUnique({
-    where: { userId: user.id },
-    select: { status: true, interval: true },
-  });
+  const { user, account } = await requireUserAccess(request);
   return { user, account };
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  const user = await requireUserAccess(request);
+  const { user } = await requireUserAccess(request);
   const form = await request.formData();
 
   const intent = form.get("intent")?.toString();

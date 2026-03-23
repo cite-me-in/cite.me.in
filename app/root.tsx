@@ -5,8 +5,7 @@ import {
   isRouteErrorResponse,
 } from "react-router";
 import { WaveLoading } from "respinner";
-import { getCurrentUser } from "~/lib/auth.server";
-import prisma from "~/lib/prisma.server";
+import { requireUserAccess } from "~/lib/auth.server";
 import type { Route } from "./+types/root";
 import PageLayout from "./components/layout/PageLayout";
 import Main from "./components/ui/Main";
@@ -14,29 +13,15 @@ import "./global.css";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const baseUrl = new URL(request.url).origin;
-  const user = await getCurrentUser(request);
-  const [sites, account] = await Promise.all([
-    user
-      ? prisma.site.findMany({
-          where: {
-            OR: [
-              { ownerId: user.id },
-              { siteUsers: { some: { userId: user.id } } },
-            ],
-          },
-          select: { id: true, domain: true },
-          orderBy: { createdAt: "desc" },
-        })
-      : [],
-    user
-      ? prisma.account.findUnique({
-          where: { userId: user.id },
-          select: { status: true },
-        })
-      : null,
-  ]);
-  const isPro = account?.status === "active";
-  return { user, baseUrl, sites, isPro };
+  try {
+    const { user, account, ownedSites, siteUsers } =
+      await requireUserAccess(request);
+    const isPro = account?.status === "active";
+    const sites = [...ownedSites, ...siteUsers.map(({ site }) => site)];
+    return { user, baseUrl, sites, isPro };
+  } catch {
+    return { user: null, baseUrl, sites: [], isPro: false };
+  }
 }
 
 export function meta({ loaderData }: Route.MetaArgs): Route.MetaDescriptors {

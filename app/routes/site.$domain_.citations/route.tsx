@@ -2,9 +2,8 @@ import { useSearchParams } from "react-router";
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SitePageHeader";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/Tabs";
-import { requireUserAccess } from "~/lib/auth.server";
+import { requireSiteAccess } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
-import { requireSiteAccess } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
 import BrandSentiment from "./BrandSentiment";
 import CitationsRecentRun from "./CitationsRecentRun";
@@ -25,8 +24,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const user = await requireUserAccess(request);
-  const site = await requireSiteAccess(params.domain, user.id);
+  const { site } = await requireSiteAccess({ domain: params.domain, request });
 
   const runs = await prisma.citationQueryRun.findMany({
     include: { queries: true },

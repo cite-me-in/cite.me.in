@@ -13,15 +13,13 @@ import Main from "~/components/ui/Main";
 import ProgressIndicator from "~/components/ui/ProgressIndicator";
 import Spinner from "~/components/ui/Spinner";
 import addSiteQueries from "~/lib/addSiteQueries";
-import { requireUserAccess } from "~/lib/auth.server";
+import { requireSiteAccess } from "~/lib/auth.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import queryAccount from "~/lib/llm-visibility/queryAccount";
 import queryGroups from "~/lib/llm-visibility/queryGroups";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
-import { requireSiteAccess } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
-import OurSource from "./OurSource";
 
 export const handle = { siteNav: true };
 
@@ -32,8 +30,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const user = await requireUserAccess(request);
-  const site = await requireSiteAccess(params.domain, user.id);
+  const { site } = await requireSiteAccess({ domain: params.domain, request });
   const suggestions = await prisma.siteQuerySuggestion.findMany({
     where: { siteId: site.id },
   });
@@ -44,8 +41,10 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
 export async function action({ params, request }: Route.ActionArgs) {
   try {
-    const user = await requireUserAccess(request);
-    const site = await requireSiteAccess(params.domain, user.id);
+    const { site } = await requireSiteAccess({
+      domain: params.domain,
+      request,
+    });
 
     switch (request.method) {
       case "PUT": {
@@ -205,7 +204,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
         </ActiveLink>
       </div>
 
-      {isProcessing ? (
+      {isProcessing && (
         <p className="flex flex-row items-start gap-2 text-base text-foreground/60">
           <span>
             <CoffeeIcon className="size-6" />
@@ -217,8 +216,6 @@ export default function Index({ loaderData }: Route.ComponentProps) {
             this page open to see the progress.
           </span>
         </p>
-      ) : (
-        <OurSource content={loaderData.site?.content ?? ""} />
       )}
     </Main>
   );

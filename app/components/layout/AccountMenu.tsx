@@ -5,7 +5,6 @@ import {
   UnlockIcon,
   UserIcon,
 } from "lucide-react";
-import type { User } from "prisma/generated/client";
 import { useEffect, useRef, useState } from "react";
 import { Link, useRouteLoaderData } from "react-router";
 import { twMerge } from "tailwind-merge";
@@ -49,7 +48,7 @@ function DropdownMenu({
   sites,
   isPro,
 }: {
-  user: User;
+  user: { id: string; email: string };
   sites: { id: string; domain: string }[];
   isPro: boolean;
 }) {

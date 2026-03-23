@@ -6,7 +6,7 @@ import addSiteQueries, {
   runQueryOnAllPlatforms,
   updateSiteQuery,
 } from "~/lib/addSiteQueries";
-import { requireUserAccess } from "~/lib/auth.server";
+import { requireSiteAccess } from "~/lib/auth.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import {
   hasWordChanges,
@@ -14,7 +14,6 @@ import {
 } from "~/lib/llm-visibility/queryValidation";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
-import { requireSiteAccess } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
 import AddQueriesGroup from "./AddQueriesGroup";
 import GroupOfQueries from "./GroupOfQueries";
@@ -29,8 +28,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const user = await requireUserAccess(request);
-  const site = await requireSiteAccess(params.domain, user.id);
+  const { site } = await requireSiteAccess({ domain: params.domain, request });
 
   const rows = await prisma.siteQuery.findMany({
     where: { siteId: site.id },
@@ -48,8 +46,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
-  const user = await requireUserAccess(request);
-  const site = await requireSiteAccess(params.domain, user.id);
+  const { site } = await requireSiteAccess({ domain: params.domain, request });
 
   const data = await request.formData();
   const intent = data.get("_intent")?.toString();
@@ -144,7 +141,7 @@ export default function SiteQueriesPage({ loaderData }: Route.ComponentProps) {
         <code className="font-mono">2. active_search</code>).
       </p>
 
-      <SuggestedQueries hasContent={!!site.content} />
+      <SuggestedQueries />
 
       <div className="space-y-4">
         {groups.length === 0 ? (

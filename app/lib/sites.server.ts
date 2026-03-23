@@ -149,31 +149,6 @@ export async function loadSitesWithMetrics(userId: string): Promise<
   });
 }
 
-export async function requireSiteAccess(
-  domain: string,
-  userId: string,
-): Promise<Site> {
-  const site = await prisma.site.findFirst({
-    where: {
-      domain,
-      OR: [{ ownerId: userId }, { siteUsers: { some: { userId } } }],
-    },
-  });
-  if (!site) throw new Response("Not found", { status: 404 });
-  return site;
-}
-
-export async function requireSiteOwner(
-  domain: string,
-  userId: string,
-): Promise<Site> {
-  const site = await prisma.site.findFirst({
-    where: { domain, ownerId: userId },
-  });
-  if (!site) throw new Response("Forbidden", { status: 403 });
-  return site;
-}
-
 export async function deleteSite({
   userId,
   siteId,

@@ -4,7 +4,6 @@ import { Button } from "~/components/ui/Button";
 import Main from "~/components/ui/Main";
 import { requireUserAccess } from "~/lib/auth.server";
 import envVars from "~/lib/envVars";
-import prisma from "~/lib/prisma.server";
 import stripe from "~/lib/stripe.server";
 import type { Route } from "./+types/route";
 
@@ -13,16 +12,13 @@ export function meta(): Route.MetaDescriptors {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const user = await requireUserAccess(request);
-  const account = await prisma.account.findUnique({
-    where: { userId: user.id },
-  });
+  const { account } = await requireUserAccess(request);
   if (account?.status === "active") return redirect("/sites");
-  return {};
+  else return {};
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  const user = await requireUserAccess(request);
+  const { user } = await requireUserAccess(request);
   const form = await request.formData();
   const interval = form.get("interval")?.toString() ?? "monthly";
 

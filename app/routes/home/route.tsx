@@ -9,7 +9,7 @@ import {
 import CiteMeInLogo from "~/components/layout/CiteMeInLogo";
 import { ActiveLink } from "~/components/ui/ActiveLink";
 import Main from "~/components/ui/Main";
-import { getCurrentUser } from "~/lib/auth.server";
+import { requireUserAccess } from "~/lib/auth.server";
 import type { Route } from "./+types/route";
 
 const PERSONAS = [
@@ -54,8 +54,12 @@ const STEPS = [
 export const handle = { hideHeader: true };
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const user = await getCurrentUser(request);
-  return { user };
+  try {
+    const user = await requireUserAccess(request);
+    return { user };
+  } catch {
+    return { user: null };
+  }
 }
 
 export function meta(): Route.MetaDescriptors {

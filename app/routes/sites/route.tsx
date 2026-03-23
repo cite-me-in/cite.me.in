@@ -25,7 +25,7 @@ export function meta(): Route.MetaDescriptors {
 export const handle = { siteNav: true };
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const user = await requireUserAccess(request);
+  const { user } = await requireUserAccess(request);
   const [sites, account] = await Promise.all([
     loadSitesWithMetrics(user.id),
     prisma.account.findUnique({
@@ -50,7 +50,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  const user = await requireUserAccess(request);
+  const { user } = await requireUserAccess(request);
   const formData = await request.formData();
 
   switch (request.method) {

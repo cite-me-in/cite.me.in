@@ -6,7 +6,7 @@ import {
   ChartTooltipContent,
 } from "~/components/ui/Chart";
 import calculateVisibilityScore from "~/lib/llm-visibility/calculateVisibilityScore";
-import type { Prisma, Site } from "~/prisma";
+import type { Prisma } from "~/prisma";
 
 const charts = [
   {
@@ -37,7 +37,7 @@ export default function VisibilityCharts({
   recentRuns: Prisma.CitationQueryRunGetPayload<{
     include: { queries: true };
   }>[];
-  site: Site;
+  site: { id: string; domain: string };
 }) {
   const data = runs.map((run) => runToPoint(run, site));
 
@@ -86,7 +86,7 @@ function runToPoint(
   run: Prisma.CitationQueryRunGetPayload<{
     include: { queries: true };
   }>,
-  site: Site,
+  site: { id: string; domain: string },
 ): {
   date: string;
   citations: number;

@@ -26,7 +26,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const user = await requireUserAccess(request);
+  const { user } = await requireUserAccess(request);
   const citation = await prisma.citationQuery.findFirst({
     where: {
       id: params.citeId,

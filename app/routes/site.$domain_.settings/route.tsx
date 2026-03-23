@@ -1,9 +1,8 @@
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SitePageHeader";
-import { requireUserAccess } from "~/lib/auth.server";
+import { requireSiteOwner, requireUserAccess } from "~/lib/auth.server";
 import envVars from "~/lib/envVars";
 import prisma from "~/lib/prisma.server";
-import { requireSiteOwner } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
 import ApiKeySection from "./ApiKeySection";
 import MembersSection from "./MembersSection";
@@ -44,7 +43,7 @@ function trackBotVisit(request: Request) {
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const user = await requireUserAccess(request);
+  const { user } = await requireUserAccess(request);
   const site = await prisma.site.findFirst({
     where: {
       domain: params.domain,
@@ -67,8 +66,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
-  const user = await requireUserAccess(request);
-  const site = await requireSiteOwner(params.domain, user.id);
+  const { site } = await requireSiteOwner({ domain: params.domain, request });
 
   const formData = await request.formData();
   const intent = formData.get("intent")?.toString();

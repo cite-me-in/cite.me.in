@@ -12,18 +12,11 @@ import type { action } from "./route";
  * A component that displays suggested queries for a site. Starts with a button
  * to suggest queries, and then displays the suggestions if they are available.
  *
- * @param hasContent - Whether the site has content
  * @returns A component that displays suggested queries
  */
-export default function SuggestedQueries({
-  hasContent,
-}: {
-  hasContent: boolean;
-}) {
+export default function SuggestedQueries() {
   const fetcher = useFetcher<typeof action>();
   const [dismissed, setDismissed] = useState(false);
-
-  if (!hasContent) return null;
 
   const isLoading = fetcher.state !== "idle";
   const data = fetcher.data;

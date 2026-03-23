@@ -1,7 +1,6 @@
 import { Output, generateText } from "ai";
 import { z } from "zod";
 import prisma from "~/lib/prisma.server";
-import type { Site } from "~/prisma";
 import { haiku } from "./anthropic";
 import queryGroups from "./queryGroups";
 
@@ -12,11 +11,14 @@ import queryGroups from "./queryGroups";
  * @param site - The site to generate queries for.
  * @returns The generated queries.
  */
-export default async function generateSiteQueries(
-  site: Site,
-): Promise<{ group: string; query: string }[]> {
-  const content =
-    site.content ?? "I couldn't fetch the main page of the website.";
+export default async function generateSiteQueries(site: {
+  id: string;
+  domain: string;
+}): Promise<{ group: string; query: string }[]> {
+  const { content } = await prisma.site.findUniqueOrThrow({
+    where: { id: site.id },
+    select: { content: true },
+  });
   const { output } = await generateText({
     model: haiku,
     output: Output.array({
