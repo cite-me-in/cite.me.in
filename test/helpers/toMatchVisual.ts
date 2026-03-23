@@ -44,11 +44,13 @@ expect.extend({
     },
   ): Promise<{ message: () => string; pass: boolean }> {
     const name = options?.name ?? getTestName();
-    await expect(locator).toMatchScreenshot({
-      name,
-      tolerance: options?.tolerance ?? 10,
-    });
-    await expect(locator).toMatchInnerHTML({ name, modify: options?.modify });
+    await Promise.all([
+      expect(locator).toMatchScreenshot({
+        name,
+        tolerance: options?.tolerance ?? 10,
+      }),
+      expect(locator).toMatchInnerHTML({ name, modify: options?.modify }),
+    ]);
     return { message: () => "Visual matches baseline", pass: true };
   },
 });

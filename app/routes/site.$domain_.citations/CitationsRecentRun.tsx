@@ -16,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/Table";
+import { formatDateShort } from "~/lib/temporal";
 
 export default function RecentVisibility({
   queries,
@@ -75,7 +76,7 @@ export default function RecentVisibility({
                   {positions(query.citations, site.domain)}
                 </TableCell>
                 <TableCell className="text-right text-foreground/60 text-xs">
-                  {formatDate(query.onDate)}
+                  {formatDateShort(new Date(query.onDate))}
                 </TableCell>
                 <TableCell className="text-right">
                   <Link to={`/site/${site.domain}/citation/${query.id}`}>
@@ -89,13 +90,6 @@ export default function RecentVisibility({
       </CardContent>
     </Card>
   );
-}
-
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
 }
 
 function positions(citations: string[], domain: string) {
