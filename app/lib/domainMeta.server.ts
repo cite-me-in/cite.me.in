@@ -4,6 +4,10 @@ type CacheEntry = DomainMeta & { fetchedAt: number };
 const cache = new Map<string, CacheEntry>();
 const TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
+export function clearDomainMetaCache(): void {
+  cache.clear();
+}
+
 export async function getDomainMeta(domain: string): Promise<DomainMeta> {
   const cached = cache.get(domain);
   if (cached && Date.now() - cached.fetchedAt < TTL_MS)

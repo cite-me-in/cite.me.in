@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { getDomainMeta } from "~/lib/domainMeta.server";
+import { clearDomainMetaCache, getDomainMeta } from "~/lib/domainMeta.server";
 
 describe("getDomainMeta", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    clearDomainMetaCache();
   });
 
   it("should extract og:site_name when present", async () => {
