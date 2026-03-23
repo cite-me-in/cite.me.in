@@ -109,6 +109,23 @@ describe("topCompetitors", () => {
     expect(competitors[0].domain).toBe("competitor.com");
   });
 
+  it("should exclude non-competitor domains (Reddit, Wikipedia, etc.)", () => {
+    const queries = [
+      {
+        citations: [
+          "https://reddit.com/r/retail/post",
+          "https://en.wikipedia.org/wiki/Retail",
+          "https://competitor.com/page",
+          "https://youtube.com/watch?v=abc",
+          "https://linkedin.com/in/someone",
+        ],
+      },
+    ];
+    const { competitors } = topCompetitors(queries, "mysite.com");
+    expect(competitors).toHaveLength(1);
+    expect(competitors[0].domain).toBe("competitor.com");
+  });
+
   it("should aggregate citations across multiple queries", () => {
     const queries = [
       { citations: ["https://a.com/1", "https://b.com/1"] },

@@ -9,6 +9,45 @@ import {
 } from "~/components/ui/Card";
 import externalLink from "~/lib/externalLink";
 
+export const NON_COMPETITOR_DOMAINS = new Set([
+  // Community / Q&A
+  "reddit.com",
+  "quora.com",
+  "stackoverflow.com",
+  // Encyclopedias
+  "wikipedia.org",
+  "en.wikipedia.org",
+  "wikimedia.org",
+  // Social media
+  "linkedin.com",
+  "twitter.com",
+  "x.com",
+  "facebook.com",
+  "instagram.com",
+  "tiktok.com",
+  "pinterest.com",
+  // Video
+  "youtube.com",
+  "vimeo.com",
+  // News & media
+  "nytimes.com",
+  "wsj.com",
+  "bloomberg.com",
+  "reuters.com",
+  "ft.com",
+  "forbes.com",
+  "businessinsider.com",
+  "techcrunch.com",
+  "theguardian.com",
+  "bbc.com",
+  "bbc.co.uk",
+  "cnn.com",
+  // General content platforms
+  "medium.com",
+  "substack.com",
+  "wordpress.com",
+]);
+
 export default function TopCompetitors({
   queries,
   ownDomain,
@@ -74,7 +113,7 @@ export function topCompetitors(
       try {
         const hostname = new URL(url).hostname.replace(/^www\./, "");
         total++;
-        if (hostname !== ownDomain)
+        if (hostname !== ownDomain && !NON_COMPETITOR_DOMAINS.has(hostname))
           counts.set(hostname, (counts.get(hostname) ?? 0) + 1);
       } catch {
         /* skip invalid URLs */
