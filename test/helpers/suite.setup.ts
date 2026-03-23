@@ -10,6 +10,7 @@ import "./toMatchInnerHTML";
 import "./toMatchScreenshot";
 import "./toMatchVisual";
 import "./trimConsole";
+import { fixedTime } from "./worker.setup";
 
 Sentry.init({ enabled: false });
 
@@ -18,7 +19,7 @@ beforeAll(async () => {
   await prisma.user.deleteMany();
 
   // Freeze time at a fixed timestamp for deterministic visual and time-based tests
-  vi.setSystemTime(new Date("2023-01-01T12:00:00Z"));
+  vi.setSystemTime(fixedTime.getTime());
 
   // MSH handlers mock 3rd party APIs
   msw();

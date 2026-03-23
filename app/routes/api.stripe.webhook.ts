@@ -9,6 +9,12 @@ import type { Route } from "./+types/api.stripe.webhook";
 
 const logger = debug("server");
 
+function hasRequiredStripeSignatureParts(signature: string) {
+  return (
+    /(?:^|,)\s*t=\d+/.test(signature) && /(?:^|,)\s*v1=[^,\s]+/.test(signature)
+  );
+}
+
 export async function action({ request }: Route.ActionArgs) {
   if (request.method !== "POST")
     throw new Response("Method not allowed", { status: 405 });
@@ -18,6 +24,8 @@ export async function action({ request }: Route.ActionArgs) {
 
   if (!sig || !envVars.STRIPE_WEBHOOK_SECRET)
     throw new Response("Missing signature", { status: 400 });
+  if (!hasRequiredStripeSignatureParts(sig))
+    throw new Response("Invalid signature", { status: 400 });
 
   let event: Stripe.Event;
   try {

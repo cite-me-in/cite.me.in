@@ -7,7 +7,7 @@ import type {
   LoaderFunctionArgs,
 } from "react-router";
 import "~/lib/logger.server";
-import msw from "~/test/mocks/msw";
+import setupTestServer from "~/test/helpers/worker.setup";
 import { createBotTracker } from "./lib/botTracker";
 import envVars from "./lib/envVars";
 import logError from "./lib/logError.server";
@@ -29,7 +29,7 @@ if (import.meta.env.PROD)
   });
 
 // Initialize MSW in test mode (on the server side)
-if (process.env.NODE_ENV === "test") msw();
+if (process.env.NODE_ENV === "test") setupTestServer();
 
 const logger = debug("server");
 

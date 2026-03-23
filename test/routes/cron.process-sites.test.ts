@@ -95,7 +95,7 @@ describe("cron.process-sites", () => {
 
     it("should skip a free site older than 25 days", async () => {
       const twentyFiveDaysAgo = new Date(
-        Temporal.Now.instant().subtract({ hours: 24 * 25 }).epochMilliseconds,
+        Temporal.Now.instant().subtract({ hours: 24 * 26 }).epochMilliseconds,
       );
       await prisma.site.create({
         data: {
