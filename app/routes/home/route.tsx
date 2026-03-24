@@ -131,9 +131,10 @@ function HeroSection({ isSignedIn }: { isSignedIn: boolean }) {
         </h1>
 
         <p className="mb-10 max-w-2xl font-medium text-black text-xl leading-relaxed md:text-2xl">
-          Cite.me.in runs your queries across ChatGPT, Claude, Gemini, and
-          Perplexity and records every time they cite your website. See what's
-          working. Fix what's not.
+          Most founders are running blind on AI visibility. Cite.me.in runs
+          your queries across ChatGPT, Claude, Gemini, and Perplexity and
+          records every time they cite your website. See what's working. Fix
+          what's not.
         </p>
 
         <div className="flex flex-col gap-4 sm:flex-row">
