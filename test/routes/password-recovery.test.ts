@@ -80,7 +80,7 @@ describe("password recovery route", () => {
   it("should match visually", async () => {
     const page = await goto("/password-recovery");
     await expect(page.locator("main")).toMatchVisual({
-      name: "password-recovery",
+      name: "account/password-recovery",
     });
   });
 

@@ -61,7 +61,7 @@ describe("sites route", () => {
 
     it("should match visually", async () => {
       await expect(page.locator("main")).toMatchVisual({
-        name: "sites.empty",
+        name: "sites/empty",
         modify: fixBaseline,
       });
     });
@@ -165,7 +165,7 @@ describe("sites route", () => {
 
     it("should match visually", async () => {
       await expect(page.locator("main")).toMatchVisual({
-        name: "sites.suggestions",
+        name: "sites/suggestions",
         modify: fixBaseline,
       });
     });
@@ -195,7 +195,7 @@ describe("sites route", () => {
 
       it("should match visually", async () => {
         await expect(page.locator("main")).toMatchVisual({
-          name: "sites.citations",
+          name: "sites/citations",
           modify: fixBaseline,
         });
       });
@@ -233,7 +233,7 @@ describe("sites route", () => {
 
     it("should match visually", async () => {
       await expect(page.locator("main")).toMatchVisual({
-        name: "sites.list",
+        name: "sites/list",
         modify: fixBaseline,
       });
     });
@@ -272,7 +272,7 @@ describe("sites route", () => {
 
       it("should match visually", async () => {
         await expect(page.locator("main")).toMatchVisual({
-          name: "sites.delete",
+          name: "sites/delete",
           modify: fixBaseline,
         });
       });
@@ -370,7 +370,7 @@ describe("sites route", () => {
 
       it("should match visually", async () => {
         await expect(page.locator("main")).toMatchVisual({
-          name: "sites.two-runs",
+          name: "sites/two-runs",
           modify: fixBaseline,
         });
       });

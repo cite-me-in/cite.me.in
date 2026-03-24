@@ -245,8 +245,8 @@ describe("site page", () => {
     // Strip chart SVGs: Recharts computes floating-point coordinates from
     // ResizeObserver measurements that drift slightly between runs. The
     // screenshot test covers visual regressions in charts.
-    await expect(page).toMatchVisual({
-      name: "site.citations",
+    await expect(page.locator("main")).toMatchVisual({
+      name: "site/citations",
       modify: (html) =>
         removeElements(html, (node) => {
           if (node.attributes["data-slot"] === "chart") return true;

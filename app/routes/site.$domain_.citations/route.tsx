@@ -58,7 +58,10 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     site.domain,
   );
   const competitors = await Promise.all(
-    rawCompetitors.map(async (c) => ({ ...c, ...(await getDomainMeta(c.domain)) })),
+    rawCompetitors.map(async (c) => ({
+      ...c,
+      ...(await getDomainMeta(c.domain)),
+    })),
   );
 
   return { site, runs, siteQueries, competitors };
@@ -89,7 +92,7 @@ export default function SiteCitationsPage({
     <Main variant="wide">
       <SitePageHeader
         site={site}
-        title="Citations"
+        title="Citation visibility"
         backTo={{ label: "Edit queries", path: `/site/${site.domain}/queries` }}
       />
 

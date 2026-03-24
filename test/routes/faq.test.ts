@@ -62,7 +62,7 @@ describe("FAQ page", () => {
 
   it("should match visually", async () => {
     await expect(page.locator("main")).toMatchVisual({
-      name: "faq",
+      name: "home/faq",
     });
   });
 

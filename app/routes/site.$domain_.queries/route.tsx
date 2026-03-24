@@ -130,8 +130,11 @@ export default function SiteQueriesPage({ loaderData }: Route.ComponentProps) {
     <Main variant="wide">
       <SitePageHeader
         site={site}
-        title="Citation Queries"
-        backTo={{ label: "Citations", path: `/site/${site.domain}/citations` }}
+        title="Queries for citation visibility"
+        backTo={{
+          label: "View citations",
+          path: `/site/${site.domain}/citations`,
+        }}
       />
 
       <p className="text-base text-foreground/60">

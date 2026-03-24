@@ -52,7 +52,7 @@ describe("profile route", () => {
 
     it("should match visually", { timeout: 30_000 }, async () => {
       await expect(page.locator("main")).toMatchVisual({
-        name: "profile.email.update",
+        name: "account/email-update",
       });
     });
 
@@ -130,7 +130,7 @@ describe("profile route", () => {
 
     it("should match visually", { timeout: 30_000 }, async () => {
       await expect(page.locator("main")).toMatchVisual({
-        name: "profile.password.update",
+        name: "account/password-update",
       });
     });
 

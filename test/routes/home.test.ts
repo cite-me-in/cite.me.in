@@ -62,7 +62,7 @@ describe("home page", () => {
   it("should match visually", { timeout: 30_000 }, async () => {
     const page = await goto("/");
     await expect(page.locator("main")).toMatchVisual({
-      name: "home",
+      name: "home/landing",
     });
   });
 

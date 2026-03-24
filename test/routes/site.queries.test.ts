@@ -71,7 +71,7 @@ describe("site queries page", () => {
 
     it("should match visually", async () => {
       await expect(page.locator("main")).toMatchVisual({
-        name: "site.queries.empty",
+        name: "site/queries-empty",
         modify: (html) =>
           removeElements(html, (node) => {
             const href = node.attributes.href ?? "";
@@ -130,7 +130,7 @@ describe("site queries page", () => {
 
     it("should match visually", async () => {
       await expect(page.locator("main")).toMatchVisual({
-        name: "site.queries",
+        name: "site/queries-few",
         modify: (html) =>
           removeElements(html, (node) => {
             const href = node.attributes.href ?? "";

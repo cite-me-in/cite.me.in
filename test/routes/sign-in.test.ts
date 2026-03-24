@@ -59,7 +59,7 @@ describe("sign-in route", () => {
   it("should match visually", async () => {
     const page = await goto("/sign-in");
     await expect(page.locator("main")).toMatchVisual({
-      name: "sign-in",
+      name: "account/sign-in",
     });
   });
 
