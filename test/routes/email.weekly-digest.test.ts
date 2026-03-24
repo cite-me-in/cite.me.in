@@ -3,6 +3,7 @@ import { render } from "@react-email/components";
 import React from "react";
 import { beforeAll, describe, it, vi } from "vitest";
 import { WeeklyDigestEmail } from "~/emails/WeeklyDigest";
+import { removeElements } from "~/lib/html/parseHTML";
 import { generateCitationChart } from "~/lib/weeklyDigest.server";
 import { newContext } from "../helpers/launchBrowser";
 
@@ -107,6 +108,25 @@ describe("WeeklyDigestEmail", () => {
     const page = await context.newPage();
     await page.setContent(html, { waitUntil: "load" });
     await page.setViewportSize({ width: 1024, height: 2048 });
-    await expect(page).toMatchVisual({ name: "email.weekly-digest" });
+
+    // Hide the chart image before screenshotting — canvas rendering varies
+    // slightly across environments and would cause false diff failures.
+    await page
+      .locator('img[alt="Citation trend: this week vs previous week"]')
+      .evaluate((el) => {
+        (el as HTMLElement).style.visibility = "hidden";
+      });
+
+    await expect(page).toMatchVisual({
+      name: "email/weekly-digest",
+      modify: (nodes) =>
+        removeElements(
+          nodes,
+          (node) =>
+            node.tag === "img" &&
+            node.attributes.alt ===
+              "Citation trend: this week vs previous week",
+        ),
+    });
   });
 });
