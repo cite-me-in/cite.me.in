@@ -84,7 +84,7 @@ try {
 Printf-style with a `[context:subcontext]` prefix — no template literals:
 
 ```ts
-const logger = deubg('server');
+const logger = debug('server');
 
 logger("[%s:%s] Created run %s", site.id, platform, run.id);
 logger("[%s:%s] Failed: %o", site.id, platform, error);
