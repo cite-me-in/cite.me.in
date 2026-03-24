@@ -27,6 +27,7 @@ const activeLinkVariants = cva(
       bg: {
         yellow: "bg-[#F59E0B]",
         white: "bg-white",
+        blue: "bg-blue-500",
       },
     },
     defaultVariants: {

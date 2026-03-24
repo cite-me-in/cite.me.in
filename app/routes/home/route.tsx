@@ -4,6 +4,8 @@ import {
   LineChart,
   MessageSquare,
   Search,
+  Sparkles,
+  Star,
   TrendingUp,
 } from "lucide-react";
 import CiteMeInLogo from "~/components/layout/CiteMeInLogo";
@@ -116,35 +118,35 @@ function HeroSection({ isSignedIn }: { isSignedIn: boolean }) {
   return (
     <section className="border-black border-b-2 bg-[#F59E0B] px-6 py-20 md:py-32">
       <div className="mx-auto max-w-4xl">
-        <div className="mb-6 inline-block rounded-base border-2 border-black bg-white px-4 py-1 font-bold text-base shadow-[2px_2px_0px_0px_black]">
+        <blockquote className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border-2 bg-white px-4 py-1.5 font-bold text-base text-black shadow-md">
+          <Star className="h-4 w-4" />
           The Search Console for AI
-        </div>
+          <Sparkles className="h-4 w-4" />
+        </blockquote>
+
         <h1 className="mb-6 font-bold text-4xl text-black leading-tight md:text-6xl">
           Does ChatGPT mention
           <br />
           your brand?
         </h1>
+
         <p className="mb-10 max-w-2xl font-medium text-black text-xl leading-relaxed md:text-2xl">
           Cite.me.in runs your queries across ChatGPT, Claude, Gemini, and
           Perplexity and records every time they cite your website. See what's
           working. Fix what's not.
         </p>
+
         <div className="flex flex-col gap-4 sm:flex-row">
           {isSignedIn ? (
-            <ActiveLink variant="button" to="/sites" size="xl">
+            <ActiveLink variant="button" bg="blue" to="/sites" size="xl">
               Add a site
             </ActiveLink>
           ) : (
             <>
-              <ActiveLink variant="button" to="/sign-up" size="xl">
+              <ActiveLink variant="button" bg="blue" to="/sign-up" size="xl">
                 Start monitoring — free
               </ActiveLink>
-              <ActiveLink
-                variant="button"
-                to="/sign-in"
-                size="xl"
-                className="bg-white"
-              >
+              <ActiveLink variant="button" bg="white" to="/sign-in" size="xl">
                 Sign in
               </ActiveLink>
             </>
