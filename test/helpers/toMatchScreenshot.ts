@@ -47,10 +47,6 @@ expect.extend({
         pass: true,
       };
 
-    // NOTE: Give the page minimum time to finish uploading images and rendering.
-    const page = "page" in locator ? locator.page() : locator;
-    await page.waitForTimeout(500);
-
     const name = options?.name || getTestName();
     const filename = path.resolve(baseDir, `${name}.png`);
     const chartLocators = await locator.locator('[data-slot="chart"]').all();

@@ -1,7 +1,7 @@
 // DO NOT add to setup.ts as vitest.config.js cannot upload file that imports vitest
 
 import { expect } from "@playwright/test";
-import { invariant } from "es-toolkit";
+import { delay, invariant } from "es-toolkit";
 import { readdirSync, unlinkSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
@@ -48,6 +48,18 @@ expect.extend({
     },
   ): Promise<{ message: () => string; pass: boolean }> {
     const name = options?.name || getTestName();
+
+    // Wait for the page to finish rendering/animations before capturing screenshots or HTML.
+    // This can use Playwright's waitForLoadState and a small additional delay for UI transitions.
+    if (
+      "waitForLoadState" in locator &&
+      typeof locator.waitForLoadState === "function"
+    )
+      await locator.waitForLoadState("networkidle");
+    // Wait for all possible animations/transitions (tweak ms if needed for your UI)
+    await delay(150);
+
+    // Run both matchers in parallel and fail if either fails.
     const [screenshot, html] = await Promise.allSettled([
       expect(locator).toMatchScreenshot({ name, ...options }),
       expect(locator).toMatchInnerHTML({ name, ...options }),
@@ -55,6 +67,7 @@ expect.extend({
     if (screenshot.status === "rejected")
       throw new Error(screenshot.reason.message);
     if (html.status === "rejected") throw new Error(html.reason.message);
+
     return { message: () => "Visual matches baseline", pass: true };
   },
 });
