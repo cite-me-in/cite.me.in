@@ -15,7 +15,6 @@ import diffHTMLs from "~/lib/html/diffHTMLs";
 import formatHTMLTree from "~/lib/html/formatHTML";
 import type { HTMLNode } from "~/lib/html/HTMLNode";
 import parseHTMLTree from "~/lib/html/parseHTML";
-import vitestConfig from "../../vitest.config";
 import { baseDir } from "./toMatchVisual";
 
 declare global {
@@ -46,16 +45,15 @@ expect.extend({
     const name = options?.name || getTestName();
     const filename = path.resolve(baseDir, `${name}.html`);
     const rawHtml =
-      "content" in locator
-        ? await (locator as unknown as Page).innerHTML("body")
-        : await locator.innerHTML();
+      "page" in locator
+        ? await locator.innerHTML()
+        : await (locator as Page).innerHTML("body");
 
     const html = parseHTMLTree(rawHtml);
     if (options?.modify) options.modify(html);
     const formattedHtml = formatHTMLTree(html);
 
     try {
-      if (vitestConfig.test?.update) throw new Error("Update is enabled");
       await access(filename, constants.R_OK);
     } catch {
       await mkdir(dirname(filename), { recursive: true });
