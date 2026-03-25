@@ -1,4 +1,4 @@
-import { TrendingUp } from "lucide-react";
+import { TrendingUpIcon } from "lucide-react";
 import { ActiveLink } from "~/components/ui/ActiveLink";
 
 export default function AboutCTA() {
@@ -7,7 +7,7 @@ export default function AboutCTA() {
       <div className="container mx-auto max-w-3xl text-center">
         <div className="mb-8 flex justify-center">
           <div className="flex h-20 w-20 items-center justify-center rounded-md border-2 border-black bg-[#F59E0B] shadow-[4px_4px_0px_0px_black]">
-            <TrendingUp className="h-10 w-10 text-black" />
+            <TrendingUpIcon className="h-10 w-10 text-black" />
           </div>
         </div>
         <h2 className="mb-6 font-bold text-4xl text-black leading-tight md:text-5xl">

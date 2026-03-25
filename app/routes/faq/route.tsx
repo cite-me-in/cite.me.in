@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { ChevronDownIcon } from "lucide-react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { ActiveLink } from "~/components/ui/ActiveLink";
@@ -101,7 +101,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
         <h3 className="font-bold text-black text-lg" itemProp="name">
           {question}
         </h3>
-        <ChevronDown
+        <ChevronDownIcon
           className={twMerge(
             "h-5 w-5 shrink-0 text-[#F59E0B] transition-transform",
             isOpen && "rotate-180",

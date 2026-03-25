@@ -1,12 +1,12 @@
 import {
-  BarChart2,
-  Globe,
-  LineChart,
-  MessageSquare,
-  Search,
-  Sparkles,
-  Star,
-  TrendingUp,
+  BarChart2Icon,
+  GlobeIcon,
+  LineChartIcon,
+  MessageSquareIcon,
+  SearchIcon,
+  SparklesIcon,
+  StarIcon,
+  TrendingUpIcon,
 } from "lucide-react";
 import CiteMeInLogo from "~/components/layout/CiteMeInLogo";
 import { ActiveLink } from "~/components/ui/ActiveLink";
@@ -16,17 +16,17 @@ import type { Route } from "./+types/route";
 
 const PERSONAS = [
   {
-    icon: TrendingUp,
+    icon: TrendingUpIcon,
     title: "Solo founders",
     body: "You're building an audience and want to know if AI platforms are sending you traffic — or ignoring you.",
   },
   {
-    icon: MessageSquare,
+    icon: MessageSquareIcon,
     title: "Small businesses",
     body: "Your customers use ChatGPT and Perplexity to find services like yours. Are you in those answers?",
   },
   {
-    icon: LineChart,
+    icon: LineChartIcon,
     title: "Marketing teams",
     body: "Track AI citation visibility as a channel. See trends, compare platforms, and report on progress.",
   },
@@ -37,19 +37,19 @@ const STEPS = [
     number: "1",
     title: "Add your website",
     body: "Enter your domain. We read your content and instantly suggest 9 ready-to-run queries — covering discovery, comparison, and direct searches — so you're tracking in under a minute. No setup required.",
-    icon: Globe,
+    icon: GlobeIcon,
   },
   {
     number: "2",
     title: "We run the queries",
     body: "Each week we run your queries across every major AI platform with web search enabled — the same experience your potential customers have.",
-    icon: Search,
+    icon: SearchIcon,
   },
   {
     number: "3",
     title: "You see the citations",
     body: "Every URL that appears in an AI response gets recorded. You see which platforms cite you, how often, and for which queries.",
-    icon: BarChart2,
+    icon: BarChart2Icon,
   },
 ] as const;
 
@@ -119,9 +119,9 @@ function HeroSection({ isSignedIn }: { isSignedIn: boolean }) {
     <section className="border-black border-b-2 bg-[#F59E0B] px-6 py-20 md:py-32">
       <div className="mx-auto max-w-4xl">
         <blockquote className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border-2 bg-white px-4 py-1.5 font-bold text-base text-black shadow-md">
-          <Star className="h-4 w-4" />
+          <StarIcon className="h-4 w-4" />
           The Search Console for AI
-          <Sparkles className="h-4 w-4" />
+          <SparklesIcon className="h-4 w-4" />
         </blockquote>
 
         <h1 className="mb-6 font-bold text-4xl text-black leading-tight md:text-6xl">
@@ -131,10 +131,9 @@ function HeroSection({ isSignedIn }: { isSignedIn: boolean }) {
         </h1>
 
         <p className="mb-10 max-w-2xl font-medium text-black text-xl leading-relaxed md:text-2xl">
-          Most founders are running blind on AI visibility. Cite.me.in runs
-          your queries across ChatGPT, Claude, Gemini, and Perplexity and
-          records every time they cite your website. See what's working. Fix
-          what's not.
+          Most founders are running blind on AI visibility. Cite.me.in runs your
+          queries across ChatGPT, Claude, Gemini, and Perplexity and records
+          every time they cite your website. See what's working. Fix what's not.
         </p>
 
         <div className="flex flex-col gap-4 sm:flex-row">

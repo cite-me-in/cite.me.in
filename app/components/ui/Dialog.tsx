@@ -1,5 +1,5 @@
 import { Dialog } from "@base-ui/react/dialog";
-import { X } from "lucide-react";
+import { XIcon } from "lucide-react";
 import type * as React from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -61,7 +61,7 @@ function DialogContent({
       >
         {children}
         <Dialog.Close className="absolute top-4 right-4 rounded-base opacity-100 ring-offset-white focus:outline-hidden focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:pointer-events-none [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0">
-          <X />
+          <XIcon />
           <span className="sr-only">Close</span>
         </Dialog.Close>
       </Dialog.Popup>
