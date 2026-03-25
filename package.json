@@ -44,6 +44,7 @@
 		"@vercel/speed-insights": "^2.0.0",
 		"ai": "^6.0.137",
 		"bcryptjs": "^3.0.3",
+		"braintrust": "^3.6.0",
 		"class-variance-authority": "^0.7.1",
 		"convert": "^7.0.0",
 		"debug": "^4.4.3",

@@ -1,11 +1,14 @@
 import { createPerplexity } from "@ai-sdk/perplexity";
-import { generateText } from "ai";
+import * as ai from "ai";
+import { wrapAISDK } from "braintrust";
 import { invariant } from "es-toolkit";
 import envVars from "~/lib/envVars";
 import type { QueryFn } from "./queryFn";
 
 export const MODEL_ID = "sonar";
 export const MODEL_PRICING = { costPerInputM: 1.0, costPerOutputM: 1.0 };
+
+const { generateText } = wrapAISDK(ai);
 
 export default async function queryPerplexity({
   maxRetries,

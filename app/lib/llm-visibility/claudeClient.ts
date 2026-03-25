@@ -1,10 +1,13 @@
 import { anthropic } from "@ai-sdk/anthropic";
-import { generateText } from "ai";
+import * as ai from "ai";
+import { wrapAISDK } from "braintrust";
 import { haiku } from "./anthropic";
 import type { QueryFn } from "./queryFn";
 
 export const MODEL_ID = "claude-haiku-4-5-20251001";
 export const MODEL_PRICING = { costPerInputM: 1.0, costPerOutputM: 5.0 };
+
+const { generateText } = wrapAISDK(ai);
 
 export default async function queryClaude({
   maxRetries,
@@ -17,7 +20,6 @@ export default async function queryClaude({
 }): ReturnType<QueryFn> {
   const { sources, text, usage } = await generateText({
     model: haiku,
-
     prompt: [
       {
         role: "system",

@@ -1,11 +1,14 @@
 import { openai } from "@ai-sdk/openai";
-import { generateText } from "ai";
+import * as ai from "ai";
+import { wrapAISDK } from "braintrust";
 import { invariant } from "es-toolkit";
 import envVars from "~/lib/envVars";
 import type { QueryFn } from "./queryFn";
 
 export const MODEL_ID = "gpt-5-chat-latest";
 export const MODEL_PRICING = { costPerInputM: 1.25, costPerOutputM: 10.0 };
+
+const { generateText } = wrapAISDK(ai);
 
 export default async function openaiClient({
   maxRetries,

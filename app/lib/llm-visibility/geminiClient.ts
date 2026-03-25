@@ -1,5 +1,6 @@
 import { google } from "@ai-sdk/google";
-import { generateText } from "ai";
+import * as ai from "ai";
+import { wrapAISDK } from "braintrust";
 import { ms } from "convert";
 import { invariant, mapAsync } from "es-toolkit";
 import envVars from "~/lib/envVars";
@@ -7,6 +8,8 @@ import type { QueryFn } from "./queryFn";
 
 export const MODEL_ID = "gemini-2.5-flash";
 export const MODEL_PRICING = { costPerInputM: 0.3, costPerOutputM: 2.5 };
+
+const { generateText } = wrapAISDK(ai);
 
 export default async function queryGemini({
   maxRetries,
