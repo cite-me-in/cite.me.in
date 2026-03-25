@@ -3,7 +3,11 @@ import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import prisma from "~/lib/prisma.server";
 import type { Site } from "~/prisma";
 
-vi.mock("ai", () => ({ generateText: vi.fn(), Output: { array: vi.fn() } }));
+vi.mock("ai", () => ({
+  generateText: vi.fn(),
+  gateway: vi.fn(),
+  Output: { array: vi.fn() },
+}));
 vi.mock("~/lib/llm-visibility/anthropic", () => ({
   haiku: "mock-haiku-model",
 }));

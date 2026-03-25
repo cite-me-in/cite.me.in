@@ -1,5 +1,8 @@
-import { generateText } from "ai";
+import * as ai from "ai";
+import { wrapAISDK } from "braintrust";
 import { haiku } from "./anthropic";
+
+const { generateText } = wrapAISDK(ai);
 
 export default async function generateBotInsight(
   domain: string,

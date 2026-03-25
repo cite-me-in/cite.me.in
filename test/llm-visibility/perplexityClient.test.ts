@@ -12,6 +12,7 @@ vi.mock("@ai-sdk/perplexity", () => ({
 
 vi.mock("ai", () => ({
   generateText: vi.fn(),
+  gateway: vi.fn(),
 }));
 
 describe("queryPerplexity", () => {

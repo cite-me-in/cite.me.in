@@ -16,6 +16,7 @@ vi.mock("@ai-sdk/google", () => {
 
 vi.mock("ai", () => ({
   generateText: vi.fn(),
+  gateway: vi.fn(),
 }));
 
 describe("queryGemini", () => {

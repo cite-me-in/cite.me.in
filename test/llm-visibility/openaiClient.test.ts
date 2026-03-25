@@ -18,6 +18,7 @@ vi.mock("@ai-sdk/openai", () => {
 
 vi.mock("ai", () => ({
   generateText: vi.fn(),
+  gateway: vi.fn(),
 }));
 
 describe("openaiClient", () => {

@@ -1,5 +1,8 @@
-import { generateText } from "ai";
+import * as ai from "ai";
+import { wrapAISDK } from "braintrust";
 import { haiku } from "../llm-visibility/anthropic";
+
+const { generateText } = wrapAISDK(ai);
 
 /**
  * Summarize the given content. Used to generate a summary for a site based on

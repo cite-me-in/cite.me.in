@@ -20,6 +20,7 @@ vi.mock("~/lib/llm-visibility/anthropic", () => ({
 
 vi.mock("ai", () => ({
   generateText: vi.fn(),
+  gateway: vi.fn(),
 }));
 
 describe("queryClaude", () => {

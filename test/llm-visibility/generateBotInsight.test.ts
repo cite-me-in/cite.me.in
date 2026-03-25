@@ -2,7 +2,7 @@ import { generateText } from "ai";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import generateBotInsight from "~/lib/llm-visibility/generateBotInsight";
 
-vi.mock("ai", () => ({ generateText: vi.fn() }));
+vi.mock("ai", () => ({ generateText: vi.fn(), gateway: vi.fn() }));
 vi.mock("~/lib/llm-visibility/anthropic", () => ({
   haiku: "mock-haiku-model",
 }));
