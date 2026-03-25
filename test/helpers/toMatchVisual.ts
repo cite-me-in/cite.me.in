@@ -47,14 +47,14 @@ expect.extend({
       modify?: (html: HTMLNode[]) => void;
     },
   ): Promise<{ message: () => string; pass: boolean }> {
-    const name = options?.name ?? getTestName();
-    await Promise.all([
-      expect(locator).toMatchScreenshot({
-        name,
-        tolerance: options?.tolerance ?? 10,
-      }),
-      expect(locator).toMatchInnerHTML({ name, modify: options?.modify }),
+    const name = options?.name || getTestName();
+    const [screenshot, html] = await Promise.allSettled([
+      expect(locator).toMatchScreenshot({ name, ...options }),
+      expect(locator).toMatchInnerHTML({ name, ...options }),
     ]);
+    if (screenshot.status === "rejected")
+      throw new Error(screenshot.reason.message);
+    if (html.status === "rejected") throw new Error(html.reason.message);
     return { message: () => "Visual matches baseline", pass: true };
   },
 });
