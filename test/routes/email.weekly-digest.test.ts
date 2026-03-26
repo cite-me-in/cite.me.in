@@ -26,9 +26,9 @@ describe("WeeklyDigestEmail", () => {
         domain: "rentail.space",
         subject: "Weekly Digest · Mar 17 — Mar 24, 2026",
         to: [],
-        citations: { delta: 5, total: 142, domain: 23 },
-        score: { current: 72, delta: 8 },
-        botVisits: { total: 1204, delta: 312 },
+        citations: { total: { current: 142, previous: 137 }, domain: { current: 23, previous: 18 } },
+        score: { current: 72, previous: 64 },
+        botVisits: { current: 1204, previous: 892 },
         byPlatform: {
           chatgpt: {
             count: 45,

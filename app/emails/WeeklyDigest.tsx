@@ -7,7 +7,7 @@ import EmailLayout from "./EmailLayout";
 import { sendEmail } from "./sendEmails";
 
 export type WeeklyDigestEmailProps = {
-  botVisits: { total: number; delta: number };
+  botVisits: { current: number; previous: number };
   byPlatform: {
     [k: string]: {
       count: number;
@@ -16,9 +16,12 @@ export type WeeklyDigestEmailProps = {
     };
   };
   chartBase64: string;
-  citations: { delta: number; total: number; domain: number };
+  citations: {
+    total: { current: number; previous: number };
+    domain: { current: number; previous: number };
+  };
   domain: string;
-  score: { current: number; delta: number };
+  score: { current: number; previous: number };
   subject: string;
   to: string[];
   competitors: {
@@ -105,19 +108,18 @@ function TopMetrics({
   score,
   botVisits,
 }: {
-  citations: { total: number; delta: number; domain: number };
-  score: { current: number; delta: number };
-  botVisits: { total: number; delta: number };
+  citations: {
+    total: { current: number; previous: number };
+    domain: { current: number; previous: number };
+  };
+  score: { current: number; previous: number };
+  botVisits: { current: number; previous: number };
 }) {
   const metrics = [
-    {
-      label: "Your citations",
-      value: citations.domain,
-      delta: citations.delta,
-    },
-    { label: "All citations", value: citations.total, delta: 0 },
-    { label: "Score", value: score.current, delta: score.delta },
-    { label: "Bot visits", value: botVisits.total, delta: botVisits.delta },
+    { label: "Your citations", ...citations.domain },
+    { label: "All citations", ...citations.total },
+    { label: "Score", ...score },
+    { label: "Bot visits", ...botVisits },
   ];
 
   return (
@@ -135,15 +137,18 @@ function TopMetrics({
                     {item.label}
                   </Text>
                   <Text className="font-bold text-2xl text-dark">
-                    {item.value.toLocaleString()}
+                    {item.current.toLocaleString()}
                   </Text>
                   <Text
                     className={twMerge(
                       "text-center font-semibold text-sm",
-                      deltaColor(item.delta),
+                      pctDeltaColor(item.current, item.previous),
                     )}
                   >
-                    {deltaValue(item.delta)}
+                    {pctDelta(item.current, item.previous)}
+                  </Text>
+                  <Text className="text-light text-xs">
+                    {item.previous.toLocaleString()}
                   </Text>
                 </Column>
               </Row>
@@ -320,11 +325,22 @@ function Card({
   );
 }
 
-function deltaValue(n: number, suffix = ""): string {
+function pctDelta(current: number, previous: number): string {
+  if (previous === 0) return current === 0 ? "—" : "+∞%";
+  const pct = Math.round(((current - previous) / previous) * 100);
+  if (pct === 0) return "—";
+  return pct > 0 ? `+${pct}%` : `${pct}%`;
+}
+
+function pctDeltaColor(current: number, previous: number): string {
+  if (current > previous) return "text-green-500";
+  if (current < previous) return "text-red-500";
+  return "text-gray-500";
+}
+
+function deltaValue(n: number): string {
   if (n === 0) return "—";
-  return n > 0
-    ? `+${n.toLocaleString()}${suffix}`
-    : `${n.toLocaleString()}${suffix}`;
+  return n > 0 ? `+${n.toLocaleString()}` : `${n.toLocaleString()}`;
 }
 
 function deltaColor(n: number): string {

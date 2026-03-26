@@ -12,7 +12,9 @@ import prisma from "./prisma.server";
  * @param userId
  * @returns Site metrics for the current and previous week
  */
-export default async function getSiteMetrics(userId: string): Promise<
+export default async function getSiteMetrics(
+  filter: { userId: string } | { siteIds: string[] },
+): Promise<
   {
     site: Pick<Site, "id" | "domain" | "ownerId" | "summary">;
     // Total citations for the current and previous week
@@ -37,7 +39,10 @@ export default async function getSiteMetrics(userId: string): Promise<
       summary: true,
     },
     orderBy: [{ domain: "asc" }],
-    where: { OR: [{ ownerId: userId }, { siteUsers: { some: { userId } } }] },
+    where:
+      "userId" in filter
+        ? { OR: [{ ownerId: filter.userId }, { siteUsers: { some: { userId: filter.userId } } }] }
+        : { id: { in: filter.siteIds } },
   });
 
   // Get all citation queries for the current and previous week for all sites

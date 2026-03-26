@@ -24,7 +24,7 @@ export const handle = { siteNav: true };
 export async function loader({ request }: Route.LoaderArgs) {
   const { user } = await requireUserAccess(request);
   const [sites, account] = await Promise.all([
-    getSiteMetrics(user.id),
+    getSiteMetrics({ userId: user.id }),
     prisma.account.findUnique({
       where: { userId: user.id },
       select: { status: true },

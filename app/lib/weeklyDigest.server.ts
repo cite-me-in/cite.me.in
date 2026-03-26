@@ -2,7 +2,7 @@ import { Temporal } from "@js-temporal/polyfill";
 import { sumBy } from "es-toolkit";
 import type { WeeklyDigestEmailProps } from "~/emails/WeeklyDigest";
 import { getDomainMeta } from "~/lib/domainMeta.server";
-import calculateVisibilityScore from "~/lib/llm-visibility/calculateVisibilityScore";
+import getSiteMetrics from "~/lib/getSiteMetrics.server";
 import prisma from "~/lib/prisma.server";
 import { topCompetitors } from "~/routes/site.$domain_.citations/TopCompetitors";
 import { formatDateMed } from "./formatDate";
@@ -10,17 +10,6 @@ import { formatDateMed } from "./formatDate";
 export async function loadWeeklyDigestMetrics(
   siteId: string,
 ): Promise<WeeklyDigestEmailProps> {
-  const { domain, owner, siteUsers } = await prisma.site.findUniqueOrThrow({
-    where: { id: siteId },
-    select: {
-      domain: true,
-      owner: { select: { email: true, unsubscribed: true } },
-      siteUsers: {
-        select: { user: { select: { email: true, unsubscribed: true } } },
-      },
-    },
-  });
-
   const todayMidnight = Temporal.Now.zonedDateTimeISO("UTC")
     .startOfDay()
     .toInstant();
@@ -32,15 +21,23 @@ export async function loadWeeklyDigestMetrics(
   ).toISOString();
   const weekEnd = new Date(todayMidnight.epochMilliseconds).toISOString();
 
-  const [currentRuns, prevRuns, currentVisits, prevVisits] = await Promise.all([
+  const [metricsResult, siteInfo, currentRuns, prevRuns] = await Promise.all([
+    getSiteMetrics({ siteIds: [siteId] }),
+    prisma.site.findUniqueOrThrow({
+      where: { id: siteId },
+      select: {
+        owner: { select: { email: true, unsubscribed: true } },
+        siteUsers: {
+          select: { user: { select: { email: true, unsubscribed: true } } },
+        },
+      },
+    }),
     prisma.citationQueryRun.findMany({
       where: { siteId, onDate: { gte: weekStart, lt: weekEnd } },
       select: {
         onDate: true,
         platform: true,
-        queries: {
-          select: { query: true, citations: true, position: true, text: true },
-        },
+        queries: { select: { query: true, citations: true } },
         sentimentLabel: true,
         sentimentSummary: true,
       },
@@ -49,30 +46,14 @@ export async function loadWeeklyDigestMetrics(
       where: { siteId, onDate: { gte: prevWeekStart, lt: weekStart } },
       select: {
         onDate: true,
-        platform: true,
-        queries: {
-          select: { query: true, citations: true, position: true, text: true },
-        },
+        queries: { select: { query: true, citations: true } },
       },
-    }),
-    prisma.botVisit.aggregate({
-      _sum: { count: true },
-      where: { siteId, date: { gte: weekStart, lt: weekEnd } },
-    }),
-    prisma.botVisit.aggregate({
-      _sum: { count: true },
-      where: { siteId, date: { gte: prevWeekStart, lt: weekStart } },
     }),
   ]);
 
-  const currentMetrics = calculateVisibilityScore({
-    domain,
-    queries: currentRuns.flatMap((r) => r.queries),
-  });
-  const prevMetrics = calculateVisibilityScore({
-    domain,
-    queries: prevRuns.flatMap((r) => r.queries),
-  });
+  const metrics = metricsResult[0];
+  if (!metrics) throw new Error(`Site not found: ${siteId}`);
+  const { domain } = metrics.site;
 
   const byPlatform = Object.fromEntries(
     currentRuns.map((r) => [
@@ -132,9 +113,6 @@ export async function loadWeeklyDigestMetrics(
       delta: current - prev,
     }));
 
-  const botVisitsTotal = currentVisits._sum.count ?? 0;
-  const botVisitsPrev = prevVisits._sum.count ?? 0;
-
   const allQueries = currentRuns.flatMap((r) => r.queries);
   const { competitors: rawCompetitors } = topCompetitors(allQueries, domain);
   const competitors = await Promise.all(
@@ -146,6 +124,7 @@ export async function loadWeeklyDigestMetrics(
     prevDailyCitations,
   );
 
+  const { owner, siteUsers } = siteInfo;
   const to = [owner, ...siteUsers.map((su) => su.user)]
     .filter(({ unsubscribed }) => !unsubscribed)
     .map(({ email }) => email);
@@ -158,20 +137,17 @@ export async function loadWeeklyDigestMetrics(
     to,
     subject,
     citations: {
-      delta: currentMetrics.domainCitations - prevMetrics.domainCitations,
-      total: currentMetrics.totalCitations,
-      domain: currentMetrics.domainCitations,
+      total: { current: metrics.allCitations.current, previous: metrics.allCitations.previous },
+      domain: { current: metrics.yourCitations.current, previous: metrics.yourCitations.previous },
     },
     byPlatform,
     score: {
-      current: Math.round(currentMetrics.visibilityScore),
-      delta: Math.round(
-        currentMetrics.visibilityScore - prevMetrics.visibilityScore,
-      ),
+      current: metrics.visbilityScore.current,
+      previous: metrics.visbilityScore.previous,
     },
     botVisits: {
-      total: botVisitsTotal,
-      delta: botVisitsTotal - botVisitsPrev,
+      current: metrics.botVisits.current,
+      previous: metrics.botVisits.previous,
     },
     topQueries,
     competitors,
