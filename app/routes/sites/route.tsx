@@ -5,13 +5,10 @@ import { Button } from "~/components/ui/Button";
 import { Card, CardContent } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
 import { requireUserAccess } from "~/lib/auth.server";
+import getSiteMetrics from "~/lib/getSiteMetrics.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import prisma from "~/lib/prisma.server";
-import {
-  addSiteToUser,
-  deleteSite,
-  loadSitesWithMetrics,
-} from "~/lib/sites.server";
+import { addSiteToUser, deleteSite } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
 import AddSiteForm from "./AddSiteForm";
 import OfferSubscription from "./OfferSubscription";
@@ -27,7 +24,7 @@ export const handle = { siteNav: true };
 export async function loader({ request }: Route.LoaderArgs) {
   const { user } = await requireUserAccess(request);
   const [sites, account] = await Promise.all([
-    loadSitesWithMetrics(user.id),
+    getSiteMetrics(user.id),
     prisma.account.findUnique({
       where: { userId: user.id },
       select: { status: true },
@@ -38,7 +35,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   // ownedSiteCount is the number of sites the user owns
   // canAddSite is true if the user can add a site (5 if pro, 1 if not)
   const isPro = account?.status === "active";
-  const ownedSiteCount = sites.filter((s) => s.isOwner).length;
+  const ownedSiteCount = sites.filter((s) => s.site.ownerId === user.id).length;
   const canAddSite = ownedSiteCount < (isPro ? 5 : 1);
 
   // trialExpired is true if the user's trial has ended (isPro is false)

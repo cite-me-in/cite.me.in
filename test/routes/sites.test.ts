@@ -218,16 +218,18 @@ describe("sites route", () => {
     });
 
     it("should show column headers", async () => {
-      const container = page.locator('a:has-text("Citations")').last();
+      const container = page.locator('a:has-text("Your citations")').last();
       await expect(
-        container.getByText("Citations", { exact: true }),
+        container.getByText("Your citations", { exact: true }),
       ).toBeVisible();
-      await expect(container.getByText("Score", { exact: true })).toBeVisible();
+      await expect(
+        container.getByText("All citations", { exact: true }),
+      ).toBeVisible();
+      await expect(
+        container.getByText("Visibility Score", { exact: true }),
+      ).toBeVisible();
       await expect(
         container.getByText("Bot Visits", { exact: true }),
-      ).toBeVisible();
-      await expect(
-        container.getByText("Unique Bots", { exact: true }),
       ).toBeVisible();
     });
 

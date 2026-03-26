@@ -16,7 +16,7 @@ export default function SiteEntry({
   visibilityScore,
 }: {
   fetcher: ReturnType<typeof useFetcher<typeof action>>;
-  site: Site;
+  site: Pick<Site, "id" | "domain" | "ownerId" | "summary">;
   botVisits: { current: number; previous: number };
   allCitations: { current: number; previous: number };
   yourCitations: { current: number; previous: number };
