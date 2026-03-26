@@ -234,10 +234,12 @@ function SentimentBreakdown({
     { sentimentLabel: SentimentLabel; sentimentSummary: string }
   >;
 }) {
-  const order: SentimentLabel[] = ["positive", "mixed", "neutral", "negative"];
   const sentiment = sortBy(
     Object.values(byPlatform).filter((p) => p.sentimentSummary.length),
-    [(p) => order.indexOf(p.sentimentLabel)],
+    [
+      ({ sentimentLabel }) =>
+        ["positive", "mixed", "neutral", "negative"].indexOf(sentimentLabel),
+    ],
   )[0];
   if (!sentiment) return null;
 
