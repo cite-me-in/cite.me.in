@@ -115,7 +115,13 @@ export default function SiteCitationsPage({
       {run ? (
         <>
           <CitationsRecentRun queries={mergedQueries} meta={run} site={site} />
-          <BrandSentiment run={sentimentRun} />
+          <BrandSentiment
+            platform={
+              PLATFORMS.find((p) => p.name === platform)?.label ??
+              "this platform"
+            }
+            run={sentimentRun}
+          />
           <TopCompetitors competitors={competitors} />
           <VisibilityCharts recentRuns={recentRuns} site={site} />
         </>

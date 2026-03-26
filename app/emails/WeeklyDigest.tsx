@@ -1,5 +1,5 @@
 import { Column, Img, Link, Row, Section, Text } from "@react-email/components";
-import { sample, sortBy } from "es-toolkit";
+import { sortBy } from "es-toolkit";
 import { twMerge } from "tailwind-merge";
 import type { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
 import type { SentimentLabel } from "~/prisma";
@@ -234,11 +234,11 @@ function SentimentBreakdown({
     { sentimentLabel: SentimentLabel; sentimentSummary: string }
   >;
 }) {
-  const sentiment = sample(
-    Object.values(byPlatform).filter(
-      (p) => p.sentimentLabel !== null && p.sentimentSummary.length,
-    ),
-  );
+  const order: SentimentLabel[] = ["positive", "mixed", "neutral", "negative"];
+  const sentiment = sortBy(
+    Object.values(byPlatform).filter((p) => p.sentimentSummary.length),
+    [(p) => order.indexOf(p.sentimentLabel)],
+  )[0];
   if (!sentiment) return null;
 
   const sentimentColors: Record<SentimentLabel, string> = {

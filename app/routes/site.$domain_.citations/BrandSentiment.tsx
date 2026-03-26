@@ -9,8 +9,10 @@ import {
 import type { SentimentLabel } from "~/prisma";
 
 export default function BrandSentiment({
+  platform,
   run,
 }: {
+  platform: string;
   run: {
     sentimentLabel: SentimentLabel | null;
     sentimentSummary: string | null;
@@ -20,9 +22,7 @@ export default function BrandSentiment({
     <Card>
       <CardHeader>
         <CardTitle>Brand Sentiment</CardTitle>
-        <CardDescription>
-          How this platform talks about your brand
-        </CardDescription>
+        <CardDescription>How {platform} talks about your brand</CardDescription>
       </CardHeader>
       <CardContent>
         {run.sentimentLabel ? (
