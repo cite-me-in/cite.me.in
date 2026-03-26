@@ -1,6 +1,7 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { sumBy } from "es-toolkit";
 import type { WeeklyDigestEmailProps } from "~/emails/WeeklyDigest";
+import type { SentimentLabel } from "~/prisma";
 import { getDomainMeta } from "~/lib/domainMeta.server";
 import getSiteMetrics from "~/lib/getSiteMetrics.server";
 import prisma from "~/lib/prisma.server";
@@ -10,16 +11,9 @@ import { formatDateMed } from "./formatDate";
 export async function loadWeeklyDigestMetrics(
   siteId: string,
 ): Promise<WeeklyDigestEmailProps> {
-  const todayMidnight = Temporal.Now.zonedDateTimeISO("UTC")
-    .startOfDay()
-    .toInstant();
-  const prevWeekStart = new Date(
-    todayMidnight.subtract({ hours: 24 * 14 }).epochMilliseconds,
-  ).toISOString();
-  const weekStart = new Date(
-    todayMidnight.subtract({ hours: 24 * 7 }).epochMilliseconds,
-  ).toISOString();
-  const weekEnd = new Date(todayMidnight.epochMilliseconds).toISOString();
+  const today = Temporal.Now.plainDateISO("UTC");
+  const weekStart = today.subtract({ days: 7 }).toJSON();
+  const prevWeekStart = today.subtract({ days: 14 }).toJSON();
 
   const [metricsResult, siteInfo, currentRuns, prevRuns] = await Promise.all([
     getSiteMetrics({ siteIds: [siteId] }),
@@ -33,7 +27,7 @@ export async function loadWeeklyDigestMetrics(
       },
     }),
     prisma.citationQueryRun.findMany({
-      where: { siteId, onDate: { gte: weekStart, lt: weekEnd } },
+      where: { siteId, onDate: { gte: weekStart, lt: today.toJSON() } },
       select: {
         onDate: true,
         platform: true,
@@ -55,16 +49,26 @@ export async function loadWeeklyDigestMetrics(
   if (!metrics) throw new Error(`Site not found: ${siteId}`);
   const { domain } = metrics.site;
 
-  const byPlatform = Object.fromEntries(
-    currentRuns.map((r) => [
-      r.platform,
-      {
-        count: sumBy(r.queries, (q) => q.citations.length),
-        sentimentLabel: r.sentimentLabel ?? "neutral",
-        sentimentSummary: r.sentimentSummary ?? "",
-      },
-    ]),
-  );
+  const byPlatform: Record<
+    string,
+    { count: number; sentimentLabel: SentimentLabel; sentimentSummary: string }
+  > = {};
+  for (const run of currentRuns) {
+    const entry = byPlatform[run.platform];
+    if (entry) {
+      entry.count += sumBy(run.queries, (q) => q.citations.length);
+      if (run.sentimentLabel) {
+        entry.sentimentLabel = run.sentimentLabel;
+        entry.sentimentSummary = run.sentimentSummary ?? "";
+      }
+    } else {
+      byPlatform[run.platform] = {
+        count: sumBy(run.queries, (q) => q.citations.length),
+        sentimentLabel: run.sentimentLabel ?? ("neutral" as SentimentLabel),
+        sentimentSummary: run.sentimentSummary ?? "",
+      };
+    }
+  }
 
   // Daily citations: Mon=0 through Sun=6 (day-of-week relative to weekStart)
   const dailyCitations = Array(7).fill(0) as number[];
@@ -130,7 +134,7 @@ export async function loadWeeklyDigestMetrics(
     .map(({ email }) => email);
   const subject = `Weekly Digest · ${formatDateMed(
     new Date(weekStart),
-  )} — ${formatDateMed(new Date(weekEnd))}`;
+  )} — ${formatDateMed(new Date(today.toJSON()))}`;
 
   return {
     domain,

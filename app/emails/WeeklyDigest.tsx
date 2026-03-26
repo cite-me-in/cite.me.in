@@ -175,12 +175,12 @@ function PlatformBreakdown({
   >;
 }) {
   return (
-    <Card>
+    <Card title="Citations by platform">
       <Row>
         {sortBy(Object.entries(byPlatform), [0])
           .slice(0, 4)
           .map(([platform, { count }]) => (
-            <Column key={platform} className="w-1/4 px-0 py-4 text-center">
+            <Column key={platform} className="w-1/4 px-0 text-center">
               <Text className="font-bold text-2xl text-dark tabular-nums">
                 {count.toLocaleString()}
               </Text>
