@@ -127,8 +127,9 @@ export default function SitesPage({
                 previousScore={item.previousScore}
                 score={item.score}
                 site={item.site}
-                totalBotVisits={item.totalBotVisits}
-                uniqueBots={item.uniqueBots}
+                botVisits={item.botVisits}
+                totalCitations={item.totalCitations}
+                previousTotalCitations={item.previousTotalCitations}
               />
             ))}
           </CardContent>

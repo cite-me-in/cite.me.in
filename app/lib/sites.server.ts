@@ -1,5 +1,5 @@
 import { Temporal } from "@js-temporal/polyfill";
-import { groupBy, sortBy, sumBy, uniqBy } from "es-toolkit";
+import { groupBy, partition, sortBy, sumBy } from "es-toolkit";
 import { generateApiKey } from "random-password-toolkit";
 import type { Site } from "~/prisma";
 import calculateVisibilityScore from "./llm-visibility/calculateVisibilityScore";
@@ -76,15 +76,17 @@ export async function loadSitesWithMetrics(userId: string): Promise<
     previousScore: number | null;
     score: number;
     site: Site;
-    totalBotVisits: number;
     totalCitations: number;
-    uniqueBots: number;
+    previousTotalCitations: number | null;
     isOwner: boolean;
+
+    // Unique bot visits for the current and previous week
+    botVisits: { current: number; previous: number };
   }[]
 > {
-  const gte = new Date(
-    Temporal.Now.plainDateISO().subtract({ days: 14 }).toJSON(),
-  );
+  const weekStart = Temporal.Now.plainDateISO("UTC").subtract({ days: 7 });
+  const prevWeekStart = weekStart.subtract({ days: 7 });
+
   const sites = await prisma.site.findMany({
     include: {
       citationRuns: {
@@ -95,16 +97,22 @@ export async function loadSitesWithMetrics(userId: string): Promise<
           },
         },
         orderBy: { onDate: "desc" },
-        where: { onDate: { gte: gte.toISOString() } },
-      },
-      botVisits: {
-        select: { count: true, botType: true },
-        where: { date: { gte } },
+        where: { onDate: { gte: prevWeekStart.toJSON() } },
       },
     },
     orderBy: [{ domain: "asc" }, { createdAt: "desc" }],
     where: {
       OR: [{ ownerId: userId }, { siteUsers: { some: { userId } } }],
+    },
+  });
+
+  // Unique bot visits for the current and previous week (total counts)
+  const botVisits = await prisma.botVisit.groupBy({
+    by: ["siteId", "date"],
+    _sum: { count: true },
+    where: {
+      siteId: { in: sites.map((s) => s.id) },
+      date: { gte: new Date(prevWeekStart.toJSON()) },
     },
   });
 
@@ -135,15 +143,25 @@ export async function loadSitesWithMetrics(userId: string): Promise<
         })
       : null;
 
+    // Compare JavaScript Date (v.date) with ISO date string (weekStart) by converting both to milliseconds
+
+    const [currentVisits, previousVisits] = partition(
+      botVisits.filter((v) => v.siteId === site.id),
+      (v) => v.date >= new Date(weekStart.toJSON()),
+    );
+
     return {
       citationsToDomain: current.domainCitations,
       previousCitationsToDomain: previous?.domainCitations ?? null,
       previousScore: previous?.visibilityScore ?? null,
       score: current.visibilityScore,
       site,
-      totalBotVisits: sumBy(site.botVisits, (v) => v.count),
+      botVisits: {
+        current: sumBy(currentVisits, (v) => v._sum.count ?? 0),
+        previous: sumBy(previousVisits, (v) => v._sum.count ?? 0),
+      },
       totalCitations: current.totalCitations,
-      uniqueBots: uniqBy(site.botVisits, (v) => v.botType).length,
+      previousTotalCitations: previous?.totalCitations ?? null,
       isOwner: site.ownerId === userId,
     };
   });

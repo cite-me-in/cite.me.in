@@ -14,8 +14,9 @@ export default function SiteEntry({
   previousScore,
   score,
   site,
-  totalBotVisits,
-  uniqueBots,
+  botVisits,
+  totalCitations,
+  previousTotalCitations,
 }: {
   citationsToDmain: number;
   fetcher: ReturnType<typeof useFetcher<typeof action>>;
@@ -23,8 +24,9 @@ export default function SiteEntry({
   previousScore: number | null;
   score: number;
   site: Site;
-  totalBotVisits: number;
-  uniqueBots: number;
+  botVisits: { current: number; previous: number };
+  totalCitations: number;
+  previousTotalCitations: number | null;
 }) {
   const isSubmitting = fetcher.state === "submitting";
 
@@ -52,13 +54,21 @@ export default function SiteEntry({
         className="grid grid-cols-4 gap-4 text-center"
       >
         <Metric
-          label="Citations"
-          value={citationsToDmain}
+          label="Your citations"
+          current={citationsToDmain}
           previous={previousCitationsToDomain}
         />
-        <Metric label="Score" value={score} previous={previousScore} />
-        <Metric label="Bot Visits" value={totalBotVisits} previous={null} />
-        <Metric label="Unique Bots" value={uniqueBots} previous={null} />
+        <Metric
+          label="All citations"
+          current={totalCitations}
+          previous={previousTotalCitations}
+        />
+        <Metric label="Score" current={score} previous={previousScore} />
+        <Metric
+          label="Bot Visits"
+          current={botVisits.current}
+          previous={botVisits.previous}
+        />
       </Link>
 
       <Streamdown
@@ -85,11 +95,11 @@ export default function SiteEntry({
 
 function Metric({
   label,
-  value,
+  current: value,
   previous,
 }: {
   label: string;
-  value: number;
+  current: number;
   previous: number | null;
 }) {
   return (
