@@ -1,8 +1,0 @@
-{
-  "planPath": "docs/plans/2026-03-17-pricing-page.md",
-  "tasks": [
-    {"id": 20, "subject": "Task 1: Create /pricing route", "status": "pending"},
-    {"id": 21, "subject": "Task 2: Add Pricing link to navigation", "status": "pending", "blockedBy": [20]}
-  ],
-  "lastUpdated": "2026-03-17T00:00:00Z"
-}
