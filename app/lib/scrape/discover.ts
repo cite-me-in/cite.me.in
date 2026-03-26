@@ -1,6 +1,7 @@
 import { ms } from "convert";
 import debug from "debug";
 import parseHTMLTree, { getElementsByTagName } from "~/lib/html/parseHTML";
+import { normalizeHostname } from "../llm-visibility/calculateVisibilityScore";
 import logError from "../logError.server";
 
 const MEDIA_EXTENSIONS = /\.(pdf|jpg|jpeg|png|gif|svg|webp|mp4|mp3|zip|exe)$/i;
@@ -72,8 +73,7 @@ async function fetchSitemapURLs(
       logger("[crawl] Fetched %s: %d sitemap URLs", url, text.length);
       return text
         .split("\n")
-        .map((link) => link.trim())
-        .filter((link) => /^https?:\/\//.test(link))
+        .map((link) => normalizeHostname(link.trim()))
         .map((link) => new URL(link, baseURL));
     } else {
       const response = await fetch(new URL(url, baseURL), { signal });

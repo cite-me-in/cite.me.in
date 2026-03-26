@@ -59,6 +59,7 @@ export default function calculateVisibilityScore({
     };
 
   const domainLower = domain.toLowerCase();
+  const domainNormalized = normalizeHostname(domain);
   let queriesWithCitation = 0;
   let positionWeightSum = 0;
   let domainCitations = 0;
@@ -66,17 +67,12 @@ export default function calculateVisibilityScore({
   let queriesWithMention = 0;
 
   for (const query of queries) {
-    // Parse all citation URLs safely
-    const urls = query.citations.flatMap((c) => {
-      try {
-        return [/^https?:\/\//.test(c) ? new URL(c) : new URL(`https://${c}`)];
-      } catch {
-        return [];
-      }
-    });
-
-    totalCitations += urls.length;
-    domainCitations += urls.filter((u) => u.hostname === domain).length;
+    for (const c of query.citations) {
+      const host = normalizeHostname(c);
+      if (!host) continue;
+      totalCitations++;
+      if (host === domainNormalized) domainCitations++;
+    }
 
     // Query coverage + position weight
     if (query.position !== null) {
@@ -113,4 +109,22 @@ export default function calculateVisibilityScore({
     totalCitations,
     totalQueries,
   };
+}
+
+/**
+ * Normalize a hostname or URL to a lowercase hostname without the "www." prefix.
+ *
+ * @param input - The hostname or URL to normalize.
+ * @returns The normalized hostname or an empty string if the input is not a valid URL.
+ */
+export function normalizeHostname(input: string): string {
+  try {
+    const url = /^https?:\/\//.test(input)
+      ? new URL(input)
+      : new URL(`https://${input}`);
+    const lower = url.hostname.toLowerCase();
+    return lower.startsWith("www.") ? lower.slice(4) : lower;
+  } catch {
+    return "";
+  }
 }

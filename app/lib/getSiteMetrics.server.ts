@@ -1,7 +1,9 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { partition, sumBy } from "es-toolkit";
 import type { Site } from "~/prisma";
-import calculateVisibilityScore from "./llm-visibility/calculateVisibilityScore";
+import calculateVisibilityScore, {
+  normalizeHostname,
+} from "./llm-visibility/calculateVisibilityScore";
 import prisma from "./prisma.server";
 
 /**
@@ -72,6 +74,8 @@ export default async function getSiteMetrics(userId: string): Promise<
   });
 
   return sites.map((site) => {
+    const domain = normalizeHostname(site.domain);
+
     const [currentQueries, previousQueries] = partition(
       queries.filter((q) => q.run.siteId === site.id),
       (q) => q.run.onDate >= weekStart.toJSON(),
@@ -90,11 +94,13 @@ export default async function getSiteMetrics(userId: string): Promise<
       yourCitations: {
         current: sumBy(
           currentQueries,
-          (q) => q.citations.filter((c) => c.includes(site.domain)).length,
+          (q) =>
+            q.citations.filter((c) => normalizeHostname(c) === domain).length,
         ),
         previous: sumBy(
           previousQueries,
-          (q) => q.citations.filter((c) => c.includes(site.domain)).length,
+          (q) =>
+            q.citations.filter((c) => normalizeHostname(c) === domain).length,
         ),
       },
       visbilityScore: {
