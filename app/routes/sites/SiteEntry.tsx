@@ -102,7 +102,7 @@ function Metric({
 }) {
   return (
     <div className={`metric-${label.toLowerCase().replace(" ", "-")}`}>
-      <div className="font-light">{label}</div>
+      <div className="whitespace-nowrap font-light">{label}</div>
       <div className="font-bold text-3xl tabular-nums">
         {value.toLocaleString()}
       </div>

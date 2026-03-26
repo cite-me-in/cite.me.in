@@ -133,22 +133,24 @@ function TopMetrics({
             <Section className="w-full overflow-hidden rounded-lg border border-border bg-white">
               <Row>
                 <Column className="px-4 text-center">
-                  <Text className="mb-1.5 text-light text-xs uppercase tracking-wide">
+                  <Text className="mb-1.5 whitespace-nowrap text-light text-xs uppercase tracking-wide">
                     {item.label}
                   </Text>
-                  <Text className="font-bold text-2xl text-dark">
+                  <Text className="font-bold text-2xl text-dark tabular-nums">
                     {item.current.toLocaleString()}
                   </Text>
-                  <Text
-                    className={twMerge(
-                      "text-center font-semibold text-sm",
-                      pctDeltaColor(item.current, item.previous),
-                    )}
-                  >
-                    {pctDelta(item.current, item.previous)}
-                  </Text>
-                  <Text className="text-light text-xs">
-                    {item.previous.toLocaleString()}
+                  <Text className="flex items-center justify-center gap-1">
+                    <span
+                      className={twMerge(
+                        "text-center font-semibold text-sm",
+                        pctDeltaColor(item.current, item.previous),
+                      )}
+                    >
+                      {pctDelta(item.current, item.previous)}
+                    </span>
+                    <span className="text-light text-xs">
+                      {item.previous.toLocaleString()}
+                    </span>
                   </Text>
                 </Column>
               </Row>
@@ -284,11 +286,11 @@ function TopCompetitors({
                   {brandName}
                 </Link>
               </td>
-              <td className="w-30 whitespace-nowrap py-4 font-bold">
+              <td className="w-30 whitespace-nowrap px-2 py-4 font-bold tabular-nums">
                 {count.toLocaleString()}{" "}
                 {count === 1 ? "citation" : "citations"}
               </td>
-              <td className="w-15 py-4 text-right">{pct}%</td>
+              <td className="w-15 px-2 py-4 text-right tabular-nums">{pct}%</td>
             </tr>
           ))}
         </tbody>
