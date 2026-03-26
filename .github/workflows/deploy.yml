@@ -10,6 +10,7 @@ env:
   POSTGRES_URL_NON_POOLING: "postgresql://postgres:postgres@localhost:5432/citeup_test"
   POSTGRES_URL: "postgresql://postgres:postgres@localhost:5432/citeup_test?pgbouncer=true"
   # These are populated during the workflow by the Infisical action.
+  INDEXNOW_KEY: ""
   VERCEL_ORG_ID: ""
   VERCEL_PROJECT_ID: ""
   VERCEL_TOKEN: ""
@@ -150,3 +151,9 @@ jobs:
           production: false
           project-id: ${{ env.VERCEL_PROJECT_ID }}
           token: ${{ env.VERCEL_TOKEN }}
+
+      - name: Upload IndexNow file
+        uses: bojieyang/indexnow-action@v2
+        with:
+          sitemap-location: "https://cite.me.in/sitemap.xml"
+          key: ${{ env.INDEXNOW_KEY }}
