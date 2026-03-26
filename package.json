@@ -3,7 +3,7 @@
 	"type": "module",
 	"license": "AGPL-3.0-only",
 	"scripts": {
-		"build": "infisical --env prod run -- tsx scripts/fetch-prices.ts && prisma generate && react-router build --force",
+		"build": "prisma generate && react-router build --force",
 		"check:format": "biome format --write",
 		"check:lint": "biome lint",
 		"check": "secretlint **/* --format stylish && pnpm check:lint && react-router typegen && tsc --noEmit --strict && knip",
