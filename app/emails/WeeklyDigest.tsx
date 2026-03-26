@@ -238,7 +238,7 @@ function SentimentBreakdown({
     Object.values(byPlatform).filter((p) => p.sentimentSummary.length),
     [
       ({ sentimentLabel }) =>
-        ["positive", "mixed", "neutral", "negative"].indexOf(sentimentLabel),
+        ["positive", "mixed", "negative"].indexOf(sentimentLabel),
     ],
   )[0];
   if (!sentiment) return null;

@@ -86,7 +86,11 @@ export default function SiteCitationsPage({
     })
     .filter((q) => q !== null);
 
-  const sentimentRun = recentRuns.find((r) => r.sentimentLabel !== null) ?? run;
+  const sentiment = [...recentRuns]
+    .filter((r) => r.sentimentLabel !== null)
+    .sort(
+      (a, b) => new Date(b.onDate).getTime() - new Date(a.onDate).getTime(),
+    )[0];
 
   return (
     <Main variant="wide">
@@ -120,7 +124,7 @@ export default function SiteCitationsPage({
               PLATFORMS.find((p) => p.name === platform)?.label ??
               "this platform"
             }
-            run={sentimentRun}
+            run={sentiment}
           />
           <TopCompetitors competitors={competitors} />
           <VisibilityCharts recentRuns={recentRuns} site={site} />
