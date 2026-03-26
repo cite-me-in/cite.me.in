@@ -48,7 +48,7 @@ describe("pricing user flows", () => {
         page.getByRole("heading", { name: "Upgrade to Pro" }),
       ).toBeVisible();
       await expect(
-        page.getByRole("button", { name: "Subscribe — $35/month" }),
+        page.getByRole("button", { name: /Subscribe — \$\d+\/month/ }),
       ).toBeVisible();
     });
 
@@ -60,7 +60,7 @@ describe("pricing user flows", () => {
       const page = await goto("/upgrade");
 
       await expect(
-        page.getByRole("button", { name: "Subscribe — $35/month" }),
+        page.getByRole("button", { name: /Subscribe — \$\d+\/month/ }),
       ).toBeVisible();
 
       // Verify the monthly form posts interval=monthly

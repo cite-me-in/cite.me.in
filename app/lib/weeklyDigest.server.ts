@@ -1,10 +1,10 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { sumBy } from "es-toolkit";
 import type { WeeklyDigestEmailProps } from "~/emails/WeeklyDigest";
-import type { SentimentLabel } from "~/prisma";
 import { getDomainMeta } from "~/lib/domainMeta.server";
 import getSiteMetrics from "~/lib/getSiteMetrics.server";
 import prisma from "~/lib/prisma.server";
+import type { SentimentLabel } from "~/prisma";
 import { topCompetitors } from "~/routes/site.$domain_.citations/TopCompetitors";
 import { formatDateMed } from "./formatDate";
 
@@ -120,7 +120,10 @@ export async function loadWeeklyDigestMetrics(
   const allQueries = currentRuns.flatMap((r) => r.queries);
   const { competitors: rawCompetitors } = topCompetitors(allQueries, domain);
   const competitors = await Promise.all(
-    rawCompetitors.map(async (c) => ({ ...c, ...(await getDomainMeta(c.domain)) })),
+    rawCompetitors.map(async (competitor) => ({
+      ...competitor,
+      ...(await getDomainMeta(competitor.domain)),
+    })),
   );
 
   const chartBase64 = await generateCitationChart(
@@ -141,8 +144,14 @@ export async function loadWeeklyDigestMetrics(
     to,
     subject,
     citations: {
-      total: { current: metrics.allCitations.current, previous: metrics.allCitations.previous },
-      domain: { current: metrics.yourCitations.current, previous: metrics.yourCitations.previous },
+      total: {
+        current: metrics.allCitations.current,
+        previous: metrics.allCitations.previous,
+      },
+      domain: {
+        current: metrics.yourCitations.current,
+        previous: metrics.yourCitations.previous,
+      },
     },
     byPlatform,
     score: {
@@ -190,13 +199,15 @@ export async function generateCitationChart(
   }
   function drawSmoothLine(values: number[]) {
     const pts = values.map((v, i) => ({ x: xAt(i), y: yAt(v) }));
-    ctx.moveTo(pts[0]!.x, pts[0]!.y);
+    if (pts.length === 0) return;
+
+    ctx.moveTo(pts[0].x, pts[0].y);
     for (let i = 1; i < pts.length - 1; i++) {
-      const mx = (pts[i]!.x + pts[i + 1]!.x) / 2;
-      const my = (pts[i]!.y + pts[i + 1]!.y) / 2;
-      ctx.quadraticCurveTo(pts[i]!.x, pts[i]!.y, mx, my);
+      const mx = (pts[i].x + pts[i + 1].x) / 2;
+      const my = (pts[i].y + pts[i + 1].y) / 2;
+      ctx.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
     }
-    ctx.lineTo(pts[pts.length - 1]!.x, pts[pts.length - 1]!.y);
+    ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
   }
 
   // Background

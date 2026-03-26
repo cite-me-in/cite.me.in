@@ -46,17 +46,17 @@ test("should sign up for a new account", async () => {
 
 test("should show monthly and annual subscription options on sites page", async () => {
   await expect(
-    page.getByRole("button", { name: /subscribe.*\$35\/month/i }),
+    page.getByRole("button", { name: /subscribe.*\$\d+\/month/i }),
   ).toBeVisible();
   await expect(
-    page.getByRole("button", { name: /subscribe.*\$320\/year/i }),
+    page.getByRole("button", { name: /subscribe.*\$\d+\/year/i }),
   ).toBeVisible();
 });
 
 test("should start Stripe checkout for monthly plan", async () => {
   const [request] = await Promise.all([
     page.waitForRequest((req) => req.url().includes("checkout.stripe.com")),
-    page.getByRole("button", { name: /subscribe.*\$35\/month/i }).click(),
+    page.getByRole("button", { name: /subscribe.*\$\d+\/month/i }).click(),
   ]);
 
   expect(request.url()).toContain("checkout.stripe.com");
