@@ -79,27 +79,31 @@ export function WeeklyDigestEmail({
 
       <TopMetrics citations={citations} score={score} botVisits={botVisits} />
       <PlatformBreakdown byPlatform={byPlatform} />
-
-      <Card title="Citation trends" subtitle="Compared to previous week">
-        <Row>
-          <Column className="px-5 pt-4">
-            <Img
-              alt="Citation trend: this week vs previous week"
-              className="mx-auto block"
-              src={`data:image/png;base64,${chartBase64}`}
-              width="520"
-            />
-            <Text className="mt-2 text-center text-light text-sm">
-              — This week &nbsp;&nbsp; - - Previous week
-            </Text>
-          </Column>
-        </Row>
-      </Card>
-
+      <CitationTrendsChart chartBase64={chartBase64} />
       <TopQueries topQueries={topQueries} />
       <SentimentBreakdown byPlatform={byPlatform} />
       <TopCompetitors competitors={competitors} />
     </EmailLayout>
+  );
+}
+
+function CitationTrendsChart({ chartBase64 }: { chartBase64: string }) {
+  return (
+    <Card title="Citation trends" subtitle="Compared to previous week">
+      <Row>
+        <Column className="px-5 pt-4">
+          <Img
+            alt="Citation trend: this week vs previous week"
+            className="mx-auto block"
+            src={`data:image/png;base64,${chartBase64}`}
+            width="520"
+          />
+          <Text className="mt-2 text-center text-light text-sm">
+            — This week &nbsp;&nbsp; - - Previous week
+          </Text>
+        </Column>
+      </Row>
+    </Card>
   );
 }
 
@@ -177,7 +181,7 @@ function PlatformBreakdown({
           .slice(0, 4)
           .map(([platform, { count }]) => (
             <Column key={platform} className="w-1/4 px-0 py-4 text-center">
-              <Text className="font-bold text-2xl text-dark">
+              <Text className="font-bold text-2xl text-dark tabular-nums">
                 {count.toLocaleString()}
               </Text>
               <Text className="text-light text-xs uppercase tracking-wide">
