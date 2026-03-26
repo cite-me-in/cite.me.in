@@ -1,5 +1,6 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { Section, Text } from "@react-email/components";
+import prices from "~/data/stripe-prices.json";
 import prisma from "~/lib/prisma.server";
 import EmailLayout from "./EmailLayout";
 import { sendEmail } from "./sendEmails";
@@ -94,7 +95,7 @@ function TrialEndedEmail({
         </Text>
         <Text>
           Your free trial has ended and daily runs have paused. Upgrade to Pro
-          to keep your history and resume monitoring — $35/month or $320/year.
+          to keep your history and resume monitoring — ${prices.monthlyAmount}/month or ${prices.annualAmount}/year.
         </Text>
       </Section>
     </EmailLayout>

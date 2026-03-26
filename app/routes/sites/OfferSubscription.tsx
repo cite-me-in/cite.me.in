@@ -1,4 +1,5 @@
 import { Button } from "~/components/ui/Button";
+import prices from "~/data/stripe-prices.json";
 
 export default function OfferSubscription() {
   return (
@@ -10,13 +11,13 @@ export default function OfferSubscription() {
       <div className="flex flex-wrap gap-3">
         <form method="post" action="/upgrade">
           <input type="hidden" name="interval" value="monthly" />
-          <Button type="submit">Subscribe — $35/month</Button>
+          <Button type="submit">Subscribe — ${prices.monthlyAmount}/month</Button>
         </form>
         <form method="post" action="/upgrade">
           <input type="hidden" name="interval" value="annual" />
           <Button type="submit" className="bg-emerald-400">
-            Subscribe — $320/year{" "}
-            <span className="font-normal">(save $99)</span>
+            Subscribe — ${prices.annualAmount}/year{" "}
+            <span className="font-normal">(save ${prices.annualSavings})</span>
           </Button>
         </form>
       </div>

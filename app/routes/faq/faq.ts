@@ -1,3 +1,5 @@
+import prices from "~/data/stripe-prices.json";
+
 export default [
   {
     category: "Getting Started",
@@ -85,12 +87,12 @@ export default [
       {
         question: "What's included in Pro?",
         answer:
-          "Pro is $35/month or $320/year. You get unlimited daily runs, your full citation history, API access, email digests, network benchmarks, and up to 5 sites.",
+          `Pro is $${prices.monthlyAmount}/month or $${prices.annualAmount}/year. You get unlimited daily runs, your full citation history, API access, email digests, network benchmarks, and up to 5 sites.`,
       },
       {
         question: "Why should I pay when it's open-source?",
         answer:
-          "You're right — you can self-host for almost nothing. But running it yourself means keeping it updated, monitoring uptime, and managing LLM API keys. $35/mo gets you all of that handled, plus access to aggregate benchmark data that self-hosting can't give you. And it keeps the project funded and independent.",
+          `You're right — you can self-host for almost nothing. But running it yourself means keeping it updated, monitoring uptime, and managing LLM API keys. $${prices.monthlyAmount}/mo gets you all of that handled, plus access to aggregate benchmark data that self-hosting can't give you. And it keeps the project funded and independent.`,
       },
       {
         question: "Can I cancel anytime?",

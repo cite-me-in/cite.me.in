@@ -2,6 +2,7 @@ import { StarIcon } from "lucide-react";
 import { redirect } from "react-router";
 import { Button } from "~/components/ui/Button";
 import Main from "~/components/ui/Main";
+import prices from "~/data/stripe-prices.json";
 import { requireUserAccess } from "~/lib/auth.server";
 import envVars from "~/lib/envVars";
 import stripe from "~/lib/stripe.server";
@@ -49,7 +50,7 @@ export default function UpgradePage() {
         <h1 className="mb-2 font-heading text-4xl">Upgrade to Pro</h1>
         <p className="mb-10 text-foreground/70">
           25 days free, no credit card. Most tools give you a week — we give you
-          enough time to actually see results. When you're ready, $35/mo keeps
+          enough time to actually see results. When you're ready, ${prices.monthlyAmount}/mo keeps
           it all running.
         </p>
 
@@ -63,10 +64,10 @@ export default function UpgradePage() {
             </div>
             <div className="text-right">
               <p className="font-heading text-3xl">
-                $35<span className="font-normal text-base">/mo</span>
+                ${prices.monthlyAmount}<span className="font-normal text-base">/mo</span>
               </p>
               <p className="text-foreground/60 text-sm">
-                or $320/year (save $99)
+                or ${prices.annualAmount}/year (save ${prices.annualSavings})
               </p>
             </div>
           </div>
@@ -92,14 +93,14 @@ export default function UpgradePage() {
             <form method="post">
               <input type="hidden" name="interval" value="monthly" />
               <Button type="submit" className="w-full">
-                Subscribe — $35/month
+                Subscribe — ${prices.monthlyAmount}/month
               </Button>
             </form>
           </div>
         </div>
 
         <p className="text-center text-foreground/60 text-sm">
-          cite.me.in is built by one person. Your $35/mo is what keeps it
+          cite.me.in is built by one person. Your ${prices.monthlyAmount}/mo is what keeps it
           independent, updated, and not acquired by someone with an alt product
           vision.
         </p>

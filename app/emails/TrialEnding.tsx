@@ -1,5 +1,6 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { Section, Text } from "@react-email/components";
+import prices from "~/data/stripe-prices.json";
 import prisma from "~/lib/prisma.server";
 import EmailLayout from "./EmailLayout";
 import { sendEmail } from "./sendEmails";
@@ -90,7 +91,7 @@ function TrialEndingEmail({
         </Text>
         <Text>
           If you'd like to keep your history and continue daily runs, you can
-          upgrade at any time for $35/month.
+          upgrade at any time for ${prices.monthlyAmount}/month.
         </Text>
       </Section>
     </EmailLayout>
