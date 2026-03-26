@@ -188,20 +188,36 @@ export async function generateCitationChart(
   function yAt(v: number) {
     return paddingTop + chartHeight - (v / maxVal) * chartHeight;
   }
+  function drawSmoothLine(values: number[]) {
+    const pts = values.map((v, i) => ({ x: xAt(i), y: yAt(v) }));
+    ctx.moveTo(pts[0]!.x, pts[0]!.y);
+    for (let i = 1; i < pts.length - 1; i++) {
+      const mx = (pts[i]!.x + pts[i + 1]!.x) / 2;
+      const my = (pts[i]!.y + pts[i + 1]!.y) / 2;
+      ctx.quadraticCurveTo(pts[i]!.x, pts[i]!.y, mx, my);
+    }
+    ctx.lineTo(pts[pts.length - 1]!.x, pts[pts.length - 1]!.y);
+  }
 
   // Background
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, width, height);
 
-  // Grid lines
+  // Grid lines + Y-axis labels
   ctx.strokeStyle = "#e5e7eb";
   ctx.lineWidth = 1;
+  ctx.fillStyle = "#6b7280";
+  ctx.font = "11px sans-serif";
+  ctx.textAlign = "right";
+  ctx.textBaseline = "middle";
   for (let i = 0; i <= 4; i++) {
     const y = paddingTop + (i * chartHeight) / 4;
     ctx.beginPath();
     ctx.moveTo(paddingLeft, y);
     ctx.lineTo(width - paddingRight, y);
     ctx.stroke();
+    const value = Math.round(maxVal * (1 - i / 4));
+    ctx.fillText(String(value), paddingLeft - 4, y);
   }
 
   // Previous week — gray dashed
@@ -209,12 +225,7 @@ export async function generateCitationChart(
   ctx.lineWidth = 2;
   ctx.setLineDash([4, 4]);
   ctx.beginPath();
-  for (let i = 0; i < 7; i++) {
-    const x = xAt(i);
-    const y = yAt(prevDaily[i] ?? 0);
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  }
+  drawSmoothLine(prevDaily.map((v) => v ?? 0));
   ctx.stroke();
 
   // Current week — blue solid
@@ -222,12 +233,7 @@ export async function generateCitationChart(
   ctx.lineWidth = 2;
   ctx.setLineDash([]);
   ctx.beginPath();
-  for (let i = 0; i < 7; i++) {
-    const x = xAt(i);
-    const y = yAt(daily[i] ?? 0);
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  }
+  drawSmoothLine(daily.map((v) => v ?? 0));
   ctx.stroke();
 
   // X-axis labels
