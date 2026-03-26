@@ -1,5 +1,5 @@
 import { Temporal } from "@js-temporal/polyfill";
-import { groupBy, partition, sortBy, sumBy } from "es-toolkit";
+import { partition, sumBy } from "es-toolkit";
 import { generateApiKey } from "random-password-toolkit";
 import type { Site } from "~/prisma";
 import calculateVisibilityScore from "./llm-visibility/calculateVisibilityScore";
@@ -71,15 +71,24 @@ export function extractDomain(url: string): string | null {
 
 export async function loadSitesWithMetrics(userId: string): Promise<
   {
-    citationsToDomain: number;
-    previousCitationsToDomain: number | null;
-    previousScore: number | null;
-    score: number;
     site: Site;
-    totalCitations: number;
-    previousTotalCitations: number | null;
     isOwner: boolean;
 
+    // Total citations for the current and previous week
+    allCitations: {
+      current: number;
+      previous: number;
+    };
+    // Your citations only for the current and previous week
+    yourCitations: {
+      current: number;
+      previous: number;
+    };
+    // Visibility score for the current and previous week
+    visbilityScore: {
+      current: number;
+      previous: number;
+    };
     // Unique bot visits for the current and previous week
     botVisits: { current: number; previous: number };
   }[]
@@ -106,6 +115,27 @@ export async function loadSitesWithMetrics(userId: string): Promise<
     },
   });
 
+  const queries = await prisma.citationQuery.findMany({
+    select: {
+      citations: true,
+      position: true,
+      text: true,
+      createdAt: true,
+      run: {
+        select: {
+          onDate: true,
+          siteId: true,
+        },
+      },
+    },
+    where: {
+      run: {
+        onDate: { gte: prevWeekStart.toJSON() },
+        siteId: { in: sites.map((s) => s.id) },
+      },
+    },
+  });
+
   // Unique bot visits for the current and previous week (total counts)
   const botVisits = await prisma.botVisit.groupBy({
     by: ["siteId", "date"],
@@ -117,33 +147,10 @@ export async function loadSitesWithMetrics(userId: string): Promise<
   });
 
   return sites.map((site) => {
-    // Group all runs by date, so each date has all the platform runs for that date:
-    // { "2026-03-12": runs, "2026-03-11": runs, ... }
-    const byDate = groupBy(site.citationRuns, ({ onDate }) => onDate);
-
-    // Sort the dates in reverse chronological order, most recent is first:
-    // [{ date: "2026-03-12", queries }, { date: "2026-03-11", queries }, ...]
-    const chronological = sortBy(Object.entries(byDate), [([date]) => date])
-      .reverse()
-      .flatMap(([date, runs]) => ({
-        date,
-        queries: runs.flatMap(({ queries }) => queries),
-      }));
-
-    // Compute composite visibility score for the most recent date's queries
-    const current = calculateVisibilityScore({
-      domain: site.domain,
-      queries: chronological[0]?.queries ?? [],
-    });
-    // Compute for the second most recent date for delta comparison
-    const previous = chronological[1]
-      ? calculateVisibilityScore({
-          domain: site.domain,
-          queries: chronological[1].queries,
-        })
-      : null;
-
-    // Compare JavaScript Date (v.date) with ISO date string (weekStart) by converting both to milliseconds
+    const [currentQueries, previousQueries] = partition(
+      queries.filter((q) => q.run.siteId === site.id),
+      (q) => q.run.onDate >= weekStart.toJSON(),
+    );
 
     const [currentVisits, previousVisits] = partition(
       botVisits.filter((v) => v.siteId === site.id),
@@ -151,17 +158,35 @@ export async function loadSitesWithMetrics(userId: string): Promise<
     );
 
     return {
-      citationsToDomain: current.domainCitations,
-      previousCitationsToDomain: previous?.domainCitations ?? null,
-      previousScore: previous?.visibilityScore ?? null,
-      score: current.visibilityScore,
-      site,
+      allCitations: {
+        current: sumBy(currentQueries, (q) => q.citations.length),
+        previous: sumBy(previousQueries, (q) => q.citations.length),
+      },
+      yourCitations: {
+        current: sumBy(
+          currentQueries,
+          (q) => q.citations.filter((c) => c.includes(site.domain)).length,
+        ),
+        previous: sumBy(
+          previousQueries,
+          (q) => q.citations.filter((c) => c.includes(site.domain)).length,
+        ),
+      },
+      visbilityScore: {
+        current: calculateVisibilityScore({
+          domain: site.domain,
+          queries: currentQueries,
+        }).visibilityScore,
+        previous: calculateVisibilityScore({
+          domain: site.domain,
+          queries: previousQueries,
+        }).visibilityScore,
+      },
       botVisits: {
         current: sumBy(currentVisits, (v) => v._sum.count ?? 0),
         previous: sumBy(previousVisits, (v) => v._sum.count ?? 0),
       },
-      totalCitations: current.totalCitations,
-      previousTotalCitations: previous?.totalCitations ?? null,
+      site,
       isOwner: site.ownerId === userId,
     };
   });

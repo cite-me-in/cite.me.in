@@ -8,25 +8,19 @@ import DeleteSiteDialog from "./DeleteSiteDialog";
 import type { action } from "./route";
 
 export default function SiteEntry({
-  citationsToDmain,
   fetcher,
-  previousCitationsToDomain,
-  previousScore,
-  score,
   site,
   botVisits,
-  totalCitations,
-  previousTotalCitations,
+  allCitations,
+  yourCitations,
+  visibilityScore,
 }: {
-  citationsToDmain: number;
   fetcher: ReturnType<typeof useFetcher<typeof action>>;
-  previousCitationsToDomain: number | null;
-  previousScore: number | null;
-  score: number;
   site: Site;
   botVisits: { current: number; previous: number };
-  totalCitations: number;
-  previousTotalCitations: number | null;
+  allCitations: { current: number; previous: number };
+  yourCitations: { current: number; previous: number };
+  visibilityScore: { current: number; previous: number };
 }) {
   const isSubmitting = fetcher.state === "submitting";
 
@@ -55,15 +49,19 @@ export default function SiteEntry({
       >
         <Metric
           label="Your citations"
-          current={citationsToDmain}
-          previous={previousCitationsToDomain}
+          current={yourCitations.current}
+          previous={yourCitations.previous}
         />
         <Metric
           label="All citations"
-          current={totalCitations}
-          previous={previousTotalCitations}
+          current={allCitations.current}
+          previous={allCitations.previous}
         />
-        <Metric label="Score" current={score} previous={previousScore} />
+        <Metric
+          label="Visibility Score"
+          current={visibilityScore.current}
+          previous={visibilityScore.previous}
+        />
         <Metric
           label="Bot Visits"
           current={botVisits.current}

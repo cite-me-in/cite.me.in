@@ -120,16 +120,13 @@ export default function SitesPage({
           <CardContent className="space-y-4 divide-y-2 divide-black/10">
             {sites.map((item) => (
               <SiteEntry
-                citationsToDmain={item.citationsToDomain}
                 fetcher={fetcher}
                 key={item.site.id}
-                previousCitationsToDomain={item.previousCitationsToDomain}
-                previousScore={item.previousScore}
-                score={item.score}
+                visibilityScore={item.visbilityScore}
                 site={item.site}
                 botVisits={item.botVisits}
-                totalCitations={item.totalCitations}
-                previousTotalCitations={item.previousTotalCitations}
+                allCitations={item.allCitations}
+                yourCitations={item.yourCitations}
               />
             ))}
           </CardContent>
