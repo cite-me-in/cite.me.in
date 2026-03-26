@@ -10,7 +10,12 @@ import {
   CardHeader,
 } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
+import prices from "~/data/stripe-prices.json";
 import type { Route } from "./+types/route";
+
+export function loader() {
+  return prices;
+}
 
 export function meta(): Route.MetaDescriptors {
   return [
@@ -23,7 +28,8 @@ export function meta(): Route.MetaDescriptors {
   ];
 }
 
-export default function PricingPage() {
+export default function PricingPage({ loaderData }: Route.ComponentProps) {
+  const { monthlyAmount, annualAmount, annualSavings } = loaderData;
   return (
     <Main className="mx-auto max-w-5xl px-4 py-16">
       <h1 className="mb-4 text-center font-heading text-4xl">Pricing</h1>
@@ -34,7 +40,11 @@ export default function PricingPage() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <FreeTierCard />
-        <ProTierCard />
+        <ProTierCard
+          monthlyAmount={monthlyAmount}
+          annualAmount={annualAmount}
+          annualSavings={annualSavings}
+        />
         <CustomTierCard />
       </div>
     </Main>
@@ -61,14 +71,22 @@ function FreeTierCard() {
   );
 }
 
-function ProTierCard() {
+function ProTierCard({
+  monthlyAmount,
+  annualAmount,
+  annualSavings,
+}: {
+  monthlyAmount: number;
+  annualAmount: number;
+  annualSavings: number;
+}) {
   return (
     <TierCard variant="yellow">
       <TierSummary
         title="Pro"
         badge="Popular"
-        price="$35/mo"
-        description="or $320/year (save $99)"
+        price={`$${monthlyAmount}/mo`}
+        description={`or $${annualAmount}/year (save $${annualSavings})`}
       />
       <TierFeatures
         features={[

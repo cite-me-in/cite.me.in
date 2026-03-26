@@ -3,6 +3,7 @@
 .env.test
 .claude/
 prisma/generated
+app/data/stripe-prices.json
 backup.sql
 server.log
 .infisical.json
