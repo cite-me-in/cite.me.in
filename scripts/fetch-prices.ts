@@ -23,4 +23,4 @@ writeFileSync(
   JSON.stringify(prices, null, 2),
 );
 
-console.log("Fetched Stripe prices:", prices);
+console.info("Fetched Stripe prices:", prices);
