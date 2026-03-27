@@ -6,7 +6,6 @@ import { Card, CardContent } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
 import { requireUserAccess } from "~/lib/auth.server";
 import getSiteMetrics from "~/lib/getSiteMetrics.server";
-import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import prisma from "~/lib/prisma.server";
 import { createSite, deleteSite } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
@@ -56,12 +55,8 @@ export async function action({ request }: Route.ActionArgs) {
       const url = formData.get("url")?.toString() ?? "";
       try {
         const { site, existing } = await createSite(user, url);
-        if (existing) {
-          return redirect(`/site/${site.domain}/citations`);
-        } else {
-          await generateSiteQueries(site);
-          return redirect(`/site/${site.domain}/suggestions`);
-        }
+        if (existing) return redirect(`/site/${site.domain}/citations`);
+        return redirect(`/site/${site.domain}/setup`);
       } catch (error) {
         return {
           error:
