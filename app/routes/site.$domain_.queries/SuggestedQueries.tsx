@@ -137,7 +137,13 @@ function SingleSuggestion({
         }
         title="Add this suggestion to your queries"
       >
-        {added ? "Added" : <PlusIcon className="h-3 w-3" />}
+        {added ? (
+          "Added"
+        ) : addFetcher.state !== "idle" ? (
+          <div className="h-3 w-3 animate-spin rounded-full border border-foreground/20 border-t-foreground" />
+        ) : (
+          <PlusIcon className="h-3 w-3" />
+        )}
       </Button>
     </li>
   );
