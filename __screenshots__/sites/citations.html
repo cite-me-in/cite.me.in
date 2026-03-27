@@ -1,0 +1,316 @@
+<div class="flex items-center justify-between gap-4">
+  <div>
+    <p>
+      <a class="block max-w-md truncate font-mono text-foreground/60 hover:underline" data-discover="true" href="/site/id" title="example.com">
+        example.com
+      </a>
+    </p>
+    <h1 class="font-heading text-3xl">
+      Citation visibility
+    </h1>
+  </div>
+  <a class="inline-flex items-center justify-center gap-2 whitespace-nowrap transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 underline-offset-4 !p-0 px-4 py-2 text-base text-foreground/60 hover:underline" data-discover="true" href="/site/id" rel="noopener noreferer">
+    Edit queries
+    <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5 12h14"></path>
+      <path d="m12 5 7 7-7 7"></path>
+    </svg>
+  </a>
+</div>
+<div class="flex justify-center">
+  <div class="mx-auto" data-activation-direction="none" data-orientation="horizontal">
+    <div class="inline-flex items-center justify-center gap-2 rounded-base border-2 border-black bg-[hsl(60,100%,99%)] p-2 shadow-[2px_2px_0px_0px_black]" data-activation-direction="none" data-orientation="horizontal" role="tablist">
+      <button aria-disabled="false" aria-selected="true" class="inline-flex items-center justify-center whitespace-nowrap rounded-base border-2 border-transparent px-4 py-2 font-bold text-base text-black transition-all duration-100 hover:border-black hover:bg-white data-active:border-black data-active:bg-[#F59E0B] data-active:shadow-[2px_2px_0px_0px_black]" data-orientation="horizontal" role="tab" tabindex="0" type="button">
+        ChatGPT
+      </button>
+      <button aria-disabled="false" aria-selected="false" class="inline-flex items-center justify-center whitespace-nowrap rounded-base border-2 border-transparent px-4 py-2 font-bold text-base text-black transition-all duration-100 hover:border-black hover:bg-white data-active:border-black data-active:bg-[#F59E0B] data-active:shadow-[2px_2px_0px_0px_black]" data-orientation="horizontal" role="tab" tabindex="-1" type="button">
+        Perplexity
+      </button>
+      <button aria-disabled="false" aria-selected="false" class="inline-flex items-center justify-center whitespace-nowrap rounded-base border-2 border-transparent px-4 py-2 font-bold text-base text-black transition-all duration-100 hover:border-black hover:bg-white data-active:border-black data-active:bg-[#F59E0B] data-active:shadow-[2px_2px_0px_0px_black]" data-orientation="horizontal" role="tab" tabindex="-1" type="button">
+        Anthropic
+      </button>
+      <button aria-disabled="false" aria-selected="false" class="inline-flex items-center justify-center whitespace-nowrap rounded-base border-2 border-transparent px-4 py-2 font-bold text-base text-black transition-all duration-100 hover:border-black hover:bg-white data-active:border-black data-active:bg-[#F59E0B] data-active:shadow-[2px_2px_0px_0px_black]" data-orientation="horizontal" role="tab" tabindex="-1" type="button">
+        Gemini
+      </button>
+    </div>
+  </div>
+</div>
+<div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
+  <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
+    <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
+      Latest Results
+    </div>
+    <div class="font-base text-base" data-slot="card-description">
+      gpt-5-chat-latest · 9 queries
+    </div>
+  </div>
+  <div class="px-6" data-slot="card-content">
+    <div class="relative w-full overflow-auto">
+      <table class="w-full caption-bottom text-base">
+        <thead class="[&amp;_tr]:border-b">
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <th class="h-10 px-2 text-left align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] font-bold text-foreground">
+              Group
+            </th>
+            <th class="h-10 px-2 text-left align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] font-bold text-foreground">
+              Query
+            </th>
+            <th class="h-10 px-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right font-bold text-foreground">
+              Positions
+            </th>
+            <th class="h-10 px-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right font-bold text-foreground">
+              Date
+            </th>
+            <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px]"></th>
+          </tr>
+        </thead>
+        <tbody class="[&amp;_tr:last-child]:border-0">
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-xs">
+              1. discovery
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] max-w-xs truncate">
+              Query 1
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+              Nov 14
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              <a data-discover="true" href="/site/id">
+                <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </a>
+            </td>
+          </tr>
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-xs">
+              1. discovery
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] max-w-xs truncate">
+              Query 2
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+              Nov 14
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              <a data-discover="true" href="/site/id">
+                <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </a>
+            </td>
+          </tr>
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-xs">
+              1. discovery
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] max-w-xs truncate">
+              Query 3
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+              Nov 14
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              <a data-discover="true" href="/site/id">
+                <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </a>
+            </td>
+          </tr>
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-xs">
+              2. active_search
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] max-w-xs truncate">
+              Query 4
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+              Nov 14
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              <a data-discover="true" href="/site/id">
+                <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </a>
+            </td>
+          </tr>
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-xs">
+              2. active_search
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] max-w-xs truncate">
+              Query 5
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+              Nov 14
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              <a data-discover="true" href="/site/id">
+                <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </a>
+            </td>
+          </tr>
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-xs">
+              2. active_search
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] max-w-xs truncate">
+              Query 6
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+              Nov 14
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              <a data-discover="true" href="/site/id">
+                <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </a>
+            </td>
+          </tr>
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-xs">
+              3. comparison
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] max-w-xs truncate">
+              Query 7
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+              Nov 14
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              <a data-discover="true" href="/site/id">
+                <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </a>
+            </td>
+          </tr>
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-xs">
+              3. comparison
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] max-w-xs truncate">
+              Query 8
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+              Nov 14
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              <a data-discover="true" href="/site/id">
+                <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </a>
+            </td>
+          </tr>
+          <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-xs">
+              3. comparison
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] max-w-xs truncate">
+              Query 9
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+              Nov 14
+            </td>
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              <a data-discover="true" href="/site/id">
+                <svg aria-hidden="true" class="lucide lucide-arrow-right size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
+  <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
+    <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
+      Brand Sentiment
+    </div>
+    <div class="font-base text-base" data-slot="card-description">
+      How ChatGPT talks about your brand
+    </div>
+  </div>
+  <div class="px-6" data-slot="card-content">
+    <div class="flex flex-col gap-3">
+      <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
+        Neutral
+      </span>
+      <p>
+        Sentiment analysis unavailable.
+      </p>
+    </div>
+  </div>
+</div>
+<div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
+  <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
+    <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
+      Top Competitors
+    </div>
+    <div class="font-base text-base" data-slot="card-description">
+      Domains most cited alongside your queries
+    </div>
+  </div>
+  <div class="px-6" data-slot="card-content">
+    <p class="text-foreground/60 text-sm">
+      No other domains found in this run.
+    </p>
+  </div>
+</div>
+<div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
+  <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
+    <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
+      Citation / Score Trend
+    </div>
+  </div>
+  <div class="px-6 flex flex-col gap-6" data-slot="card-content">
+    <div>
+      <div class="flex justify-center text-xs [&amp;_.recharts-cartesian-axis-tick_text]:fill-foreground [&amp;_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-[#80808080] [&amp;_.recharts-curve.recharts-tooltip-cursor]:stroke-[#80808080] [&amp;_.recharts-dot[stroke='#fff']]:stroke-transparent [&amp;_.recharts-polar-grid_[stroke='#ccc']]:stroke-black [&amp;_.recharts-polar-grid_[stroke='#ccc']]:dark:stroke-white [&amp;_.recharts-reference-line_[stroke='#ccc']]:stroke-black [&amp;_.recharts-reference-line_[stroke='#ccc']]:dark:stroke-white [&amp;_.recharts-sector[stroke='#fff']]:stroke-border [&amp;_.recharts-sector]:outline-hidden [&amp;_.recharts-surface]:outline-hidden [&amp;_.recharts-layer_path]:stroke-2 [&amp;_.recharts-layer_path]:[fill-opacity:1] [&amp;_.recharts-layer_path]:[stroke:var(--color-border)] h-36 w-full" data-chart="chart-_r_6_" data-slot="chart">
+        <style>
+          [data-chart=chart-_r_6_] { --color-citations: var(--chart-3); } .dark [data-chart=chart-_r_6_] { --color-citations: var(--chart-3); }
+        </style>
+      </div>
+      <p class="text-center text-foreground/60 text-sm">
+        Count of citations that reference this site.
+      </p>
+    </div>
+    <div>
+      <div class="flex justify-center text-xs [&amp;_.recharts-cartesian-axis-tick_text]:fill-foreground [&amp;_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-[#80808080] [&amp;_.recharts-curve.recharts-tooltip-cursor]:stroke-[#80808080] [&amp;_.recharts-dot[stroke='#fff']]:stroke-transparent [&amp;_.recharts-polar-grid_[stroke='#ccc']]:stroke-black [&amp;_.recharts-polar-grid_[stroke='#ccc']]:dark:stroke-white [&amp;_.recharts-reference-line_[stroke='#ccc']]:stroke-black [&amp;_.recharts-reference-line_[stroke='#ccc']]:dark:stroke-white [&amp;_.recharts-sector[stroke='#fff']]:stroke-border [&amp;_.recharts-sector]:outline-hidden [&amp;_.recharts-surface]:outline-hidden [&amp;_.recharts-layer_path]:stroke-2 [&amp;_.recharts-layer_path]:[fill-opacity:1] [&amp;_.recharts-layer_path]:[stroke:var(--color-border)] h-36 w-full" data-chart="chart-_r_7_" data-slot="chart">
+        <style>
+          [data-chart=chart-_r_7_] { --color-score: var(--chart-4); } .dark [data-chart=chart-_r_7_] { --color-score: var(--chart-4); }
+        </style>
+      </div>
+      <p class="text-center text-foreground/60 text-sm">
+        Composite visibility score (0-100) weighting query coverage (35%), position-decayed citation rank (30%), share of voice (20%), and soft text mentions (15%).
+      </p>
+    </div>
+  </div>
+</div>

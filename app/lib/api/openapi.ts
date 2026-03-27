@@ -155,7 +155,7 @@ export function generateOpenApiSpec(): ReturnType<typeof createDocument> {
       "/api/me/{email}": {
         get: {
           description:
-            "Gets the details of the current user. Includes all the sites they have access to. You can only use this endpoint with your own email address.",
+            "Responds with the details of the current user. Includes all the sites they have access to. You can only use this endpoint with your own email address.",
           security: [{ BearerAuth: [] }],
           parameters: [
             {
@@ -183,7 +183,7 @@ export function generateOpenApiSpec(): ReturnType<typeof createDocument> {
       "/api/sites/{domain}": {
         get: {
           description:
-            "Gets the details of a site you have access to, and lists all the users who also have access to that site and their roles (owner or member).",
+            "Responds with the details of the given site. Includes the content of the site, the summary, the date the site was added, and the users who have access to that site and their roles (owner or member).",
           security: [{ BearerAuth: [] }],
           parameters: [
             {
@@ -212,7 +212,7 @@ export function generateOpenApiSpec(): ReturnType<typeof createDocument> {
       "/api/sites/{domain}/metrics": {
         get: {
           description:
-            "Metrics for a site provide overall citations count, your citations count, visibility score, and unique bot visits. Each metric has one value for the current week and one for the previous week.",
+            "Responds with the metrics for the given site. Overall citations, your citations, visibility score, and bot visits. For each metric includes value for the current week and for the previous week.",
           security: [{ BearerAuth: [] }],
           parameters: [
             {
@@ -240,7 +240,7 @@ export function generateOpenApiSpec(): ReturnType<typeof createDocument> {
       "/api/sites/{domain}/queries": {
         get: {
           description:
-            "Gets the queries for a site and for each query, the citations found. The queries are sorted by the date they were run in descending order, with the most recent queries first.\n\nFor each platform list all query runs for that platform, including the query, the citations found, and the sentiment from that platform. Also the overall sentiment from that platform.",
+            "Responds with the queries for the given site. For each platform list all the queries run against that platform, the citations found, and the platform sentiment.",
           security: [{ BearerAuth: [] }],
           parameters: [
             {
