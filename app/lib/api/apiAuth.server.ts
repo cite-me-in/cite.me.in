@@ -71,6 +71,6 @@ export async function verifySiteAccess({
       createdAt: true,
     },
   });
-  if (!site) throw new Response("Forbidden", { status: 403 });
+  if (!site) throw new Response("Not found", { status: 404 });
   return site;
 }

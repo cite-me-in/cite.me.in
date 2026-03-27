@@ -46,6 +46,9 @@ beforeAll(async () => {
                   ],
                 },
               },
+              sentimentLabel: "positive",
+              sentimentSummary:
+                "Rentail.space is cited positively across multiple queries, frequently appearing as a top recommendation for finding short-term retail space. It ranks prominently in citations and is described as a reliable marketplace for pop-up and kiosk leasing.",
             },
           },
         },
@@ -74,9 +77,9 @@ describe("GET /api/sites/:domain", () => {
     expect(response.status).toBe(401);
   });
 
-  it("should return 403 for a domain the user doesn't own", async () => {
+  it("should return 404 for a domain that doesn't exist", async () => {
     const response = await get("/api/sites/not-owned.example", API_KEY);
-    expect(response.status).toBe(403);
+    expect(response.status).toBe(404);
   });
 
   it("should return the site with users and roles", async () => {
@@ -93,55 +96,68 @@ describe("GET /api/sites/:domain", () => {
   });
 });
 
-describe("GET /api/sites/:domain/runs", () => {
+describe("GET /api/sites/:domain/metrics", () => {
   it("should return 401 without a token", async () => {
-    const res = await get(`/api/sites/${DOMAIN}/runs`);
+    const res = await get(`/api/sites/${DOMAIN}/metrics`);
     expect(res.status).toBe(401);
   });
 
-  it("should return runs with summary counts", async () => {
-    const res = await get(`/api/sites/${DOMAIN}/runs`, API_KEY);
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(Array.isArray(body.runs)).toBe(true);
-    const run = body.runs.find((r: { id: string }) => r.id === RUN_ID);
-    expect(run).toBeDefined();
-    expect(run.platform).toBe("chatgpt");
-    expect(run.queryCount).toBe(1);
-    expect(run.citationCount).toBe(2);
-  });
-
-  it("should return empty list for a future ?since= date", async () => {
-    const future = new Date(Date.now() + 86_400_000).toISOString();
-    const res = await get(`/api/sites/${DOMAIN}/runs?since=${future}`, API_KEY);
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body.runs).toHaveLength(0);
-  });
-});
-
-describe("GET /api/sites/:domain/runs/:runId", () => {
-  it("should return 401 without a token", async () => {
-    const res = await get(`/api/sites/${DOMAIN}/runs/${RUN_ID}`);
-    expect(res.status).toBe(401);
-  });
-
-  it("should return 404 for an unknown runId", async () => {
-    const res = await get(`/api/sites/${DOMAIN}/runs/nonexistent`, API_KEY);
+  it("should return 404 for a domain that doesn't exist", async () => {
+    const res = await get("/api/sites/nonexistent.example/metrics", API_KEY);
     expect(res.status).toBe(404);
   });
 
-  it("should return the run detail with queries and citations", async () => {
-    const res = await get(`/api/sites/${DOMAIN}/runs/${RUN_ID}`, API_KEY);
+  it("should return metrics with summary counts", async () => {
+    const res = await get(`/api/sites/${DOMAIN}/metrics`, API_KEY);
     expect(res.status).toBe(200);
     const body = await res.json();
-    expect(body.id).toBe(RUN_ID);
-    expect(body.platform).toBe("chatgpt");
-    expect(Array.isArray(body.queries)).toBe(true);
-    expect(body.queries[0].query).toBe("best retail platforms");
-    expect(body.queries[0].citations).toEqual([
+    expect(body.allCitations.current).toBe(2);
+    expect(body.allCitations.previous).toBe(0);
+    expect(body.yourCitations.current).toBe(2);
+    expect(body.yourCitations.previous).toBe(0);
+    expect(body.visbilityScore.current).toBe(70);
+    expect(body.visbilityScore.previous).toBe(0);
+    expect(body.botVisits.current).toBe(0);
+    expect(body.botVisits.previous).toBe(0);
+  });
+});
+
+describe("GET /api/sites/:domain/queries", () => {
+  it("should return 401 without a token", async () => {
+    const res = await get(`/api/sites/${DOMAIN}/queries`);
+    expect(res.status).toBe(401);
+  });
+
+  it("should return 404 for a domain that doesn't exist", async () => {
+    const res = await get("/api/sites/nonexistent.example/queries", API_KEY);
+    expect(res.status).toBe(404);
+  });
+
+  it("should return the queries with citations", async () => {
+    const res = await get(`/api/sites/${DOMAIN}/queries`, API_KEY);
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(Array.isArray(body.platforms)).toBe(true);
+    expect(body.platforms[0].model).toBe("gpt-4o");
+    expect(body.platforms[0].onDate).toBe(
+      new Date().toISOString().split("T")[0],
+    );
+    expect(body.platforms[0].platform).toBe("chatgpt");
+    expect(Array.isArray(body.platforms[0].queries)).toBe(true);
+    expect(body.platforms[0].queries[0].query).toBe("best retail platforms");
+    expect(body.platforms[0].queries[0].citations).toEqual([
       `https://${DOMAIN}/page1`,
       `https://${DOMAIN}/page2`,
     ]);
+  });
+
+  it("should return the queries with sentiment", async () => {
+    const res = await get(`/api/sites/${DOMAIN}/queries`, API_KEY);
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.platforms[0].sentiment.label).toBe("positive");
+    expect(body.platforms[0].sentiment.summary).toBe(
+      "Rentail.space is cited positively across multiple queries, frequently appearing as a top recommendation for finding short-term retail space. It ranks prominently in citations and is described as a reliable marketplace for pop-up and kiosk leasing.",
+    );
   });
 });

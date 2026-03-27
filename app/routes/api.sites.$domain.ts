@@ -1,6 +1,7 @@
 import { data } from "react-router";
 import { verifySiteAccess } from "~/lib/api/apiAuth.server";
-import { SiteSchema } from "~/lib/api/schemas";
+import { SiteSchema } from "~/lib/api/openapi";
+import getSiteMetrics from "~/lib/getSiteMetrics.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/api.sites.$domain";
 
@@ -18,12 +19,15 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     },
   });
 
+  const [metrics] = await getSiteMetrics({ siteIds: [id] });
+
   return data(
     SiteSchema.parse({
-      domain: site.domain,
-      summary: site.summary,
       content: site.content,
       createdAt: site.createdAt.toISOString().split("T")[0],
+      domain: site.domain,
+      summary: site.summary,
+      metrics,
       users: [
         {
           id: site.owner.id,

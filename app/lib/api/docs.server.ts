@@ -1,52 +1,11 @@
-type SchemaProperty = {
-  type?: string | string[];
-  format?: string;
-  enum?: string[];
-  items?: { type?: string; $ref?: string };
-  $ref?: string;
-  example?: unknown;
-  description?: string;
-};
-
-type OpenApiSpec = {
-  info: { description?: string };
-  servers: { url: string }[];
-  paths: Record<
-    string,
-    {
-      get?: {
-        summary?: string;
-        description?: string;
-        parameters?: Array<{
-          name: string;
-          in: string;
-          required?: boolean;
-          schema?: SchemaProperty;
-          description?: string;
-          example?: unknown;
-        }>;
-        responses?: Record<
-          string,
-          {
-            description?: string;
-            content?: {
-              "application/json"?: { schema?: { $ref?: string } };
-            };
-          }
-        >;
-      };
-    }
-  >;
-  components: {
-    schemas: Record<
-      string,
-      {
-        properties?: Record<string, SchemaProperty>;
-        description?: string;
-      }
-    >;
-  };
-};
+import { sortBy } from "es-toolkit";
+import type {
+  ZodOpenApiHeaderObject,
+  ZodOpenApiParameterObject,
+  ZodOpenApiResponseObject,
+  ZodOpenApiSchemaObject,
+  createDocument,
+} from "zod-openapi";
 
 /**
  * Generate Markdown documentation for the entire OpenAPI spec.
@@ -54,7 +13,10 @@ type OpenApiSpec = {
  * @param spec - The OpenAPI spec to generate documentation for.
  * @returns The generated Markdown documentation as a string
  */
-export function generateApiDocsMarkdown(spec: OpenApiSpec): string {
+export function generateApiDocsMarkdown(
+  spec: ReturnType<typeof createDocument>,
+): string {
+  if (!spec.servers) return "";
   const baseUrl = spec.servers[0]?.url;
   const sections: string[] = [];
 
@@ -71,7 +33,7 @@ Authorization: Bearer YOUR_API_KEY
 
 Retrieve your API key from your [profile page](/profile).`);
 
-  for (const [path, pathItem] of Object.entries(spec.paths)) {
+  for (const [path, pathItem] of Object.entries(spec.paths ?? {})) {
     const op = pathItem.get;
     if (!op) continue;
 
@@ -88,10 +50,10 @@ Retrieve your API key from your [profile page](/profile).`);
     if (queryTable) parts.push(queryTable);
 
     const okResponse = op.responses?.["200"];
-    const ref = okResponse?.content?.["application/json"]?.schema?.$ref;
-    if (ref) {
+    const schema = okResponse?.content?.["application/json"]?.schema;
+    if (schema) {
       parts.push("#### Response: 200");
-      parts.push(responseTable(spec, ref));
+      parts.push(responseTable(schema));
     }
 
     if (op.responses) parts.push(statusCodesTable(op.responses));
@@ -112,21 +74,26 @@ Retrieve your API key from your [profile page](/profile).`);
  * @returns The generated Markdown table of path parameters as a string.
  */
 function pathParamsTable(
-  params: NonNullable<
-    NonNullable<OpenApiSpec["paths"][string]["get"]>["parameters"]
-  >,
+  params: (ZodOpenApiParameterObject | ZodOpenApiHeaderObject)[],
 ): string {
-  const pathParams = params.filter((p) => p.in === "path");
+  const pathParams = params.filter(
+    (param) => "in" in param && param.in === "path",
+  );
   if (!pathParams.length) return "";
+
   const lines = [
     "#### Path Parameters",
     "| Parameter | Type | Description |",
     "| --- | --- | --- |",
   ];
-  for (const p of pathParams)
-    lines.push(
-      `| \`${p.name}\` | \`${p.schema?.type ?? "string"}\` | ${p.description ?? ""} |`,
-    );
+  for (const param of pathParams) {
+    if ("name" in param)
+      lines.push(
+        `| \`${param.name}\` | \`${
+          param.schema && "type" in param.schema ? param.schema.type : "string"
+        }\` | ${param.description ?? ""} |`,
+      );
+  }
   return lines.join("\n");
 }
 
@@ -137,79 +104,90 @@ function pathParamsTable(
  * @returns The generated Markdown table of query parameters as a string.
  */
 function queryParamsTable(
-  params: NonNullable<
-    NonNullable<OpenApiSpec["paths"][string]["get"]>["parameters"]
-  >,
+  params: (ZodOpenApiParameterObject | ZodOpenApiHeaderObject)[],
 ): string {
-  const queryParams = params.filter((p) => p.in === "query");
+  const queryParams = params.filter(
+    (param) => "in" in param && param.in === "query",
+  );
   if (!queryParams.length) return "";
   const lines = [
     "#### Query Parameters",
     "| Parameter | Type | Required | Description |",
     "| --- | --- | --- | --- |",
   ];
-  for (const p of queryParams)
-    lines.push(
-      `| \`${p.name}\` | \`${p.schema?.type ?? "string"}\` | ${p.required ? "Yes" : "No"} | ${p.description ?? ""} |`,
-    );
+  for (const param of queryParams) {
+    if ("name" in param)
+      lines.push(
+        `| \`${param.name}\` | \`${
+          param.schema && "type" in param.schema ? param.schema.type : "string"
+        }\` | ${param.required ? "Yes" : "No"} | ${param.description ?? ""} |`,
+      );
+  }
   return lines.join("\n");
 }
 
 /**
  * Generate Markdown table of response fields from the given OpenAPI spec.
  *
- * @param spec - The OpenAPI spec to generate the table from.
- * @param ref - The reference to the schema to generate the table from.
+ * @param schema - The schema to generate the table from.
  * @returns The generated Markdown table of response fields as a string.
  */
-function responseTable(spec: OpenApiSpec, ref: string): string {
-  const name = ref.replace("#/components/schemas/", "");
-  const rows = schemaRows(spec, name);
-  if (!rows.length) return "";
+function responseTable(schema: ZodOpenApiSchemaObject): string {
+  const properties =
+    "properties" in schema && schema.properties
+      ? Object.entries(schema.properties)
+      : [];
+  if (!properties.length) return "";
 
-  const lines = ["| Field | Type | Example |", "| --- | --- | --- |"];
-  for (const row of rows)
-    lines.push(
-      `| \`${row.field}\` | \`${encodeForMarkdown(row.type)}\` | ${row.example ? `\`${encodeForMarkdown(row.example)}\`` : ""} |`,
-    );
+  const lines = ["| Field | Type | Description |", "| --- | --- | --- |"];
+  for (const [name, prop] of sortBy(properties, [0]))
+    addSchemaProperty({ name, prop, lines });
   return lines.join("\n");
 }
 
 /**
- * Turn OpenAPI schema into a table of rows for the response table.
+ * Add one or more lines about the property. Adds multiple lines if the property
+ * is an object or array of objects.
  *
- * @param spec - The OpenAPI spec to turn into a table of rows.
- * @param schemaName - The name of the schema to turn into a table of rows.
- * @param prefix - The prefix to add to the field name.
- * @returns The generated table of rows as an array of TableRow objects.
+ * @param lines - The lines to add the property to.
+ * @param name - The name of the property.
+ * @param parent - The parent of the property.
+ * @param prop - The schema property of the property.
  */
-function schemaRows(spec: OpenApiSpec, schemaName: string, prefix = "") {
-  const schema = spec.components.schemas[schemaName];
-  if (!schema?.properties) return [];
-
-  const rows: {
-    field: string;
-    type: string;
-    example: string;
-    description?: string;
-  }[] = [];
-  for (const [name, prop] of Object.entries(schema.properties)) {
-    const field = prefix ? `${prefix}.${name}` : name;
-
-    if (prop.type === "array" && prop.items?.$ref) {
-      const subName = prop.items.$ref.replace("#/components/schemas/", "");
-      rows.push({ field, type: `${subName}[]`, example: "" });
-      for (const sub of schemaRows(spec, subName, `${field}[]`)) rows.push(sub);
-    } else {
-      rows.push({
-        field,
-        type: resolveType(prop),
-        example: exampleValue(prop),
-        description: prop.description,
-      });
-    }
+function addSchemaProperty({
+  lines,
+  name,
+  parent,
+  prop,
+}: {
+  lines: string[];
+  name: string;
+  parent?: string;
+  prop: ZodOpenApiSchemaObject;
+}) {
+  const type = "type" in prop ? (prop.type as string) : "unknown";
+  if (
+    type === "array" &&
+    "items" in prop &&
+    prop.items &&
+    "properties" in prop.items
+  ) {
+    const properties = prop.items.properties ?? {};
+    const thisParent = `${parent ?? ""}${name}[].`;
+    for (const [name, prop] of sortBy(Object.entries(properties), [0]))
+      addSchemaProperty({ name, prop, lines, parent: thisParent });
+  } else if (type === "object" && "properties" in prop && prop.properties) {
+    const properties = prop.properties;
+    const thisParent = `${parent ?? ""}${name}.`;
+    for (const [name, prop] of sortBy(Object.entries(properties), [0]))
+      addSchemaProperty({ name, prop, lines, parent: thisParent });
+  } else {
+    lines.push(
+      `| \`${parent ?? ""}${name}\` | \`${encodeForMarkdown(type)}\` | ${
+        "description" in prop ? prop.description : ""
+      } |`,
+    );
   }
-  return rows;
 }
 
 /**
@@ -219,9 +197,7 @@ function schemaRows(spec: OpenApiSpec, schemaName: string, prefix = "") {
  * @returns The generated Markdown table of status codes and descriptions as a string.
  */
 function statusCodesTable(
-  responses: NonNullable<
-    NonNullable<OpenApiSpec["paths"][string]["get"]>["responses"]
-  >,
+  responses: Record<string, ZodOpenApiResponseObject>,
 ): string {
   const lines = ["#### Status Codes", "| Code | Meaning |", "| --- | --- |"];
   for (const [code, resp] of Object.entries(responses))
@@ -252,29 +228,6 @@ const data = await response.json();
 \`\`\``;
 }
 
-function exampleValue(prop: SchemaProperty): string {
-  if (prop.example !== undefined) return String(prop.example);
-  if (prop.enum) return `"${prop.enum[0]}"`;
-  if (prop.type === "array") return "[]";
-  return "";
-}
-
-function resolveType(prop: SchemaProperty): string {
-  if (prop.enum) return prop.enum.map((v) => `"${v}"`).join(" | ");
-  if (Array.isArray(prop.type)) {
-    const nonNull = prop.type.filter((t) => t !== "null");
-    return `${nonNull.join(" | ")} | null`;
-  }
-  if (prop.type === "array" && prop.items) {
-    if (prop.items.$ref) {
-      const name = prop.items.$ref.replace("#/components/schemas/", "");
-      return `${name}[]`;
-    }
-    return `${prop.items.type ?? "unknown"}[]`;
-  }
-  return prop.type ?? "unknown";
-}
-
 /**
  * Encodes a value string so it is not interpreted as Markdown.
  * Escapes pipe "|" and backtick "`" characters, and wraps in backticks as needed.
@@ -282,7 +235,7 @@ function resolveType(prop: SchemaProperty): string {
  * @param value - The value to encode.
  * @returns The encoded value as a string safe for Markdown tables.
  */
-function encodeForMarkdown(value: string): string {
+function encodeForMarkdown(value?: string): string {
   if (!value) return "";
   // Escape pipe and backtick, and replace common issues
   const v = String(value).replace(/\|/g, "\\|").replace(/`/g, "\\`");

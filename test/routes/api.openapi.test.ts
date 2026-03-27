@@ -11,8 +11,8 @@ describe("GET /api/openapi.json", () => {
     expect(body.openapi).toBe("3.1.0");
     expect(body.info.title).toBe("cite.me.in Monitoring API");
     expect(body.paths).toHaveProperty("/api/sites/{domain}");
-    expect(body.paths).toHaveProperty("/api/sites/{domain}/runs");
-    expect(body.paths).toHaveProperty("/api/sites/{domain}/runs/{runId}");
+    expect(body.paths).toHaveProperty("/api/sites/{domain}/metrics");
+    expect(body.paths).toHaveProperty("/api/sites/{domain}/queries");
   });
 
   it("should document BearerAuth security scheme", async () => {

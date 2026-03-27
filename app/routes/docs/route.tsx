@@ -18,9 +18,7 @@ export function meta(): Route.MetaDescriptors {
 
 export async function loader() {
   return {
-    markdown: generateApiDocsMarkdown(
-      generateOpenApiSpec() as Parameters<typeof generateApiDocsMarkdown>[0],
-    ),
+    markdown: generateApiDocsMarkdown(generateOpenApiSpec()),
   };
 }
 

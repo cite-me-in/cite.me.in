@@ -56,31 +56,15 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 const AdminUsersSchema = z.object({
-  users: z
-    .array(
-      z
-        .object({
-          createdAt: z.iso.date().openapi({ example: "2024-01-01" }),
-          email: z.email().openapi({ example: "user@example.com" }),
-          id: z.string().openapi({ example: "clxyz123" }),
-          plan: z
-            .enum(["monthly", "yearly"])
-            .nullable()
-            .openapi({ example: "monthly" }),
-          sites: z.array(
-            z
-              .object({
-                createdAt: z.iso.date().openapi({ example: "2024-01-01" }),
-                domain: z.string().openapi({ example: "example.com" }),
-              })
-              .openapi("Site"),
-          ),
-          status: z
-            .enum(["free_trial", "active", "cancelled"])
-            .openapi({ example: "free_trial" }),
-          updatedAt: z.iso.date().openapi({ example: "2024-01-01" }),
-        })
-        .openapi("User"),
-    )
-    .openapi("AdminUsers"),
+  users: z.array(
+    z.object({
+      createdAt: z.iso.date(),
+      email: z.email(),
+      id: z.string(),
+      plan: z.enum(["monthly", "yearly"]).nullable(),
+      sites: z.array(z.object({ createdAt: z.iso.date(), domain: z.string() })),
+      status: z.enum(["free_trial", "active", "cancelled"]),
+      updatedAt: z.iso.date(),
+    }),
+  ),
 });
