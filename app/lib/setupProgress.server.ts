@@ -19,7 +19,7 @@ export async function setStatus(
   status: "running" | "complete" | "error",
 ) {
   await redis.set(statusKey(siteId, userId), status, "EX", TTL);
-  if (status !== "running") await redis.expire(logKey(siteId, userId), TTL);
+  await redis.expire(logKey(siteId, userId), TTL);
 }
 
 export async function getProgress(
