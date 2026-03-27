@@ -20,7 +20,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   });
   const status = await getStatus(site.id, user.id);
   if (status === "complete") throw redirect(`/site/${params.domain}/citations`);
-  return { domain: params.domain, needsStart: status === null };
+  return { domain: params.domain, needsStart: status === null, hadError: status === "error" };
 }
 
 export default function SetupPage({ loaderData }: Route.ComponentProps) {
@@ -29,7 +29,7 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
 
   const [lines, setLines] = useState<string[]>([]);
   const [done, setDone] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(loaderData.hadError);
   const offsetRef = useRef(0);
   const logRef = useRef<HTMLPreElement>(null);
 
@@ -43,7 +43,7 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
 
   // Poll status endpoint every 2s.
   useEffect(() => {
-    if (done) return;
+    if (done || error) return;
     const id = setInterval(async () => {
       try {
         const res = await fetch(
@@ -61,7 +61,7 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
       }
     }, 2_000);
     return () => clearInterval(id);
-  }, [done, domain]);
+  }, [done, error, domain]);
 
   // Auto-scroll log to bottom.
   useEffect(() => {
