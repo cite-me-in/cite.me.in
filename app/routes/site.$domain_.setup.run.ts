@@ -143,6 +143,7 @@ async function runPlatformWithProgress({
   });
 
   await forEachAsync(queries, async ({ query, group }, index) => {
+    // Shorter stagger than the daily cron (1s) — setup is a one-time event.
     if (process.env.NODE_ENV !== "test") await delay(ms("200ms") * index);
     await log(`${label}: ${query} (${index + 1}/${queries.length})`);
     await singleQueryRepetition({
