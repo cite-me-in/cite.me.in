@@ -1,12 +1,12 @@
 import { Column, Img, Link, Row, Section, Text } from "@react-email/components";
-import { sortBy } from "es-toolkit";
+import { sortBy, sumBy } from "es-toolkit";
 import { twMerge } from "tailwind-merge";
-import type { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
 import type { SentimentLabel } from "~/prisma";
 import EmailLayout from "./EmailLayout";
 import { sendEmail } from "./sendEmails";
 
 export type WeeklyDigestEmailProps = {
+  subject: string;
   botVisits: { current: number; previous: number };
   byPlatform: {
     [k: string]: {
@@ -20,10 +20,8 @@ export type WeeklyDigestEmailProps = {
     total: { current: number; previous: number };
     domain: { current: number; previous: number };
   };
-  domain: string;
   score: { current: number; previous: number };
-  subject: string;
-  to: string[];
+  toEmails: string[];
   competitors: {
     domain: string;
     brandName: string;
@@ -39,15 +37,11 @@ export async function sendSiteDigestEmails(
   data: WeeklyDigestEmailProps,
 ): Promise<{ id: string }[]> {
   const emailIds = [];
-  for (const to of data.to) {
+  for (const to of data.toEmails) {
     const emailId = await sendEmail({
       canUnsubscribe: true,
-      render: ({ subject, unsubscribeURL }) => (
-        <WeeklyDigestEmail
-          {...data}
-          subject={subject}
-          unsubscribeURL={unsubscribeURL}
-        />
+      render: ({ unsubscribeURL }) => (
+        <WeeklyDigestEmail {...data} unsubscribeURL={unsubscribeURL} />
       ),
       subject: data.subject,
       user: { email: to, unsubscribed: false },
@@ -63,20 +57,13 @@ export function WeeklyDigestEmail({
   chartBase64,
   citations,
   competitors,
-  domain,
   score,
-  subject,
   topQueries,
   unsubscribeURL,
-}: Awaited<ReturnType<typeof loadWeeklyDigestMetrics>>) {
+  subject,
+}: WeeklyDigestEmailProps) {
   return (
     <EmailLayout subject={subject} unsubscribeURL={unsubscribeURL}>
-      <Text className="text-center font-bold font-mono text-dark">
-        <Link href={`https://${domain}`} className="text-dark no-underline">
-          {domain}
-        </Link>
-      </Text>
-
       <TopMetrics citations={citations} score={score} botVisits={botVisits} />
       <PlatformBreakdown byPlatform={byPlatform} />
       <CitationTrendsChart chartBase64={chartBase64} />
@@ -89,7 +76,11 @@ export function WeeklyDigestEmail({
 
 function CitationTrendsChart({ chartBase64 }: { chartBase64: string }) {
   return (
-    <Card title="Citation trends" subtitle="Compared to previous week">
+    <Card
+      title="Citation trends"
+      subtitle="Compared to previous week"
+      withBorder
+    >
       <Row>
         <Column className="px-5 pt-4">
           <Img
@@ -174,21 +165,28 @@ function PlatformBreakdown({
     { count: number; sentimentLabel: SentimentLabel; sentimentSummary: string }
   >;
 }) {
+  const first4 = sortBy(Object.entries(byPlatform), [0]).slice(0, 4);
+  const total = sumBy(first4, ([, { count }]) => count);
+
   return (
-    <Card title="Citations by platform">
+    <Card title="Citations by platform" className="pb-8">
       <Row>
-        {sortBy(Object.entries(byPlatform), [0])
-          .slice(0, 4)
-          .map(([platform, { count }]) => (
-            <Column key={platform} className="w-1/4 px-0 text-center">
-              <Text className="font-bold text-2xl text-dark tabular-nums">
-                {count.toLocaleString()}
-              </Text>
-              <Text className="text-light text-xs uppercase tracking-wide">
-                {platform}
-              </Text>
-            </Column>
-          ))}
+        {first4.map(([platform, { count }]) => (
+          <Column key={platform} className="w-1/4 px-1">
+            <Section className="w-full overflow-hidden rounded-lg border border-border bg-white">
+              <Row>
+                <Column className="px-4 text-center">
+                  <Text className="font-bold text-2xl text-dark tabular-nums">
+                    {((count / total) * 100).toFixed(1)}%
+                  </Text>
+                  <Text className="text-light text-xs uppercase tracking-wide">
+                    {platform}
+                  </Text>
+                </Column>
+              </Row>
+            </Section>
+          </Column>
+        ))}
       </Row>
     </Card>
   );
@@ -201,7 +199,11 @@ function TopQueries({
 }) {
   if (topQueries.length === 0) return null;
   return (
-    <Card title="↑ Top queries" subtitle="Queries most cited this week">
+    <Card
+      title="↑ Top queries"
+      subtitle="Queries most cited this week"
+      withBorder
+    >
       <table>
         <thead>
           <tr className="text-center text-light text-xs uppercase tracking-wide">
@@ -250,7 +252,7 @@ function SentimentBreakdown({
     mixed: "text-yellow-500",
   };
   return (
-    <Card title="AI sentiment this week">
+    <Card title="AI sentiment this week" withBorder>
       <Text
         className={twMerge(
           "text-right text-sm uppercase",
@@ -282,6 +284,7 @@ function TopCompetitors({
     <Card
       title="Top competitors"
       subtitle="Sites appearing in your queries this week"
+      withBorder
     >
       <table>
         <tbody>
@@ -307,15 +310,25 @@ function TopCompetitors({
 
 function Card({
   children,
+  className,
   title,
   subtitle,
+  withBorder,
 }: {
   children: React.ReactNode;
+  className?: string;
   title?: string;
   subtitle?: string;
+  withBorder?: boolean;
 }) {
   return (
-    <Section className="my-4 w-full overflow-hidden bg-white">
+    <Section
+      className={twMerge(
+        "my-4 w-full overflow-hidden bg-white",
+        withBorder && "rounded-lg border border-border",
+        className,
+      )}
+    >
       {(title || subtitle) && (
         <Row>
           <Column className="px-5 pt-4">

@@ -73,20 +73,13 @@ export default function EmailLayout({
 function Header({ subject }: { subject: string }) {
   return (
     <Section>
-      <Text className="my-2 flex items-center justify-center text-center">
+      <Heading className="my-6 flex items-center justify-center gap-2 whitespace-nowrap text-center">
         <Img
           height={32}
           src={new URL("/icon-192.png", "https://cite.me.in").toString()}
-          className="mt-1 mr-2"
           width={32}
-        />{" "}
-        <span className="font-bold text-2xl text-[#F59E0B] leading-none">
-          cite.me.in
-        </span>
-      </Text>
-
-      <Heading className="mb-6 text-center font-bold text-2xl text-gray-800 leading-snug">
-        {subject}
+        />
+        <span className="font-bold text-2xl text-gray-800">{subject}</span>
       </Heading>
     </Section>
   );

@@ -6,7 +6,7 @@ import getSiteMetrics from "~/lib/getSiteMetrics.server";
 import prisma from "~/lib/prisma.server";
 import type { SentimentLabel } from "~/prisma";
 import { topCompetitors } from "~/routes/site.$domain_.citations/TopCompetitors";
-import { formatDateMed } from "./formatDate";
+import { formatDateShort } from "./formatDate";
 
 export async function loadWeeklyDigestMetrics(
   siteId: string,
@@ -132,17 +132,16 @@ export async function loadWeeklyDigestMetrics(
   );
 
   const { owner, siteUsers } = siteInfo;
-  const to = [owner, ...siteUsers.map((su) => su.user)]
+  const toEmails = [owner, ...siteUsers.map((su) => su.user)]
     .filter(({ unsubscribed }) => !unsubscribed)
     .map(({ email }) => email);
-  const subject = `Weekly Digest · ${formatDateMed(
-    new Date(weekStart),
-  )} — ${formatDateMed(new Date(today.toJSON()))}`;
+  const subject = `${formatDateShort(new Date(weekStart))} — ${formatDateShort(
+    new Date(today.toJSON()),
+  )} • ${domain}`;
 
   return {
-    domain,
-    to,
     subject,
+    toEmails,
     citations: {
       total: {
         current: metrics.allCitations.current,
