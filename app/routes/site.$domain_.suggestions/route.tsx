@@ -1,8 +1,7 @@
 import { groupBy, sortBy } from "es-toolkit";
-import { AlertCircleIcon, CoffeeIcon, PlusIcon, TrashIcon } from "lucide-react";
+import { AlertCircleIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
 import { redirect, useFetcher } from "react-router";
-import { useInterval } from "usehooks-ts";
 import z from "zod";
 import { ActiveLink } from "~/components/ui/ActiveLink";
 import { Alert, AlertTitle } from "~/components/ui/Alert";
@@ -10,12 +9,10 @@ import { Button } from "~/components/ui/Button";
 import { Card, CardContent } from "~/components/ui/Card";
 import { Input } from "~/components/ui/Input";
 import Main from "~/components/ui/Main";
-import ProgressIndicator from "~/components/ui/ProgressIndicator";
 import Spinner from "~/components/ui/Spinner";
 import addSiteQueries from "~/lib/addSiteQueries";
 import { requireSiteAccess } from "~/lib/auth.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
-import queryAccount from "~/lib/llm-visibility/queryAccount";
 import queryGroups from "~/lib/llm-visibility/queryGroups";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
@@ -64,10 +61,6 @@ export async function action({ params, request }: Route.ActionArgs) {
           .array(z.object({ group: z.string(), query: z.string() }))
           .parse(raw);
         await addSiteQueries(site, queries);
-        await queryAccount({
-          site,
-          queries: queries.filter((q) => q.query.trim()),
-        });
         return redirect(`/site/${params.domain}/citations`);
       }
     }
@@ -194,8 +187,6 @@ export default function Index({ loaderData }: Route.ComponentProps) {
           {isProcessing ? "Saving…" : "Save queries"}
         </Button>
 
-        {isProcessing && <GradualProgress />}
-
         <ActiveLink
           to={`/site/${loaderData.site.domain}`}
           className="text-base text-foreground/60 underline"
@@ -204,30 +195,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
         </ActiveLink>
       </div>
 
-      {isProcessing && (
-        <p className="flex flex-row items-start gap-2 text-base text-foreground/60">
-          <span>
-            <CoffeeIcon className="size-6" />
-          </span>
-          <span>
-            Be patient, nothing will happen for a couple of minutes. We're going
-            to check these queries against the domain, asking Claude, OpenAI,
-            Google, and Perplexity to see if they return any citations. Keep
-            this page open to see the progress.
-          </span>
-        </p>
-      )}
     </Main>
   );
 }
 
-function GradualProgress({ totalTime = 120_000 }: { totalTime?: number }) {
-  const [progress, setProgress] = useState(0);
-  const increment = (300 * 100) / totalTime;
-  useInterval(() => {
-    setProgress((progress) => (progress >= 100 ? 100 : progress + increment));
-  }, 100);
-  if (import.meta.env.MODE === "test") return null;
-
-  return <ProgressIndicator value={progress} />;
-}
