@@ -1,16 +1,11 @@
 import { generateApiKey } from "random-password-toolkit";
 import type { Site } from "~/prisma";
 import prisma from "./prisma.server";
-import { crawl } from "./scrape/crawl";
-import { summarize } from "./scrape/summarize";
 
-export async function addSiteToUser(
+export async function createSite(
   user: { id: string },
   url: string,
-): Promise<{
-  site: Site;
-  existing: boolean;
-}> {
+): Promise<{ site: Site; existing: boolean }> {
   const domain = extractDomain(url);
   if (!domain) throw new Error("Enter a valid website URL or domain name");
 
@@ -25,30 +20,36 @@ export async function addSiteToUser(
   });
   const isPro = account?.status === "active";
   const limit = isPro ? 5 : 1;
-
   const siteCount = await prisma.site.count({ where: { ownerId: user.id } });
   if (siteCount >= limit) {
-    const limitMsg = isPro
-      ? "Pro plan supports up to 5 sites. Contact us if you need more."
-      : "Free trial supports 1 site. Upgrade to Pro to add up to 5 sites.";
-    throw new Error(limitMsg);
+    throw new Error(
+      isPro
+        ? "Pro plan supports up to 5 sites. Contact us if you need more."
+        : "Free trial supports 1 site. Upgrade to Pro to add up to 5 sites.",
+    );
   }
 
-  const content = await crawl({
-    domain,
-    maxPages: 10,
-    maxWords: 5_000,
-    maxSeconds: 15,
-  });
-  const summary = await summarize({ domain, content });
+  // Quick reachability check — the only sync step before backgrounding.
+  try {
+    const res = await fetch(`https://${domain}/`, {
+      method: "HEAD",
+      signal: AbortSignal.timeout(5_000),
+    });
+    // Some servers reject HEAD; treat 405 as reachable.
+    if (!res.ok && res.status !== 405) throw new Error(`HTTP ${res.status}`);
+  } catch (error) {
+    if (error instanceof Error && error.message.startsWith("HTTP "))
+      throw new Error(`Could not reach ${domain} (${error.message}). Check the URL.`);
+    throw new Error(`Could not reach ${domain}. Check the URL and try again.`);
+  }
 
   const site = await prisma.site.create({
     data: {
       apiKey: `cite.me.in_${generateApiKey(16)}`,
-      content,
+      content: "",
+      summary: "",
       domain,
       owner: { connect: { id: user.id } },
-      summary,
     },
   });
   return { site, existing: false };

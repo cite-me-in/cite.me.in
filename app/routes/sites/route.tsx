@@ -8,7 +8,7 @@ import { requireUserAccess } from "~/lib/auth.server";
 import getSiteMetrics from "~/lib/getSiteMetrics.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import prisma from "~/lib/prisma.server";
-import { addSiteToUser, deleteSite } from "~/lib/sites.server";
+import { createSite, deleteSite } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
 import AddSiteForm from "./AddSiteForm";
 import OfferSubscription from "./OfferSubscription";
@@ -55,7 +55,7 @@ export async function action({ request }: Route.ActionArgs) {
       // Add a new site to the account
       const url = formData.get("url")?.toString() ?? "";
       try {
-        const { site, existing } = await addSiteToUser(user, url);
+        const { site, existing } = await createSite(user, url);
         if (existing) {
           return redirect(`/site/${site.domain}/citations`);
         } else {
