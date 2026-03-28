@@ -10,6 +10,7 @@ import type { Route } from "./+types/root";
 import PageLayout from "./components/layout/PageLayout";
 import Main from "./components/ui/Main";
 import "./global.css";
+import socialLinks from "./lib/socialLinks";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const baseUrl = new URL(request.url).origin;
@@ -82,9 +83,10 @@ export const links: Route.LinksFunction = () => [
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
+  ...socialLinks.map(({ url }) => ({ rel: "me", href: url })),
 ];
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export function Layout({ children }: { children: React.ReactNode; }) {
   return <PageLayout>{children}</PageLayout>;
 }
 
