@@ -52,7 +52,7 @@ test("verifies user created in DB", async () => {
 test("fills out site add form", async () => {
   await page.getByLabel("Website URL or domain").fill("https://example.com");
   await page.getByRole("button", { name: "Add Site" }).click();
-  await page.waitForSelector('button:has-text("Save queries")');
+  await page.waitForURL(/\/site\/[^/]+\/setup/, { timeout: 15_000 });
 });
 
 test("verifies site created in DB", async () => {
@@ -62,9 +62,8 @@ test("verifies site created in DB", async () => {
   expect(site.domain).toBe("example.com");
 });
 
-test("clicks suggest queries button", async () => {
-  await page.getByRole("button", { name: /save queries/i }).click();
-  await page.waitForURL(/\/site\/[^/]+\/citations/);
+test("waits for setup pipeline to complete", async () => {
+  await page.waitForURL(/\/site\/[^/]+\/citations/, { timeout: 30_000 });
 });
 
 test("verifies queries saved in DB", async () => {
