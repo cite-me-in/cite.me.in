@@ -148,6 +148,9 @@ export async function getLastEmailSent(): Promise<
  * @param to - The email address of the recipient.
  */
 async function captureLastEmail(lastEmail: typeof lastEmailSent) {
+  // Set directly for same-process access (test calls sendEmail then getLastEmailSent).
+  // Also publish via Redis for cross-process access (server sends, test process reads).
+  lastEmailSent = lastEmail;
   initRedis();
   if (publisher)
     await publisher.publish("email:last", JSON.stringify(lastEmail));
