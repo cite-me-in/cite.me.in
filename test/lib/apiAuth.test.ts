@@ -37,7 +37,7 @@ describe("requireAdminApiKey", () => {
 describe("verifySiteAccess", () => {
   const userId = "api-auth-test-user-1";
   const siteId = "test-site-1";
-  const userApiKey = "cite.me.in_test_auth_key_abc123xyz";
+  const userApiKey = "cite.me.in_api-auth-test-user-1_testabcdefghijklmnop";
 
   beforeAll(async () => {
     await prisma.user.upsert({
@@ -90,31 +90,28 @@ describe("verifySiteAccess", () => {
 
 describe("verifyUserAccess", () => {
   const userId = "api-auth-test-user-1";
-  const userApiKey = "cite.me.in_test_auth_key_abc123xyz";
+  const userApiKey = "cite.me.in_api-auth-test-user-1_testabcdefghijklmnop";
 
   it("should return the user when token matches", async () => {
-    const user = await verifyUserAccess({
-      email: "api-auth-test@test.example",
-      request: makeRequest(userApiKey),
-    });
+    const user = await verifyUserAccess(makeRequest(userApiKey));
     expect(user.id).toBe(userId);
+  });
+
+  it("should throw 401 when no Authorization header", async () => {
+    const err = await verifyUserAccess(makeRequest()).catch((e) => e);
+    expect(err).toBeInstanceOf(Response);
+    expect((err as Response).status).toBe(401);
   });
 
   it("should throw 404 Response when token is unknown", async () => {
     await expect(
-      verifyUserAccess({
-        email: "api-auth-test@test.example",
-        request: makeRequest("unknown-key"),
-      }),
+      verifyUserAccess(makeRequest("cite.me.in_api-auth-test-user-1_wrongsecret")),
     ).rejects.toThrow(Response);
   });
 
-  it("should throw 404 Response when email is unknown", async () => {
+  it("should throw 404 when userId in token doesn't exist", async () => {
     await expect(
-      verifyUserAccess({
-        email: "unknown@test.example",
-        request: makeRequest(),
-      }),
+      verifyUserAccess(makeRequest("cite.me.in_nonexistent-user-id_testabcdef")),
     ).rejects.toThrow(Response);
   });
 });
