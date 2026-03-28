@@ -3,7 +3,8 @@ import prisma from "~/lib/prisma.server";
 import { port } from "~/test/helpers/launchBrowser";
 
 const BASE = `http://localhost:${port}`;
-const API_KEY = "cite.me.in_sites_route_test_key";
+const USER_ID = "api-sites-route-user-1";
+const API_KEY = `cite.me.in_${USER_ID}_sitesroutetestkey123456`;
 const DOMAIN = "api-sites-route-test.example";
 const EMAIL = "api-sites-route@test.example";
 const RUN_ID = "api-sites-route-run-1";
@@ -16,9 +17,9 @@ function get(path: string, token?: string) {
 
 beforeAll(async () => {
   await prisma.user.upsert({
-    where: { id: "api-sites-route-user-1" },
+    where: { id: USER_ID },
     create: {
-      id: "api-sites-route-user-1",
+      id: USER_ID,
       email: EMAIL,
       passwordHash: "test",
       apiKey: API_KEY,
@@ -55,19 +56,14 @@ beforeAll(async () => {
   });
 });
 
-describe("GET /api/me/:email", () => {
+describe("GET /api/me", () => {
   it("should return 401 without a token", async () => {
-    const res = await get(`/api/me/${EMAIL}`);
+    const res = await get("/api/me");
     expect(res.status).toBe(401);
   });
 
-  it("should return 404 for a user that doesn't exist", async () => {
-    const res = await get("/api/me/nonexistent@nonexistent.example");
-    expect(res.status).toBe(401);
-  });
-
-  it("should return 404 for a user that doesn't exist", async () => {
-    const res = await get(`/api/me/${EMAIL}`, "wrong-token");
+  it("should return 404 for an unknown token", async () => {
+    const res = await get("/api/me", "cite.me.in_nonexistent_wrongsecret1234");
     expect(res.status).toBe(404);
   });
 
@@ -79,7 +75,7 @@ describe("GET /api/me/:email", () => {
     };
 
     beforeAll(async () => {
-      response = await get(`/api/me/${EMAIL}`, API_KEY);
+      response = await get("/api/me", API_KEY);
       body = await response.json();
     });
 
