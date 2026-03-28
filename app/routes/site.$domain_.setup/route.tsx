@@ -1,5 +1,7 @@
+import { ms } from "convert";
 import { useEffect, useRef, useState } from "react";
 import { redirect, useNavigate } from "react-router";
+import { useInterval } from "usehooks-ts";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
 import Spinner from "~/components/ui/Spinner";
@@ -18,9 +20,13 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     domain: params.domain,
     request,
   });
-  const status = await getStatus(site.id, user.id);
-  if (status === "complete") throw redirect(`/site/${params.domain}/citations`);
-  return { domain: params.domain, needsStart: status === null, hadError: status === "error" };
+  const status = await getStatus({ siteId: site.id, userId: user.id });
+  if (status === "complete") throw redirect(`/site/${params.domain}`);
+  return {
+    domain: params.domain,
+    needsStart: status === null,
+    hadError: status === "error",
+  };
 }
 
 export default function SetupPage({ loaderData }: Route.ComponentProps) {
@@ -42,15 +48,17 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
   }, [domain, needsStart]);
 
   // Poll status endpoint every 2s.
-  useEffect(() => {
-    if (done || error) return;
-    const id = setInterval(async () => {
+  useInterval(
+    async () => {
       try {
         const res = await fetch(
           `/site/${domain}/setup/status?offset=${offsetRef.current}`,
         );
-        const data: { lines: string[]; done: boolean; nextOffset: number } =
-          await res.json();
+        const data = (await res.json()) as {
+          lines: string[];
+          done: boolean;
+          nextOffset: number;
+        };
         if (data.lines.length > 0) {
           setLines((prev) => [...prev, ...data.lines]);
           offsetRef.current = data.nextOffset;
@@ -59,24 +67,23 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
       } catch {
         // Network hiccup — keep polling.
       }
-    }, 2_000);
-    return () => clearInterval(id);
-  }, [done, error, domain]);
+    },
+    done || error ? null : ms("2s"),
+  );
 
   // Auto-scroll log to bottom when new lines arrive.
   // biome-ignore lint/correctness/useExhaustiveDependencies: lines triggers the scroll; logRef is stable
   useEffect(() => {
-    logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: "smooth" });
+    logRef.current?.scrollTo({
+      top: logRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [lines]);
 
   // Redirect to citations after pipeline completes.
   useEffect(() => {
     if (!done) return;
-    const timer = setTimeout(
-      () => navigate(`/site/${domain}/citations`),
-      2_000,
-    );
-    return () => clearTimeout(timer);
+    setTimeout(() => navigate(`/site/${domain}/citations`), ms("2s"));
   }, [done, domain, navigate]);
 
   return (
@@ -94,7 +101,11 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             {!done && !error && <Spinner />}
-            {done ? "Setup complete" : error ? "Something went wrong" : "Running…"}
+            {done
+              ? "Setup complete"
+              : error
+                ? "Something went wrong"
+                : "Running…"}
           </CardTitle>
         </CardHeader>
         <CardContent>

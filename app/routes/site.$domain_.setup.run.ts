@@ -4,35 +4,16 @@ import sendSiteSetupEmail from "~/emails/SiteSetupComplete";
 import addSiteQueries from "~/lib/addSiteQueries";
 import { requireSiteAccess } from "~/lib/auth.server";
 import analyzeSentiment from "~/lib/llm-visibility/analyzeSentiment";
-import queryClaude from "~/lib/llm-visibility/claudeClient";
-import queryGemini from "~/lib/llm-visibility/geminiClient";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
-import openaiClient from "~/lib/llm-visibility/openaiClient";
-import queryPerplexity from "~/lib/llm-visibility/perplexityClient";
+import PLATFORMS from "~/lib/llm-visibility/platforms";
 import type { QueryFn } from "~/lib/llm-visibility/queryFn";
 import { singleQueryRepetition } from "~/lib/llm-visibility/queryPlatform";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import { crawl } from "~/lib/scrape/crawl";
 import { summarize } from "~/lib/scrape/summarize";
-import {
-  appendLog,
-  getStatus,
-  setStatus,
-} from "~/lib/setupProgress.server";
+import { appendLog, getStatus, setStatus } from "~/lib/setupProgress.server";
 import type { Route } from "./+types/site.$domain_.setup.run";
-
-const PLATFORMS: {
-  platform: string;
-  modelId: string;
-  queryFn: QueryFn;
-  label: string;
-}[] = [
-  { platform: "chatgpt", modelId: "gpt-5-chat-latest", queryFn: openaiClient, label: "ChatGPT" },
-  { platform: "perplexity", modelId: "sonar", queryFn: queryPerplexity, label: "Perplexity" },
-  { platform: "claude", modelId: "claude-haiku-4-5-20251001", queryFn: queryClaude, label: "Claude" },
-  { platform: "gemini", modelId: "gemini-2.5-flash", queryFn: queryGemini, label: "Gemini" },
-];
 
 export async function action({ request, params }: Route.ActionArgs) {
   if (request.method !== "POST")
@@ -44,13 +25,14 @@ export async function action({ request, params }: Route.ActionArgs) {
   });
 
   // Idempotency: don't start a second pipeline if one is running or done.
-  const current = await getStatus(site.id, user.id);
+  const current = await getStatus({ siteId: site.id, userId: user.id });
   if (current === "running" || current === "complete")
     return new Response(null, { status: 204 });
 
-  await setStatus(site.id, user.id, "running");
+  await setStatus({ siteId: site.id, userId: user.id, status: "running" });
 
-  const log = (line: string) => appendLog(site.id, user.id, line);
+  const log = (line: string) =>
+    appendLog({ siteId: site.id, userId: user.id, line });
 
   try {
     // Phase 1: Crawl
@@ -74,7 +56,8 @@ export async function action({ request, params }: Route.ActionArgs) {
     // Phase 3: Generate queries
     await log("Generating queries...");
     const suggestions = await generateSiteQueries(site);
-    for (const { group, query } of suggestions) await log(`  [${group}] ${query}`);
+    for (const { group, query } of suggestions)
+      await log(`  [${group}] ${query}`);
 
     // Phase 4: Save queries to DB
     const queries = suggestions.filter((q) => q.query.trim());
@@ -108,10 +91,10 @@ export async function action({ request, params }: Route.ActionArgs) {
     await sendSiteSetupEmail({ domain: site.domain, user: owner });
 
     await log("Done! Your citations are ready.");
-    await setStatus(site.id, user.id, "complete");
+    await setStatus({ siteId: site.id, userId: user.id, status: "complete" });
   } catch (error) {
     await log("Something went wrong — please try refreshing.");
-    await setStatus(site.id, user.id, "error");
+    await setStatus({ siteId: site.id, userId: user.id, status: "error" });
     logError(error, { extra: { siteId: site.id } });
   }
 
@@ -133,7 +116,7 @@ async function runPlatformWithProgress({
   queryFn: QueryFn;
   label: string;
   queries: { query: string; group: string }[];
-  log: (line: string) => Promise<void>;
+  log: (line: string) => Promise<unknown>;
 }) {
   const onDate = new Date().toISOString().split("T")[0];
   const run = await prisma.citationQueryRun.upsert({

@@ -1,3 +1,4 @@
+import { ms } from "convert";
 import { generateApiKey } from "random-password-toolkit";
 import type { Site } from "~/prisma";
 import prisma from "./prisma.server";
@@ -30,17 +31,24 @@ export async function createSite(
   }
 
   // Quick reachability check — the only sync step before backgrounding.
-  try {
-    const res = await fetch(`https://${domain}/`, {
-      method: "HEAD",
-      signal: AbortSignal.timeout(5_000),
-    });
-    // Some servers reject HEAD; treat 405 as reachable.
-    if (!res.ok && res.status !== 405) throw new Error(`HTTP ${res.status}`);
-  } catch (error) {
-    if (error instanceof Error && error.message.startsWith("HTTP "))
-      throw new Error(`Could not reach ${domain} (${error.message}). Check the URL.`);
-    throw new Error(`Could not reach ${domain}. Check the URL and try again.`);
+  // Skipped in test environment (no outbound network access).
+  if (process.env.NODE_ENV !== "test") {
+    try {
+      const res = await fetch(`https://${domain}/`, {
+        method: "HEAD",
+        signal: AbortSignal.timeout(ms("5s")),
+      });
+      // Some servers reject HEAD; treat 405 as reachable.
+      if (!res.ok && res.status !== 405) throw new Error(`HTTP ${res.status}`);
+    } catch (error) {
+      if (error instanceof Error && error.message.startsWith("HTTP "))
+        throw new Error(
+          `Could not reach ${domain} (${error.message}). Check the URL.`,
+        );
+      throw new Error(
+        `Could not reach ${domain}. Check the URL and try again.`,
+      );
+    }
   }
 
   const site = await prisma.site.create({

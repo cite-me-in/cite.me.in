@@ -1,4 +1,4 @@
-import redis from "./redis.server";
+import redis from "~/lib/redis.server";
 
 const TTL = 86_400; // 24 hours
 
@@ -9,24 +9,63 @@ function statusKey(siteId: string, userId: string) {
   return `setup:${siteId}:${userId}:status`;
 }
 
-export async function appendLog(siteId: string, userId: string, line: string) {
-  await redis.rpush(logKey(siteId, userId), line);
+/**
+ * Appends a line to the log for the given site and user.
+ *
+ * @param line - The line to append to the log
+ * @param siteId - The ID of the site
+ * @param userId - The ID of the user
+ * @returns The number of lines in the log
+ */
+export async function appendLog({
+  line,
+  siteId,
+  userId,
+}: {
+  line: string;
+  siteId: string;
+  userId: string;
+}) {
+  return await redis.rpush(logKey(siteId, userId), line);
 }
 
-export async function setStatus(
-  siteId: string,
-  userId: string,
-  status: "running" | "complete" | "error",
-) {
+/**
+ * Sets the status for the given site and user.
+ *
+ * @param siteId - The ID of the site
+ * @param status - The status to set
+ * @param userId - The ID of the user
+ */
+export async function setStatus({
+  siteId,
+  status,
+  userId,
+}: {
+  siteId: string;
+  status: "running" | "complete" | "error";
+  userId: string;
+}) {
   await redis.set(statusKey(siteId, userId), status, "EX", TTL);
   await redis.expire(logKey(siteId, userId), TTL);
 }
 
-export async function getProgress(
-  siteId: string,
-  userId: string,
-  offset: number,
-): Promise<{ lines: string[]; done: boolean; nextOffset: number }> {
+/**
+ * Gets the progress for the given site and user.
+ *
+ * @param offset - The offset to start from
+ * @param siteId - The ID of the site
+ * @param userId - The ID of the user
+ * @returns The progress for the given site and user
+ */
+export async function getProgress({
+  offset,
+  siteId,
+  userId,
+}: {
+  offset: number;
+  siteId: string;
+  userId: string;
+}): Promise<{ lines: string[]; done: boolean; nextOffset: number }> {
   const [lines, status] = await Promise.all([
     redis.lrange(logKey(siteId, userId), offset, -1),
     redis.get(statusKey(siteId, userId)),
@@ -35,6 +74,19 @@ export async function getProgress(
   return { lines, done, nextOffset: offset + lines.length };
 }
 
-export async function getStatus(siteId: string, userId: string) {
+/**
+ * Gets the status for the given site and user.
+ *
+ * @param siteId - The ID of the site
+ * @param userId - The ID of the user
+ * @returns The status for the given site and user
+ */
+export async function getStatus({
+  siteId,
+  userId,
+}: {
+  siteId: string;
+  userId: string;
+}) {
   return redis.get(statusKey(siteId, userId));
 }

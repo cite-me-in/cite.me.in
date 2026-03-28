@@ -10,11 +10,18 @@ export default async function sendSiteSetupEmail({
   domain: string;
   user: { email: string; unsubscribed: boolean };
 }) {
-  const citationsUrl = `${envVars.VITE_APP_URL}/site/${domain}/citations`;
+  const citationsURL = new URL(
+    `/site/${domain}/citations`,
+    envVars.VITE_APP_URL,
+  ).toString();
   await sendEmail({
     canUnsubscribe: false,
     render: ({ subject }) => (
-      <SiteSetupComplete subject={subject} domain={domain} citationsUrl={citationsUrl} />
+      <SiteSetupComplete
+        subject={subject}
+        domain={domain}
+        citationsURL={citationsURL}
+      />
     ),
     subject: `${domain} is set up on cite.me.in`,
     user,
@@ -22,13 +29,13 @@ export default async function sendSiteSetupEmail({
 }
 
 function SiteSetupComplete({
-  subject,
+  citationsURL,
   domain,
-  citationsUrl,
+  subject,
 }: {
-  subject: string;
+  citationsURL: string;
   domain: string;
-  citationsUrl: string;
+  subject: string;
 }) {
   return (
     <EmailLayout subject={subject}>
@@ -44,7 +51,7 @@ function SiteSetupComplete({
 
       <Section className="my-8 text-center">
         <Button
-          href={citationsUrl}
+          href={citationsURL}
           className="rounded-md bg-primary px-4 py-2 text-white hover:bg-primary-hover"
         >
           View your citations

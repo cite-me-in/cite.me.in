@@ -9,6 +9,10 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   });
 
   const offset = Number(new URL(request.url).searchParams.get("offset") ?? "0");
-  const progress = await getProgress(site.id, user.id, offset);
+  const progress = await getProgress({
+    siteId: site.id,
+    userId: user.id,
+    offset,
+  });
   return Response.json(progress);
 }

@@ -1,8 +1,5 @@
 import { differenceBy, forEachAsync, uniqBy } from "es-toolkit";
-import queryClaude from "./llm-visibility/claudeClient";
-import queryGemini from "./llm-visibility/geminiClient";
-import openaiClient from "./llm-visibility/openaiClient";
-import queryPerplexity from "./llm-visibility/perplexityClient";
+import PLATFORMS from "./llm-visibility/platforms";
 import { singleQueryRepetition } from "./llm-visibility/queryPlatform";
 import prisma from "./prisma.server";
 
@@ -82,17 +79,6 @@ export async function renameSiteQueryGroup({
     data: { group: trimQuery(newGroup) },
   });
 }
-
-const PLATFORMS = [
-  { platform: "chatgpt", modelId: "gpt-5-chat-latest", queryFn: openaiClient },
-  { platform: "perplexity", modelId: "sonar", queryFn: queryPerplexity },
-  {
-    platform: "claude",
-    modelId: "claude-haiku-4-5-20251001",
-    queryFn: queryClaude,
-  },
-  { platform: "gemini", modelId: "gemini-2.5-flash", queryFn: queryGemini },
-] as const;
 
 export async function runQueryOnAllPlatforms({
   site,
