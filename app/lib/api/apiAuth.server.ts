@@ -11,13 +11,15 @@ export async function requireAdminApiKey(request: Request): Promise<void> {
     throw new Response("Unauthorized", { status: 401 });
 }
 
-export async function verifyUserAccess({
-  email,
-  request,
-}: {
-  email: string;
-  request: Request;
-}): Promise<{
+function parseTokenUserId(token: string): string | null {
+  if (!token.startsWith("cite.me.in_")) return null;
+  const rest = token.slice("cite.me.in_".length);
+  const lastUnderscore = rest.lastIndexOf("_");
+  if (lastUnderscore === -1) return null;
+  return rest.slice(0, lastUnderscore);
+}
+
+export async function verifyUserAccess(request: Request): Promise<{
   id: string;
   email: string;
   createdAt: Date;
@@ -28,13 +30,12 @@ export async function verifyUserAccess({
   if (tokenType !== "Bearer")
     throw new Response("Unauthorized", { status: 401 });
 
+  const userId = parseTokenUserId(token);
+  if (!userId) throw new Response("Not found", { status: 404 });
+
   const user = await prisma.user.findFirst({
-    where: { email, apiKey: token },
-    select: {
-      id: true,
-      email: true,
-      createdAt: true,
-    },
+    where: { id: userId, apiKey: token },
+    select: { id: true, email: true, createdAt: true },
   });
   if (!user) throw new Response("Not found", { status: 404 });
   return user;
@@ -51,25 +52,14 @@ export async function verifySiteAccess({
   domain: string;
   createdAt: Date;
 }> {
-  const auth = request.headers.get("authorization");
-  if (!auth) throw new Response("Unauthorized", { status: 401 });
-  const [tokenType, token] = auth.split(/\s+/);
-  if (tokenType !== "Bearer")
-    throw new Response("Unauthorized", { status: 401 });
+  const { id: userId } = await verifyUserAccess(request);
 
   const site = await prisma.site.findFirst({
     where: {
       domain,
-      OR: [
-        { owner: { apiKey: token } },
-        { siteUsers: { some: { user: { apiKey: token } } } },
-      ],
+      OR: [{ ownerId: userId }, { siteUsers: { some: { userId } } }],
     },
-    select: {
-      id: true,
-      domain: true,
-      createdAt: true,
-    },
+    select: { id: true, domain: true, createdAt: true },
   });
   if (!site) throw new Response("Not found", { status: 404 });
   return site;
