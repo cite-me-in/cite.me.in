@@ -54,7 +54,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 
   try {
     // Phase 1: Crawl
-    await log("Crawling " + site.domain + "...");
+    await log(`Crawling ${site.domain}...`);
     const content = await crawl({
       domain: site.domain,
       maxPages: 10,

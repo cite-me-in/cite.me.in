@@ -63,7 +63,8 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
     return () => clearInterval(id);
   }, [done, error, domain]);
 
-  // Auto-scroll log to bottom.
+  // Auto-scroll log to bottom when new lines arrive.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: lines triggers the scroll; logRef is stable
   useEffect(() => {
     logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: "smooth" });
   }, [lines]);
@@ -105,6 +106,7 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
               <span className="text-foreground/40">Starting…</span>
             )}
             {lines.map((line, i) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: lines are append-only, index is stable
               <div key={i}>{line}</div>
             ))}
             {done && (
