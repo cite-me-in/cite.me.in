@@ -126,7 +126,9 @@ function initRedis() {
  *
  * @returns The last email that was sent.
  */
-export async function getLastEmailSent(): Promise<typeof lastEmailSent> {
+export async function getLastEmailSent(): Promise<
+  NonNullable<typeof lastEmailSent>
+> {
   initRedis();
   await withTimeout(async () => {
     while (!lastEmailSent) await delay(100);
