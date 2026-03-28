@@ -1,0 +1,12 @@
+{
+  "planPath": "docs/plans/2026-03-28-admin-user-flag.md",
+  "tasks": [
+    {"id": 13, "subject": "Task 1: Add isAdmin to schema and migrate", "status": "pending"},
+    {"id": 14, "subject": "Task 2: Update apiAuth tests for requireAdmin", "status": "pending", "blockedBy": [13]},
+    {"id": 15, "subject": "Task 3: Implement requireAdmin, remove requireAdminApiKey", "status": "pending", "blockedBy": [13, 14]},
+    {"id": 16, "subject": "Task 4: Update admin route and remove ADMIN_API_SECRET", "status": "pending", "blockedBy": [15]},
+    {"id": 17, "subject": "Task 5: Update api.admin.users.test.ts", "status": "pending", "blockedBy": [15, 16]},
+    {"id": 18, "subject": "Task 6: Run full typecheck and lint", "status": "pending", "blockedBy": [16, 17]}
+  ],
+  "lastUpdated": "2026-03-28T00:00:00Z"
+}
