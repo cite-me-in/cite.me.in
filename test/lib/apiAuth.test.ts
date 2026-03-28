@@ -1,11 +1,10 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import {
-  requireAdminApiKey,
+  requireAdmin,
   verifySiteAccess,
   verifyUserAccess,
 } from "~/lib/api/apiAuth.server";
 import { hashPassword } from "~/lib/auth.server";
-import envVars from "~/lib/envVars";
 import prisma from "~/lib/prisma.server";
 
 function makeRequest(token?: string) {
@@ -14,23 +13,47 @@ function makeRequest(token?: string) {
   });
 }
 
-describe("requireAdminApiKey", () => {
-  it("should resolve when token matches ADMIN_API_SECRET", async () => {
+describe("requireAdmin", () => {
+  const adminId = "api-auth-admin-user-1";
+  const adminApiKey = `cite.me.in_${adminId}_adminapikey1234567890`;
+
+  beforeAll(async () => {
+    await prisma.user.upsert({
+      where: { id: adminId },
+      create: {
+        id: adminId,
+        email: "api-auth-admin@test.example",
+        passwordHash: await hashPassword("password"),
+        apiKey: adminApiKey,
+        isAdmin: true,
+      },
+      update: { apiKey: adminApiKey, isAdmin: true },
+    });
+  });
+
+  it("should return the user when token is an admin", async () => {
+    const user = await requireAdmin(makeRequest(adminApiKey));
+    expect(user.id).toBe(adminId);
+  });
+
+  it("should throw 401 when no Authorization header", async () => {
+    const err = await requireAdmin(makeRequest()).catch((e) => e);
+    expect(err).toBeInstanceOf(Response);
+    expect((err as Response).status).toBe(401);
+  });
+
+  it("should throw 403 when user is not an admin", async () => {
+    // Use the non-admin user seeded in verifySiteAccess describe
+    const nonAdminKey = "cite.me.in_api-auth-test-user-1_testabcdefghijklmnop";
+    const err = await requireAdmin(makeRequest(nonAdminKey)).catch((e) => e);
+    expect(err).toBeInstanceOf(Response);
+    expect((err as Response).status).toBe(403);
+  });
+
+  it("should throw 404 when token is unknown", async () => {
     await expect(
-      requireAdminApiKey(makeRequest(envVars.ADMIN_API_SECRET)),
-    ).resolves.toBeUndefined();
-  });
-
-  it("should throw 401 Response when token is wrong", async () => {
-    const err = await requireAdminApiKey(makeRequest("wrong")).catch((e) => e);
-    expect(err).toBeInstanceOf(Response);
-    expect((err as Response).status).toBe(401);
-  });
-
-  it("should throw 401 Response when no Authorization header", async () => {
-    const err = await requireAdminApiKey(makeRequest()).catch((e) => e);
-    expect(err).toBeInstanceOf(Response);
-    expect((err as Response).status).toBe(401);
+      requireAdmin(makeRequest("cite.me.in_nonexistent-user_wrongsecret")),
+    ).rejects.toThrow(Response);
   });
 });
 
