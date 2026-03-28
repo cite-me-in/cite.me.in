@@ -7,8 +7,7 @@ dotenv.config({ path: ".env", quiet: true });
 
 const envVars = {
   INDEXNOW_KEY: env.get("INDEXNOW_KEY").required(false).asString(),
-  ADMIN_API_SECRET: env.get("ADMIN_API_SECRET").required(false).asString(),
-  ANTHROPIC_API_KEY: env.get("ANTHROPIC_API_KEY").required().asString(),
+ANTHROPIC_API_KEY: env.get("ANTHROPIC_API_KEY").required().asString(),
   BOT_TRACKER_API_KEY: env.get("BOT_TRACKER_API_KEY").required().asString(),
   BOT_TRACKER_URL: env.get("BOT_TRACKER_URL").required().asUrlString(),
   CRON_SECRET: env.get("CRON_SECRET").required(false).asString(),

@@ -1,11 +1,11 @@
 import { data } from "react-router";
 import z from "zod";
-import { requireAdminApiKey } from "~/lib/api/apiAuth.server";
+import { requireAdmin } from "~/lib/api/apiAuth.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/api.admin.users";
 
 export async function loader({ request }: Route.LoaderArgs) {
-  await requireAdminApiKey(request);
+  await requireAdmin(request);
 
   const users = await prisma.user.findMany({
     select: {
