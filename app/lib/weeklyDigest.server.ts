@@ -1,6 +1,7 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { sumBy } from "es-toolkit";
 import type { WeeklyDigestEmailProps } from "~/emails/WeeklyDigest";
+import envVars from "~/lib/envVars";
 import { getDomainMeta } from "~/lib/domainMeta.server";
 import getSiteMetrics from "~/lib/getSiteMetrics.server";
 import prisma from "~/lib/prisma.server";
@@ -139,8 +140,14 @@ export async function loadWeeklyDigestMetrics(
     new Date(today.toJSON()),
   )} • ${domain}`;
 
+  const citationsURL = new URL(
+    `/site/${domain}/citations`,
+    envVars.VITE_APP_URL,
+  ).toString();
+
   return {
     subject,
+    citationsURL,
     toEmails,
     citations: {
       total: {

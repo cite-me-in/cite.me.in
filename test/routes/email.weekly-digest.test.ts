@@ -1,7 +1,8 @@
 import { expect } from "@playwright/test";
 import { beforeAll, describe, it, vi } from "vitest";
-import { sendSiteDigestEmails } from "~/emails/WeeklyDigest";
 import { getLastEmailSent } from "~/emails/sendEmails";
+import { sendSiteDigestEmails } from "~/emails/WeeklyDigest";
+import envVars from "~/lib/envVars";
 import { removeElements } from "~/lib/html/parseHTML";
 import { generateCitationChart } from "~/lib/weeklyDigest.server";
 import { newContext } from "../helpers/launchBrowser";
@@ -22,6 +23,10 @@ describe("WeeklyDigestEmail", () => {
 
     await sendSiteDigestEmails({
       subject: "Weekly Digest · Mar 17 — Mar 24, 2026",
+      citationsURL: new URL(
+        "/site/example.com/citations",
+        envVars.VITE_APP_URL,
+      ).toString(),
       toEmails: ["test@example.com"],
       citations: {
         total: { current: 142, previous: 137 },

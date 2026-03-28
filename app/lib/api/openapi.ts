@@ -138,8 +138,10 @@ export function generateOpenApiSpec(): ReturnType<typeof createDocument> {
     info: {
       title: "cite.me.in Monitoring API",
       version: "1.0.0",
-      description:
-        "Monitor your brand's visibility in AI-generated responses. Authenticate with your API key from the profile page. See the [documentation](https://cite.me.in/docs) for more information.",
+      description: `Monitor your brand's visibility in AI-generated responses. Authenticate with your API key from the profile page. See the [documentation](${new URL(
+        "/docs",
+        import.meta.env.VITE_APP_URL,
+      )}) for more information.`,
     },
     servers: [{ url: envVars.VITE_APP_URL }],
     components: {

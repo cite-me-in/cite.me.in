@@ -1,4 +1,4 @@
-import { Column, Img, Link, Row, Section, Text } from "@react-email/components";
+import { Button, Column, Img, Link, Row, Section, Text } from "@react-email/components";
 import { sortBy, sumBy } from "es-toolkit";
 import { twMerge } from "tailwind-merge";
 import type { SentimentLabel } from "~/prisma";
@@ -7,6 +7,7 @@ import { sendEmail } from "./sendEmails";
 
 export type WeeklyDigestEmailProps = {
   subject: string;
+  citationsURL: string;
   botVisits: { current: number; previous: number };
   byPlatform: {
     [k: string]: {
@@ -56,6 +57,7 @@ export function WeeklyDigestEmail({
   byPlatform,
   chartBase64,
   citations,
+  citationsURL,
   competitors,
   score,
   topQueries,
@@ -70,6 +72,14 @@ export function WeeklyDigestEmail({
       <TopQueries topQueries={topQueries} />
       <SentimentBreakdown byPlatform={byPlatform} />
       <TopCompetitors competitors={competitors} />
+      <Section className="my-8 text-center">
+        <Button
+          href={citationsURL}
+          className="rounded-md bg-primary px-4 py-2 text-white hover:bg-primary-hover"
+        >
+          View your citations
+        </Button>
+      </Section>
     </EmailLayout>
   );
 }

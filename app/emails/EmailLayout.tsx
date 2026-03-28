@@ -76,7 +76,10 @@ function Header({ subject }: { subject: string }) {
       <Heading className="my-6 flex items-center justify-center gap-2 whitespace-nowrap text-center">
         <Img
           height={32}
-          src={new URL("/icon-192.png", "https://cite.me.in").toString()}
+          src={new URL(
+            "/icon-192.png",
+            import.meta.env.VITE_APP_URL,
+          ).toString()}
           width={32}
         />
         <span className="font-bold text-2xl text-gray-800">{subject}</span>

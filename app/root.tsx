@@ -61,7 +61,7 @@ export const links: Route.LinksFunction = () => [
     rel: "alternate",
     type: "application/atom+xml",
     title: "The Cite.me.in Blog",
-    href: "https://blog.cite.me.in/rss.xml",
+    href: new URL("/rss.xml", import.meta.env.VITE_APP_URL).toString(),
   },
   {
     rel: "sitemap",
