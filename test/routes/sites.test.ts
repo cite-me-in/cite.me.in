@@ -142,63 +142,25 @@ describe("sites route", () => {
         .getByRole("textbox", { name: "Website URL or domain" })
         .fill("example.com");
       await page.getByRole("button", { name: "Add Site" }).click();
-      await page.waitForURL(/\/site\/[^/]+\/suggestions/);
-      // Wait for suggestions to finish loading
-      await page.waitForSelector('button:text("Save queries")', {
-        timeout: 30000,
-      });
+      await page.waitForURL(/\/site\/[^/]+\/setup/, { timeout: 15_000 });
 
       site = await prisma.site.findFirstOrThrow({
         where: { domain: "example.com", ownerId: user.id },
       });
     });
 
-    it("should save site and redirect to suggestions page", async () => {
-      expect(site).not.toBeNull();
+    it("should create site record in DB", async () => {
+      expect(site.domain).toBe("example.com");
     });
 
-    it("should navigate to suggestions page", async () => {
-      expect(new URL(page.url()).pathname).toMatch(
-        `/site/${site.domain}/suggestions`,
-      );
+    it("should redirect to setup page", async () => {
+      expect(new URL(page.url()).pathname).toMatch(`/site/${site.domain}/setup`);
     });
 
-    it("should match visually", async () => {
-      await expect(page.locator("main")).toMatchVisual({
-        name: "sites/suggestions",
-        modify: fixBaseline,
-      });
-    });
-
-    it("should have skip link to citations page", async () => {
-      const link = page.getByRole("link", { name: "Skip" });
-      const href = await link.getAttribute("href");
-      expect(href).toContain(`/site/${site.domain}`);
-    });
-
-    describe("when save queries button", () => {
-      beforeAll(async () => {
-        expect(page.url()).toMatch(/\/site\/[^/]+\/suggestions/);
-        await page.getByRole("button", { name: "Save queries" }).click();
-        await page.waitForURL(/\/site\/[^/]+\/citations/);
-
-        await page
-          .locator('text="Latest Results"')
-          .waitFor({ state: "visible" });
-      });
-
-      it("should navigate to citations page", async () => {
-        expect(new URL(page.url()).pathname).toMatch(
-          `/site/${site.domain}/citations`,
-        );
-      });
-
-      it("should match visually", async () => {
-        await expect(page.locator("main")).toMatchVisual({
-          name: "sites/citations",
-          modify: fixBaseline,
-        });
-      });
+    it("should show setup page heading", async () => {
+      await expect(
+        page.getByRole("heading", { name: /Setting up/ }),
+      ).toBeVisible();
     });
   });
 
