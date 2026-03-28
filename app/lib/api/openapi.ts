@@ -154,19 +154,11 @@ export function generateOpenApiSpec(): ReturnType<typeof createDocument> {
     },
 
     paths: {
-      "/api/me/{email}": {
+      "/api/me": {
         get: {
           description:
-            "Responds with the details of the current user. Includes all the sites they have access to. You can only use this endpoint with your own email address.",
+            "Responds with the details of the authenticated user. Includes all the sites they have access to.",
           security: [{ BearerAuth: [] }],
-          parameters: [
-            {
-              description: "The email address of the user to get details for",
-              in: "path",
-              name: "email",
-              required: true,
-            },
-          ],
           responses: {
             200: {
               description: "User details with sites",
@@ -176,7 +168,7 @@ export function generateOpenApiSpec(): ReturnType<typeof createDocument> {
               description: "Unauthorized",
             },
             404: {
-              description: "Email not recognised or not found",
+              description: "User not found",
             },
           },
         },
