@@ -3,7 +3,8 @@ import prisma from "~/lib/prisma.server";
 import { port } from "~/test/helpers/launchBrowser";
 
 const BASE = `http://localhost:${port}`;
-const API_KEY = "cite.me.in_sites_route_test_key";
+const USER_ID = "user1";
+const API_KEY = `cite.me.in_${USER_ID}_secret123456`;
 const DOMAIN = "api-sites-route-test.example";
 const EMAIL = "api-sites-route@test.example";
 const RUN_ID = "api-sites-route-run-1";
@@ -16,9 +17,9 @@ function get(path: string, token?: string) {
 
 beforeAll(async () => {
   await prisma.user.upsert({
-    where: { id: "api-sites-route-user-1" },
+    where: { id: USER_ID },
     create: {
-      id: "api-sites-route-user-1",
+      id: USER_ID,
       email: EMAIL,
       passwordHash: "test",
       apiKey: API_KEY,
@@ -59,18 +60,6 @@ beforeAll(async () => {
 });
 
 describe("GET /api/sites/:domain", () => {
-  let response: Response;
-  let body: {
-    domain: string;
-    createdAt: string;
-    content: string;
-    summary: string;
-    users: { email: string; role: string }[];
-  };
-  beforeAll(async () => {
-    response = await get(`/api/sites/${DOMAIN}`, API_KEY);
-    body = await response.json();
-  });
 
   it("should return 401 without a token", async () => {
     const response = await get(`/api/sites/${DOMAIN}`);
@@ -82,17 +71,36 @@ describe("GET /api/sites/:domain", () => {
     expect(response.status).toBe(404);
   });
 
-  it("should return the site with users and roles", async () => {
-    expect(response.status).toBe(200);
-    expect(body.domain).toBe(DOMAIN);
-    expect(body.createdAt).toBe(new Date().toISOString().split("T")[0]);
-    expect(Array.isArray(body.users)).toBe(true);
-  });
+  describe("with a correct token", () => {
+    let response: Response;
+    let body: {
+      domain: string;
+      createdAt: string;
+      content: string;
+      summary: string;
+      users: { email: string; role: string; }[];
+    };
 
-  it("should return the site with content and summary", async () => {
-    expect(response.status).toBe(200);
-    expect(body.content).toBe("Test content");
-    expect(body.summary).toBe("Test summary");
+    beforeAll(async () => {
+      response = await get(`/api/sites/${DOMAIN}`, API_KEY);
+      body = await response.json();
+    });
+
+    it("should return 200", async () => {
+      expect(response.status).toBe(200);
+    });
+
+    it("should return the site with users and roles", async () => {
+      expect(body.domain).toBe(DOMAIN);
+      expect(body.createdAt).toBe(new Date().toISOString().split("T")[0]);
+      expect(Array.isArray(body.users)).toBe(true);
+    });
+
+    it("should return the site with content and summary", async () => {
+      expect(body.content).toBe("Test content");
+      expect(body.summary).toBe("Test summary");
+    });
+
   });
 });
 
@@ -133,31 +141,48 @@ describe("GET /api/sites/:domain/queries", () => {
     expect(res.status).toBe(404);
   });
 
-  it("should return the queries with citations", async () => {
-    const res = await get(`/api/sites/${DOMAIN}/queries`, API_KEY);
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(Array.isArray(body.platforms)).toBe(true);
-    expect(body.platforms[0].model).toBe("gpt-4o");
-    expect(body.platforms[0].onDate).toBe(
-      new Date().toISOString().split("T")[0],
-    );
-    expect(body.platforms[0].platform).toBe("chatgpt");
-    expect(Array.isArray(body.platforms[0].queries)).toBe(true);
-    expect(body.platforms[0].queries[0].query).toBe("best retail platforms");
-    expect(body.platforms[0].queries[0].citations).toEqual([
-      `https://${DOMAIN}/page1`,
-      `https://${DOMAIN}/page2`,
-    ]);
-  });
+  describe("with a correct token", () => {
+    let response: Response;
+    let body: {
+      platforms: {
+        model: string;
+        onDate: string;
+        platform: string;
+        queries: { query: string; citations: string[]; }[];
+        sentiment: { label: string; summary: string; };
+      }[];
+    };
 
-  it("should return the queries with sentiment", async () => {
-    const res = await get(`/api/sites/${DOMAIN}/queries`, API_KEY);
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body.platforms[0].sentiment.label).toBe("positive");
-    expect(body.platforms[0].sentiment.summary).toBe(
-      "Rentail.space is cited positively across multiple queries, frequently appearing as a top recommendation for finding short-term retail space. It ranks prominently in citations and is described as a reliable marketplace for pop-up and kiosk leasing.",
-    );
+    beforeAll(async () => {
+      response = await get(`/api/sites/${DOMAIN}/queries`, API_KEY);
+      body = await response.json();
+    });
+
+    it("should return 200", async () => {
+      expect(response.status).toBe(200);
+    });
+
+
+    it("should return the queries with citations", async () => {
+      expect(Array.isArray(body.platforms)).toBe(true);
+      expect(body.platforms[0].model).toBe("gpt-4o");
+      expect(body.platforms[0].onDate).toBe(
+        new Date().toISOString().split("T")[0],
+      );
+      expect(body.platforms[0].platform).toBe("chatgpt");
+      expect(Array.isArray(body.platforms[0].queries)).toBe(true);
+      expect(body.platforms[0].queries[0].query).toBe("best retail platforms");
+      expect(body.platforms[0].queries[0].citations).toEqual([
+        `https://${DOMAIN}/page1`,
+        `https://${DOMAIN}/page2`,
+      ]);
+    });
+
+    it("should return the queries with sentiment", async () => {
+      expect(body.platforms[0].sentiment.label).toBe("positive");
+      expect(body.platforms[0].sentiment.summary).toBe(
+        "Rentail.space is cited positively across multiple queries, frequently appearing as a top recommendation for finding short-term retail space. It ranks prominently in citations and is described as a reliable marketplace for pop-up and kiosk leasing.",
+      );
+    });
   });
 });

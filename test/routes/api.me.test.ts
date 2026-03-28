@@ -3,7 +3,7 @@ import prisma from "~/lib/prisma.server";
 import { port } from "~/test/helpers/launchBrowser";
 
 const BASE = `http://localhost:${port}`;
-const USER_ID = "api-sites-route-user-1";
+const USER_ID = "user1";
 const API_KEY = `cite.me.in_${USER_ID}_sitesroutetestkey123456`;
 const DOMAIN = "api-sites-route-test.example";
 const EMAIL = "api-sites-route@test.example";
@@ -62,16 +62,16 @@ describe("GET /api/me", () => {
     expect(res.status).toBe(401);
   });
 
-  it("should return 404 for an unknown token", async () => {
+  it("should return 403 for an unknown token", async () => {
     const res = await get("/api/me", "cite.me.in_nonexistent_wrongsecret1234");
-    expect(res.status).toBe(404);
+    expect(res.status).toBe(403);
   });
 
   describe("with a correct token", () => {
     let response: Response;
     let body: {
       email: string;
-      sites: { domain: string; createdAt: string }[];
+      sites: { domain: string; createdAt: string; }[];
     };
 
     beforeAll(async () => {

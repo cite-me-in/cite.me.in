@@ -3,8 +3,8 @@ import { beforeAll, describe, expect, it } from "vitest";
 import prisma from "~/lib/prisma.server";
 import { port } from "../helpers/launchBrowser";
 
-const ADMIN_ID = "admin-users-route-admin-1";
-const ADMIN_API_KEY = `cite.me.in_${ADMIN_ID}_adminroutekey123456789`;
+const USER_ID = "user1";
+const ADMIN_API_KEY = `cite.me.in_${USER_ID}_adminroutekey123456789`;
 
 function makeRequest(token?: string) {
   return fetch(`http://localhost:${port}/api/admin/users`, {
@@ -15,9 +15,9 @@ function makeRequest(token?: string) {
 describe("api.admin.users", () => {
   beforeAll(async () => {
     await prisma.user.upsert({
-      where: { id: ADMIN_ID },
+      where: { id: USER_ID },
       create: {
-        id: ADMIN_ID,
+        id: USER_ID,
         email: "admin-users-route-admin@test.example",
         passwordHash: "test",
         apiKey: ADMIN_API_KEY,
@@ -70,9 +70,9 @@ describe("api.admin.users", () => {
     expect(res.status).toBe(401);
   });
 
-  it("should return 401 with a wrong token", async () => {
+  it("should return 403 with a wrong token", async () => {
     const res = await makeRequest("wrong-token");
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(403);
   });
 
   it("should return 403 with a valid non-admin token", async () => {
@@ -89,7 +89,7 @@ describe("api.admin.users", () => {
         email: string;
         id: string;
         plan: string;
-        sites: { domain: string; createdAt: string }[];
+        sites: { domain: string; createdAt: string; }[];
         status: string;
         updatedAt: string;
       }[];

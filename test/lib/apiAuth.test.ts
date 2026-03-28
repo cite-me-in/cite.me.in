@@ -14,26 +14,26 @@ function makeRequest(token?: string) {
 }
 
 describe("requireAdmin", () => {
-  const adminId = "api-auth-admin-user-1";
-  const adminApiKey = `cite.me.in_${adminId}_adminapikey1234567890`;
+  const userId = "user1";
+  const apiKey = `cite.me.in_${userId}_adminapikey1234567890`;
 
   beforeAll(async () => {
     await prisma.user.upsert({
-      where: { id: adminId },
+      where: { id: userId },
       create: {
-        id: adminId,
-        email: "api-auth-admin@test.example",
+        id: userId,
+        email: `${userId}@test.example`,
         passwordHash: await hashPassword("password"),
-        apiKey: adminApiKey,
+        apiKey: apiKey,
         isAdmin: true,
       },
-      update: { apiKey: adminApiKey, isAdmin: true },
+      update: { apiKey: apiKey, isAdmin: true },
     });
   });
 
   it("should return the user when token is an admin", async () => {
-    const user = await requireAdmin(makeRequest(adminApiKey));
-    expect(user.id).toBe(adminId);
+    const user = await requireAdmin(makeRequest(apiKey));
+    expect(user.id).toBe(userId);
   });
 
   it("should throw 401 when no Authorization header", async () => {
@@ -44,7 +44,7 @@ describe("requireAdmin", () => {
 
   it("should throw 403 when user is not an admin", async () => {
     // Use the non-admin user seeded in verifySiteAccess describe
-    const nonAdminKey = "cite.me.in_api-auth-test-user-1_testabcdefghijklmnop";
+    const nonAdminKey = `cite.me.in_${userId}_testabcdefghijklmnop`;
     const err = await requireAdmin(makeRequest(nonAdminKey)).catch((e) => e);
     expect(err).toBeInstanceOf(Response);
     expect((err as Response).status).toBe(403);
@@ -58,21 +58,21 @@ describe("requireAdmin", () => {
 });
 
 describe("verifySiteAccess", () => {
-  const userId = "api-auth-test-user-1";
+  const userId = "user2";
   const siteId = "test-site-1";
-  const userApiKey = "cite.me.in_api-auth-test-user-1_testabcdefghijklmnop";
+  const apiKey = `cite.me.in_${userId}_testabcdefghijklmnop`;
 
   beforeAll(async () => {
     await prisma.user.upsert({
       where: { id: userId },
       create: {
         id: userId,
-        email: "api-auth-test@test.example",
+        email: `${userId}@test.example`,
         passwordHash: await hashPassword("password"),
-        apiKey: userApiKey,
+        apiKey: apiKey,
         ownedSites: {
           create: {
-            apiKey: userApiKey,
+            apiKey: apiKey,
             content: "Test content",
             domain: "test.example",
             id: siteId,
@@ -80,14 +80,14 @@ describe("verifySiteAccess", () => {
           },
         },
       },
-      update: { apiKey: userApiKey },
+      update: { apiKey: apiKey },
     });
   });
 
   it("should return the site when token matches", async () => {
     const site = await verifySiteAccess({
       domain: "test.example",
-      request: makeRequest(userApiKey),
+      request: makeRequest(apiKey),
     });
     expect(site.id).toBe(siteId);
   });
@@ -112,11 +112,24 @@ describe("verifySiteAccess", () => {
 });
 
 describe("verifyUserAccess", () => {
-  const userId = "api-auth-test-user-1";
-  const userApiKey = "cite.me.in_api-auth-test-user-1_testabcdefghijklmnop";
+  const userId = "user3";
+  const apiKey = `cite.me.in_${userId}_testabcdefghijklmnop`;
+
+  beforeAll(async () => {
+    await prisma.user.upsert({
+      where: { id: userId },
+      create: {
+        id: userId,
+        email: `${userId}@test.example`,
+        passwordHash: await hashPassword("password"),
+        apiKey: apiKey,
+      },
+      update: { apiKey: apiKey },
+    });
+  });
 
   it("should return the user when token matches", async () => {
-    const user = await verifyUserAccess(makeRequest(userApiKey));
+    const user = await verifyUserAccess(makeRequest(apiKey));
     expect(user.id).toBe(userId);
   });
 
@@ -128,13 +141,15 @@ describe("verifyUserAccess", () => {
 
   it("should throw 404 Response when token is unknown", async () => {
     await expect(
-      verifyUserAccess(makeRequest("cite.me.in_api-auth-test-user-1_wrongsecret")),
+      verifyUserAccess(makeRequest(`cite.me.in_${userId}_wrongsecret`)),
     ).rejects.toThrow(Response);
   });
 
   it("should throw 404 when userId in token doesn't exist", async () => {
     await expect(
-      verifyUserAccess(makeRequest("cite.me.in_nonexistent-user-id_testabcdef")),
+      verifyUserAccess(
+        makeRequest("cite.me.in_nonexistent-user-id_testabcdef"),
+      ),
     ).rejects.toThrow(Response);
   });
 });
