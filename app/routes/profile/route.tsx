@@ -120,7 +120,7 @@ async function updatePassword({
 async function regenerateApiKey({ userId }: { userId: string }) {
   try {
     const { generateApiKey } = await import("random-password-toolkit");
-    const apiKey = `cite.me.in_${generateApiKey(24)}`;
+    const apiKey = `cite.me.in_${userId}_${generateApiKey(24)}`;
     const updated = await prisma.user.update({
       where: { id: userId },
       data: { apiKey },
