@@ -258,6 +258,7 @@ model User {
   emailVerificationTokens EmailVerificationToken[]
   emailVerifiedAt         DateTime?                @map("email_verified_at")
   id                      String                                             @id @default(cuid())
+  isAdmin                 Boolean                  @default(false)           @map("is_admin")
   ownedSites              Site[]                   @relation("OwnedSites")
   passwordHash            String                   @map("password_hash")
   passwordRecoveryTokens  PasswordRecoveryToken[]
