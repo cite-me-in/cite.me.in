@@ -1,115 +1,64 @@
 # Privacy Policy
 
-## 1. Introduction
+## What we collect
 
-Cite.me.in ("we," "our," or "us") is committed to protecting your privacy.  This
-Privacy Policy explains how we collect, use, disclose, and safeguard your
-information when you use our service.
-
-## 2. Information We Collect
-
-We collect information that you provide directly to us, including:
-
-- Email address (when you create an account)
-- Password (encrypted and securely stored)
+- Email address and password (encrypted) when you create an account
 - The domains and search queries you configure for monitoring
+- Usage data and analytics to improve the service
 
-## 3. How We Use Your Information
+## How we use it
 
-We use the information we collect to:
+We use your data to run citation visibility queries on your behalf, send
+service-related notices, and improve the product. We do not sell your personal
+information.
 
-- Provide, maintain, and improve our services
-- Run citation visibility queries on your behalf across AI platforms
-- Send you technical notices and support messages
-- Monitor and analyze trends, usage, and activities
-- Detect, prevent, and address technical issues
-- Comply with legal obligations and protect our rights
+## AI platform queries
 
-## 4. AI Platform Queries
+To monitor citation visibility, we submit your configured search queries to
+third-party AI platforms — including Anthropic Claude, OpenAI ChatGPT, Google
+Gemini, and Perplexity. We store the results to provide you with historical
+data.
 
-Our service submits search queries to third-party AI platforms (including
-Anthropic Claude, OpenAI ChatGPT, Google Gemini, and Perplexity) to monitor
-citation visibility. These queries are sent using your configured search terms
-and your API credentials where applicable. We store the results of these queries
-to provide you with historical visibility data.
+## Sharing
 
-## 5. Information Sharing and Disclosure
+We share data only with service providers acting on our behalf (hosting,
+analytics, error tracking), when required by law, or in connection with a
+merger or acquisition.
 
-We do not sell your personal information. We may share your information in the
-following circumstances:
+## Cookies
 
-- Service Providers: With third-party vendors who perform services on our behalf
-  (e.g., hosting, analytics, error tracking)
-- Legal Requirements: When required by law or to protect our rights
-- Business Transfers: In connection with a merger, acquisition, or sale of
-  assets
-- With Your Consent: When you explicitly authorize us to share your information
+We use cookies to maintain your session, analyze usage patterns, and track
+marketing attribution.
 
-## 6. Data Security
+## Security
 
-We implement appropriate technical and organizational measures to protect your
-personal information, including:
+We use industry-standard security practices including encryption in transit and
+at rest, and secure password hashing.
 
-- Encryption of data in transit and at rest
-- Secure password hashing using industry standards
-- Regular security assessments and monitoring
-- Access controls and authentication requirements
-- Error tracking and performance monitoring (via Sentry)
+## Your rights
 
-## 7. Cookies and Tracking Technologies
+You may request access to, correction of, or deletion of your personal data at
+any time. To exercise these rights, email
+[privacy@cite.me.in](mailto:privacy@cite.me.in).
 
-We use cookies and similar tracking technologies to:
+## Data retention
 
-- Maintain your authenticated session
-- Analyze usage patterns and improve our service
-- Track UTM attribution for marketing purposes
+We retain your data for as long as your account is active. When you delete your
+account, your data is deleted within 30 days except where retention is required
+by law.
 
-## 8. Your Rights and Choices
+## Children
 
-Depending on your location, you may have the following rights:
+This service is not intended for children under 13. We do not knowingly collect
+data from children under 13.
 
-- Access: Request access to your personal information
-- Correction: Request correction of inaccurate data
-- Deletion: Request deletion of your personal information
-- Data Portability: Request a copy of your data in a structured format
-- Opt-out: Unsubscribe from marketing communications
-- Object: Object to certain processing of your data
+## Changes
 
-To exercise these rights, please contact us at
+We may update this policy at any time. Continued use of the service after
+changes are posted constitutes acceptance of the updated policy.
+
+## Contact
+
 [privacy@cite.me.in](mailto:privacy@cite.me.in)
 
-## 9. Data Retention
-
-We retain your personal information for as long as necessary to provide our
-services and fulfill the purposes outlined in this Privacy Policy. When you
-delete your account, we will delete or anonymize your personal information,
-except where we are required to retain it for legal purposes.
-
-## 10. Children's Privacy
-
-Our service is not intended for children under 13 years of age. We do not
-knowingly collect personal information from children under 13. If you believe we
-have collected information from a child under 13, please contact us immediately.
-
-## 11. International Data Transfers
-
-Your information may be transferred to and processed in countries other than
-your country of residence. These countries may have data protection laws that
-differ from those of your country. We take steps to ensure that your information
-receives an adequate level of protection.
-
-## 12. Changes to This Privacy Policy
-
-We may update this Privacy Policy from time to time. We will notify you of any
-material changes by posting the new Privacy Policy on this page and updating the
-"Last Updated" date. You are advised to review this Privacy Policy periodically
-for any changes.
-
-## 13. Contact Us
-
-If you have any questions about this Privacy Policy, please contact us at:
-
-Email: [privacy@cite.me.in](mailto:privacy@cite.me.in)
-
-By using Cite.me.in, you acknowledge that you have read, understood, and
-agree to this Privacy Policy.
+_Last updated: March 2026_
