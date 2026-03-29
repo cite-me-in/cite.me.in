@@ -35,7 +35,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   // canAddSite is true if the user can add a site (5 if pro, 1 if not)
   const isPro = account?.status === "active";
   const ownedSiteCount = sites.filter((s) => s.site.ownerId === user.id).length;
-  const canAddSite = ownedSiteCount < (isPro ? 5 : 1);
+  const canAddSite = user.isAdmin || (ownedSiteCount < (isPro ? 5 : 1));
 
   // trialExpired is true if the user's trial has ended (isPro is false)
   const trialEnd = new Date(user.createdAt);

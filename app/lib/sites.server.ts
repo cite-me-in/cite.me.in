@@ -4,9 +4,9 @@ import type { Site } from "~/prisma";
 import prisma from "./prisma.server";
 
 export async function createSite(
-  user: { id: string },
+  user: { id: string; isAdmin: boolean; },
   url: string,
-): Promise<{ site: Site; existing: boolean }> {
+): Promise<{ site: Site; existing: boolean; }> {
   const domain = extractDomain(url);
   if (!domain) throw new Error("Enter a valid website URL or domain name");
 
@@ -22,13 +22,13 @@ export async function createSite(
   const isPro = account?.status === "active";
   const limit = isPro ? 5 : 1;
   const siteCount = await prisma.site.count({ where: { ownerId: user.id } });
-  if (siteCount >= limit) {
+  const canAddSite = user.isAdmin || siteCount < limit;
+  if (!canAddSite)
     throw new Error(
       isPro
         ? "Pro plan supports up to 5 sites. Contact us if you need more."
         : "Free trial supports 1 site. Upgrade to Pro to add up to 5 sites.",
     );
-  }
 
   // Quick reachability check — the only sync step before backgrounding.
   // Skipped in test environment (no outbound network access).

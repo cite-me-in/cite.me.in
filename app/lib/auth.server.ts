@@ -105,15 +105,16 @@ export async function signOut(): Promise<Headers> {
  */
 export async function requireUserAccess(request: Request): Promise<{
   user: {
+    isAdmin: boolean;
     apiKey: string | null;
     createdAt: Date;
     email: string;
     id: string;
     passwordHash: string;
   };
-  account: { status: string; interval: string } | null;
-  ownedSites: { id: string; domain: string }[];
-  siteUsers: { site: { id: string; domain: string } }[];
+  account: { status: string; interval: string; } | null;
+  ownedSites: { id: string; domain: string; }[];
+  siteUsers: { site: { id: string; domain: string; }; }[];
 }> {
   const cookieHeader = request.headers.get("Cookie");
   const token = await sessionCookie.parse(cookieHeader);
@@ -123,16 +124,15 @@ export async function requireUserAccess(request: Request): Promise<{
       select: {
         user: {
           select: {
+            account: { select: { status: true, interval: true } },
             apiKey: true,
             createdAt: true,
             email: true,
             id: true,
-            passwordHash: true,
-            account: { select: { status: true, interval: true } },
+            isAdmin: true,
             ownedSites: { select: { domain: true, id: true } },
-            siteUsers: {
-              select: { site: { select: { domain: true, id: true } } },
-            },
+            passwordHash: true,
+            siteUsers: { select: { site: { select: { domain: true, id: true } } }, },
           },
         },
       },
@@ -177,8 +177,8 @@ export async function requireSiteAccess({
   domain: string;
   request: Request;
 }): Promise<{
-  site: { id: string; domain: string };
-  user: { id: string; email: string };
+  site: { id: string; domain: string; };
+  user: { id: string; email: string; };
 }> {
   const { user, ownedSites, siteUsers } = await requireUserAccess(request);
   const site =
@@ -205,8 +205,8 @@ export async function requireSiteOwner({
   domain: string;
   request: Request;
 }): Promise<{
-  site: { id: string; domain: string };
-  user: { id: string; email: string };
+  site: { id: string; domain: string; };
+  user: { id: string; email: string; };
 }> {
   const { user, ownedSites } = await requireUserAccess(request);
   const site = ownedSites.find((s) => s.domain === domain);
