@@ -7,7 +7,7 @@ import Main from "~/components/ui/Main";
 import Spinner from "~/components/ui/Spinner";
 import { requireSiteAccess } from "~/lib/auth.server";
 import { getStatus } from "~/lib/setupProgress.server";
-import type { Route } from "./+types/route";
+import type { Route } from "./+types/site.$domain_.setup";
 
 export const handle = { siteNav: true };
 
@@ -111,7 +111,7 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
         <CardContent>
           <pre
             ref={logRef}
-            className="h-96 overflow-y-auto rounded border border-border bg-muted p-4 font-mono text-sm leading-relaxed"
+            className="h-96 overflow-y-auto whitespace-break-spaces rounded border border-border bg-muted p-4 font-mono text-foreground/60 text-sm leading-relaxed"
           >
             {lines.length === 0 && !done && (
               <span className="text-foreground/40">Starting…</span>
