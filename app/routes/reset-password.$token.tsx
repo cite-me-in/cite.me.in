@@ -3,10 +3,10 @@ import { Link, redirect } from "react-router";
 import AuthForm from "~/components/ui/AuthForm";
 import { createSession } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
-import type { Route } from "./+types/route";
+import type { Route } from "./+types/reset-password.$token";
 
 export async function loader({ params, request }: Route.LoaderArgs) {
-  const { token } = params;
+  const token = params.token;
 
   const result = await prisma.passwordRecoveryToken.updateMany({
     where: { token, usedAt: null, expiresAt: { gt: new Date() } },

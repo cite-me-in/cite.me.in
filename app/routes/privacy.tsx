@@ -3,7 +3,7 @@ import remarkGfm from "remark-gfm";
 import { Streamdown } from "streamdown";
 import Main from "~/components/ui/Main";
 import privacy from "~/data/privacy.md?raw";
-import type { Route } from "./+types/route";
+import type { Route } from "./+types/privacy";
 
 export function meta(): Route.MetaDescriptors {
   return [

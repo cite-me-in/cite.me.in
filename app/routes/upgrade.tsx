@@ -6,7 +6,7 @@ import prices from "~/data/stripe-prices.json";
 import { requireUserAccess } from "~/lib/auth.server";
 import envVars from "~/lib/envVars";
 import stripe from "~/lib/stripe.server";
-import type { Route } from "./+types/route";
+import type { Route } from "./+types/upgrade";
 
 export function meta(): Route.MetaDescriptors {
   return [{ title: "Upgrade to Pro | Cite.me.in" }];

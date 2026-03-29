@@ -18,7 +18,7 @@ import {
 } from "~/lib/auth.server";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
-import type { Route } from "./+types/route";
+import type { Route } from "./+types/sign-up";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);

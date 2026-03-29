@@ -11,7 +11,7 @@ import {
 } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
 import prices from "~/data/stripe-prices.json";
-import type { Route } from "./+types/route";
+import type { Route } from "./+types/pricing";
 
 export function loader() {
   return prices;

@@ -13,7 +13,7 @@ import { Input } from "~/components/ui/Input";
 import sendPasswordRecoveryEmail from "~/emails/PasswordRecovery";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
-import type { Route } from "./+types/route";
+import type { Route } from "./+types/password-recovery";
 
 export async function action({ request }: Route.ActionArgs) {
   const form = await request.formData();

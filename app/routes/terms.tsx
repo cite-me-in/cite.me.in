@@ -3,7 +3,7 @@ import remarkGfm from "remark-gfm";
 import { Streamdown } from "streamdown";
 import Main from "~/components/ui/Main";
 import terms from "~/data/terms.md?raw";
-import type { Route } from "./+types/route";
+import type { Route } from "./+types/terms";
 
 export function meta(): Route.MetaDescriptors {
   return [

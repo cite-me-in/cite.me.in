@@ -8,7 +8,7 @@ import sendEmailVerificationEmail from "~/emails/EmailVerification";
 import { createEmailVerificationToken } from "~/lib/auth.server";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
-import type { Route } from "./+types/route";
+import type { Route } from "./+types/verify-email.$token";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const { token } = params;

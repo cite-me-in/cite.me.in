@@ -1,7 +1,7 @@
 import { Link } from "react-router";
 import Main from "~/components/ui/Main";
 import { requireUserAccess } from "~/lib/auth.server";
-import type { Route } from "./+types/route";
+import type { Route } from "./+types/upgrade.success";
 
 export function meta(): Route.MetaDescriptors {
   return [{ title: "Welcome to Pro | Cite.me.in" }];

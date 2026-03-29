@@ -3,7 +3,7 @@ import AuthForm from "~/components/ui/AuthForm";
 import { Button } from "~/components/ui/Button";
 import { requireUserAccess } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
-import type { Route } from "./+types/route";
+import type { Route } from "./+types/invite.$token";
 
 export function meta() {
   return [{ title: "Accept Invitation | Cite.me.in" }];
