@@ -107,7 +107,7 @@ logger("[%s:%s] Failed: %o", site.id, platform, error);
 
 ## Libraries
 
-- `es-toolkit` for array/object utilities (not lodash)
+- `radashi` for array/object utilities (not lodash); `tiny-invariant` for runtime assertions
 - `@js-temporal/polyfill` for date/time (not `Date`)
 - `twMerge` + `cva` for conditional class names on UI components
 

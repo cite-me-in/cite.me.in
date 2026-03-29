@@ -1,13 +1,13 @@
-import { invariant } from "es-toolkit";
+import invariant from "tiny-invariant";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import queryPlatform from "~/lib/llm-visibility/queryPlatform";
 import prisma from "~/lib/prisma.server";
 
 vi.mock("@sentry/node", () => ({ captureException: vi.fn() }));
 
-vi.mock("es-toolkit", async (importOriginal) => {
-  const original = await importOriginal<typeof import("es-toolkit")>();
-  return { ...original, delay: vi.fn().mockResolvedValue(undefined) };
+vi.mock("radashi", async (importOriginal) => {
+  const original = await importOriginal<typeof import("radashi")>();
+  return { ...original, sleep: vi.fn().mockResolvedValue(undefined) };
 });
 
 const CITATION_SETS = [
@@ -54,7 +54,7 @@ const PLATFORM_ARGS = {
 } as const;
 
 describe("queryPlatform", () => {
-  let site: { id: string; domain: string; createdAt: Date };
+  let site: { id: string; domain: string; createdAt: Date; };
 
   beforeAll(async () => {
     const user = await prisma.user.create({

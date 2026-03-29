@@ -1,4 +1,4 @@
-import { invariant } from "es-toolkit";
+import invariant from "tiny-invariant";
 import { MailIcon } from "lucide-react";
 import { Form, redirect } from "react-router";
 import AuthForm from "~/components/ui/AuthForm";

@@ -1,4 +1,4 @@
-import { invariant } from "es-toolkit";
+import invariant from "tiny-invariant";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { createDocument } from "zod-openapi";
 import { port } from "~/test/helpers/launchBrowser";

@@ -1,4 +1,4 @@
-import { invariant } from "es-toolkit";
+import invariant from "tiny-invariant";
 import { useState } from "react";
 import { redirect, useFetcher } from "react-router";
 import { Button } from "~/components/ui/Button";

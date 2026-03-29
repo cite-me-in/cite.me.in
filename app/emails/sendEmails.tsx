@@ -1,9 +1,10 @@
 import { pretty, render } from "@react-email/components";
 import { ms } from "convert";
 import debug from "debug";
-import { delay, invariant, withTimeout } from "es-toolkit";
 import Redis from "ioredis";
+import { retry, sleep } from "radashi";
 import { Resend } from "resend";
+import invariant from "tiny-invariant";
 import envVars from "~/lib/envVars";
 import generateUnsubscribeToken from "./generateUnsubscribeToken";
 
@@ -78,15 +79,15 @@ export async function sendEmail({
       to: [user.email],
       headers: canUnsubscribe
         ? {
-            ...headers,
-            "List-Unsubscribe": `<${unsubscribeURL}>`,
-            "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-          }
+          ...headers,
+          "List-Unsubscribe": `<${unsubscribeURL}>`,
+          "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+        }
         : headers,
     });
     if (error) throw error;
     logger("Sent %s to %s", subject, user.email);
-    await delay(ms("1s"));
+    await sleep(ms("1s"));
     return data;
   }
 }
@@ -130,9 +131,7 @@ export async function getLastEmailSent(): Promise<
   NonNullable<typeof lastEmailSent>
 > {
   initRedis();
-  await withTimeout(async () => {
-    while (!lastEmailSent) await delay(100);
-  }, ms("1s"));
+  await retry({ times: 10, delay: ms("1s"), }, async () => { invariant(lastEmailSent, "No email sent"); return lastEmailSent; });
   invariant(lastEmailSent, "No email sent");
   const lastEmail = lastEmailSent;
   lastEmailSent = null;

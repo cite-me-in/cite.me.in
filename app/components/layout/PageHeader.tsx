@@ -1,4 +1,4 @@
-import { last } from "es-toolkit";
+import { last } from "radashi";
 import { SettingsIcon } from "lucide-react";
 import { NavLink, type UIMatch, useMatches } from "react-router";
 import { twMerge } from "tailwind-merge";

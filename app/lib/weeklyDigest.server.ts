@@ -1,5 +1,5 @@
 import { Temporal } from "@js-temporal/polyfill";
-import { sumBy } from "es-toolkit";
+import { sum } from "radashi";
 import type { WeeklyDigestEmailProps } from "~/emails/WeeklyDigest";
 import envVars from "~/lib/envVars";
 import { getDomainMeta } from "~/lib/domainMeta.server";
@@ -57,14 +57,14 @@ export async function loadWeeklyDigestMetrics(
   for (const run of currentRuns) {
     const entry = byPlatform[run.platform];
     if (entry) {
-      entry.count += sumBy(run.queries, (q) => q.citations.length);
+      entry.count += sum(run.queries, (q) => q.citations.length);
       if (run.sentimentLabel) {
         entry.sentimentLabel = run.sentimentLabel;
         entry.sentimentSummary = run.sentimentSummary ?? "";
       }
     } else {
       byPlatform[run.platform] = {
-        count: sumBy(run.queries, (q) => q.citations.length),
+        count: sum(run.queries, (q) => q.citations.length),
         sentimentLabel: run.sentimentLabel ?? ("neutral" as SentimentLabel),
         sentimentSummary: run.sentimentSummary ?? "",
       };

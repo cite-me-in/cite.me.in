@@ -1,7 +1,7 @@
 // DO NOT add to setup.ts as vitest.config.js cannot upload file that imports vitest
 
 import { expect } from "@playwright/test";
-import { invariant } from "es-toolkit";
+import invariant from "tiny-invariant";
 import {
   access,
   constants,

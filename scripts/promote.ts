@@ -12,7 +12,7 @@ import type { GetDeploymentResponseBody } from "@vercel/sdk/models/getdeployment
 import type { GetDeploymentsResponseBody } from "@vercel/sdk/models/getdeploymentsop.js";
 import dotenv from "dotenv";
 import envVars from "env-var";
-import { invariant } from "es-toolkit";
+import invariant from "tiny-invariant";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { Octokit } from "octokit";

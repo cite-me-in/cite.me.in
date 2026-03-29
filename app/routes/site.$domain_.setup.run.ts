@@ -1,5 +1,5 @@
 import { ms } from "convert";
-import { delay, forEachAsync } from "es-toolkit";
+import { sleep } from "radashi";
 import sendSiteSetupEmail from "~/emails/SiteSetupComplete";
 import addSiteQueries from "~/lib/addSiteQueries";
 import { requireSiteAccess } from "~/lib/auth.server";
@@ -125,9 +125,9 @@ async function runPlatformWithProgress({
     create: { onDate, model: modelId, platform, siteId: site.id },
   });
 
-  await forEachAsync(queries, async ({ query, group }, index) => {
+  for (const [index, { query, group }] of queries.entries()) {
     // Shorter stagger than the daily cron (1s) — setup is a one-time event.
-    if (process.env.NODE_ENV !== "test") await delay(ms("200ms") * index);
+    if (process.env.NODE_ENV !== "test") await sleep(ms("200ms") * index);
     await log(`${label}: ${query} (${index + 1}/${queries.length})`);
     await singleQueryRepetition({
       siteId: site.id,
@@ -139,7 +139,7 @@ async function runPlatformWithProgress({
       runId: run.id,
       site,
     });
-  });
+  }
 
   // Sentiment analysis for this platform's run.
   try {

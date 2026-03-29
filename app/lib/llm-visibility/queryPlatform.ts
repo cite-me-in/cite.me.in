@@ -1,6 +1,6 @@
 import { ms } from "convert";
 import debug from "debug";
-import { delay, forEachAsync } from "es-toolkit";
+import { sleep } from "radashi";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import {
@@ -45,9 +45,9 @@ export default async function queryPlatform({
     });
     logger("[%s:%s] Created citation query run %s", site.id, platform, run.id);
 
-    await forEachAsync(queries, async (query, index) => {
-      if (process.env.NODE_ENV !== "test") await delay(ms("1s") * index);
-      return singleQueryRepetition({
+    for (const [index, query] of queries.entries()) {
+      if (process.env.NODE_ENV !== "test") await sleep(ms("1s") * index);
+      await singleQueryRepetition({
         siteId,
         group: query.group,
         modelId,
@@ -57,7 +57,7 @@ export default async function queryPlatform({
         runId: run.id,
         site,
       });
-    });
+    }
 
     await updateRunSentiment({ site, platform, runId: run.id });
   } catch (error) {

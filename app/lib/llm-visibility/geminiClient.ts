@@ -2,7 +2,8 @@ import { google } from "@ai-sdk/google";
 import * as ai from "ai";
 import { wrapAISDK } from "braintrust";
 import { ms } from "convert";
-import { invariant, mapAsync } from "es-toolkit";
+import invariant from "tiny-invariant";
+import { map } from "radashi";
 import envVars from "~/lib/envVars";
 import type { QueryFn } from "./queryFn";
 
@@ -60,7 +61,7 @@ references, with a link to each source URL.`,
   const extraQueries = metadata?.webSearchQueries ?? [];
   const urls = metadata?.groundingChunks?.map((chunk) => chunk.web.uri);
   const signal = AbortSignal.timeout(ms("10s"));
-  const urlSources = await mapAsync(urls ?? [], async (url) => {
+  const urlSources = await map(urls ?? [], async (url) => {
     try {
       const response = await fetch(url, { redirect: "follow", signal });
       return response.url;

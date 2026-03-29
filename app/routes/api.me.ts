@@ -1,4 +1,4 @@
-import { sortBy } from "es-toolkit";
+import { alphabetical } from "radashi";
 import { data } from "react-router";
 import { verifyUserAccess } from "~/lib/api/apiAuth.server";
 import { UserSchema } from "~/lib/api/openapi";
@@ -16,7 +16,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       },
     },
   });
-  const sites = sortBy(
+  const sites = alphabetical(
     [
       ...user.ownedSites.map(({ domain, createdAt }) => ({
         domain,
@@ -27,7 +27,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         createdAt: site.createdAt.toISOString().split("T")[0],
       })),
     ],
-    ["domain"],
+    ({ domain }) => domain,
   );
 
   return data(UserSchema.parse({ email, sites }));

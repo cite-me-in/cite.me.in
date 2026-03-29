@@ -5,7 +5,7 @@
  * cleanly when the test is done.
  */
 
-import { invariant } from "es-toolkit";
+import invariant from "tiny-invariant";
 import { rm } from "node:fs/promises";
 import { resolve } from "node:path";
 import * as vite from "vite";

@@ -1,6 +1,6 @@
 import { Temporal } from "@js-temporal/polyfill";
 import debug from "debug";
-import { mapAsync } from "es-toolkit";
+import { map } from "radashi";
 import { data } from "react-router";
 import sendTrialEndedEmails from "~/emails/TrialEnded";
 import sendTrialEndingEmails from "~/emails/TrialEnding";
@@ -34,7 +34,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   );
 
   const results: { emailIds: string[]; domain: string }[] = [];
-  await mapAsync(sitesForDigest, async (site) => {
+  await map(sitesForDigest, async (site) => {
     // NOTE Always run updates first and then send the digest email.
     await Promise.all([nextCitationRun(site), updateBotInsight(site)]);
     const data = await loadWeeklyDigestMetrics(site.id);

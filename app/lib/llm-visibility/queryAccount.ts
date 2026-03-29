@@ -1,4 +1,4 @@
-import { forEachAsync, groupBy, orderBy } from "es-toolkit";
+import { alphabetical, group, map } from "radashi";
 import prisma from "~/lib/prisma.server";
 import PLATFORMS from "./platforms";
 import { default as runPlatform } from "./queryPlatform";
@@ -17,7 +17,7 @@ export default async function queryAccount({
   site: { id: string; domain: string };
   queries: { query: string; group: string }[];
 }) {
-  await forEachAsync(PLATFORMS, ({ platform, modelId, queryFn }) =>
+  await map(PLATFORMS, ({ platform, modelId, queryFn }) =>
     runPlatform({
       siteId: site.id,
       modelId,
@@ -33,6 +33,6 @@ export default async function queryAccount({
     include: { queries: true },
     orderBy: { onDate: "asc" },
   });
-  const byDate = Object.entries(groupBy(all, ({ onDate }) => onDate));
-  return orderBy(byDate, [([date]) => date], ["asc"]);
+  const byDate = Object.entries(group(all, ({ onDate }) => onDate));
+  return alphabetical(byDate, ([date]) => date);
 }

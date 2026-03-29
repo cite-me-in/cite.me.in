@@ -1,5 +1,5 @@
 import { Button, Column, Img, Link, Row, Section, Text } from "@react-email/components";
-import { sortBy, sumBy } from "es-toolkit";
+import { alphabetical, sort, sum } from "radashi";
 import { twMerge } from "tailwind-merge";
 import type { SentimentLabel } from "~/prisma";
 import EmailLayout from "./EmailLayout";
@@ -175,8 +175,8 @@ function PlatformBreakdown({
     { count: number; sentimentLabel: SentimentLabel; sentimentSummary: string }
   >;
 }) {
-  const first4 = sortBy(Object.entries(byPlatform), [0]).slice(0, 4);
-  const total = sumBy(first4, ([, { count }]) => count);
+  const first4 = alphabetical(Object.entries(byPlatform), ([name]) => name).slice(0, 4);
+  const total = sum(first4, ([, { count }]) => count);
 
   return (
     <Card title="Citations by platform" className="pb-8">
@@ -246,12 +246,10 @@ function SentimentBreakdown({
     { sentimentLabel: SentimentLabel; sentimentSummary: string }
   >;
 }) {
-  const sentiment = sortBy(
+  const sentiment = sort(
     Object.values(byPlatform).filter((p) => p.sentimentSummary.length),
-    [
-      ({ sentimentLabel }) =>
-        ["positive", "mixed", "negative"].indexOf(sentimentLabel),
-    ],
+    ({ sentimentLabel }) =>
+      ["positive", "mixed", "negative"].indexOf(sentimentLabel),
   )[0];
   if (!sentiment) return null;
 

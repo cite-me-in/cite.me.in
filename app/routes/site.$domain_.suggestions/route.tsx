@@ -1,5 +1,5 @@
-import { groupBy, sortBy } from "es-toolkit";
 import { AlertCircleIcon, PlusIcon, TrashIcon } from "lucide-react";
+import { alphabetical, group } from "radashi";
 import { useState } from "react";
 import { redirect, useFetcher } from "react-router";
 import z from "zod";
@@ -75,14 +75,14 @@ export async function action({ params, request }: Route.ActionArgs) {
 
 export default function Index({ loaderData }: Route.ComponentProps) {
   const [suggestions, setSuggestions] = useState<
-    { id: string; group: string; query: string }[]
+    { id: string; group: string; query: string; }[]
   >(loaderData.suggestions);
-  const nonEmpty = suggestions.filter((q) => q.query.trim());
-  const groupedQueries = sortBy(
-    Object.entries(groupBy(suggestions, (s) => s.group)),
-    [([group]) => group],
+  const groupedQueries = alphabetical(
+    Object.entries(group(suggestions, (s) => s.group)),
+    ([g]) => g,
   );
 
+  const nonEmpty = suggestions.filter((s) => s.query.trim());
   const fetcher = useFetcher<typeof action>();
   const isProcessing = fetcher.state !== "idle";
 
@@ -126,11 +126,11 @@ export default function Index({ loaderData }: Route.ComponentProps) {
           <Card key={group}>
             <CardContent className="space-y-2">
               <p className="font-heading text-base">
-                {queryGroups.find((c: { group: string }) => c.group === group)
+                {queryGroups.find((c: { group: string; }) => c.group === group)
                   ?.intent ?? group}
               </p>
               <ul className="space-y-1">
-                {queries.map(({ query, id }, pos) => (
+                {queries?.map(({ query, id }, pos) => (
                   <li key={id} className="flex items-center gap-2">
                     <Input
                       aria-label={`${group} — query ${pos + 1}`}

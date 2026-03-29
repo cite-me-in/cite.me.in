@@ -1,7 +1,7 @@
 import { openai } from "@ai-sdk/openai";
 import * as ai from "ai";
 import { wrapAISDK } from "braintrust";
-import { invariant } from "es-toolkit";
+import invariant from "tiny-invariant";
 import envVars from "~/lib/envVars";
 import type { QueryFn } from "./queryFn";
 

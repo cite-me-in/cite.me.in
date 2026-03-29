@@ -1,7 +1,8 @@
 // DO NOT add to setup.ts as vitest.config.js cannot upload file that imports vitest
 
 import { expect } from "@playwright/test";
-import { delay, invariant } from "es-toolkit";
+import invariant from "tiny-invariant";
+import { sleep } from "radashi";
 import { readdirSync, unlinkSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
@@ -57,7 +58,7 @@ expect.extend({
     )
       await locator.waitForLoadState("networkidle");
     // Wait for all possible animations/transitions (tweak ms if needed for your UI)
-    await delay(150);
+    await sleep(150);
 
     // Run both matchers in parallel and fail if either fails.
     const [screenshot, html] = await Promise.allSettled([

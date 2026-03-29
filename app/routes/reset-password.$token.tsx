@@ -1,4 +1,4 @@
-import { invariant } from "es-toolkit";
+import invariant from "tiny-invariant";
 import { Link, redirect } from "react-router";
 import AuthForm from "~/components/ui/AuthForm";
 import { createSession } from "~/lib/auth.server";

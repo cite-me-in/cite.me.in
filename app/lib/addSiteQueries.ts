@@ -1,4 +1,4 @@
-import { differenceBy, forEachAsync, uniqBy } from "es-toolkit";
+import { diff, map, unique } from "radashi";
 import PLATFORMS from "./llm-visibility/platforms";
 import { singleQueryRepetition } from "./llm-visibility/queryPlatform";
 import prisma from "./prisma.server";
@@ -25,14 +25,14 @@ export default async function addSiteQueries(
     query: trimQuery(query),
   }));
   // Remove duplicates from the input and from the existing queries.
-  const unique = differenceBy(
-    uniqBy(trimmed, (q) => `${q.group}:${q.query}`),
+  const uniqueQueries = diff(
+    unique(trimmed, (q) => `${q.group}:${q.query}`),
     existing,
     (q) => `${q.group}:${q.query}`,
   );
   // Add the new queries to the database.
   await prisma.siteQuery.createMany({
-    data: unique.map(({ group, query }) => ({ siteId: site.id, group, query })),
+    data: uniqueQueries.map(({ group, query }) => ({ siteId: site.id, group, query })),
   });
 }
 
@@ -89,7 +89,7 @@ export async function runQueryOnAllPlatforms({
   query: string;
   group: string;
 }) {
-  await forEachAsync(PLATFORMS, async ({ platform, modelId, queryFn }) => {
+  await map(PLATFORMS, async ({ platform, modelId, queryFn }) => {
     const onDate = new Date().toISOString().split("T")[0];
     const run = await prisma.citationQueryRun.upsert({
       where: {

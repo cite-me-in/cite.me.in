@@ -1,5 +1,5 @@
 import { Temporal } from "@js-temporal/polyfill";
-import { partition, sumBy } from "es-toolkit";
+import { fork, sum } from "radashi";
 import type { Site } from "~/prisma";
 import calculateVisibilityScore, {
   normalizeHostname,
@@ -13,18 +13,18 @@ import prisma from "./prisma.server";
  * @returns Site metrics for the current and previous week
  */
 export default async function getSiteMetrics(
-  filter: { userId: string } | { siteIds: string[] },
+  filter: { userId: string; } | { siteIds: string[]; },
 ): Promise<
   {
     site: Pick<Site, "id" | "domain" | "ownerId" | "summary">;
     // Total citations for the current and previous week
-    allCitations: { current: number; previous: number };
+    allCitations: { current: number; previous: number; };
     // Your citations only for the current and previous week
-    yourCitations: { current: number; previous: number };
+    yourCitations: { current: number; previous: number; };
     // Visibility score for the current and previous week
-    visbilityScore: { current: number; previous: number };
+    visbilityScore: { current: number; previous: number; };
     // Unique bot visits for the current and previous week
-    botVisits: { current: number; previous: number };
+    botVisits: { current: number; previous: number; };
   }[]
 > {
   const weekStart = Temporal.Now.plainDateISO("UTC").subtract({ days: 7 });
@@ -81,28 +81,28 @@ export default async function getSiteMetrics(
   return sites.map((site) => {
     const domain = normalizeHostname(site.domain);
 
-    const [currentQueries, previousQueries] = partition(
+    const [currentQueries, previousQueries] = fork(
       queries.filter((q) => q.run.siteId === site.id),
       (q) => q.run.onDate >= weekStart.toJSON(),
     );
 
-    const [currentVisits, previousVisits] = partition(
+    const [currentVisits, previousVisits] = fork(
       botVisits.filter((v) => v.siteId === site.id),
       (v) => v.date >= new Date(weekStart.toJSON()),
     );
 
     return {
       allCitations: {
-        current: sumBy(currentQueries, (q) => q.citations.length),
-        previous: sumBy(previousQueries, (q) => q.citations.length),
+        current: sum(currentQueries, (q) => q.citations.length),
+        previous: sum(previousQueries, (q) => q.citations.length),
       },
       yourCitations: {
-        current: sumBy(
+        current: sum(
           currentQueries,
           (q) =>
             q.citations.filter((c) => normalizeHostname(c) === domain).length,
         ),
-        previous: sumBy(
+        previous: sum(
           previousQueries,
           (q) =>
             q.citations.filter((c) => normalizeHostname(c) === domain).length,
@@ -119,8 +119,8 @@ export default async function getSiteMetrics(
         }).visibilityScore,
       },
       botVisits: {
-        current: sumBy(currentVisits, (v) => v._sum.count ?? 0),
-        previous: sumBy(previousVisits, (v) => v._sum.count ?? 0),
+        current: sum(currentVisits, (v) => v._sum.count ?? 0),
+        previous: sum(previousVisits, (v) => v._sum.count ?? 0),
       },
       site,
     };

@@ -1,4 +1,4 @@
-import { sortBy } from "es-toolkit";
+import { alphabetical } from "radashi";
 import type {
   ZodOpenApiHeaderObject,
   ZodOpenApiParameterObject,
@@ -140,7 +140,7 @@ function responseTable(schema: ZodOpenApiSchemaObject): string {
   if (!properties.length) return "";
 
   const lines = ["| Field | Type | Description |", "| --- | --- | --- |"];
-  for (const [name, prop] of sortBy(properties, [0]))
+  for (const [name, prop] of alphabetical(properties, ([n]) => n))
     addSchemaProperty({ name, prop, lines });
   return lines.join("\n");
 }
@@ -174,12 +174,12 @@ function addSchemaProperty({
   ) {
     const properties = prop.items.properties ?? {};
     const thisParent = `${parent ?? ""}${name}[].`;
-    for (const [name, prop] of sortBy(Object.entries(properties), [0]))
+    for (const [name, prop] of alphabetical(Object.entries(properties), ([n]) => n))
       addSchemaProperty({ name, prop, lines, parent: thisParent });
   } else if (type === "object" && "properties" in prop && prop.properties) {
     const properties = prop.properties;
     const thisParent = `${parent ?? ""}${name}.`;
-    for (const [name, prop] of sortBy(Object.entries(properties), [0]))
+    for (const [name, prop] of alphabetical(Object.entries(properties), ([n]) => n))
       addSchemaProperty({ name, prop, lines, parent: thisParent });
   } else {
     lines.push(

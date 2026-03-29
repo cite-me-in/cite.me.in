@@ -1,5 +1,5 @@
 import type { Temporal } from "@js-temporal/polyfill";
-import { sumBy } from "es-toolkit";
+import { sum } from "radashi";
 import DateRangeSelector, {
   parseDateRange,
 } from "~/components/ui/DateRangeSelector";
@@ -78,7 +78,7 @@ async function getBotTotals(
     .sort()
     .map((date) => ({
       date,
-      total: sumBy(Object.values(dailyByBot[date]), (c) => c),
+      total: sum(Object.values(dailyByBot[date]), (c) => c),
       ...Object.fromEntries(
         topBots.map((bot) => [bot, dailyByBot[date][bot] ?? 0]),
       ),
@@ -146,7 +146,7 @@ async function getBotTotals(
     .map(([mime, count]) => ({ mime, count }))
     .sort((a, b) => b.count - a.count);
 
-  const totalVisits = sumBy(Object.values(botTotals), (c) => c);
+  const totalVisits = sum(Object.values(botTotals), (c) => c);
 
   return {
     chartData,

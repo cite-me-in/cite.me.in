@@ -1,4 +1,3 @@
-import { sortBy } from "es-toolkit";
 import { AlertCircleIcon, PlusIcon, SparklesIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import { useFetcher } from "react-router";
@@ -27,7 +26,9 @@ export default function SuggestedQueries() {
 
   // Group suggestions by group and sort by group/group's queries
   const groupedSuggestions = suggestions
-    ? sortBy(suggestions, ["group", "query"]).reduce(
+    ? [...suggestions]
+        .sort((a, b) => a.group.localeCompare(b.group) || a.query.localeCompare(b.query))
+        .reduce(
         (acc, suggestion) => {
           if (!acc[suggestion.group]) {
             acc[suggestion.group] = [];
