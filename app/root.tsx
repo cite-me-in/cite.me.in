@@ -86,7 +86,7 @@ export const links: Route.LinksFunction = () => [
   ...socialLinks.map(({ url }) => ({ rel: "me", href: url })),
 ];
 
-export function Layout({ children }: { children: React.ReactNode; }) {
+export function Layout({ children }: { children: React.ReactNode }) {
   return <PageLayout>{children}</PageLayout>;
 }
 
