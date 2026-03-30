@@ -159,7 +159,6 @@ export async function singleQueryRepetition({
       },
     });
   } catch (error) {
-    console.error(error);
     logError(error, {
       extra: {
         siteId: site.id,

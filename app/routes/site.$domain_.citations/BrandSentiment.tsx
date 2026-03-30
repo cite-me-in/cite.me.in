@@ -9,26 +9,30 @@ import {
 import type { SentimentLabel } from "~/prisma";
 
 export default function BrandSentiment({
-  platform,
-  run,
+  sentiment,
 }: {
-  platform: string;
-  run: {
+  sentiment?: {
+    onDate: string;
+    platform: string;
     sentimentLabel: SentimentLabel | null;
     sentimentSummary: string | null;
   };
 }) {
+  if (!sentiment) return null;
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Brand Sentiment</CardTitle>
-        <CardDescription>How {platform} talks about your brand</CardDescription>
+        <CardDescription>
+          How {sentiment.platform} talks about your brand
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        {run.sentimentLabel ? (
+        {sentiment.sentimentLabel ? (
           <div className="flex flex-col gap-3">
-            <SentimentBadge label={run.sentimentLabel} />
-            {run.sentimentSummary && <p>{run.sentimentSummary}</p>}
+            <SentimentBadge label={sentiment.sentimentLabel} />
+            {sentiment.sentimentSummary && <p>{sentiment.sentimentSummary}</p>}
           </div>
         ) : (
           <p className="text-foreground/60">
