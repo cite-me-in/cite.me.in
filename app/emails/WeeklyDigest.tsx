@@ -7,7 +7,7 @@ import {
   Section,
   Text,
 } from "@react-email/components";
-import { alphabetical, sort, sum } from "radashi";
+import { alphabetical, last, sort, sum } from "radashi";
 import { twMerge } from "tailwind-merge";
 import type { SentimentLabel } from "~/prisma";
 import EmailLayout from "./EmailLayout";
@@ -261,12 +261,14 @@ function SentimentBreakdown({
     { sentimentLabel: SentimentLabel; sentimentSummary: string }
   >;
 }) {
-  const sentiment = sort(
-    Object.values(byPlatform).filter((p) => p.sentimentSummary.length),
-    ({ sentimentLabel }) =>
-      ["positive", "mixed", "negative"].indexOf(sentimentLabel),
-  )[0];
-  if (!sentiment) return null;
+  const sentiment = last(
+    sort(
+      Object.values(byPlatform).filter((p) => p.sentimentSummary.length),
+      ({ sentimentLabel }) =>
+        ["positive", "mixed", "negative"].indexOf(sentimentLabel),
+    ),
+  );
+  if (!sentiment?.sentimentSummary.length) return null;
 
   const sentimentColors: Record<SentimentLabel, string> = {
     positive: "text-green-500",
