@@ -1,7 +1,10 @@
 import Redis from "ioredis";
+import debug from "debug";
 import envVars from "./envVars.server";
 
+const logger = debug("setup:redis");
 const redis = new Redis(envVars.REDIS_URL);
+redis.on("error", (err) => logger("Redis error: %O", err));
 const TTL = 86_400; // 24 hours
 
 function logKey(siteId: string, userId: string) {

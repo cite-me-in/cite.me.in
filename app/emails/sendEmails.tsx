@@ -117,6 +117,8 @@ function initRedis() {
   try {
     subscriber = new Redis(envVars.REDIS_URL);
     publisher = new Redis(envVars.REDIS_URL);
+    subscriber.on("error", (err) => logger("Redis subscriber error: %O", err));
+    publisher.on("error", (err) => logger("Redis publisher error: %O", err));
     subscriber.on("message", (channel: string, message: unknown) => {
       if (channel === "email:last")
         lastEmailSent = message
