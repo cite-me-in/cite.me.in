@@ -1,4 +1,5 @@
 import { render } from "@react-email/components";
+import { useEffect, useRef } from "react";
 import { useFetcher } from "react-router";
 import { Button } from "~/components/ui/Button";
 import { WeeklyDigestEmail, sendSiteDigestEmails } from "~/emails/WeeklyDigest";
@@ -7,6 +8,8 @@ import { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
 import type { Route } from "./+types/[_]preview";
 
 const siteId = "cmmi2yfwi000404l9qcci3j0x";
+
+export const handle = { siteNav: true };
 
 export async function loader({ request }: Route.LoaderArgs) {
   await requireUserAccess(request);
@@ -25,6 +28,17 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function WeeklyDigest({ loaderData }: Route.ComponentProps) {
   const fetcher = useFetcher<typeof action>();
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    const iframe = iframeRef.current;
+    if (iframe?.contentDocument) {
+      const doc = iframe.contentDocument;
+      const body = doc.body;
+      if (body) iframe.style.height = `${body.scrollHeight + 20}px`;
+    }
+  }, []);
+
   return (
     <div className="p-4">
       <div className="mb-4 flex items-center justify-end gap-4">
@@ -41,8 +55,8 @@ export default function WeeklyDigest({ loaderData }: Route.ComponentProps) {
 
       <iframe
         srcDoc={loaderData.html}
+        ref={iframeRef}
         className="w-full border-0"
-        style={{ height: "80vh" }}
         title="Email preview"
       />
     </div>
