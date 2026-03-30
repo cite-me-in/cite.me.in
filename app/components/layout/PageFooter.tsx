@@ -73,13 +73,11 @@ export default function PageFooter() {
   );
 }
 
-
-
 function SocialLinks() {
   return (
     <div className="flex items-center gap-8">
       {socialLinks.map(({ name, url, icon }) => (
-        <ActiveLink key={url} target="_blank" to={url}>
+        <ActiveLink key={url} target="_blank" to={url} variant="silent">
           {icon}
           {name}
         </ActiveLink>
