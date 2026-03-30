@@ -2,7 +2,7 @@ import { generateText } from "ai";
 import { describe, expect, it, vi } from "vitest";
 import queryClaude from "~/lib/llm-visibility/claudeClient.server";
 
-vi.mock("~/lib/envVars", () => ({
+vi.mock("~/lib/envVars.server", () => ({
   default: { ANTHROPIC_API_KEY: "test-key" },
 }));
 
@@ -11,7 +11,8 @@ vi.mock("@ai-sdk/anthropic", () => {
     vi.fn(() => "mock-model"),
     { tools: { webSearch_20250305: vi.fn(() => "mock-web-search") } },
   );
-  return { anthropic };
+  const createAnthropic = vi.fn(() => vi.fn(() => "mock-model"));
+  return { anthropic, createAnthropic };
 });
 
 vi.mock("~/lib/llm-visibility/anthropic", () => ({

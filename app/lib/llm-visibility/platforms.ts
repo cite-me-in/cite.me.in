@@ -1,8 +1,7 @@
-const PLATFORMS: {
-  name: string;
-  modelId: string;
-  label: string;
-}[] = [
+/**
+ * This can be used in the UI to display the platforms and their labels.
+ */
+export default [
   {
     label: "ChatGPT",
     modelId: "gpt-5-chat-latest",
@@ -23,6 +22,8 @@ const PLATFORMS: {
     modelId: "sonar",
     name: "perplexity",
   },
-];
-
-export default PLATFORMS;
+] satisfies {
+  label: string;
+  modelId: string;
+  name: string;
+}[];
