@@ -1,13 +1,17 @@
-import { anthropic } from "@ai-sdk/anthropic";
+import { anthropic, createAnthropic } from "@ai-sdk/anthropic";
 import * as ai from "ai";
 import { wrapAISDK } from "braintrust";
-import { haiku } from "./anthropic";
+import envVars from "~/lib/envVars.server";
 import type { QueryFn } from "./queryFn";
 
 export const MODEL_ID = "claude-haiku-4-5-20251001";
 export const MODEL_PRICING = { costPerInputM: 1.0, costPerOutputM: 5.0 };
 
 const { generateText } = wrapAISDK(ai);
+
+export const haiku = createAnthropic({
+  apiKey: envVars.ANTHROPIC_API_KEY,
+})("claude-haiku-4-6-20260329");
 
 export default async function queryClaude({
   maxRetries,

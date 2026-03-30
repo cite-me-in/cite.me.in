@@ -2,7 +2,7 @@ import { Temporal } from "@js-temporal/polyfill";
 import { sum } from "radashi";
 import type { WeeklyDigestEmailProps } from "~/emails/WeeklyDigest";
 import { getDomainMeta } from "~/lib/domainMeta.server";
-import envVars from "~/lib/envVars";
+import envVars from "~/lib/envVars.server";
 import getSiteMetrics from "~/lib/getSiteMetrics.server";
 import prisma from "~/lib/prisma.server";
 import type { SentimentLabel } from "~/prisma";

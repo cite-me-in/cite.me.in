@@ -1,6 +1,6 @@
 import * as ai from "ai";
 import { wrapAISDK } from "braintrust";
-import { haiku } from "./anthropic";
+import { haiku } from "./claudeClient.server";
 
 const { generateText } = wrapAISDK(ai);
 

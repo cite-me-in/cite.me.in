@@ -1,5 +1,5 @@
 import { diff, map, unique } from "radashi";
-import PLATFORMS from "./llm-visibility/platforms";
+import PLATFORMS from "./llm-visibility/platformsToQuery.server";
 import { singleQueryRepetition } from "./llm-visibility/queryPlatform";
 import prisma from "./prisma.server";
 

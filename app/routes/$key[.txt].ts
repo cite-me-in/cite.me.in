@@ -1,4 +1,4 @@
-import envVars from "~/lib/envVars";
+import envVars from "~/lib/envVars.server";
 import type { Route } from "./+types/$key[.txt]";
 
 /**

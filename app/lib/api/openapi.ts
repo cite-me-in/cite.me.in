@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { createDocument } from "zod-openapi";
-import envVars from "~/lib/envVars";
+import envVars from "~/lib/envVars.server";
 
 export const UserSchema = z.object({
   email: z.email().describe("The email address of the user"),

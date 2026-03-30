@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import { beforeAll, describe, expect, it } from "vitest";
-import envVars from "~/lib/envVars";
+import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
 import { port } from "~/test/helpers/launchBrowser";
 
@@ -54,7 +54,10 @@ describe("api.stripe.webhook", () => {
   });
 
   it("should return 200 and ignore unknown event types", async () => {
-    const payload = JSON.stringify({ type: "payment_intent.created", data: { object: {} } });
+    const payload = JSON.stringify({
+      type: "payment_intent.created",
+      data: { object: {} },
+    });
     const response = await signedRequest(payload);
     expect(response.status).toBe(200);
   });

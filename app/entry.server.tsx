@@ -10,7 +10,7 @@ import type {
 import "~/lib/logger.server";
 import setupTestServer from "~/test/helpers/worker.setup";
 import { createBotTracker } from "./lib/botTracker";
-import envVars from "./lib/envVars";
+import envVars from "./lib/envVars.server";
 import logError from "./lib/logError.server";
 
 switch (process.env.NODE_ENV) {

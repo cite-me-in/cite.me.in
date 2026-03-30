@@ -2,9 +2,9 @@ import { expect } from "@playwright/test";
 import { beforeAll, describe, it, vi } from "vitest";
 import { getLastEmailSent } from "~/emails/sendEmails";
 import { sendSiteDigestEmails } from "~/emails/WeeklyDigest";
-import envVars from "~/lib/envVars";
+import envVars from "~/lib/envVars.server";
 import { newContext } from "../helpers/launchBrowser";
-import chartBase64 from "./email.weekly-digest.png.base64?raw"
+import chartBase64 from "./email.weekly-digest.png.base64?raw";
 
 describe("WeeklyDigestEmail", () => {
   let email: NonNullable<Awaited<ReturnType<typeof getLastEmailSent>>>;

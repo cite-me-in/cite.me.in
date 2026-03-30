@@ -5,7 +5,7 @@ import Redis from "ioredis";
 import { retry, sleep } from "radashi";
 import { Resend } from "resend";
 import invariant from "tiny-invariant";
-import envVars from "~/lib/envVars";
+import envVars from "~/lib/envVars.server";
 import generateUnsubscribeToken from "./generateUnsubscribeToken";
 
 let lastEmailSent: {

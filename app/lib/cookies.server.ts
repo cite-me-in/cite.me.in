@@ -1,5 +1,5 @@
 import { createCookie } from "react-router";
-import envVars from "~/lib/envVars";
+import envVars from "~/lib/envVars.server";
 
 export const sessionCookie = createCookie("session", {
   httpOnly: true,

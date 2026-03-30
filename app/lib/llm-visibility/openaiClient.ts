@@ -2,7 +2,7 @@ import { openai } from "@ai-sdk/openai";
 import * as ai from "ai";
 import { wrapAISDK } from "braintrust";
 import invariant from "tiny-invariant";
-import envVars from "~/lib/envVars";
+import envVars from "~/lib/envVars.server";
 import type { QueryFn } from "./queryFn";
 
 export const MODEL_ID = "gpt-5-chat-latest";

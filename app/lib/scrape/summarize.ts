@@ -1,6 +1,6 @@
 import * as ai from "ai";
 import { wrapAISDK } from "braintrust";
-import { haiku } from "../llm-visibility/anthropic";
+import { haiku } from "~/lib/llm-visibility/claudeClient.server";
 
 const { generateText } = wrapAISDK(ai);
 

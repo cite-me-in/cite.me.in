@@ -2,9 +2,9 @@ import { google } from "@ai-sdk/google";
 import * as ai from "ai";
 import { wrapAISDK } from "braintrust";
 import { ms } from "convert";
-import invariant from "tiny-invariant";
 import { map } from "radashi";
-import envVars from "~/lib/envVars";
+import invariant from "tiny-invariant";
+import envVars from "~/lib/envVars.server";
 import type { QueryFn } from "./queryFn";
 
 export const MODEL_ID = "gemini-2.5-flash";

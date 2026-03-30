@@ -1,5 +1,5 @@
 import { Button, Section, Text } from "@react-email/components";
-import envVars from "~/lib/envVars";
+import envVars from "~/lib/envVars.server";
 import EmailLayout from "./EmailLayout";
 import { sendEmail } from "./sendEmails";
 

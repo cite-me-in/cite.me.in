@@ -8,7 +8,7 @@ import debug from "debug";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { PrismaClient } from "~/prisma";
-import envVars from "./envVars";
+import envVars from "./envVars.server";
 
 export default new PrismaClient({
   adapter: new PrismaPg({

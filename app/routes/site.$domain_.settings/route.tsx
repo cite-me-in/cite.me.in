@@ -1,7 +1,7 @@
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SitePageHeader";
 import { requireSiteOwner, requireUserAccess } from "~/lib/auth.server";
-import envVars from "~/lib/envVars";
+import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 import ApiKeySection from "./ApiKeySection";

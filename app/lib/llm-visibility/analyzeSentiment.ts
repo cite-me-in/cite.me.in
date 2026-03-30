@@ -1,7 +1,7 @@
 import { generateText } from "ai";
 import { z } from "zod";
 import type { SentimentLabel } from "~/prisma";
-import { haiku } from "./anthropic";
+import { haiku } from "./claudeClient.server";
 
 const schema = z.object({
   label: z.enum(["positive", "negative", "neutral", "mixed"]),
@@ -16,7 +16,10 @@ export default async function analyzeSentiment({
   queries: { query: string; text: string; position: number | null }[];
 }): Promise<{ label: SentimentLabel; summary: string }> {
   if (queries.length === 0)
-    return { label: "neutral", summary: "No queries were run for this platform." };
+    return {
+      label: "neutral",
+      summary: "No queries were run for this platform.",
+    };
 
   const queryLines = queries
     .map((q) => {
@@ -46,7 +49,10 @@ Respond with a JSON object only, no markdown fences:
   });
 
   try {
-    const json = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+    const json = text
+      .replace(/^```(?:json)?\s*/i, "")
+      .replace(/\s*```$/, "")
+      .trim();
     const parsed = schema.parse(JSON.parse(json));
     return { label: parsed.label as SentimentLabel, summary: parsed.summary };
   } catch {

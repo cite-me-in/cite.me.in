@@ -1,5 +1,5 @@
 import { createHmac } from "node:crypto";
-import envVars from "~/lib/envVars";
+import envVars from "~/lib/envVars.server";
 
 /**
  * Generate a unsubscribe token for the given email address.

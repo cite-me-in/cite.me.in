@@ -3,7 +3,7 @@ import { logger as sentry } from "@sentry/react-router";
 import { createWriteStream } from "node:fs";
 import { resolve } from "node:path";
 import { format, styleText } from "node:util";
-import envVars from "./envVars";
+import envVars from "./envVars.server";
 
 const colors = {
   trace: (text: string) => styleText("gray", text),

@@ -1,6 +1,6 @@
 import { generateText } from "ai";
 import { describe, expect, it, vi } from "vitest";
-import queryClaude from "~/lib/llm-visibility/claudeClient";
+import queryClaude from "~/lib/llm-visibility/claudeClient.server";
 
 vi.mock("~/lib/envVars", () => ({
   default: { ANTHROPIC_API_KEY: "test-key" },

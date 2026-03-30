@@ -8,7 +8,7 @@ import {
   requireUserAccess,
   verifyPassword,
 } from "~/lib/auth.server";
-import envVars from "~/lib/envVars";
+import envVars from "~/lib/envVars.server";
 import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import stripe from "~/lib/stripe.server";

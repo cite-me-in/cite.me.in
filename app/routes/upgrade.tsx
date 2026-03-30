@@ -4,7 +4,7 @@ import { Button } from "~/components/ui/Button";
 import Main from "~/components/ui/Main";
 import prices from "~/data/stripe-prices.json";
 import { requireUserAccess } from "~/lib/auth.server";
-import envVars from "~/lib/envVars";
+import envVars from "~/lib/envVars.server";
 import stripe from "~/lib/stripe.server";
 import type { Route } from "./+types/upgrade";
 
@@ -50,8 +50,8 @@ export default function UpgradePage() {
         <h1 className="mb-2 font-heading text-4xl">Upgrade to Pro</h1>
         <p className="mb-10 text-foreground/70">
           25 days free, no credit card. Most tools give you a week — we give you
-          enough time to actually see results. When you're ready, ${prices.monthlyAmount}/mo keeps
-          it all running.
+          enough time to actually see results. When you're ready, $
+          {prices.monthlyAmount}/mo keeps it all running.
         </p>
 
         <div className="mb-6 rounded-base border-2 border-black p-8 shadow-[4px_4px_0px_0px_black]">
@@ -64,7 +64,8 @@ export default function UpgradePage() {
             </div>
             <div className="text-right">
               <p className="font-heading text-3xl">
-                ${prices.monthlyAmount}<span className="font-normal text-base">/mo</span>
+                ${prices.monthlyAmount}
+                <span className="font-normal text-base">/mo</span>
               </p>
               <p className="text-foreground/60 text-sm">
                 or ${prices.annualAmount}/year (save ${prices.annualSavings})
@@ -100,9 +101,9 @@ export default function UpgradePage() {
         </div>
 
         <p className="text-center text-foreground/60 text-sm">
-          cite.me.in is built by one person. Your ${prices.monthlyAmount}/mo is what keeps it
-          independent, updated, and not acquired by someone with an alt product
-          vision.
+          cite.me.in is built by one person. Your ${prices.monthlyAmount}/mo is
+          what keeps it independent, updated, and not acquired by someone with
+          an alt product vision.
         </p>
         <p className="mt-2 text-center text-foreground/60 text-sm">
           cite.me.in is open-source. If we ever shut down, you take the code and

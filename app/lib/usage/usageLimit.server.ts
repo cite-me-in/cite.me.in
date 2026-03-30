@@ -1,8 +1,8 @@
-import envVars from "~/lib/envVars";
+import envVars from "~/lib/envVars.server";
 import {
   MODEL_ID as CLAUDE_MODEL_ID,
   MODEL_PRICING as CLAUDE_PRICING,
-} from "~/lib/llm-visibility/claudeClient";
+} from "~/lib/llm-visibility/claudeClient.server";
 import {
   MODEL_ID as GEMINI_MODEL_ID,
   MODEL_PRICING as GEMINI_PRICING,

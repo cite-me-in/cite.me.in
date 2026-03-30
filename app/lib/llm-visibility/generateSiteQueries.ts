@@ -1,7 +1,7 @@
 import { Output, generateText } from "ai";
 import { z } from "zod";
 import prisma from "~/lib/prisma.server";
-import { haiku } from "./anthropic";
+import { haiku } from "./claudeClient.server";
 import queryGroups from "./queryGroups";
 
 /**

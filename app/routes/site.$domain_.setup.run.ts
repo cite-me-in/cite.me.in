@@ -5,7 +5,7 @@ import addSiteQueries from "~/lib/addSiteQueries";
 import { requireSiteAccess } from "~/lib/auth.server";
 import analyzeSentiment from "~/lib/llm-visibility/analyzeSentiment";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
-import PLATFORMS from "~/lib/llm-visibility/platforms";
+import PLATFORMS from "~/lib/llm-visibility/platformsToQuery.server";
 import type { QueryFn } from "~/lib/llm-visibility/queryFn";
 import { singleQueryRepetition } from "~/lib/llm-visibility/queryPlatform";
 import logError from "~/lib/logError.server";

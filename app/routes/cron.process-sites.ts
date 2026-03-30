@@ -5,7 +5,7 @@ import { data } from "react-router";
 import sendTrialEndedEmails from "~/emails/TrialEnded";
 import sendTrialEndingEmails from "~/emails/TrialEnding";
 import { sendSiteDigestEmails } from "~/emails/WeeklyDigest";
-import envVars from "~/lib/envVars";
+import envVars from "~/lib/envVars.server";
 import generateBotInsight from "~/lib/llm-visibility/generateBotInsight";
 import queryAccount from "~/lib/llm-visibility/queryAccount";
 import logError from "~/lib/logError.server";

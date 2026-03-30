@@ -6,7 +6,7 @@ import {
 import debug from "debug";
 import { createWriteStream } from "node:fs";
 import { resolve } from "node:path";
-import envVars from "./envVars";
+import envVars from "./envVars.server";
 
 const logFile =
   process.env.NODE_ENV === "test" &&
