@@ -43,7 +43,7 @@ export type WeeklyDigestEmailProps = {
 };
 
 export async function sendSiteDigestEmails(
-  data: WeeklyDigestEmailProps,
+  data: Omit<WeeklyDigestEmailProps, "unsubscribeURL">,
 ): Promise<{ id: string }[]> {
   const emailIds = [];
   for (const to of data.toEmails) {
@@ -202,7 +202,7 @@ function PlatformBreakdown({
               <Row>
                 <Column className="px-4 text-center">
                   <Text className="font-bold text-2xl text-dark tabular-nums">
-                    {((count / total) * 100).toFixed(1)}%
+                    {total > 0 ? `${((count / total) * 100).toFixed(1)}%` : "—"}
                   </Text>
                   <Text className="text-light text-xs uppercase tracking-wide">
                     {platform}

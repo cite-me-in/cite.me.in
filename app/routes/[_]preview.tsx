@@ -20,11 +20,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 export async function action({ request }: Route.ActionArgs) {
   const { user } = await requireUserAccess(request);
   const data = await loadWeeklyDigestMetrics(siteId);
-  return await sendSiteDigestEmails({
-    ...data,
-    unsubscribeURL: "/",
-    toEmails: [user.email],
-  });
+  return await sendSiteDigestEmails({ ...data, toEmails: [user.email] });
 }
 
 export default function WeeklyDigest({ loaderData }: Route.ComponentProps) {

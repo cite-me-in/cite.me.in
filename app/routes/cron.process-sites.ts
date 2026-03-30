@@ -38,8 +38,11 @@ export async function loader({ request }: Route.LoaderArgs) {
     // NOTE Always run updates first and then send the digest email.
     await Promise.all([nextCitationRun(site), updateBotInsight(site)]);
     const data = await loadWeeklyDigestMetrics(site.id);
-    const sent = await sendSiteDigestEmails(data);
-    results.push({ emailIds: sent.map((e) => e.id), domain: site.domain });
+    const sendEmails = await sendSiteDigestEmails(data);
+    results.push({
+      emailIds: sendEmails.map((e) => e.id),
+      domain: site.domain,
+    });
   });
 
   // Send trial-ending and trial-ended emails after all sites have been processed.

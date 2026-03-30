@@ -97,10 +97,6 @@ describe("WeeklyDigestEmail", () => {
         },
       ],
       chartBase64,
-      unsubscribeURL: new URL(
-        "/unsubscribe?token=test-token&email=test@example.com",
-        envVars.VITE_APP_URL,
-      ).toString(),
     });
 
     vi.restoreAllMocks();
