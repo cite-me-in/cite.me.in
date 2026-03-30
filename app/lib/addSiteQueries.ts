@@ -32,7 +32,11 @@ export default async function addSiteQueries(
   );
   // Add the new queries to the database.
   await prisma.siteQuery.createMany({
-    data: uniqueQueries.map(({ group, query }) => ({ siteId: site.id, group, query })),
+    data: uniqueQueries.map(({ group, query }) => ({
+      siteId: site.id,
+      group,
+      query,
+    })),
   });
 }
 
@@ -89,7 +93,7 @@ export async function runQueryOnAllPlatforms({
   query: string;
   group: string;
 }) {
-  await map(PLATFORMS, async ({ platform, modelId, queryFn }) => {
+  await map(PLATFORMS, async ({ name: platform, modelId, queryFn }) => {
     const onDate = new Date().toISOString().split("T")[0];
     const run = await prisma.citationQueryRun.upsert({
       where: {

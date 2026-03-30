@@ -69,7 +69,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     // Phase 5: Query all 4 platforms in parallel
     await log("Querying AI platforms...");
     await Promise.all(
-      PLATFORMS.map(({ platform, modelId, queryFn, label }) =>
+      PLATFORMS.map(({ name: platform, modelId, queryFn, label }) =>
         runPlatformWithProgress({
           site,
           platform,

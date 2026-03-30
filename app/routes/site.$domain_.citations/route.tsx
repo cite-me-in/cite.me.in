@@ -4,6 +4,7 @@ import SitePageHeader from "~/components/ui/SitePageHeader";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/Tabs";
 import { requireSiteAccess } from "~/lib/auth.server";
 import { getDomainMeta } from "~/lib/domainMeta.server";
+import PLATFORMS from "~/lib/llm-visibility/platforms";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 import BrandSentiment from "./BrandSentiment";
@@ -12,13 +13,6 @@ import TopCompetitors, { topCompetitors } from "./TopCompetitors";
 import VisibilityCharts from "./VisibilityCharts";
 
 export const handle = { siteNav: true };
-
-const PLATFORMS = [
-  { name: "chatgpt", label: "ChatGPT" },
-  { name: "perplexity", label: "Perplexity" },
-  { name: "claude", label: "Anthropic" },
-  { name: "gemini", label: "Gemini" },
-] as const;
 
 export function meta({ loaderData }: Route.MetaArgs) {
   return [{ title: `Citations — ${loaderData?.site.domain} | Cite.me.in` }];
@@ -40,9 +34,11 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   ]);
 
   const url = new URL(request.url);
-  const platform = url.searchParams.get("platform") ?? PLATFORMS[0].name;
+  const platform =
+    PLATFORMS.find((p) => p.name === url.searchParams.get("platform")) ??
+    PLATFORMS[0];
 
-  const recentRuns = runs.filter((r) => r.platform === platform);
+  const recentRuns = runs.filter((r) => r.platform === platform.name);
   const queriesForCompetitors = siteQueries
     .map((sq) => {
       for (const r of recentRuns) {
@@ -72,8 +68,10 @@ export default function SiteCitationsPage({
 }: Route.ComponentProps) {
   const { site, runs, siteQueries, competitors } = loaderData;
   const [searchParams, setSearchParams] = useSearchParams();
-  const platform = searchParams.get("platform") ?? PLATFORMS[0].name;
-  const recentRuns = runs.filter((r) => r.platform === platform);
+  const platform =
+    PLATFORMS.find((p) => p.name === searchParams.get("platform")) ??
+    PLATFORMS[0];
+  const recentRuns = runs.filter((r) => r.platform === platform.name);
   const run = recentRuns[0];
 
   const mergedQueries = siteQueries
@@ -103,7 +101,7 @@ export default function SiteCitationsPage({
       <div className="flex justify-center">
         <Tabs
           className="mx-auto"
-          defaultValue={platform}
+          defaultValue={platform.name}
           onValueChange={(platform) => setSearchParams({ platform })}
         >
           <TabsList>
@@ -119,7 +117,10 @@ export default function SiteCitationsPage({
       {run ? (
         <>
           <CitationsRecentRun queries={mergedQueries} meta={run} site={site} />
-          <BrandSentiment sentiment={sentiment} />
+          <BrandSentiment
+            sentiment={sentiment}
+            platformLabel={platform.label}
+          />
           <TopCompetitors competitors={competitors} />
           <VisibilityCharts recentRuns={recentRuns} site={site} />
         </>
@@ -128,7 +129,7 @@ export default function SiteCitationsPage({
           <span aria-label="sad face" role="img" className="mr-2">
             😔
           </span>
-          No runs yet for {PLATFORMS.find((p) => p.name === platform)?.label}.
+          No runs yet for {platform.label}.
         </p>
       )}
     </Main>

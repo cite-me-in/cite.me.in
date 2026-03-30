@@ -5,34 +5,34 @@ import queryPerplexity from "~/lib/llm-visibility/perplexityClient";
 import type { QueryFn } from "~/lib/llm-visibility/queryFn";
 
 const PLATFORMS: {
-  platform: string;
+  name: string;
   modelId: string;
   queryFn: QueryFn;
   label: string;
 }[] = [
   {
-    platform: "chatgpt",
-    modelId: "gpt-5-chat-latest",
-    queryFn: openaiClient,
     label: "ChatGPT",
+    modelId: "gpt-5-chat-latest",
+    name: "chatgpt",
+    queryFn: openaiClient,
   },
   {
-    platform: "perplexity",
-    modelId: "sonar",
-    queryFn: queryPerplexity,
-    label: "Perplexity",
-  },
-  {
-    platform: "claude",
-    modelId: "claude-haiku-4-5-20251001",
-    queryFn: queryClaude,
     label: "Claude",
+    modelId: "claude-haiku-4-5-20251001",
+    name: "claude",
+    queryFn: queryClaude,
   },
   {
-    platform: "gemini",
-    modelId: "gemini-2.5-flash",
-    queryFn: queryGemini,
     label: "Gemini",
+    modelId: "gemini-2.5-flash",
+    name: "gemini",
+    queryFn: queryGemini,
+  },
+  {
+    label: "Perplexity",
+    modelId: "sonar",
+    name: "perplexity",
+    queryFn: queryPerplexity,
   },
 ];
 

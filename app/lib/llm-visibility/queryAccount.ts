@@ -17,7 +17,7 @@ export default async function queryAccount({
   site: { id: string; domain: string };
   queries: { query: string; group: string }[];
 }) {
-  await map(PLATFORMS, ({ platform, modelId, queryFn }) =>
+  await map(PLATFORMS, ({ name: platform, modelId, queryFn }) =>
     runPlatform({
       siteId: site.id,
       modelId,
