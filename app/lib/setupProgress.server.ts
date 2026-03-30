@@ -1,10 +1,13 @@
-import redis from "~/lib/redis.server";
+import Redis from "ioredis";
+import envVars from "./envVars.server";
 
+const redis = new Redis(envVars.REDIS_URL);
 const TTL = 86_400; // 24 hours
 
 function logKey(siteId: string, userId: string) {
   return `setup:${siteId}:${userId}:log`;
 }
+
 function statusKey(siteId: string, userId: string) {
   return `setup:${siteId}:${userId}:status`;
 }

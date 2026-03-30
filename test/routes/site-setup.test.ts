@@ -1,9 +1,10 @@
 import { type Page, expect } from "@playwright/test";
+import Redis from "ioredis";
 import { afterAll, beforeAll, describe, it } from "vitest";
 import { hashPassword } from "~/lib/auth.server";
-import redis from "~/lib/redis.server";
-import { appendLog, setStatus } from "~/lib/setupProgress.server";
+import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
+import { appendLog, setStatus } from "~/lib/setupProgress.server";
 import { goto } from "../helpers/launchBrowser";
 import { signIn } from "../helpers/signIn";
 
@@ -13,6 +14,7 @@ const DOMAIN = "setup-test.com";
 
 describe("setup page", () => {
   let page: Page;
+  const redis = new Redis(envVars.REDIS_URL);
 
   beforeAll(async () => {
     await prisma.user.create({
@@ -35,10 +37,26 @@ describe("setup page", () => {
 
     // Seed Redis with a running status and partial log — simulates mid-pipeline state.
     await setStatus({ siteId: SITE_ID, userId: USER_ID, status: "running" });
-    await appendLog({ siteId: SITE_ID, userId: USER_ID, line: `Crawling ${DOMAIN}...` });
-    await appendLog({ siteId: SITE_ID, userId: USER_ID, line: "Found 1,234 words of content" });
-    await appendLog({ siteId: SITE_ID, userId: USER_ID, line: "Summarizing content..." });
-    await appendLog({ siteId: SITE_ID, userId: USER_ID, line: "Generating queries..." });
+    await appendLog({
+      siteId: SITE_ID,
+      userId: USER_ID,
+      line: `Crawling ${DOMAIN}...`,
+    });
+    await appendLog({
+      siteId: SITE_ID,
+      userId: USER_ID,
+      line: "Found 1,234 words of content",
+    });
+    await appendLog({
+      siteId: SITE_ID,
+      userId: USER_ID,
+      line: "Summarizing content...",
+    });
+    await appendLog({
+      siteId: SITE_ID,
+      userId: USER_ID,
+      line: "Generating queries...",
+    });
 
     await signIn(USER_ID);
     page = await goto(`/site/${DOMAIN}/setup`);
@@ -66,7 +84,9 @@ describe("setup page", () => {
   });
 
   it("should match visually", async () => {
-    await expect(page.locator("main")).toMatchVisual({ name: "setup/in-progress" });
+    await expect(page.locator("main")).toMatchVisual({
+      name: "setup/in-progress",
+    });
   });
 
   describe("when Redis status flips to complete", () => {
