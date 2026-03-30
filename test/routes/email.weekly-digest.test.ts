@@ -3,16 +3,13 @@ import { beforeAll, describe, it, vi } from "vitest";
 import { getLastEmailSent } from "~/emails/sendEmails";
 import { sendSiteDigestEmails } from "~/emails/WeeklyDigest";
 import envVars from "~/lib/envVars";
-import { removeElements } from "~/lib/html/parseHTML";
 import { newContext } from "../helpers/launchBrowser";
+import chartBase64 from "./email.weekly-digest.png.base64?raw"
 
 describe("WeeklyDigestEmail", () => {
   let email: NonNullable<Awaited<ReturnType<typeof getLastEmailSent>>>;
 
   beforeAll(async () => {
-    const chartBase64 =
-      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=";
-
     // Pin Math.random so SentimentBreakdown's sample() always picks the same
     // platform and the visual baseline stays stable across runs.
     vi.spyOn(Math, "random").mockReturnValue(0);
@@ -128,14 +125,6 @@ describe("WeeklyDigestEmail", () => {
 
     await expect(page).toMatchVisual({
       name: "email/weekly-digest",
-      modify: (nodes) =>
-        removeElements(
-          nodes,
-          (node) =>
-            node.tag === "img" &&
-            node.attributes.alt ===
-              "Citation trend: this week vs previous week",
-        ),
     });
   });
 });
