@@ -3,7 +3,11 @@ import debug from "debug";
 import envVars from "./envVars.server";
 
 const logger = debug("setup:redis");
-const redis = new Redis(envVars.REDIS_URL);
+const redis = new Redis(envVars.REDIS_URL, {
+  maxRetriesPerRequest: 3,
+  enableReadyCheck: false,
+  lazyConnect: true,
+});
 redis.on("error", (err) => logger("Redis error: %O", err));
 const TTL = 86_400; // 24 hours
 
