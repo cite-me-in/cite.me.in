@@ -4,18 +4,14 @@ import { getLastEmailSent } from "~/emails/sendEmails";
 import { sendSiteDigestEmails } from "~/emails/WeeklyDigest";
 import envVars from "~/lib/envVars";
 import { removeElements } from "~/lib/html/parseHTML";
-import { generateCitationChart } from "~/lib/weeklyDigest.server";
 import { newContext } from "../helpers/launchBrowser";
-
-// Fixed daily citation data so the chart PNG is deterministic across runs.
-const DAILY = [3, 5, 8, 6, 9, 4, 7];
-const PREV_DAILY = [2, 4, 6, 5, 7, 3, 5];
 
 describe("WeeklyDigestEmail", () => {
   let email: NonNullable<Awaited<ReturnType<typeof getLastEmailSent>>>;
 
   beforeAll(async () => {
-    const chartBase64 = await generateCitationChart(DAILY, PREV_DAILY);
+    const chartBase64 =
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=";
 
     // Pin Math.random so SentimentBreakdown's sample() always picks the same
     // platform and the visual baseline stays stable across runs.
@@ -101,6 +97,10 @@ describe("WeeklyDigestEmail", () => {
         },
       ],
       chartBase64,
+      unsubscribeURL: new URL(
+        "/unsubscribe?token=test-token&email=test@example.com",
+        envVars.VITE_APP_URL,
+      ).toString(),
     });
 
     vi.restoreAllMocks();

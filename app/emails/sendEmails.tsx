@@ -17,14 +17,31 @@ let lastEmailSent: {
 const resend = new Resend(envVars.RESEND_API_KEY);
 const logger = debug("email");
 
+type CanUnsubscribeEmailProps = {
+  canUnsubscribe: true;
+  render: ({
+    subject,
+    unsubscribeURL,
+  }: {
+    subject: string;
+    unsubscribeURL: string;
+  }) => React.ReactNode;
+};
+
+type NoUnsubscribeEmailProps = {
+  canUnsubscribe: false;
+  render: ({ subject }: { subject: string }) => React.ReactNode;
+};
+
 /**
  * Send an email using Resend. If an error occurs, it will be captured by Sentry.
  * The email will be stored in `lastEmailSent` for visual regression testing.
  *
  * @param canUnsubscribe - Whether the email can be unsubscribed from.
- * @param renderFn - The function to render the email.
+ * @param headers - The headers to send with the email.
+ * @param render - The function to render the email.
  * @param subject - The subject of the email.
- * @param to - The email address to send the email to.
+ * @param user - The user to send the email to.
  * @returns The ID of the email that was sent.
  */
 export async function sendEmail({
@@ -33,16 +50,8 @@ export async function sendEmail({
   render: renderFn,
   subject,
   user,
-}: {
-  canUnsubscribe?: boolean;
+}: (CanUnsubscribeEmailProps | NoUnsubscribeEmailProps) & {
   headers?: Record<string, string>;
-  render: ({
-    subject,
-    unsubscribeURL,
-  }: {
-    subject: string;
-    unsubscribeURL?: string;
-  }) => React.ReactNode;
   subject: string;
   user: {
     email: string;
@@ -51,20 +60,20 @@ export async function sendEmail({
 }): Promise<{
   id: string;
 } | null> {
-  let unsubscribeURL: string | undefined;
-  if (canUnsubscribe) {
-    if (user.unsubscribed) return null;
+  if (canUnsubscribe && user.unsubscribed) return null;
 
-    const token = generateUnsubscribeToken(user.email);
-    const url = new URL("/unsubscribe", envVars.VITE_APP_URL);
-    url.searchParams.set("token", token);
-    url.searchParams.set("email", user.email);
-    unsubscribeURL = url.toString();
-  }
+  const token = generateUnsubscribeToken(user.email);
+  const url = new URL("/unsubscribe", envVars.VITE_APP_URL);
+  url.searchParams.set("token", token);
+  url.searchParams.set("email", user.email);
+  const unsubscribeURL = url.toString();
 
-  lastEmailSent = null;
   const html = await pretty(
-    await render(await renderFn({ subject, unsubscribeURL })),
+    await render(
+      canUnsubscribe
+        ? await renderFn({ subject, unsubscribeURL })
+        : await renderFn({ subject }),
+    ),
   );
 
   // In tests, we don't want to actually send emails, we just want to render them
@@ -79,10 +88,10 @@ export async function sendEmail({
       to: [user.email],
       headers: canUnsubscribe
         ? {
-          ...headers,
-          "List-Unsubscribe": `<${unsubscribeURL}>`,
-          "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-        }
+            ...headers,
+            "List-Unsubscribe": `<${unsubscribeURL}>`,
+            "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+          }
         : headers,
     });
     if (error) throw error;
@@ -131,7 +140,10 @@ export async function getLastEmailSent(): Promise<
   NonNullable<typeof lastEmailSent>
 > {
   initRedis();
-  await retry({ times: 10, delay: ms("1s"), }, async () => { invariant(lastEmailSent, "No email sent"); return lastEmailSent; });
+  await retry({ times: 10, delay: ms("1s") }, async () => {
+    invariant(lastEmailSent, "No email sent");
+    return lastEmailSent;
+  });
   invariant(lastEmailSent, "No email sent");
   const lastEmail = lastEmailSent;
   lastEmailSent = null;

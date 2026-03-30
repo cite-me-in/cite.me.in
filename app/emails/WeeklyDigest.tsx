@@ -1,4 +1,12 @@
-import { Button, Column, Img, Link, Row, Section, Text } from "@react-email/components";
+import {
+  Button,
+  Column,
+  Img,
+  Link,
+  Row,
+  Section,
+  Text,
+} from "@react-email/components";
 import { alphabetical, sort, sum } from "radashi";
 import { twMerge } from "tailwind-merge";
 import type { SentimentLabel } from "~/prisma";
@@ -6,8 +14,6 @@ import EmailLayout from "./EmailLayout";
 import { sendEmail } from "./sendEmails";
 
 export type WeeklyDigestEmailProps = {
-  subject: string;
-  citationsURL: string;
   botVisits: { current: number; previous: number };
   byPlatform: {
     [k: string]: {
@@ -21,8 +27,7 @@ export type WeeklyDigestEmailProps = {
     total: { current: number; previous: number };
     domain: { current: number; previous: number };
   };
-  score: { current: number; previous: number };
-  toEmails: string[];
+  citationsURL: string;
   competitors: {
     domain: string;
     brandName: string;
@@ -30,8 +35,11 @@ export type WeeklyDigestEmailProps = {
     count: number;
     pct: number;
   }[];
+  score: { current: number; previous: number };
+  subject: string;
+  toEmails: string[];
   topQueries: { query: string; count: number; delta: number }[];
-  unsubscribeURL?: string;
+  unsubscribeURL: string;
 };
 
 export async function sendSiteDigestEmails(
@@ -41,8 +49,12 @@ export async function sendSiteDigestEmails(
   for (const to of data.toEmails) {
     const emailId = await sendEmail({
       canUnsubscribe: true,
-      render: ({ unsubscribeURL }) => (
-        <WeeklyDigestEmail {...data} unsubscribeURL={unsubscribeURL} />
+      render: ({ unsubscribeURL, subject }) => (
+        <WeeklyDigestEmail
+          {...data}
+          subject={subject}
+          unsubscribeURL={unsubscribeURL}
+        />
       ),
       subject: data.subject,
       user: { email: to, unsubscribed: false },
@@ -175,7 +187,10 @@ function PlatformBreakdown({
     { count: number; sentimentLabel: SentimentLabel; sentimentSummary: string }
   >;
 }) {
-  const first4 = alphabetical(Object.entries(byPlatform), ([name]) => name).slice(0, 4);
+  const first4 = alphabetical(
+    Object.entries(byPlatform),
+    ([name]) => name,
+  ).slice(0, 4);
   const total = sum(first4, ([, { count }]) => count);
 
   return (

@@ -11,14 +11,20 @@ const siteId = "cmmi2yfwi000404l9qcci3j0x";
 export async function loader({ request }: Route.LoaderArgs) {
   await requireUserAccess(request);
   const data = await loadWeeklyDigestMetrics(siteId);
-  const html = await render(<WeeklyDigestEmail {...data} />);
+  const html = await render(
+    <WeeklyDigestEmail {...data} unsubscribeURL={"/"} />,
+  );
   return { html };
 }
 
 export async function action({ request }: Route.ActionArgs) {
   const { user } = await requireUserAccess(request);
   const data = await loadWeeklyDigestMetrics(siteId);
-  return await sendSiteDigestEmails({ ...data, toEmails: [user.email] });
+  return await sendSiteDigestEmails({
+    ...data,
+    unsubscribeURL: "/",
+    toEmails: [user.email],
+  });
 }
 
 export default function WeeklyDigest({ loaderData }: Route.ComponentProps) {

@@ -1,8 +1,8 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { sum } from "radashi";
 import type { WeeklyDigestEmailProps } from "~/emails/WeeklyDigest";
-import envVars from "~/lib/envVars";
 import { getDomainMeta } from "~/lib/domainMeta.server";
+import envVars from "~/lib/envVars";
 import getSiteMetrics from "~/lib/getSiteMetrics.server";
 import prisma from "~/lib/prisma.server";
 import type { SentimentLabel } from "~/prisma";
@@ -11,7 +11,7 @@ import { formatDateShort } from "./formatDate";
 
 export async function loadWeeklyDigestMetrics(
   siteId: string,
-): Promise<WeeklyDigestEmailProps> {
+): Promise<Omit<WeeklyDigestEmailProps, "unsubscribeURL">> {
   const today = Temporal.Now.plainDateISO("UTC");
   const weekStart = today.subtract({ days: 7 }).toJSON();
   const prevWeekStart = today.subtract({ days: 14 }).toJSON();
@@ -174,7 +174,7 @@ export async function loadWeeklyDigestMetrics(
   };
 }
 
-export async function generateCitationChart(
+async function generateCitationChart(
   daily: number[],
   prevDaily: number[],
 ): Promise<string> {
