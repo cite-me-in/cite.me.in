@@ -11,7 +11,7 @@ const { generateText } = wrapAISDK(ai);
 
 export const haiku = createAnthropic({
   apiKey: envVars.ANTHROPIC_API_KEY,
-})("claude-haiku-4-6-20260329");
+})("claude-haiku-4-5");
 
 export default async function queryClaude({
   maxRetries,
