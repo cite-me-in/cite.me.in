@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "~/components/ui/Table";
 import { formatDateShort } from "~/lib/formatDate";
+import { isSameDomain } from "~/lib/isSameDomain";
 
 export default function RecentVisibility({
   queries,
@@ -61,8 +62,8 @@ export default function RecentVisibility({
               <TableRow
                 key={query.id}
                 className={twMerge(
-                  query.citations.some(
-                    (c) => new URL(c).hostname === site.domain,
+                  query.citations.some((c) =>
+                    isSameDomain({ domain: site.domain, url: c }),
                   ) && "bg-green-100 hover:bg-green-100/80",
                 )}
               >
@@ -95,7 +96,7 @@ export default function RecentVisibility({
 function positions(citations: string[], domain: string) {
   const all = citations
     .map((citation, index) =>
-      new URL(citation).hostname === domain ? index + 1 : null,
+      isSameDomain({ domain, url: citation }) ? index + 1 : null,
     )
     .filter((position) => position !== null);
   return all.length === 0

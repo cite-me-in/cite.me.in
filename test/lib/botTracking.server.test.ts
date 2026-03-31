@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import recordBotVisit from "~/lib/botTracking.server";
+import { normalizeDomain } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
 
 async function makeRequest(
@@ -11,7 +12,7 @@ async function makeRequest(
   const headers: Record<string, string> = { "user-agent": userAgent };
   if (accept) headers.accept = accept;
   const site = await prisma.site.findFirstOrThrow({
-    where: { domain: new URL(url).hostname },
+    where: { domain: normalizeDomain(url) },
   });
   return {
     accept: accept || null,
@@ -33,7 +34,7 @@ describe("trackBotVisit", () => {
       data: {
         ownerId: user.id,
         apiKey: "test-api-key-bot-tracking-1",
-        domain: new URL("/", import.meta.env.VITE_APP_URL).hostname,
+        domain: new URL(import.meta.env.VITE_APP_URL).hostname,
         content: "Test content",
         summary: "Test summary",
       },

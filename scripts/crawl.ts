@@ -7,18 +7,18 @@
  */
 
 import { execSync } from "node:child_process";
+import { normalizeDomain } from "../app/lib/isSameDomain";
 import prisma from "../app/lib/prisma.server";
 import { crawl } from "../app/lib/scrape/crawl";
 import { summarize } from "../app/lib/scrape/summarize";
 
-let domain = process.argv[2];
+const domain = normalizeDomain(process.argv[2]);
 if (!domain) {
   console.error(
     "Usage: ./scripts/crawl.ts <domain> [maxPages] [maxWords] [maxSeconds]",
   );
   process.exit(1);
 }
-if (/^https?:\/\//.test(domain)) domain = new URL(domain).hostname;
 
 const email = execSync("git config user.email", { encoding: "utf-8" }).trim();
 if (!email) {

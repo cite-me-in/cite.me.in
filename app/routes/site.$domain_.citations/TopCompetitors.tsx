@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "~/components/ui/Card";
 import externalLink from "~/lib/externalLink";
+import { normalizeDomain } from "~/lib/isSameDomain";
 import nonCompetitors from "./nonCompetitors";
 
 export default function TopCompetitors({
@@ -76,15 +77,15 @@ export function topCompetitors(
   for (const query of queries) {
     for (const url of query.citations) {
       try {
-        const hostname = new URL(url).hostname.replace(/^www\./, "");
+        const domain = normalizeDomain(url);
         total++;
         if (
-          hostname !== ownDomain &&
-          !nonCompetitors.has(hostname) &&
+          domain !== ownDomain &&
+          !nonCompetitors.has(domain) &&
           // Also check if nonCompetitors contains the hostname with first subdomain stripped (e.g. "en.wikipedia.org" -> "wikipedia.org")
-          !nonCompetitors.has(hostname.split(".").slice(1).join("."))
+          !nonCompetitors.has(domain.split(".").slice(1).join("."))
         )
-          counts.set(hostname, (counts.get(hostname) ?? 0) + 1);
+          counts.set(domain, (counts.get(domain) ?? 0) + 1);
       } catch {
         /* skip invalid URLs */
       }

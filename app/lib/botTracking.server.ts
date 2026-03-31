@@ -1,6 +1,7 @@
 import { Temporal } from "@js-temporal/polyfill";
 import prisma from "~/lib/prisma.server";
 import captureAndLogError from "./captureAndLogError.server";
+import { normalizeDomain } from "./isSameDomain";
 
 /**
  * Known bot patterns for classification
@@ -144,7 +145,7 @@ function parseReferer(referer: string | null, requestURL: URL): string | null {
   if (!referer) return null;
   try {
     const refererURL = new URL(referer);
-    if (refererURL.hostname.toLowerCase() === requestURL.hostname.toLowerCase())
+    if (normalizeDomain(refererURL) === normalizeDomain(requestURL))
       return null;
   } catch {
     // ignore parse errors, keep referer as is

@@ -1,9 +1,8 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { fork, sum } from "radashi";
 import type { Site } from "~/prisma";
-import calculateVisibilityScore, {
-  normalizeHostname,
-} from "./llm-visibility/calculateVisibilityScore";
+import { normalizeDomain } from "./isSameDomain";
+import calculateVisibilityScore from "./llm-visibility/calculateVisibilityScore";
 import prisma from "./prisma.server";
 
 /**
@@ -13,18 +12,18 @@ import prisma from "./prisma.server";
  * @returns Site metrics for the current and previous week
  */
 export default async function getSiteMetrics(
-  filter: { userId: string; } | { siteIds: string[]; },
+  filter: { userId: string } | { siteIds: string[] },
 ): Promise<
   {
     site: Pick<Site, "id" | "domain" | "ownerId" | "summary">;
     // Total citations for the current and previous week
-    allCitations: { current: number; previous: number; };
+    allCitations: { current: number; previous: number };
     // Your citations only for the current and previous week
-    yourCitations: { current: number; previous: number; };
+    yourCitations: { current: number; previous: number };
     // Visibility score for the current and previous week
-    visbilityScore: { current: number; previous: number; };
+    visbilityScore: { current: number; previous: number };
     // Unique bot visits for the current and previous week
-    botVisits: { current: number; previous: number; };
+    botVisits: { current: number; previous: number };
   }[]
 > {
   const weekStart = Temporal.Now.plainDateISO("UTC").subtract({ days: 7 });
@@ -41,7 +40,12 @@ export default async function getSiteMetrics(
     orderBy: [{ domain: "asc" }],
     where:
       "userId" in filter
-        ? { OR: [{ ownerId: filter.userId }, { siteUsers: { some: { userId: filter.userId } } }] }
+        ? {
+            OR: [
+              { ownerId: filter.userId },
+              { siteUsers: { some: { userId: filter.userId } } },
+            ],
+          }
         : { id: { in: filter.siteIds } },
   });
 
@@ -79,7 +83,7 @@ export default async function getSiteMetrics(
   });
 
   return sites.map((site) => {
-    const domain = normalizeHostname(site.domain);
+    const domain = normalizeDomain(site.domain);
 
     const [currentQueries, previousQueries] = fork(
       queries.filter((q) => q.run.siteId === site.id),
@@ -100,12 +104,12 @@ export default async function getSiteMetrics(
         current: sum(
           currentQueries,
           (q) =>
-            q.citations.filter((c) => normalizeHostname(c) === domain).length,
+            q.citations.filter((c) => normalizeDomain(c) === domain).length,
         ),
         previous: sum(
           previousQueries,
           (q) =>
-            q.citations.filter((c) => normalizeHostname(c) === domain).length,
+            q.citations.filter((c) => normalizeDomain(c) === domain).length,
         ),
       },
       visbilityScore: {

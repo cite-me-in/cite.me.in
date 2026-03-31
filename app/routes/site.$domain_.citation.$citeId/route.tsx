@@ -12,6 +12,7 @@ import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SitePageHeader";
 import { requireUserAccess } from "~/lib/auth.server";
 import externalLink from "~/lib/externalLink";
+import { isSameDomain } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 
@@ -77,7 +78,7 @@ export default function SiteCitationsPage({
                 <tr
                   key={index.toString()}
                   className={twMerge(
-                    new URL(citation).hostname === site.domain &&
+                    isSameDomain({ domain: site.domain, url: citation }) &&
                       "bg-green-100 hover:bg-green-100/80",
                   )}
                 >

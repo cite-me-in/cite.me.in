@@ -2,7 +2,7 @@ import { ms } from "convert";
 import debug from "debug";
 import parseHTMLTree, { getElementsByTagName } from "~/lib/html/parseHTML";
 import captureAndLogError from "../captureAndLogError.server";
-import { normalizeHostname } from "../llm-visibility/calculateVisibilityScore";
+import { isSameDomain, normalizeDomain } from "../isSameDomain";
 
 const MEDIA_EXTENSIONS = /\.(pdf|jpg|jpeg|png|gif|svg|webp|mp4|mp3|zip|exe)$/i;
 
@@ -36,8 +36,8 @@ export async function discoverURLs({
     fetchRSS(url, tree, probe()),
   ]);
   const navURLs = extractNavURLs({ baseURL: url, tree });
-  const urls = dedup([...sitemapURLs, ...rssURLs, ...navURLs]).filter(
-    (url) => new URL(url).hostname === hostname,
+  const urls = dedup([...sitemapURLs, ...rssURLs, ...navURLs]).filter((url) =>
+    isSameDomain({ domain: hostname, url }),
   );
   logger("[crawl] Discovered %s => %d URLs", hostname, urls.length);
 
@@ -73,7 +73,7 @@ async function fetchSitemapURLs(
       logger("[crawl] Fetched %s: %d sitemap URLs", url, text.length);
       return text
         .split("\n")
-        .map((link) => normalizeHostname(link.trim()))
+        .map((link) => normalizeDomain(link.trim()))
         .map((link) => new URL(link, baseURL));
     } else {
       const response = await fetch(new URL(url, baseURL), { signal });

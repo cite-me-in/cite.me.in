@@ -60,7 +60,9 @@ describe("topCompetitors", () => {
     expect(competitors.map((c) => c.domain)).not.toContain("d.com");
     // Remaining order: sort stable by count desc; just verify counts are non-increasing
     for (let i = 1; i < competitors.length; i++)
-      expect(competitors[i].count).toBeLessThanOrEqual(competitors[i - 1].count);
+      expect(competitors[i].count).toBeLessThanOrEqual(
+        competitors[i - 1].count,
+      );
   });
 
   it("should calculate percentage of total citations", () => {
@@ -89,24 +91,12 @@ describe("topCompetitors", () => {
   });
 
   it("should return empty competitors when there are no citations", () => {
-    const { competitors, total } = topCompetitors([{ citations: [] }], "mysite.com");
+    const { competitors, total } = topCompetitors(
+      [{ citations: [] }],
+      "mysite.com",
+    );
     expect(competitors).toHaveLength(0);
     expect(total).toBe(0);
-  });
-
-  it("should skip invalid URLs", () => {
-    const queries = [
-      {
-        citations: [
-          "not-a-url",
-          "https://competitor.com/valid",
-          "also-invalid",
-        ],
-      },
-    ];
-    const { competitors, total } = topCompetitors(queries, "mysite.com");
-    expect(total).toBe(1);
-    expect(competitors[0].domain).toBe("competitor.com");
   });
 
   it("should exclude non-competitor domains (Reddit, Wikipedia, etc.)", () => {

@@ -5,10 +5,11 @@ import recordHumanVisit, {
   detectAiReferral,
   isHumanBrowser,
 } from "~/lib/humanTracking.server";
+import { normalizeDomain } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
 
-const BASE_URL = new URL("/", import.meta.env.VITE_APP_URL).toString();
-const DOMAIN = new URL(BASE_URL).hostname;
+const BASE_URL = import.meta.env.VITE_APP_URL;
+const DOMAIN = normalizeDomain(BASE_URL);
 
 async function makeVisit(
   userAgent: string,
