@@ -11,13 +11,13 @@ export async function loader() {
         new URL("/sitemap.xml", import.meta.env.VITE_APP_URL).toString(),
       ],
     },
-    { userAgent: "GPTBot", allow: ["/"] },
-    { userAgent: "ChatGPT-User", allow: ["/"] },
-    { userAgent: "PerplexityBot", allow: ["/"] },
-    { userAgent: "ClaudeBot", allow: ["/"] },
     { userAgent: "anthropic-ai", allow: ["/"] },
-    { userAgent: "Googlebot", allow: ["/"] },
     { userAgent: "Bingbot", allow: ["/"] },
+    { userAgent: "ChatGPT-User", allow: ["/"] },
+    { userAgent: "ClaudeBot", allow: ["/"] },
+    { userAgent: "Googlebot", allow: ["/"] },
+    { userAgent: "GPTBot", allow: ["/"] },
+    { userAgent: "PerplexityBot", allow: ["/"] },
   ]);
 
   return new Response(robotsTxt, {

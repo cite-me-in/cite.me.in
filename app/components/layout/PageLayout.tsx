@@ -1,6 +1,7 @@
 import { CSPProvider } from "@base-ui/react";
 import { Links, Meta, Scripts, ScrollRestoration } from "react-router";
 import PageLoadingBouncer from "~/components/ui/PageLoadingBouncer";
+import prices from "~/data/stripe-prices.json";
 import "~/global.css";
 import PageAnalytics from "./PageAnalytics";
 import PageFooter from "./PageFooter";
@@ -94,6 +95,21 @@ function JSONLD() {
       {JSON.stringify({
         "@context": "https://schema.org",
         "@graph": [
+          {
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            name: "cite.me.in",
+            description:
+              "Monitor whether your brand gets cited when people ask AI questions.",
+            applicationCategory: "BusinessApplication",
+            operatingSystem: "Web",
+            offers: {
+              "@type": "Offer",
+              price: prices.monthlyAmount,
+              priceCurrency: "USD",
+            },
+            url: import.meta.env.VITE_APP_URL,
+          },
           {
             "@type": "Organization",
             name: "Cite.me.in",
