@@ -1,12 +1,12 @@
-import invariant from "tiny-invariant";
 import { MailIcon } from "lucide-react";
 import { Form, redirect } from "react-router";
+import invariant from "tiny-invariant";
 import AuthForm from "~/components/ui/AuthForm";
 import { Button } from "~/components/ui/Button";
 import { FieldSet } from "~/components/ui/FieldSet";
 import sendEmailVerificationEmail from "~/emails/EmailVerification";
 import { createEmailVerificationToken } from "~/lib/auth.server";
-import logError from "~/lib/logError.server";
+import captureAndLogError from "~/lib/captureAndLogError.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/verify-email.$token";
 
@@ -61,7 +61,7 @@ export async function action({ params, request }: Route.ActionArgs) {
         url: new URL(`/verify-email/${newToken}`, request.url).toString(),
       });
     } catch (error) {
-      logError(error);
+      captureAndLogError(error);
     }
   }
 

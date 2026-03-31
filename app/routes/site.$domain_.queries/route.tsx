@@ -7,12 +7,12 @@ import addSiteQueries, {
   updateSiteQuery,
 } from "~/lib/addSiteQueries";
 import { requireSiteAccess } from "~/lib/auth.server";
+import captureAndLogError from "~/lib/captureAndLogError.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import {
   hasWordChanges,
   isMeaningfulSentence,
 } from "~/lib/llm-visibility/queryValidation";
-import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 import AddQueriesGroup from "./AddQueriesGroup";
@@ -77,7 +77,7 @@ export async function action({ request, params }: Route.ActionArgs) {
         try {
           await runQueryOnAllPlatforms({ site, query, group });
         } catch (error) {
-          logError(error, { extra: { siteId: site.id } });
+          captureAndLogError(error, { extra: { siteId: site.id } });
         }
       return { ok: true as const };
     }
@@ -93,7 +93,7 @@ export async function action({ request, params }: Route.ActionArgs) {
         try {
           await runQueryOnAllPlatforms({ site, query, group: existing.group });
         } catch (error) {
-          logError(error, { extra: { siteId: site.id } });
+          captureAndLogError(error, { extra: { siteId: site.id } });
         }
       return { ok: true as const };
     }
@@ -111,7 +111,7 @@ export async function action({ request, params }: Route.ActionArgs) {
         const suggestions = await generateSiteQueries(site);
         return { ok: true, suggestions };
       } catch (error) {
-        logError(error, { extra: { siteId: site.id } });
+        captureAndLogError(error, { extra: { siteId: site.id } });
         return {
           ok: false,
           error: "Couldn't generate suggestions. Please try again.",

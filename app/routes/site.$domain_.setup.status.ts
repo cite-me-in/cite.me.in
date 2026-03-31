@@ -1,3 +1,4 @@
+import { data } from "react-router";
 import { requireSiteAccess } from "~/lib/auth.server";
 import { getProgress } from "~/lib/setupProgress.server";
 import type { Route } from "./+types/site.$domain_.setup.status";
@@ -14,5 +15,5 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     userId: user.id,
     offset,
   });
-  return Response.json(progress);
+  return data(progress);
 }

@@ -25,7 +25,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   return {
     domain: params.domain,
     needsStart: status === null,
-    hadError: status === "error",
+    hasError: status === "error",
   };
 }
 
@@ -35,7 +35,7 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
 
   const [lines, setLines] = useState<string[]>([]);
   const [done, setDone] = useState(false);
-  const [error, setError] = useState(loaderData.hadError);
+  const [error, setError] = useState(loaderData.hasError);
   const offsetRef = useRef(0);
   const logRef = useRef<HTMLPreElement>(null);
 

@@ -1,7 +1,7 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { createHash } from "node:crypto";
 import prisma from "~/lib/prisma.server";
-import logError from "./logError.server";
+import captureAndLogError from "./captureAndLogError.server";
 
 /**
  * Browser detection — order matters: Edge and Opera ship with Chrome tokens, so
@@ -143,7 +143,7 @@ export default async function recordHumanVisit({
     });
     return { tracked: true };
   } catch (error) {
-    logError(error, { extra: { visitorId, browser, deviceType } });
+    captureAndLogError(error, { extra: { visitorId, browser, deviceType } });
     return { tracked: false, reason: "db error" };
   }
 }

@@ -1,7 +1,7 @@
 import { ms } from "convert";
 import debug from "debug";
 import { sleep } from "radashi";
-import logError from "~/lib/logError.server";
+import captureAndLogError from "~/lib/captureAndLogError.server";
 import prisma from "~/lib/prisma.server";
 import {
   checkUsageLimits,
@@ -61,7 +61,7 @@ export default async function queryPlatform({
 
     await updateRunSentiment({ site, platform, runId: run.id });
   } catch (error) {
-    logError(error, {
+    captureAndLogError(error, {
       extra: { siteId: site.id, platform },
     });
   }
@@ -90,7 +90,7 @@ async function updateRunSentiment({
     });
     logger("[%s:%s] Sentiment analysis complete: %s", site.id, platform, label);
   } catch (sentimentError) {
-    logError(sentimentError, {
+    captureAndLogError(sentimentError, {
       extra: { siteId: site.id, platform, runId },
     });
   }
@@ -159,7 +159,7 @@ export async function singleQueryRepetition({
       },
     });
   } catch (error) {
-    logError(error, {
+    captureAndLogError(error, {
       extra: {
         siteId: site.id,
         platform,

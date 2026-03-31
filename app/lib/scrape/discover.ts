@@ -1,8 +1,8 @@
 import { ms } from "convert";
 import debug from "debug";
 import parseHTMLTree, { getElementsByTagName } from "~/lib/html/parseHTML";
+import captureAndLogError from "../captureAndLogError.server";
 import { normalizeHostname } from "../llm-visibility/calculateVisibilityScore";
-import logError from "../logError.server";
 
 const MEDIA_EXTENSIONS = /\.(pdf|jpg|jpeg|png|gif|svg|webp|mp4|mp3|zip|exe)$/i;
 
@@ -84,7 +84,9 @@ async function fetchSitemapURLs(
       return urls;
     }
   } catch (error) {
-    logError(`Error fetching sitemap URLs: ${error}`, { extra: { url } });
+    captureAndLogError(`Error fetching sitemap URLs: ${error}`, {
+      extra: { url },
+    });
     return [];
   }
 }
@@ -165,7 +167,7 @@ async function fetchRSS(
     logger("[crawl] Fetched %s: %d RSS/Atom URLs", url, urls.length);
     return urls;
   } catch (error) {
-    logError(`Error fetching RSS: ${error}`, { extra: { url } });
+    captureAndLogError(`Error fetching RSS: ${error}`, { extra: { url } });
     return [];
   }
 }

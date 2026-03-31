@@ -5,10 +5,10 @@ import { data } from "react-router";
 import sendTrialEndedEmails from "~/emails/TrialEnded";
 import sendTrialEndingEmails from "~/emails/TrialEnding";
 import { sendSiteDigestEmails } from "~/emails/WeeklyDigest";
+import captureAndLogError from "~/lib/captureAndLogError.server";
 import envVars from "~/lib/envVars.server";
 import generateBotInsight from "~/lib/llm-visibility/generateBotInsight";
 import queryAccount from "~/lib/llm-visibility/queryAccount";
-import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import { UsageLimitExceededError } from "~/lib/usage/UsageLimitExceededError";
 import { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
@@ -138,7 +138,9 @@ async function nextCitationRun(site: {
       message,
     );
     if (!(error instanceof UsageLimitExceededError))
-      logError(error, { extra: { siteId: site.id, step: "citation-run" } });
+      captureAndLogError(error, {
+        extra: { siteId: site.id, step: "citation-run" },
+      });
     return false;
   }
 }
@@ -192,7 +194,9 @@ async function updateBotInsight(site: {
       site.domain,
       message,
     );
-    logError(error, { extra: { siteId: site.id, step: "bot-insight" } });
+    captureAndLogError(error, {
+      extra: { siteId: site.id, step: "bot-insight" },
+    });
     return false;
   }
 }

@@ -17,7 +17,7 @@ import {
 } from "~/lib/llm-visibility/perplexityClient";
 import prisma from "~/lib/prisma.server";
 import { Prisma } from "~/prisma";
-import logError from "../logError.server";
+import captureAndLogError from "../captureAndLogError.server";
 import { UsageLimitExceededError } from "./UsageLimitExceededError";
 
 export async function recordUsageEvent({
@@ -113,7 +113,7 @@ function calculateCostUSD(
     [PERPLEXITY_MODEL_ID]: PERPLEXITY_PRICING,
   }[model];
   if (!cost) {
-    logError(`Unknown usage cost for ${model}`);
+    captureAndLogError(`Unknown usage cost for ${model}`);
     return 0;
   }
   return "perRequest" in cost

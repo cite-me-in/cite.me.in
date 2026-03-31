@@ -6,7 +6,7 @@ import parseHTMLTree, {
   getMainContent,
   htmlToMarkdown,
 } from "~/lib/html/parseHTML";
-import logError from "../logError.server";
+import captureAndLogError from "../captureAndLogError.server";
 
 const SUPPORTED_CONTENT_TYPES = ["text/html", "text/markdown"];
 
@@ -56,7 +56,7 @@ export async function fetchAndExtract({
       ? extractFromMarkdown(body, url)
       : extractFromHtml(body, url);
   } catch (error) {
-    logError(`Error fetching ${url}: ${error}`, { extra: { url } });
+    captureAndLogError(`Error fetching ${url}: ${error}`, { extra: { url } });
     return null;
   }
 }

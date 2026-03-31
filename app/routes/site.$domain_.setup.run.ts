@@ -3,12 +3,12 @@ import { sleep } from "radashi";
 import sendSiteSetupEmail from "~/emails/SiteSetupComplete";
 import addSiteQueries from "~/lib/addSiteQueries";
 import { requireSiteAccess } from "~/lib/auth.server";
+import captureAndLogError from "~/lib/captureAndLogError.server";
 import analyzeSentiment from "~/lib/llm-visibility/analyzeSentiment";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import PLATFORMS from "~/lib/llm-visibility/platformsToQuery.server";
 import type { QueryFn } from "~/lib/llm-visibility/queryFn";
 import { singleQueryRepetition } from "~/lib/llm-visibility/queryPlatform";
-import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import { crawl } from "~/lib/scrape/crawl";
 import { summarize } from "~/lib/scrape/summarize";
@@ -95,7 +95,7 @@ export async function action({ request, params }: Route.ActionArgs) {
   } catch (error) {
     await log("Something went wrong — please try refreshing.");
     await setStatus({ siteId: site.id, userId: user.id, status: "error" });
-    logError(error, { extra: { siteId: site.id } });
+    captureAndLogError(error, { extra: { siteId: site.id } });
   }
 
   return new Response(null, { status: 204 });
@@ -155,6 +155,6 @@ async function runPlatformWithProgress({
       data: { sentimentLabel: sentLabel, sentimentSummary: summary },
     });
   } catch (error) {
-    logError(error, { extra: { siteId: site.id, platform } });
+    captureAndLogError(error, { extra: { siteId: site.id, platform } });
   }
 }

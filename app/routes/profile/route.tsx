@@ -8,8 +8,8 @@ import {
   requireUserAccess,
   verifyPassword,
 } from "~/lib/auth.server";
+import captureAndLogError from "~/lib/captureAndLogError.server";
 import envVars from "~/lib/envVars.server";
-import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import stripe from "~/lib/stripe.server";
 import type { Route } from "./+types/route";
@@ -112,7 +112,7 @@ async function updatePassword({
     });
     return { success: "Password changed successfully" };
   } catch (error) {
-    logError(error);
+    captureAndLogError(error);
     return { error: "Failed to change password, please try again" };
   }
 }
@@ -128,7 +128,7 @@ async function regenerateApiKey({ userId }: { userId: string }) {
     });
     return { apiKey: updated.apiKey };
   } catch (error) {
-    logError(error);
+    captureAndLogError(error);
     return { error: "Failed to generate API key" };
   }
 }

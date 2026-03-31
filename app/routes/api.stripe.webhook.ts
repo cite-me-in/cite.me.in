@@ -1,8 +1,8 @@
 import debug from "debug";
 import { data } from "react-router";
 import Stripe from "stripe";
+import captureAndLogError from "~/lib/captureAndLogError.server";
 import envVars from "~/lib/envVars.server";
-import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import stripe from "~/lib/stripe.server";
 import type { Route } from "./+types/api.stripe.webhook";
@@ -36,7 +36,7 @@ export async function action({ request }: Route.ActionArgs) {
     );
   } catch (error) {
     if (!(error instanceof Stripe.errors.StripeSignatureVerificationError))
-      logError(error);
+      captureAndLogError(error);
     throw new Response("Invalid signature", { status: 400 });
   }
 
@@ -91,7 +91,7 @@ export async function action({ request }: Route.ActionArgs) {
       }
     }
   } catch (error) {
-    logError(error);
+    captureAndLogError(error);
     return data({ error: "Webhook processing failed" }, { status: 500 });
   }
 

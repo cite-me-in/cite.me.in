@@ -12,9 +12,9 @@ import Main from "~/components/ui/Main";
 import Spinner from "~/components/ui/Spinner";
 import addSiteQueries from "~/lib/addSiteQueries";
 import { requireSiteAccess } from "~/lib/auth.server";
+import captureAndLogError from "~/lib/captureAndLogError.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import queryGroups from "~/lib/llm-visibility/queryGroups";
-import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 
@@ -66,7 +66,7 @@ export async function action({ params, request }: Route.ActionArgs) {
     }
   } catch (error) {
     if (error instanceof Response) throw error;
-    logError(error);
+    captureAndLogError(error);
     return {
       error: "An error occurred while saving the queries. Please try again.",
     };
@@ -75,7 +75,7 @@ export async function action({ params, request }: Route.ActionArgs) {
 
 export default function Index({ loaderData }: Route.ComponentProps) {
   const [suggestions, setSuggestions] = useState<
-    { id: string; group: string; query: string; }[]
+    { id: string; group: string; query: string }[]
   >(loaderData.suggestions);
   const groupedQueries = alphabetical(
     Object.entries(group(suggestions, (s) => s.group)),
@@ -126,7 +126,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
           <Card key={group}>
             <CardContent className="space-y-2">
               <p className="font-heading text-base">
-                {queryGroups.find((c: { group: string; }) => c.group === group)
+                {queryGroups.find((c: { group: string }) => c.group === group)
                   ?.intent ?? group}
               </p>
               <ul className="space-y-1">
@@ -194,8 +194,6 @@ export default function Index({ loaderData }: Route.ComponentProps) {
           Skip
         </ActiveLink>
       </div>
-
     </Main>
   );
 }
-

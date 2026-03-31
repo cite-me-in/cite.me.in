@@ -16,7 +16,7 @@ import {
   createSession,
   hashPassword,
 } from "~/lib/auth.server";
-import logError from "~/lib/logError.server";
+import captureAndLogError from "~/lib/captureAndLogError.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/sign-up";
 
@@ -67,7 +67,7 @@ export async function action({ request }: Route.ActionArgs) {
       url: new URL(`/verify-email/${verifyToken}`, request.url).toString(),
     });
   } catch (error) {
-    logError(error);
+    captureAndLogError(error);
   }
 
   const redirectTo = inviteToken
@@ -78,7 +78,10 @@ export async function action({ request }: Route.ActionArgs) {
   return redirect(redirectTo, { headers: { "Set-Cookie": setCookie } });
 }
 
-export default function SignUp({ actionData, loaderData }: Route.ComponentProps) {
+export default function SignUp({
+  actionData,
+  loaderData,
+}: Route.ComponentProps) {
   const errors = actionData?.errors ?? {};
 
   return (
@@ -87,7 +90,11 @@ export default function SignUp({ actionData, loaderData }: Route.ComponentProps)
       form={
         <Form method="post">
           {loaderData.inviteToken && (
-            <input type="hidden" name="inviteToken" value={loaderData.inviteToken} />
+            <input
+              type="hidden"
+              name="inviteToken"
+              value={loaderData.inviteToken}
+            />
           )}
           {loaderData.next && (
             <input type="hidden" name="next" value={loaderData.next} />

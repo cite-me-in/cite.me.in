@@ -11,7 +11,7 @@ import {
 } from "~/components/ui/FieldSet";
 import { Input } from "~/components/ui/Input";
 import sendPasswordRecoveryEmail from "~/emails/PasswordRecovery";
-import logError from "~/lib/logError.server";
+import captureAndLogError from "~/lib/captureAndLogError.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/password-recovery";
 
@@ -35,7 +35,7 @@ export async function action({ request }: Route.ActionArgs) {
         url: new URL(`/reset-password/${token}`, request.url).toString(),
       });
     } catch {
-      logError(new Error("Failed to send password recovery email"));
+      captureAndLogError(new Error("Failed to send password recovery email"));
     }
   }
 

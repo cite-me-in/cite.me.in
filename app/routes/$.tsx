@@ -2,7 +2,7 @@ import { FrownIcon } from "lucide-react";
 import { data } from "react-router";
 import { ActiveLink } from "~/components/ui/ActiveLink";
 import Main from "~/components/ui/Main";
-import logError from "~/lib/logError.server";
+import captureAndLogError from "~/lib/captureAndLogError.server";
 import type { Route } from "./+types/$";
 
 export function meta(): Route.MetaDescriptors {
@@ -34,7 +34,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     };
     return data({ suggestions }, { status: 404 });
   } catch (error) {
-    logError(error);
+    captureAndLogError(error);
     return data({ suggestions: [] }, { status: 404 });
   }
 }

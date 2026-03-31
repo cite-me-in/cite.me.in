@@ -10,8 +10,8 @@ import type {
 import "~/lib/logger.server";
 import setupTestServer from "~/test/helpers/worker.setup";
 import { createBotTracker } from "./lib/botTracker";
+import captureAndLogError from "./lib/captureAndLogError.server";
 import envVars from "./lib/envVars.server";
-import logError from "./lib/logError.server";
 
 switch (process.env.NODE_ENV) {
   case "production": {
@@ -121,7 +121,7 @@ export function handleError(
   { request }: LoaderFunctionArgs | ActionFunctionArgs,
 ) {
   if (!request.signal.aborted) {
-    logError(error, { extra: { request } });
+    captureAndLogError(error, { extra: { request } });
     logger("error: %s", error);
   }
 }

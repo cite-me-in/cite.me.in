@@ -23,7 +23,7 @@ const logtail =
     sendLogsToBetterStack: true,
   });
 
-export default function logError(
+export default function captureAndLogError(
   error: unknown,
   hints?: ExclusiveEventHintOrCaptureContext,
 ) {
