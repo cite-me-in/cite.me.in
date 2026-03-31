@@ -55,16 +55,19 @@ async function queryPlatform({ site, platform, queries }: { ... }) {
 
 ## Error handling
 
-- `try/catch` + `captureException` at orchestration layer only; let errors bubble from helpers
+- `try/catch` + `captureAndLogError` at orchestration layer only; let errors bubble from helpers
 - Return `{ error: string }` from actions for user-facing errors; throw for unexpected ones
+- Use `captureAndLogError` from `~/lib/captureAndLogError.server` — it calls Sentry, debug logger, console, and Logtail in one call
 - When auth helpers (`requireUser`, `requireSiteAccess`) are called inside a try/catch, re-throw `Response` so 404/403/redirects aren't swallowed:
 
 ```ts
+import captureAndLogError from "~/lib/captureAndLogError.server";
+
 try {
   await prisma.user.update(...);
   return { success: "Email updated" };
 } catch (error) {
-  captureException(error);
+  captureAndLogError(error);
   return { error: "That email is already in use" };
 }
 
@@ -74,7 +77,7 @@ try {
   // ...
 } catch (error) {
   if (error instanceof Response) throw error;
-  captureException(error);
+  captureAndLogError(error);
   return { error: "Something went wrong" };
 }
 ```
