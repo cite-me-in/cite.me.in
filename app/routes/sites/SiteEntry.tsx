@@ -4,7 +4,6 @@ import { Streamdown } from "streamdown";
 import { twMerge } from "tailwind-merge";
 import { ActiveLink } from "~/components/ui/ActiveLink";
 import type { Site } from "~/prisma";
-import DeleteSiteDialog from "./DeleteSiteDialog";
 import type { action } from "./route";
 
 export default function SiteEntry({
@@ -71,22 +70,10 @@ export default function SiteEntry({
 
       <Streamdown
         mode="static"
-        className="prose prose-sm mt-4 line-clamp-2 max-w-none text-foreground/60"
+        className="prose prose-sm mt-4 mb-4 line-clamp-2 max-w-none text-foreground/60 italic"
       >
         {site.summary}
       </Streamdown>
-
-      <div className="flex justify-between">
-        <DeleteSiteDialog
-          domain={site.domain}
-          onConfirm={() => {
-            fetcher.submit({ siteId: site.id }, { method: "DELETE" });
-          }}
-          isSubmitting={isSubmitting}
-        />
-      </div>
-
-      <div className="mt-4" />
     </div>
   );
 }

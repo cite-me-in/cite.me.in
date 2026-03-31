@@ -1,12 +1,15 @@
+import { redirect, useFetcher } from "react-router";
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SitePageHeader";
 import { requireSiteOwner, requireUserAccess } from "~/lib/auth.server";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
+import { deleteSite } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
 import ApiKeySection from "./ApiKeySection";
+import DeleteSiteButton from "./DeleteSiteButton";
 import MembersSection from "./MembersSection";
-import SiteContent from "./SiteContent";
+import SiteContentButton from "./SiteContentButton";
 
 export const handle = { siteNav: true };
 
@@ -66,7 +69,10 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
-  const { site } = await requireSiteOwner({ domain: params.domain, request });
+  const { site, user } = await requireSiteOwner({
+    domain: params.domain,
+    request,
+  });
 
   const formData = await request.formData();
   const intent = formData.get("intent")?.toString();
@@ -78,18 +84,38 @@ export async function action({ request, params }: Route.ActionArgs) {
     return { ok: true as const };
   }
 
+  if (intent === "delete-site") {
+    await deleteSite({ userId: user.id, siteId: site.id });
+    throw redirect("/sites");
+  }
+
   return { ok: false as const, error: "Unknown intent" };
 }
 
 export default function SiteSettingsPage({ loaderData }: Route.ComponentProps) {
   const { site, isOwner, script } = loaderData;
+  const deleteFetcher = useFetcher();
 
   return (
     <Main variant="wide">
       <SitePageHeader site={site} title="Settings" />
 
       <section className="space-y-8">
-        <SiteContent content={loaderData.site?.content ?? ""} />
+        <div className="flex items-start justify-between gap-2">
+          <SiteContentButton content={loaderData.site?.content ?? ""} />
+          {isOwner && (
+            <DeleteSiteButton
+              domain={site.domain}
+              isSubmitting={deleteFetcher.state !== "idle"}
+              onConfirm={() =>
+                deleteFetcher.submit(
+                  { intent: "delete-site" },
+                  { method: "post" },
+                )
+              }
+            />
+          )}
+        </div>
         <ApiKeySection apiKey={site.apiKey} script={script} />
         <MembersSection site={site} isOwner={isOwner} />
       </section>

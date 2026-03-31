@@ -12,7 +12,7 @@ import {
 } from "~/components/ui/Dialog";
 import { Input } from "~/components/ui/Input";
 
-export default function DeleteSiteDialog({
+export default function DeleteSiteButton({
   domain,
   onConfirm,
   isSubmitting = false,
@@ -38,11 +38,10 @@ export default function DeleteSiteDialog({
       <DialogTrigger
         render={
           <Button
-            variant="ghost"
-            disabled={isSubmitting}
             aria-label="Delete site"
+            disabled={isSubmitting}
             size="sm"
-            className="text-destructive"
+            variant="destructive"
           />
         }
       >
