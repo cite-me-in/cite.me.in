@@ -1,11 +1,11 @@
 import { CSPProvider } from "@base-ui/react";
 import { Links, Meta, Scripts, ScrollRestoration } from "react-router";
 import PageLoadingBouncer from "~/components/ui/PageLoadingBouncer";
-import prices from "~/data/stripe-prices.json";
 import "~/global.css";
 import PageAnalytics from "./PageAnalytics";
 import PageFooter from "./PageFooter";
 import PageHeader from "./PageHeader";
+import PageSchema from "./PageSchema";
 
 const title = "Cite.me.in — Monitor AI citation visibility";
 
@@ -72,7 +72,7 @@ export default function PageLayout({
         <ScrollRestoration />
         <Scripts />
         {import.meta.env.PROD && <PageAnalytics />}
-        <JSONLD />
+        <PageSchema />
       </body>
     </html>
   );
@@ -86,82 +86,5 @@ function DevTag() {
         DEV
       </span>
     )
-  );
-}
-
-function JSONLD() {
-  return (
-    <script type="application/ld+json">
-      {JSON.stringify({
-        "@context": "https://schema.org",
-        "@graph": [
-          {
-            "@context": "https://schema.org",
-            "@type": "SoftwareApplication",
-            name: "cite.me.in",
-            description:
-              "Monitor whether your brand gets cited when people ask AI questions.",
-            applicationCategory: "BusinessApplication",
-            operatingSystem: "Web",
-            offers: {
-              "@type": "Offer",
-              price: prices.monthlyAmount,
-              priceCurrency: "USD",
-            },
-            url: import.meta.env.VITE_APP_URL,
-          },
-          {
-            "@type": "Organization",
-            name: "Cite.me.in",
-            description: "Monitor AI citation visibility for your brand.",
-            email: import.meta.env.VITE_EMAIL_FROM,
-            url: import.meta.env.VITE_APP_URL,
-            logo: new URL(
-              "/icon-192.png",
-              import.meta.env.VITE_APP_URL,
-            ).toString(),
-            image: new URL(
-              "/images/og-image.png",
-              import.meta.env.VITE_APP_URL,
-            ).toString(),
-            contactPoint: {
-              "@type": "ContactPoint",
-              email: import.meta.env.VITE_EMAIL_FROM,
-              contactType: "Customer Service",
-            },
-            slogan: "Monitor AI citation visibility for your brand.",
-          },
-          {
-            "@id": import.meta.env.VITE_APP_URL,
-            "@type": "WebSite",
-            name: "Cite.me.in",
-            description: "Monitor AI citation visibility for your brand.",
-            inLanguage: "en",
-            url: import.meta.env.VITE_APP_URL,
-            keywords:
-              "AI citation visibility, AI citation monitoring, AI citation tracking, AI citation analysis, AI citation optimization, AI citation improvement",
-          },
-          {
-            "@id": new URL(
-              "/images/og-image.png",
-              import.meta.env.VITE_APP_URL,
-            ).toString(),
-            "@type": "ImageObject",
-            name: "OG Image",
-            caption: "Monitor AI citation visibility for your brand.",
-            contentUrl: new URL(
-              "/images/og-image.png",
-              import.meta.env.VITE_APP_URL,
-            ).toString(),
-            url: new URL(
-              "/images/og-image.png",
-              import.meta.env.VITE_APP_URL,
-            ).toString(),
-            height: 1024,
-            width: 1024,
-          },
-        ],
-      })}
-    </script>
   );
 }
