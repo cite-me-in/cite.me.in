@@ -1,4 +1,3 @@
-import invariant from "tiny-invariant";
 import { useState } from "react";
 import { redirect, useFetcher } from "react-router";
 import { Button } from "~/components/ui/Button";
@@ -7,7 +6,7 @@ import Main from "~/components/ui/Main";
 import { requireUserAccess } from "~/lib/auth.server";
 import getSiteMetrics from "~/lib/getSiteMetrics.server";
 import prisma from "~/lib/prisma.server";
-import { createSite, deleteSite } from "~/lib/sites.server";
+import { createSite } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
 import AddSiteForm from "./AddSiteForm";
 import OfferSubscription from "./OfferSubscription";
@@ -35,7 +34,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   // canAddSite is true if the user can add a site (5 if pro, 1 if not)
   const isPro = account?.status === "active";
   const ownedSiteCount = sites.filter((s) => s.site.ownerId === user.id).length;
-  const canAddSite = user.isAdmin || (ownedSiteCount < (isPro ? 5 : 1));
+  const canAddSite = user.isAdmin || ownedSiteCount < (isPro ? 5 : 1);
 
   // trialExpired is true if the user's trial has ended (isPro is false)
   const trialEnd = new Date(user.createdAt);
@@ -65,14 +64,6 @@ export async function action({ request }: Route.ActionArgs) {
               : "An unknown error occurred while adding the site",
         };
       }
-    }
-
-    case "DELETE": {
-      // Delete the site
-      const siteId = formData.get("siteId")?.toString();
-      invariant(siteId, "Site ID is required");
-      await deleteSite({ userId: user.id, siteId });
-      return { ok: true };
     }
 
     default:
@@ -112,7 +103,6 @@ export default function SitesPage({
           <CardContent className="space-y-4 divide-y-2 divide-black/10">
             {sites.map((item) => (
               <SiteEntry
-                fetcher={fetcher}
                 key={item.site.id}
                 visibilityScore={item.visbilityScore}
                 site={item.site}

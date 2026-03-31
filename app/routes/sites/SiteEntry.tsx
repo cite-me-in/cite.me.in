@@ -1,28 +1,23 @@
 import { ArrowRightIcon } from "lucide-react";
-import { Link, type useFetcher } from "react-router";
+import { Link } from "react-router";
 import { Streamdown } from "streamdown";
 import { twMerge } from "tailwind-merge";
 import { ActiveLink } from "~/components/ui/ActiveLink";
 import type { Site } from "~/prisma";
-import type { action } from "./route";
 
 export default function SiteEntry({
-  fetcher,
   site,
   botVisits,
   allCitations,
   yourCitations,
   visibilityScore,
 }: {
-  fetcher: ReturnType<typeof useFetcher<typeof action>>;
   site: Pick<Site, "id" | "domain" | "ownerId" | "summary">;
   botVisits: { current: number; previous: number };
   allCitations: { current: number; previous: number };
   yourCitations: { current: number; previous: number };
   visibilityScore: { current: number; previous: number };
 }) {
-  const isSubmitting = fetcher.state === "submitting";
-
   return (
     <div className="space-y-4">
       <div className="flex flex-row items-center justify-between">

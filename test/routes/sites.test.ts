@@ -203,26 +203,25 @@ describe("sites route", () => {
     });
 
     describe("when delete button", () => {
+      let settingsPage: Page;
       let deleteConfirmBtn: Locator;
       let confirmDomainInput: Locator;
       let count: number;
 
       beforeAll(async () => {
         count = await prisma.site.count();
-        const deleteBtn = page
-          .getByRole("button", { name: "Delete site" })
-          .first();
-        await deleteBtn.click();
+        settingsPage = await goto("/site/dashboard-test.com/settings");
+        await settingsPage.getByRole("button", { name: "Delete site" }).click();
 
-        deleteConfirmBtn = page.getByRole("button", {
+        deleteConfirmBtn = settingsPage.getByRole("button", {
           name: "Delete Site",
         });
-        confirmDomainInput = page.getByPlaceholder("dashboard-test.com");
+        confirmDomainInput = settingsPage.getByPlaceholder("dashboard-test.com");
       });
 
       it("should open confirmation dialog", async () => {
         await expect(
-          page.getByText("Are you sure you want to delete"),
+          settingsPage.getByText("Are you sure you want to delete"),
         ).toBeVisible();
       });
 
@@ -235,8 +234,8 @@ describe("sites route", () => {
       });
 
       it("should match visually", async () => {
-        await expect(page.locator("main")).toMatchVisual({
-          name: "sites/delete",
+        await expect(settingsPage.locator("main")).toMatchVisual({
+          name: "settings/delete",
           modify: fixBaseline,
         });
       });
@@ -245,8 +244,8 @@ describe("sites route", () => {
         beforeAll(async () => {
           await confirmDomainInput.fill("dashboard-test.com");
           await expect(deleteConfirmBtn).toBeEnabled();
-          await page.getByRole("button", { name: "Delete Site" }).click();
-          await expect(page.getByRole("dialog")).toBeHidden();
+          await settingsPage.getByRole("button", { name: "Delete Site" }).click();
+          await settingsPage.waitForURL("/sites");
         });
 
         it("should delete site", async () => {
