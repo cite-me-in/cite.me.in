@@ -59,7 +59,7 @@ const handlers = [
   ),
 ];
 
-const server = setupServer(...handlers);
+export const server = setupServer(...handlers);
 
 // Add logging for debugging
 server.events

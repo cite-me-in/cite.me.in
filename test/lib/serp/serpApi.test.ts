@@ -1,30 +1,27 @@
+import { HttpResponse, http } from "msw";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import fetchAioResults from "~/lib/serp/serpApi.server";
+import { server } from "~/test/mocks/msw";
 
 vi.mock("~/lib/envVars.server", () => ({
   default: { SERPAPI_API_KEY: "test-key" },
 }));
 
-const makeResponse = (body: unknown) =>
-  ({
-    ok: true,
-    json: async () => body,
-  }) as Response;
+afterEach(() => server.resetHandlers());
 
 describe("fetchAioResults", () => {
-  afterEach(() => vi.restoreAllMocks());
-
   it("should return aioPresent=true and citations when AIO block exists", async () => {
-    vi.spyOn(global, "fetch").mockResolvedValue(
-      makeResponse({
-        ai_overview: {
-          references: [
-            { link: "https://example.com/page", title: "Example" },
-            { link: "https://other.com/", title: "Other" },
-          ],
-        },
-        organic_results: [{ link: "https://example.com" }],
-      }),
+    server.use(
+      http.get("https://serpapi.com/search", () =>
+        HttpResponse.json({
+          ai_overview: {
+            references: [
+              { link: "https://example.com/page", title: "Example" },
+              { link: "https://other.com/", title: "Other" },
+            ],
+          },
+        }),
+      ),
     );
 
     const result = await fetchAioResults("best retail space platforms");
@@ -36,10 +33,10 @@ describe("fetchAioResults", () => {
   });
 
   it("should return aioPresent=false and empty citations when no AIO block", async () => {
-    vi.spyOn(global, "fetch").mockResolvedValue(
-      makeResponse({
-        organic_results: [{ link: "https://example.com" }],
-      }),
+    server.use(
+      http.get("https://serpapi.com/search", () =>
+        HttpResponse.json({ organic_results: [] }),
+      ),
     );
 
     const result = await fetchAioResults("niche query with no AIO");
@@ -48,8 +45,10 @@ describe("fetchAioResults", () => {
   });
 
   it("should return aioPresent=true and empty citations when AIO has no references", async () => {
-    vi.spyOn(global, "fetch").mockResolvedValue(
-      makeResponse({ ai_overview: { references: [] } }),
+    server.use(
+      http.get("https://serpapi.com/search", () =>
+        HttpResponse.json({ ai_overview: { references: [] } }),
+      ),
     );
 
     const result = await fetchAioResults("query");
@@ -58,25 +57,28 @@ describe("fetchAioResults", () => {
   });
 
   it("should throw when the API response is not ok", async () => {
-    vi.spyOn(global, "fetch").mockResolvedValue({
-      ok: false,
-      status: 401,
-      text: async () => "Unauthorized",
-    } as Response);
+    server.use(
+      http.get("https://serpapi.com/search", () =>
+        HttpResponse.json({ error: "Unauthorized" }, { status: 401 }),
+      ),
+    );
 
     await expect(fetchAioResults("query")).rejects.toThrow("SerpApi error 401");
   });
 
   it("should include api_key and engine=google in the request URL", async () => {
-    const spy = vi.spyOn(global, "fetch").mockResolvedValue(
-      makeResponse({}),
+    let capturedUrl: URL | null = null;
+    server.use(
+      http.get("https://serpapi.com/search", ({ request }) => {
+        capturedUrl = new URL(request.url);
+        return HttpResponse.json({});
+      }),
     );
 
     await fetchAioResults("test query");
 
-    const calledUrl = new URL(spy.mock.calls[0][0] as string);
-    expect(calledUrl.searchParams.get("engine")).toBe("google");
-    expect(calledUrl.searchParams.get("api_key")).toBe("test-key");
-    expect(calledUrl.searchParams.get("q")).toBe("test query");
+    expect(capturedUrl!.searchParams.get("engine")).toBe("google");
+    expect(capturedUrl!.searchParams.get("api_key")).toBe("test-key");
+    expect(capturedUrl!.searchParams.get("q")).toBe("test query");
   });
 });
