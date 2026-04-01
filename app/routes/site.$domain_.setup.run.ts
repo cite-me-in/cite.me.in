@@ -7,7 +7,7 @@ import { requireSiteAccess } from "~/lib/auth.server";
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import analyzeSentiment from "~/lib/llm-visibility/analyzeSentiment";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
-import PLATFORMS from "~/lib/llm-visibility/platformsToQuery.server";
+import PLATFORMS from "~/lib/llm-visibility/platformQueries.server";
 import type { QueryFn } from "~/lib/llm-visibility/queryFn";
 import { singleQueryRepetition } from "~/lib/llm-visibility/queryPlatform";
 import prisma from "~/lib/prisma.server";

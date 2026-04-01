@@ -1,6 +1,6 @@
 import { alphabetical, group, map } from "radashi";
 import prisma from "~/lib/prisma.server";
-import PLATFORMS from "./platformsToQuery.server";
+import PLATFORMS from "./platformQueries.server";
 import { default as runPlatform } from "./queryPlatform";
 
 /**

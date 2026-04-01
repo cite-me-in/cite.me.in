@@ -21,24 +21,9 @@ export default [
   { ...platforms.gemini, queryFn: queryGemini },
   { ...platforms.perplexity, queryFn: queryPerplexity },
   {
-    ...platforms.bing,
-    queryFn: ({ query, timeout }) =>
-      fetchSERPResults({ query, engine: "bing", timeout }),
-  },
-  {
-    ...platforms.google,
-    queryFn: ({ query, timeout }) =>
-      fetchSERPResults({ query, engine: "google", timeout }),
-  },
-  {
     ...platforms.copilot,
     queryFn: ({ query, timeout }) =>
       fetchSERPResults({ query, engine: "bing_copilot", timeout }),
-  },
-  {
-    ...platforms["google-ai-mode"],
-    queryFn: ({ query, timeout }) =>
-      fetchSERPResults({ query, engine: "google_ai_mode", timeout }),
   },
 ] satisfies {
   name: string;
