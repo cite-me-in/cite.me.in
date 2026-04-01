@@ -168,7 +168,6 @@ model Site {
   id                   String                                   @id @default(cuid())
   owner                User                  @relation("OwnedSites", fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId              String                @map("owner_id")
-  serpRuns             SerpRun[]
   siteInvitations      SiteInvitation[]
   siteQueries          SiteQuery[]
   siteQuerySuggestions SiteQuerySuggestion[]
@@ -271,34 +270,6 @@ model User {
   @@map("users")
 }
 
-model SerpRun {
-  createdAt DateTime    @map("created_at") @default(now())
-  id        String      @id @default(cuid())
-  onDate    String      @map("on_date")
-  queries   SerpQuery[]
-  site      Site        @relation(fields: [siteId], references: [id], onDelete: Cascade)
-  siteId    String      @map("site_id")
-  source    String      @map("source")
-  updatedAt DateTime    @map("updated_at") @updatedAt
-
-  @@unique([siteId, source, onDate])
-  @@index([siteId])
-  @@map("serp_runs")
-}
-
-model SerpQuery {
-  aioPresent Boolean  @map("aio_present")
-  citations  String[] @map("citations")
-  createdAt  DateTime @map("created_at") @default(now())
-  group      String   @map("group")
-  id         String   @id @default(cuid())
-  query      String   @map("query")
-  run        SerpRun  @relation(fields: [runId], references: [id], onDelete: Cascade)
-  runId      String   @map("run_id")
-
-  @@index([runId])
-  @@map("serp_queries")
-}
 
 enum InvitationStatus {
   PENDING
