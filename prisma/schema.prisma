@@ -272,6 +272,7 @@ model User {
 }
 
 model SerpRun {
+  createdAt DateTime    @map("created_at") @default(now())
   id        String      @id @default(cuid())
   onDate    String      @map("on_date")
   queries   SerpQuery[]
