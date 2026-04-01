@@ -1,5 +1,6 @@
 import { ms } from "convert";
 import { sleep } from "radashi";
+import invariant from "tiny-invariant";
 import sendSiteSetupEmail from "~/emails/SiteSetupComplete";
 import addSiteQueries from "~/lib/addSiteQueries";
 import { requireSiteAccess } from "~/lib/auth.server";
@@ -118,6 +119,8 @@ async function runPlatformWithProgress({
   queries: { query: string; group: string }[];
   log: (line: string) => Promise<unknown>;
 }) {
+  invariant(platform, "Platform is required");
+  invariant(model, "Model is required");
   const onDate = new Date().toISOString().split("T")[0];
   const run = await prisma.citationQueryRun.upsert({
     where: { siteId_platform_onDate: { onDate, platform, siteId: site.id } },

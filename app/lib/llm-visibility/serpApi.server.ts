@@ -1,5 +1,7 @@
 import envVars from "~/lib/envVars.server";
 
+export const SERP_API_PRICING = 25.0 / 1000;
+
 /**
  * Uses the SerpAPI to fetch organic results for a given query and engine.
  *

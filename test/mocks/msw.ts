@@ -20,6 +20,11 @@ const handlers = [
     HttpResponse.html("<html><body><p>Hello world</p></body></html>"),
   ),
 
+  // Return empty results for SerpAPI by default; tests can override with server.use()
+  http.get("https://serpapi.com/search", () =>
+    HttpResponse.json({ organic_results: [] }),
+  ),
+
   // Make sure we're not sending emails in tests
   http.post("https://api.resend.com/emails", () =>
     HttpResponse.json({ id: crypto.randomUUID() }),

@@ -36,7 +36,7 @@ export default [
       fetchSERPResults({ query, engine: "bing_copilot", timeout }),
   },
   {
-    ...platforms.googleAIMode,
+    ...platforms["google-ai-mode"],
     queryFn: ({ query, timeout }) =>
       fetchSERPResults({ query, engine: "google_ai_mode", timeout }),
   },

@@ -15,6 +15,7 @@ import {
   MODEL_ID as PERPLEXITY_MODEL_ID,
   MODEL_PRICING as PERPLEXITY_PRICING,
 } from "~/lib/llm-visibility/perplexityClient";
+import { SERP_API_PRICING } from "~/lib/llm-visibility/serpApi.server";
 import prisma from "~/lib/prisma.server";
 import { Prisma } from "~/prisma";
 import captureAndLogError from "../captureAndLogError.server";
@@ -111,6 +112,10 @@ function calculateCostUSD(
     [OPENAI_MODEL_ID]: OPENAI_PRICING,
     [GEMINI_MODEL_ID]: GEMINI_PRICING,
     [PERPLEXITY_MODEL_ID]: PERPLEXITY_PRICING,
+    bing: { perRequest: SERP_API_PRICING },
+    google: { perRequest: SERP_API_PRICING },
+    "google-ai-mode": { perRequest: SERP_API_PRICING },
+    copilot: { perRequest: SERP_API_PRICING },
   }[model];
   if (!cost) {
     captureAndLogError(`Unknown usage cost for ${model}`);
