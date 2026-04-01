@@ -199,7 +199,7 @@ function SetupSentiment({
               </Text>
               <Text
                 className={twMerge(
-                  "text-sm font-semibold uppercase",
+                  "font-semibold text-sm uppercase",
                   sentimentColors[sentimentLabel ?? "neutral"],
                 )}
               >
