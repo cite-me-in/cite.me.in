@@ -17,15 +17,8 @@ export default async function queryAccount({
   site: { id: string; domain: string };
   queries: { query: string; group: string }[];
 }) {
-  await map(PLATFORMS, ({ name: platform, modelId, queryFn }) =>
-    runPlatform({
-      siteId: site.id,
-      modelId,
-      platform,
-      queries,
-      queryFn,
-      site,
-    }),
+  await map(PLATFORMS, ({ name: platform, model, queryFn }) =>
+    runPlatform({ model, platform, queries, queryFn, site }),
   );
 
   const all = await prisma.citationQueryRun.findMany({

@@ -32,7 +32,7 @@ describe.each([
       timeout: 0,
     });
 
-    expect(result).toEqual([
+    expect(result.citations).toEqual([
       "https://example.com/page",
       "https://other.com/article",
       "https://third.com/",
@@ -52,7 +52,15 @@ describe.each([
       timeout: 0,
     });
 
-    expect(result).toEqual([]);
+    expect(result).toEqual({
+      citations: [],
+      extraQueries: [],
+      text: "",
+      usage: {
+        inputTokens: 0,
+        outputTokens: 0,
+      },
+    });
   });
 
   it("should pass the correct engine param in the request", async () => {

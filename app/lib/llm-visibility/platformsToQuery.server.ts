@@ -7,7 +7,7 @@ import type { QueryFn } from "./queryFn";
 import { fetchOrganicResults } from "./serpApi.server";
 
 const platforms = Object.fromEntries(
-  PLATFORMS.map(({ name, modelId, label }) => [name, { name, modelId, label }]),
+  PLATFORMS.map(({ name, model, label }) => [name, { name, model, label }]),
 );
 
 /**
@@ -42,7 +42,7 @@ export default [
   },
 ] satisfies {
   name: string;
-  modelId: string;
+  model: string;
   queryFn: QueryFn;
   label: string;
 }[];

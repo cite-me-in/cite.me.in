@@ -69,11 +69,11 @@ export async function action({ request, params }: Route.ActionArgs) {
     // Phase 5: Query all 4 platforms in parallel
     await log("Querying AI platforms...");
     await Promise.all(
-      PLATFORMS.map(({ name: platform, modelId, queryFn, label }) =>
+      PLATFORMS.map(({ name: platform, model, queryFn, label }) =>
         runPlatformWithProgress({
           site,
           platform,
-          modelId,
+          model,
           queryFn,
           label,
           queries,
@@ -104,7 +104,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 async function runPlatformWithProgress({
   site,
   platform,
-  modelId,
+  model,
   queryFn,
   label,
   queries,
@@ -112,7 +112,7 @@ async function runPlatformWithProgress({
 }: {
   site: { id: string; domain: string };
   platform: string;
-  modelId: string;
+  model: string;
   queryFn: QueryFn;
   label: string;
   queries: { query: string; group: string }[];
@@ -121,8 +121,8 @@ async function runPlatformWithProgress({
   const onDate = new Date().toISOString().split("T")[0];
   const run = await prisma.citationQueryRun.upsert({
     where: { siteId_platform_onDate: { onDate, platform, siteId: site.id } },
-    update: { model: modelId },
-    create: { onDate, model: modelId, platform, siteId: site.id },
+    update: { model },
+    create: { onDate, model, platform, siteId: site.id },
   });
 
   for (const [index, { query, group }] of queries.entries()) {
@@ -130,9 +130,8 @@ async function runPlatformWithProgress({
     if (process.env.NODE_ENV !== "test") await sleep(ms("200ms") * index);
     await log(`${label}: ${query} (${index + 1}/${queries.length})`);
     await singleQueryRepetition({
-      siteId: site.id,
       group,
-      modelId,
+      model,
       platform,
       query,
       queryFn,

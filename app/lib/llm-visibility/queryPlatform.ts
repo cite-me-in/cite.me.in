@@ -1,6 +1,7 @@
 import { ms } from "convert";
 import debug from "debug";
 import { sleep } from "radashi";
+import invariant from "tiny-invariant";
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import prisma from "~/lib/prisma.server";
 import {
@@ -15,42 +16,41 @@ const logger = debug("server");
 /**
  * Query a given platform for a given account and queries.
  *
- * @param modelId - The model to use for the queries.
+ * @param model - The model to use for the queries.
  * @param platform - The platform to query.
  * @param queries - The queries to query.
  * @param queryFn - The function to use to query the LLM.
  * @param site - The site to query.
  */
 export default async function queryPlatform({
-  siteId,
-  modelId,
+  model,
   platform,
   queries,
   queryFn,
   site,
 }: {
-  siteId: string;
-  modelId: string;
+  model: string;
   platform: string;
   queries: { query: string; group: string }[];
   queryFn: QueryFn;
   site: { id: string; domain: string };
 }) {
+  invariant(platform, "Platform is required");
+  invariant(model, "Model is required");
   try {
     const onDate = new Date().toISOString().split("T")[0];
     const run = await prisma.citationQueryRun.upsert({
       where: { siteId_platform_onDate: { onDate, platform, siteId: site.id } },
-      update: { model: modelId },
-      create: { onDate, model: modelId, platform, siteId: site.id },
+      update: { model: model },
+      create: { onDate, model: model, platform, siteId: site.id },
     });
     logger("[%s:%s] Created citation query run %s", site.id, platform, run.id);
 
     for (const [index, query] of queries.entries()) {
       if (process.env.NODE_ENV !== "test") await sleep(ms("1s") * index);
       await singleQueryRepetition({
-        siteId,
         group: query.group,
-        modelId,
+        model,
         platform,
         query: query.query,
         queryFn,
@@ -97,18 +97,16 @@ async function updateRunSentiment({
 }
 
 export async function singleQueryRepetition({
-  siteId,
   group,
-  modelId,
+  model,
   platform,
   query,
   queryFn,
   runId,
   site,
 }: {
-  siteId: string;
   group: string;
-  modelId: string;
+  model: string;
   platform: string;
   query: string;
   queryFn: QueryFn;
@@ -130,15 +128,15 @@ export async function singleQueryRepetition({
   }
 
   try {
-    await checkUsageLimits(siteId);
+    await checkUsageLimits(site.id);
     const { citations, extraQueries, text, usage } = await queryFn({
       maxRetries: 3,
       timeout: ms("60s"),
       query,
     });
     await recordUsageEvent({
-      siteId,
-      model: modelId,
+      siteId: site.id,
+      model,
       inputTokens: usage.inputTokens ?? 0,
       outputTokens: usage.outputTokens ?? 0,
     });

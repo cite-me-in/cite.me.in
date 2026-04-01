@@ -49,7 +49,7 @@ const QUERIES = [
 
 const PLATFORM_ARGS = {
   siteId: "site-1",
-  modelId: "claude-haiku-4-5-20251001",
+  model: "claude-haiku-4-5-20251001",
   platform: "claude",
   queries: QUERIES,
 } as const;
@@ -79,11 +79,7 @@ describe("queryPlatform", () => {
     let callIndex = 0;
     const queryFn = vi.fn(async () => CITATION_SETS[callIndex++ % 3]);
 
-    await queryPlatform({
-      ...PLATFORM_ARGS,
-      site,
-      queryFn,
-    });
+    await queryPlatform({ ...PLATFORM_ARGS, site, queryFn });
 
     const run = await prisma.citationQueryRun.findFirst({
       where: { siteId: site.id, platform: "claude" },

@@ -2,20 +2,20 @@
  * This can be used in the UI to display the platforms and their labels.
  */
 export default [
-  { label: "Bing", modelId: "bing", name: "bing" },
-  { label: "CoPilot", modelId: "copilot", name: "copilot" },
-  { label: "ChatGPT", modelId: "gpt-5-chat-latest", name: "chatgpt" },
-  { label: "Claude", modelId: "claude-haiku-4-5-20251001", name: "claude" },
-  { label: "Gemini", modelId: "gemini-2.5-flash", name: "gemini" },
+  { label: "Bing", model: "bing", name: "bing" },
+  { label: "CoPilot", model: "copilot", name: "copilot" },
+  { label: "ChatGPT", model: "gpt-5-chat-latest", name: "chatgpt" },
+  { label: "Claude", model: "claude-haiku-4-5-20251001", name: "claude" },
+  { label: "Gemini", model: "gemini-2.5-flash", name: "gemini" },
   {
     label: "Google AI Mode",
-    modelId: "google-ai-mode",
+    model: "google-ai-mode",
     name: "google-ai-mode",
   },
-  { label: "Google", modelId: "google", name: "google" },
-  { label: "Perplexity", modelId: "sonar", name: "perplexity" },
+  { label: "Google", model: "google", name: "google" },
+  { label: "Perplexity", model: "sonar", name: "perplexity" },
 ] satisfies {
   label: string;
-  modelId: string;
+  model: string;
   name: string;
 }[];
