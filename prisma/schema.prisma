@@ -168,11 +168,11 @@ model Site {
   id                   String                                   @id @default(cuid())
   owner                User                  @relation("OwnedSites", fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId              String                @map("owner_id")
+  serpRuns             SerpRun[]
   siteInvitations      SiteInvitation[]
   siteQueries          SiteQuery[]
   siteQuerySuggestions SiteQuerySuggestion[]
   siteUsers            SiteUser[]
-  serpRuns             SerpRun[]
   summary              String                @map("summary")
   updatedAt            DateTime              @map("updated_at") @updatedAt
   usageEvents          UsageEvent[]
