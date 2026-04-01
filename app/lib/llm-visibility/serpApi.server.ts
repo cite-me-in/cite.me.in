@@ -13,7 +13,7 @@ import envVars from "~/lib/envVars.server";
  * @see https://serpapi.com/google-ai-mode-api
  * @see https://serpapi.com/search-api
  */
-export async function fetchOrganicResults({
+export default async function fetchSERPResults({
   query,
   engine,
   timeout,

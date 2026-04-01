@@ -1,6 +1,6 @@
 import { HttpResponse, http } from "msw";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { fetchOrganicResults } from "~/lib/llm-visibility/serpApi.server";
+import fetchSERPResults from "~/lib/llm-visibility/serpApi.server";
 import { server } from "~/test/mocks/msw";
 
 vi.mock("~/lib/envVars.server", () => ({
@@ -26,7 +26,7 @@ describe.each([
       ),
     );
 
-    const result = await fetchOrganicResults({
+    const result = await fetchSERPResults({
       query: "best retail space platforms",
       engine,
       timeout: 0,
@@ -46,7 +46,7 @@ describe.each([
       ),
     );
 
-    const result = await fetchOrganicResults({
+    const result = await fetchSERPResults({
       query: "very niche query",
       engine,
       timeout: 0,
@@ -72,7 +72,7 @@ describe.each([
       }),
     );
 
-    await fetchOrganicResults({ query: "test query", engine, timeout: 0 });
+    await fetchSERPResults({ query: "test query", engine, timeout: 0 });
 
     expect(capturedUrl?.searchParams.get("engine")).toBe(engine);
     expect(capturedUrl?.searchParams.get("q")).toBe("test query");
@@ -87,7 +87,7 @@ describe.each([
     );
 
     await expect(
-      fetchOrganicResults({ query: "query", engine, timeout: 0 }),
+      fetchSERPResults({ query: "query", engine, timeout: 0 }),
     ).rejects.toThrow("SerpApi error 401");
   });
 });

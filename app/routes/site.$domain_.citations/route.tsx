@@ -1,3 +1,4 @@
+import { alphabetical } from "radashi";
 import { useSearchParams } from "react-router";
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
@@ -105,7 +106,7 @@ export default function SiteCitationsPage({
           onValueChange={(platform) => setSearchParams({ platform })}
         >
           <TabsList>
-            {PLATFORMS.map((platform) => (
+            {alphabetical(PLATFORMS, ({ label }) => label).map((platform) => (
               <TabsTrigger key={platform.name} value={platform.name}>
                 {platform.label}
               </TabsTrigger>
