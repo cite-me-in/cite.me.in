@@ -40,7 +40,6 @@ beforeAll(async () => {
                   group: "retail",
                   extraQueries: [],
                   text: "Some answer",
-                  position: 1,
                   citations: [
                     `https://${DOMAIN}/page1`,
                     `https://${DOMAIN}/page2`,
@@ -71,7 +70,7 @@ describe("GET /api/me", () => {
     let response: Response;
     let body: {
       email: string;
-      sites: { domain: string; createdAt: string; }[];
+      sites: { domain: string; createdAt: string }[];
     };
 
     beforeAll(async () => {

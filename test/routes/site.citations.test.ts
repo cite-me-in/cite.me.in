@@ -30,14 +30,13 @@ const QUERIES = [
 
 // Nine fixed citation sets (3 queries × 3 repetitions).
 // Position is the index of HOSTNAME in the citations array, or null if absent.
-const CITATION_SETS: Array<{ citations: string[]; position: number | null }> = [
+const CITATION_SETS: Array<{ citations: string[] }> = [
   {
     citations: [
       `https://${HOSTNAME}/marketplace`,
       "https://popupinsider.com/guide",
       "https://storeshq.com/retail",
     ],
-    position: 0,
   },
   {
     citations: [
@@ -45,7 +44,6 @@ const CITATION_SETS: Array<{ citations: string[]; position: number | null }> = [
       "https://siteselectiongroup.com/leasing",
       "https://storeshq.com/retail",
     ],
-    position: null,
   },
   {
     citations: [
@@ -53,21 +51,18 @@ const CITATION_SETS: Array<{ citations: string[]; position: number | null }> = [
       `https://${HOSTNAME}/listings`,
       "https://storeshq.com/retail",
     ],
-    position: 1,
   },
   {
     citations: [
       `https://${HOSTNAME}/marketplace`,
       "https://popupinsider.com/guide",
     ],
-    position: 0,
   },
   {
     citations: [
       "https://storeshq.com/retail",
       "https://siteselectiongroup.com/leasing",
     ],
-    position: null,
   },
   {
     citations: [
@@ -75,7 +70,6 @@ const CITATION_SETS: Array<{ citations: string[]; position: number | null }> = [
       "https://storeshq.com/retail",
       `https://${HOSTNAME}/faq`,
     ],
-    position: 2,
   },
   {
     citations: [
@@ -83,14 +77,12 @@ const CITATION_SETS: Array<{ citations: string[]; position: number | null }> = [
       "https://popupinsider.com/guide",
       "https://storeshq.com/retail",
     ],
-    position: 0,
   },
   {
     citations: [
       "https://siteselectiongroup.com/leasing",
       "https://popupinsider.com/guide",
     ],
-    position: null,
   },
   {
     citations: [
@@ -98,7 +90,6 @@ const CITATION_SETS: Array<{ citations: string[]; position: number | null }> = [
       "https://storeshq.com/retail",
       "https://siteselectiongroup.com/leasing",
     ],
-    position: 0,
   },
 ];
 
@@ -169,14 +160,13 @@ describe("site page", () => {
       for (let runIdx = 0; runIdx < runDays.length; runIdx++) {
         // Shift citation sets per run so visibility varies across history.
         const queryData = QUERIES.flatMap(({ query, group }, qi) => {
-          const { citations, position } =
+          const { citations } =
             CITATION_SETS[(qi * 3 + runIdx) % CITATION_SETS.length];
           return {
             query,
             group,
             text: `Response for "${query}".`,
             citations,
-            position,
             extraQueries: [] as string[],
           };
         });

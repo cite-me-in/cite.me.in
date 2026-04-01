@@ -2,7 +2,6 @@ import { ms } from "convert";
 import debug from "debug";
 import { sleep } from "radashi";
 import captureAndLogError from "~/lib/captureAndLogError.server";
-import { isSameDomain } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
 import {
   checkUsageLimits,
@@ -144,16 +143,11 @@ export async function singleQueryRepetition({
       outputTokens: usage.outputTokens ?? 0,
     });
     logger("[%s:%s] %s (group: %s)", site.id, platform, query, group);
-    const index = citations.findIndex((url) =>
-      isSameDomain({ domain: site.domain, url }),
-    );
-
     await prisma.citationQuery.create({
       data: {
         group,
         citations,
         extraQueries,
-        position: index >= 0 ? index : null,
         query,
         runId,
         text,

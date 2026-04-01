@@ -40,7 +40,6 @@ beforeAll(async () => {
                   group: "retail",
                   extraQueries: [],
                   text: "Some answer",
-                  position: 1,
                   citations: [
                     `https://${DOMAIN}/page1`,
                     `https://${DOMAIN}/page2`,
@@ -60,7 +59,6 @@ beforeAll(async () => {
 });
 
 describe("GET /api/sites/:domain", () => {
-
   it("should return 401 without a token", async () => {
     const response = await get(`/api/sites/${DOMAIN}`);
     expect(response.status).toBe(401);
@@ -78,7 +76,7 @@ describe("GET /api/sites/:domain", () => {
       createdAt: string;
       content: string;
       summary: string;
-      users: { email: string; role: string; }[];
+      users: { email: string; role: string }[];
     };
 
     beforeAll(async () => {
@@ -100,7 +98,6 @@ describe("GET /api/sites/:domain", () => {
       expect(body.content).toBe("Test content");
       expect(body.summary).toBe("Test summary");
     });
-
   });
 });
 
@@ -148,8 +145,8 @@ describe("GET /api/sites/:domain/queries", () => {
         model: string;
         onDate: string;
         platform: string;
-        queries: { query: string; citations: string[]; }[];
-        sentiment: { label: string; summary: string; };
+        queries: { query: string; citations: string[] }[];
+        sentiment: { label: string; summary: string };
       }[];
     };
 
@@ -161,7 +158,6 @@ describe("GET /api/sites/:domain/queries", () => {
     it("should return 200", async () => {
       expect(response.status).toBe(200);
     });
-
 
     it("should return the queries with citations", async () => {
       expect(Array.isArray(body.platforms)).toBe(true);

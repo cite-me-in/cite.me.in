@@ -154,7 +154,9 @@ describe("sites route", () => {
     });
 
     it("should redirect to setup page", async () => {
-      expect(new URL(page.url()).pathname).toMatch(`/site/${site.domain}/setup`);
+      expect(new URL(page.url()).pathname).toMatch(
+        `/site/${site.domain}/setup`,
+      );
     });
 
     it("should show setup page heading", async () => {
@@ -216,7 +218,8 @@ describe("sites route", () => {
         deleteConfirmBtn = settingsPage.getByRole("button", {
           name: "Delete Site",
         });
-        confirmDomainInput = settingsPage.getByPlaceholder("dashboard-test.com");
+        confirmDomainInput =
+          settingsPage.getByPlaceholder("dashboard-test.com");
       });
 
       it("should open confirmation dialog", async () => {
@@ -244,7 +247,9 @@ describe("sites route", () => {
         beforeAll(async () => {
           await confirmDomainInput.fill("dashboard-test.com");
           await expect(deleteConfirmBtn).toBeEnabled();
-          await settingsPage.getByRole("button", { name: "Delete Site" }).click();
+          await settingsPage
+            .getByRole("button", { name: "Delete Site" })
+            .click();
           await settingsPage.waitForURL("/sites");
         });
 
@@ -320,7 +325,6 @@ describe("sites route", () => {
                     ],
                     text: "response",
                     group: "group",
-                    position: 0,
                     extraQueries: [],
                   },
                 ],

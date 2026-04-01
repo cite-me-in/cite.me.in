@@ -20,7 +20,6 @@ export async function loader({ request, params }: Route.LoaderArgs) {
           id: true,
           query: true,
           group: true,
-          position: true,
           citations: true,
           text: true,
         },

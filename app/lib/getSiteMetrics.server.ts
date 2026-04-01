@@ -54,7 +54,6 @@ export default async function getSiteMetrics(
   const queries = await prisma.citationQuery.findMany({
     select: {
       citations: true,
-      position: true,
       text: true,
       createdAt: true,
       run: {

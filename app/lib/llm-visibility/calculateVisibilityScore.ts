@@ -14,7 +14,7 @@
  *   softMentionRate      × 0.15
  */
 
-import { normalizeDomain } from "../isSameDomain";
+import { isSameDomain, normalizeDomain } from "../isSameDomain";
 
 const weights = {
   queryCoverageRate: 0.35,
@@ -30,7 +30,6 @@ export default function calculateVisibilityScore({
   domain: string;
   queries: {
     citations: string[];
-    position: number | null;
     text: string;
   }[];
 }): {
@@ -76,11 +75,14 @@ export default function calculateVisibilityScore({
       if (host === domainNormalized) domainCitations++;
     }
 
+    const position =
+      query.citations.findIndex((c) => isSameDomain({ domain, url: c })) + 1;
+
     // Query coverage + position weight
-    if (query.position !== null) {
+    if (position !== null) {
       queriesWithCitation++;
       // Reciprocal rank: position 0 → 1.0, position 1 → 0.5, position 4 → 0.2
-      positionWeightSum += 1 / (query.position + 1);
+      positionWeightSum += 1 / (position + 1);
     }
 
     // Soft mention: domain name appears anywhere in the LLM response text

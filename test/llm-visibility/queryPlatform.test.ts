@@ -1,5 +1,6 @@
 import invariant from "tiny-invariant";
 import { beforeAll, describe, expect, it, vi } from "vitest";
+import { isSameDomain } from "~/lib/isSameDomain";
 import queryPlatform from "~/lib/llm-visibility/queryPlatform";
 import prisma from "~/lib/prisma.server";
 
@@ -54,7 +55,7 @@ const PLATFORM_ARGS = {
 } as const;
 
 describe("queryPlatform", () => {
-  let site: { id: string; domain: string; createdAt: Date; };
+  let site: { id: string; domain: string; createdAt: Date };
 
   beforeAll(async () => {
     const user = await prisma.user.create({
@@ -107,13 +108,21 @@ describe("queryPlatform", () => {
     expect(run.queries[0].query).toBe(
       "How do I find short-term retail space in shopping malls?",
     );
-    expect(run.queries[0].position).toBe(0);
+    expect(
+      run.queries[0].citations.findIndex((c) =>
+        isSameDomain({ domain: site.domain, url: c }),
+      ) + 1,
+    );
 
     expect(run.queries[1].group).toBe("2. active_search");
     expect(run.queries[1].query).toBe(
       "Find available temporary retail space in shopping centers",
     );
-    expect(run.queries[1].position).toBe(2);
+    expect(
+      run.queries[1].citations.findIndex((c) =>
+        isSameDomain({ domain: site.domain, url: c }),
+      ) + 1,
+    ).toBe(3);
   });
 
   it("should create a run and store citation queries for each query", {
@@ -139,7 +148,6 @@ describe("queryPlatform", () => {
     expect(run.queries[0]).toMatchObject({
       citations: ["https://rentail.space/listings", "https://other.com"],
       text: "You can find short-term retail space on rentail.space.",
-      position: 0,
       extraQueries: [],
     });
 
@@ -152,7 +160,6 @@ describe("queryPlatform", () => {
         "https://rentail.space/faq",
       ],
       text: "Platforms like rentail.space offer temporary retail options.",
-      position: 2,
       extraQueries: [],
     });
   });

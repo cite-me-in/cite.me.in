@@ -67,7 +67,6 @@ model CitationQuery {
   extraQueries String[]         @map("extra_queries")
   group        String           @map("group")
   id           String                                 @id @default(cuid())
-  position     Int?             @map("position")
   query        String           @map("query")
   run          CitationQueryRun @relation(fields: [runId], references: [id], onDelete: Cascade)
   runId        String           @map("run_id")
@@ -258,7 +257,7 @@ model User {
   emailVerificationTokens EmailVerificationToken[]
   emailVerifiedAt         DateTime?                @map("email_verified_at")
   id                      String                                             @id @default(cuid())
-  isAdmin                 Boolean                  @default(false)           @map("is_admin")
+  isAdmin                 Boolean                  @map("is_admin")          @default(false)
   ownedSites              Site[]                   @relation("OwnedSites")
   passwordHash            String                   @map("password_hash")
   passwordRecoveryTokens  PasswordRecoveryToken[]

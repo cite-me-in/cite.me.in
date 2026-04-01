@@ -1,6 +1,7 @@
 import { generateText } from "ai";
 import { z } from "zod";
 import type { SentimentLabel } from "~/prisma";
+import { isSameDomain } from "../isSameDomain";
 import { haiku } from "./claudeClient.server";
 
 const schema = z.object({
@@ -13,7 +14,11 @@ export default async function analyzeSentiment({
   queries,
 }: {
   domain: string;
-  queries: { query: string; text: string; position: number | null }[];
+  queries: {
+    citations: string[];
+    query: string;
+    text: string;
+  }[];
 }): Promise<{ label: SentimentLabel; summary: string }> {
   if (queries.length === 0)
     return {
@@ -23,11 +28,11 @@ export default async function analyzeSentiment({
 
   const queryLines = queries
     .map((q) => {
+      const position =
+        q.citations.findIndex((c) => isSameDomain({ domain, url: c })) + 1;
       const cited =
-        q.position !== null
-          ? `cited at position #${q.position + 1}`
-          : "not cited";
-      return `Query: ${q.query}\nCitation status: ${cited}\nResponse:\n${q.text}`;
+        position !== null ? `cited at position #${position + 1}` : "not cited";
+      return `Query: ${q.query}\nCitation status: ${cited}\nResponse:\n$<response>${q.text}</response>`;
     })
     .join("\n\n---\n\n");
 
