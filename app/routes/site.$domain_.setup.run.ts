@@ -3,6 +3,7 @@ import { sleep } from "radashi";
 import invariant from "tiny-invariant";
 import sendSiteSetupEmail from "~/emails/SiteSetupComplete";
 import addSiteQueries from "~/lib/addSiteQueries";
+import loadSetupMetrics from "~/lib/setupMetrics.server";
 import { requireSiteAccess } from "~/lib/auth.server";
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import analyzeSentiment from "~/lib/llm-visibility/analyzeSentiment";
@@ -89,7 +90,8 @@ export async function action({ request, params }: Route.ActionArgs) {
       where: { id: user.id },
       select: { email: true, unsubscribed: true },
     });
-    await sendSiteSetupEmail({ domain: site.domain, user: owner });
+    const metrics = await loadSetupMetrics(site.id);
+    await sendSiteSetupEmail({ domain: site.domain, user: owner, metrics });
 
     await log("Done! Your citations are ready.");
     await setStatus({ siteId: site.id, userId: user.id, status: "complete" });
