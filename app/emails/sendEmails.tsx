@@ -6,6 +6,7 @@ import { retry, sleep } from "radashi";
 import { Resend } from "resend";
 import invariant from "tiny-invariant";
 import envVars from "~/lib/envVars.server";
+import EmailLayout from "./EmailLayout";
 import generateUnsubscribeToken from "./generateUnsubscribeToken";
 
 let lastEmailSent: {
@@ -16,22 +17,6 @@ let lastEmailSent: {
 
 const resend = new Resend(envVars.RESEND_API_KEY);
 const logger = debug("email");
-
-type CanUnsubscribeEmailProps = {
-  canUnsubscribe: true;
-  render: ({
-    subject,
-    unsubscribeURL,
-  }: {
-    subject: string;
-    unsubscribeURL: string;
-  }) => React.ReactNode;
-};
-
-type NoUnsubscribeEmailProps = {
-  canUnsubscribe: false;
-  render: ({ subject }: { subject: string }) => React.ReactNode;
-};
 
 /**
  * Send an email using Resend. If an error occurs, it will be captured by Sentry.
@@ -46,11 +31,13 @@ type NoUnsubscribeEmailProps = {
  */
 export async function sendEmail({
   canUnsubscribe,
+  email,
   headers,
-  render: renderFn,
   subject,
   user,
-}: (CanUnsubscribeEmailProps | NoUnsubscribeEmailProps) & {
+}: {
+  canUnsubscribe: boolean;
+  email: React.ReactNode;
   headers?: Record<string, string>;
   subject: string;
   user: {
@@ -70,9 +57,12 @@ export async function sendEmail({
 
   const html = await pretty(
     await render(
-      canUnsubscribe
-        ? await renderFn({ subject, unsubscribeURL })
-        : await renderFn({ subject }),
+      <EmailLayout
+        subject={subject}
+        unsubscribeURL={canUnsubscribe ? unsubscribeURL : undefined}
+      >
+        {email}
+      </EmailLayout>,
     ),
   );
 

@@ -2,7 +2,6 @@ import { Temporal } from "@js-temporal/polyfill";
 import { Section, Text } from "@react-email/components";
 import prices from "~/data/stripe-prices.json";
 import prisma from "~/lib/prisma.server";
-import EmailLayout from "./EmailLayout";
 import { sendEmail } from "./sendEmails";
 
 export default async function sendTrialEndedEmails(trialDays: number) {
@@ -60,33 +59,7 @@ async function sendTrialEndedEmail({
     canUnsubscribe: true,
     subject: "Your cite.me.in data is waiting",
     user,
-    render: ({ subject, unsubscribeURL }) => (
-      <TrialEndedEmail
-        subject={subject}
-        unsubscribeURL={unsubscribeURL}
-        citationCount={citationCount}
-        domain={domain}
-        queryCount={queryCount}
-      />
-    ),
-  });
-}
-
-function TrialEndedEmail({
-  subject,
-  unsubscribeURL,
-  citationCount,
-  domain,
-  queryCount,
-}: {
-  subject: string;
-  unsubscribeURL?: string;
-  citationCount: number;
-  domain: string;
-  queryCount: number;
-}) {
-  return (
-    <EmailLayout subject={subject} unsubscribeURL={unsubscribeURL}>
+    email: (
       <Section>
         <Text>
           Over the last 25 days, you tracked {citationCount} citation
@@ -95,11 +68,12 @@ function TrialEndedEmail({
         </Text>
         <Text>
           Your free trial has ended and daily runs have paused. Upgrade to Pro
-          to keep your history and resume monitoring — ${prices.monthlyAmount}/month or ${prices.annualAmount}/year.
+          to keep your history and resume monitoring — ${prices.monthlyAmount}
+          /month or ${prices.annualAmount}/year.
         </Text>
       </Section>
-    </EmailLayout>
-  );
+    ),
+  });
 }
 
 async function countSiteCitations(siteId: string): Promise<number> {

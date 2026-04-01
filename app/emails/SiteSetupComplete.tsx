@@ -1,9 +1,16 @@
-import { Button, Column, Link, Row, Section, Text } from "@react-email/components";
+import {
+  Button,
+  Column,
+  Link,
+  Row,
+  Section,
+  Text,
+} from "@react-email/components";
 import { alphabetical } from "radashi";
 import { twMerge } from "tailwind-merge";
-import type { SentimentLabel } from "~/prisma";
+import Card from "~/components/email/Card";
 import envVars from "~/lib/envVars.server";
-import EmailLayout from "./EmailLayout";
+import type { SentimentLabel } from "~/prisma";
 import { sendEmail } from "./sendEmails";
 
 export type SetupMetrics = {
@@ -40,10 +47,9 @@ export default async function sendSiteSetupEmail({
     envVars.VITE_APP_URL,
   ).toString();
   await sendEmail({
-    canUnsubscribe: false,
-    render: ({ subject }) => (
+    canUnsubscribe: true,
+    email: (
       <SiteSetupComplete
-        subject={subject}
         domain={domain}
         citationsURL={citationsURL}
         metrics={metrics}
@@ -58,15 +64,13 @@ function SiteSetupComplete({
   citationsURL,
   domain,
   metrics,
-  subject,
 }: {
   citationsURL: string;
   domain: string;
   metrics: SetupMetrics;
-  subject: string;
 }) {
   return (
-    <EmailLayout subject={subject}>
+    <Section>
       <Text className="my-4 text-base text-text leading-relaxed">
         Your site <strong>{domain}</strong> has been set up on cite.me.in.
       </Text>
@@ -95,14 +99,14 @@ function SiteSetupComplete({
         <br />
         The Cite.me.in Team
       </Text>
-    </EmailLayout>
+    </Section>
   );
 }
 
 function PlatformCitations({
   byPlatform,
 }: {
-  byPlatform: SetupMetrics["byPlatform"];
+  byPlatform: Record<string, { citations: number }>;
 }) {
   const platforms = alphabetical(
     Object.entries(byPlatform),
@@ -139,7 +143,7 @@ function PlatformCitations({
 function SetupTopQueries({
   topQueries,
 }: {
-  topQueries: SetupMetrics["topQueries"];
+  topQueries: { query: string; count: number }[];
 }) {
   if (topQueries.length === 0) return null;
   return (
@@ -171,7 +175,10 @@ function SetupTopQueries({
 function SetupSentiment({
   byPlatform,
 }: {
-  byPlatform: SetupMetrics["byPlatform"];
+  byPlatform: Record<
+    string,
+    { sentimentLabel: SentimentLabel | null; sentimentSummary: string | null }
+  >;
 }) {
   const platforms = alphabetical(
     Object.entries(byPlatform).filter(
@@ -221,7 +228,13 @@ function SetupSentiment({
 function SetupTopCompetitors({
   competitors,
 }: {
-  competitors: SetupMetrics["competitors"];
+  competitors: {
+    domain: string;
+    brandName: string;
+    url: string;
+    count: number;
+    pct: number;
+  }[];
 }) {
   if (competitors.length === 0) return null;
   return (
@@ -243,53 +256,11 @@ function SetupTopCompetitors({
                 {count.toLocaleString()}{" "}
                 {count === 1 ? "citation" : "citations"}
               </td>
-              <td className="w-15 px-2 py-4 text-right tabular-nums">
-                {pct}%
-              </td>
+              <td className="w-15 px-2 py-4 text-right tabular-nums">{pct}%</td>
             </tr>
           ))}
         </tbody>
       </table>
     </Card>
-  );
-}
-
-function Card({
-  children,
-  className,
-  title,
-  subtitle,
-  withBorder,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  title?: string;
-  subtitle?: string;
-  withBorder?: boolean;
-}) {
-  return (
-    <Section
-      className={twMerge(
-        "my-4 w-full overflow-hidden bg-white",
-        withBorder && "rounded-lg border border-border",
-        className,
-      )}
-    >
-      {(title || subtitle) && (
-        <Row>
-          <Column className="px-5 pt-4">
-            {title && (
-              <Text className="font-bold text-2xl text-dark">{title}</Text>
-            )}
-            {subtitle && (
-              <Text className="text-light text-sm">{subtitle}</Text>
-            )}
-          </Column>
-        </Row>
-      )}
-      <Row>
-        <Column className="px-5 pt-4">{children}</Column>
-      </Row>
-    </Section>
   );
 }

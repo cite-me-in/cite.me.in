@@ -1,5 +1,4 @@
 import { Button, CodeInline, Section, Text } from "@react-email/components";
-import EmailLayout from "./EmailLayout";
 import { sendEmail } from "./sendEmails";
 
 export default async function sendPasswordRecoveryEmail({
@@ -11,21 +10,15 @@ export default async function sendPasswordRecoveryEmail({
 }) {
   await sendEmail({
     canUnsubscribe: false,
-    render: ({ subject }) => <PasswordRecovery subject={subject} url={url} />,
+    email: <PasswordRecovery url={url} />,
     subject: "Reset your Cite.me.in password",
     user: { email, unsubscribed: false },
   });
 }
 
-function PasswordRecovery({
-  subject,
-  url: resetPasswordUrl,
-}: {
-  subject: string;
-  url: string;
-}) {
+function PasswordRecovery({ url: resetPasswordUrl }: { url: string }) {
   return (
-    <EmailLayout subject={subject}>
+    <Section>
       <Text className="my-4 text-base text-text leading-relaxed">
         Hello there,
       </Text>
@@ -62,6 +55,6 @@ function PasswordRecovery({
         <br />
         The Cite.me.in Team
       </Text>
-    </EmailLayout>
+    </Section>
   );
 }

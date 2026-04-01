@@ -1,5 +1,4 @@
 import { Button, CodeInline, Section, Text } from "@react-email/components";
-import EmailLayout from "./EmailLayout";
 import { sendEmail } from "./sendEmails";
 
 export default async function sendEmailVerificationEmail({
@@ -11,21 +10,15 @@ export default async function sendEmailVerificationEmail({
 }) {
   await sendEmail({
     canUnsubscribe: false,
-    render: ({ subject }) => <EmailVerification subject={subject} url={url} />,
+    email: <EmailVerification url={url} />,
     subject: "Verify your email address for cite.me.in",
     user: { email, unsubscribed: false },
   });
 }
 
-function EmailVerification({
-  subject,
-  url: verificationUrl,
-}: {
-  subject: string;
-  url: string;
-}) {
+function EmailVerification({ url: verificationUrl }: { url: string }) {
   return (
-    <EmailLayout subject={subject}>
+    <Section>
       <Text className="my-4 text-base text-text leading-relaxed">
         Hello there,
       </Text>
@@ -63,6 +56,6 @@ function EmailVerification({
         <br />
         The Cite.me.in Team
       </Text>
-    </EmailLayout>
+    </Section>
   );
 }

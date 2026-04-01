@@ -9,8 +9,8 @@ import {
 } from "@react-email/components";
 import { alphabetical, last, sort, sum } from "radashi";
 import { twMerge } from "tailwind-merge";
+import Card from "~/components/email/Card";
 import type { SentimentLabel } from "~/prisma";
-import EmailLayout from "./EmailLayout";
 import { sendEmail } from "./sendEmails";
 
 export type WeeklyDigestEmailProps = {
@@ -39,7 +39,6 @@ export type WeeklyDigestEmailProps = {
   subject: string;
   toEmails: string[];
   topQueries: { query: string; count: number; delta: number }[];
-  unsubscribeURL: string;
 };
 
 export async function sendSiteDigestEmails(
@@ -49,13 +48,7 @@ export async function sendSiteDigestEmails(
   for (const to of data.toEmails) {
     const emailId = await sendEmail({
       canUnsubscribe: true,
-      render: ({ unsubscribeURL, subject }) => (
-        <WeeklyDigestEmail
-          {...data}
-          subject={subject}
-          unsubscribeURL={unsubscribeURL}
-        />
-      ),
+      email: <WeeklyDigestEmail {...data} />,
       subject: data.subject,
       user: { email: to, unsubscribed: false },
     });
@@ -73,11 +66,9 @@ export function WeeklyDigestEmail({
   competitors,
   score,
   topQueries,
-  unsubscribeURL,
-  subject,
 }: WeeklyDigestEmailProps) {
   return (
-    <EmailLayout subject={subject} unsubscribeURL={unsubscribeURL}>
+    <>
       <TopMetrics citations={citations} score={score} botVisits={botVisits} />
       <PlatformBreakdown byPlatform={byPlatform} />
       <CitationTrendsChart chartBase64={chartBase64} />
@@ -92,7 +83,7 @@ export function WeeklyDigestEmail({
           View your citations
         </Button>
       </Section>
-    </EmailLayout>
+    </>
   );
 }
 
@@ -330,44 +321,6 @@ function TopCompetitors({
         </tbody>
       </table>
     </Card>
-  );
-}
-
-function Card({
-  children,
-  className,
-  title,
-  subtitle,
-  withBorder,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  title?: string;
-  subtitle?: string;
-  withBorder?: boolean;
-}) {
-  return (
-    <Section
-      className={twMerge(
-        "my-4 w-full overflow-hidden bg-white",
-        withBorder && "rounded-lg border border-border",
-        className,
-      )}
-    >
-      {(title || subtitle) && (
-        <Row>
-          <Column className="px-5 pt-4">
-            {title && (
-              <Text className="font-bold text-2xl text-dark">{title}</Text>
-            )}
-            {subtitle && <Text className="text-light text-sm">{subtitle}</Text>}
-          </Column>
-        </Row>
-      )}
-      <Row>
-        <Column className="px-5 pt-4">{children}</Column>
-      </Row>
-    </Section>
   );
 }
 

@@ -2,6 +2,7 @@ import { render } from "@react-email/components";
 import { useEffect, useRef } from "react";
 import { useFetcher } from "react-router";
 import { Button } from "~/components/ui/Button";
+import EmailLayout from "~/emails/EmailLayout";
 import { WeeklyDigestEmail, sendSiteDigestEmails } from "~/emails/WeeklyDigest";
 import { requireUserAccess } from "~/lib/auth.server";
 import { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
@@ -15,7 +16,9 @@ export async function loader({ request }: Route.LoaderArgs) {
   await requireUserAccess(request);
   const data = await loadWeeklyDigestMetrics(siteId);
   const html = await render(
-    <WeeklyDigestEmail {...data} unsubscribeURL={"/"} />,
+    <EmailLayout subject={data.subject}>
+      <WeeklyDigestEmail {...data} />
+    </EmailLayout>,
   );
   return { html };
 }

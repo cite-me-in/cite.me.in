@@ -1,5 +1,4 @@
 import { Button, Section, Text } from "@react-email/components";
-import EmailLayout from "./EmailLayout";
 import { sendEmail } from "./sendEmails";
 
 export default async function sendSiteInvitationEmail({
@@ -15,9 +14,8 @@ export default async function sendSiteInvitationEmail({
 }) {
   await sendEmail({
     canUnsubscribe: false,
-    render: ({ subject }) => (
+    email: (
       <SiteInvitationEmail
-        subject={subject}
         siteDomain={siteDomain}
         invitedByEmail={invitedByEmail}
         url={url}
@@ -29,18 +27,16 @@ export default async function sendSiteInvitationEmail({
 }
 
 function SiteInvitationEmail({
-  subject,
   siteDomain,
   invitedByEmail,
   url,
 }: {
-  subject: string;
   siteDomain: string;
   invitedByEmail: string;
   url: string;
 }) {
   return (
-    <EmailLayout subject={subject}>
+    <Section>
       <Text className="my-4 text-base text-text leading-relaxed">Hello,</Text>
       <Text className="my-4 text-base text-text leading-relaxed">
         {invitedByEmail} has invited you to join <strong>{siteDomain}</strong>{" "}
@@ -63,6 +59,6 @@ function SiteInvitationEmail({
         <br />
         The Cite.me.in Team
       </Text>
-    </EmailLayout>
+    </Section>
   );
 }
