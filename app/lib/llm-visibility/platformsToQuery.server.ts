@@ -4,6 +4,7 @@ import openaiClient from "~/lib/llm-visibility/openaiClient";
 import queryPerplexity from "~/lib/llm-visibility/perplexityClient";
 import PLATFORMS from "~/lib/llm-visibility/platforms";
 import type { QueryFn } from "./queryFn";
+import { fetchOrganicResults } from "./serpApi.server";
 
 const platforms = Object.fromEntries(
   PLATFORMS.map(({ name, modelId, label }) => [name, { name, modelId, label }]),
@@ -19,6 +20,26 @@ export default [
   { ...platforms.claude, queryFn: queryClaude },
   { ...platforms.gemini, queryFn: queryGemini },
   { ...platforms.perplexity, queryFn: queryPerplexity },
+  {
+    ...platforms.bing,
+    queryFn: ({ query, timeout }) =>
+      fetchOrganicResults({ query, engine: "bing", timeout }),
+  },
+  {
+    ...platforms.google,
+    queryFn: ({ query, timeout }) =>
+      fetchOrganicResults({ query, engine: "google", timeout }),
+  },
+  {
+    ...platforms.copilot,
+    queryFn: ({ query, timeout }) =>
+      fetchOrganicResults({ query, engine: "bing_copilot", timeout }),
+  },
+  {
+    ...platforms.googleAIMode,
+    queryFn: ({ query, timeout }) =>
+      fetchOrganicResults({ query, engine: "google_ai_mode", timeout }),
+  },
 ] satisfies {
   name: string;
   modelId: string;

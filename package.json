@@ -14,6 +14,7 @@
 		"promote": "./scripts/promote.ts",
 		"start": "react-router-serve ./build/server/index.js",
 		"test:db:push": "infisical --env dev run -- pnpm prisma db push",
+		"prod:db:push": "infisical --env prod run -- pnpm prisma db push",
 		"test:reset": "rm -rf __screenshots__/*",
 		"test": "pnpm run check && pnpm test:db:push && pnpm test:reset && pnpm --expose-gc --max-old-space-size=3096 vitest run && playwright test",
 		"upgrade": "./scripts/upgrade.sh"
