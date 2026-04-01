@@ -1,0 +1,11 @@
+{
+  "planPath": "docs/plans/2026-03-31-google-aio-tracking.md",
+  "tasks": [
+    {"id": 3, "subject": "Task 1: Schema changes", "status": "pending"},
+    {"id": 4, "subject": "Task 2: Add env vars", "status": "pending", "blockedBy": [3]},
+    {"id": 5, "subject": "Task 3: DataForSEO client + test", "status": "pending", "blockedBy": [4]},
+    {"id": 6, "subject": "Task 4: queryGoogleAio runner + test", "status": "pending", "blockedBy": [5]},
+    {"id": 7, "subject": "Task 5: Wire into cron", "status": "pending", "blockedBy": [6]}
+  ],
+  "lastUpdated": "2026-03-31T00:00:00Z"
+}
