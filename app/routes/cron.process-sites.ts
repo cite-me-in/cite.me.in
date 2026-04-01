@@ -11,6 +11,7 @@ import generateBotInsight from "~/lib/llm-visibility/generateBotInsight";
 import queryAccount from "~/lib/llm-visibility/queryAccount";
 import prisma from "~/lib/prisma.server";
 import { UsageLimitExceededError } from "~/lib/usage/UsageLimitExceededError";
+import queryGoogleAio from "~/lib/serp/queryGoogleAio.server";
 import { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
 import type { Route } from "./+types/cron.process-sites";
 
@@ -36,7 +37,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const results: { emailIds: string[]; domain: string }[] = [];
   await map(sitesForDigest, async (site) => {
     // NOTE Always run updates first and then send the digest email.
-    await Promise.all([nextCitationRun(site), updateBotInsight(site)]);
+    await Promise.all([nextCitationRun(site), updateBotInsight(site), queryGoogleAio(site)]);
     const data = await loadWeeklyDigestMetrics(site.id);
     const sendEmails = await sendSiteDigestEmails(data);
     results.push({
