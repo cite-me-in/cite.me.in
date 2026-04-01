@@ -172,6 +172,7 @@ model Site {
   siteQueries          SiteQuery[]
   siteQuerySuggestions SiteQuerySuggestion[]
   siteUsers            SiteUser[]
+  serpRuns             SerpRun[]
   summary              String                @map("summary")
   updatedAt            DateTime              @map("updated_at") @updatedAt
   usageEvents          UsageEvent[]
@@ -268,6 +269,34 @@ model User {
   updatedAt               DateTime                 @map("updated_at")        @updatedAt
 
   @@map("users")
+}
+
+model SerpRun {
+  id        String      @id @default(cuid())
+  onDate    String      @map("on_date")
+  queries   SerpQuery[]
+  site      Site        @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId    String      @map("site_id")
+  source    String      @map("source")
+  updatedAt DateTime    @map("updated_at") @updatedAt
+
+  @@unique([siteId, source, onDate])
+  @@index([siteId])
+  @@map("serp_runs")
+}
+
+model SerpQuery {
+  aioPresent Boolean  @map("aio_present")
+  citations  String[] @map("citations")
+  createdAt  DateTime @map("created_at") @default(now())
+  group      String   @map("group")
+  id         String   @id @default(cuid())
+  query      String   @map("query")
+  run        SerpRun  @relation(fields: [runId], references: [id], onDelete: Cascade)
+  runId      String   @map("run_id")
+
+  @@index([runId])
+  @@map("serp_queries")
 }
 
 enum InvitationStatus {
