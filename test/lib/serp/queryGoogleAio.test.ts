@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it, vi } from "vitest";
-import fetchAioResults from "~/lib/serp/dataForSeo.server";
+import fetchAioResults from "~/lib/serp/serpApi.server";
 import queryGoogleAio from "~/lib/serp/queryGoogleAio.server";
 import prisma from "~/lib/prisma.server";
 

@@ -3,7 +3,7 @@ import debug from "debug";
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
-import fetchAioResults from "./dataForSeo.server";
+import fetchAioResults from "./serpApi.server";
 
 const logger = debug("server");
 
@@ -11,8 +11,8 @@ export default async function queryGoogleAio(site: {
   id: string;
   domain: string;
 }): Promise<void> {
-  if (!envVars.DATAFORSEO_LOGIN || !envVars.DATAFORSEO_PASSWORD) {
-    logger("[%s:google-aio] Skipping — DATAFORSEO credentials not set", site.id);
+  if (!envVars.SERPAPI_API_KEY) {
+    logger("[%s:google-aio] Skipping — SERPAPI_API_KEY not set", site.id);
     return;
   }
 

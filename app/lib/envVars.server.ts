@@ -11,8 +11,7 @@ ANTHROPIC_API_KEY: env.get("ANTHROPIC_API_KEY").required().asString(),
   BOT_TRACKER_API_KEY: env.get("BOT_TRACKER_API_KEY").required().asString(),
   BOT_TRACKER_URL: env.get("BOT_TRACKER_URL").required().asUrlString(),
   CRON_SECRET: env.get("CRON_SECRET").required(false).asString(),
-  DATAFORSEO_LOGIN: env.get("DATAFORSEO_LOGIN").required(false).asString(),
-  DATAFORSEO_PASSWORD: env.get("DATAFORSEO_PASSWORD").required(false).asString(),
+  SERPAPI_API_KEY: env.get("SERPAPI_API_KEY").required(false).asString(),
   GOOGLE_GENERATIVE_AI_API_KEY: env
     .get("GOOGLE_GENERATIVE_AI_API_KEY")
     .required(false)
