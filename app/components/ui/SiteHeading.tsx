@@ -2,14 +2,16 @@ import { ArrowRightIcon } from "lucide-react";
 import { Link } from "react-router";
 import { ActiveLink } from "./ActiveLink";
 
-export default function SitePageHeader({
+export default function SiteHeading({
   site,
   title,
+  subtitle,
   backTo,
   children,
 }: {
   site: { domain: string };
   title: string;
+  subtitle?: string;
   backTo?: { label: string; path: string };
   children?: React.ReactNode;
 }) {
@@ -26,8 +28,13 @@ export default function SitePageHeader({
           </Link>
         </p>
         <h1 className="font-heading text-3xl">{title}</h1>
+        {subtitle && (
+          <p className="mt-1 text-base text-foreground/60">{subtitle}</p>
+        )}
       </div>
+
       {children}
+
       {backTo && (
         <ActiveLink
           className="text-base text-foreground/60 hover:underline"

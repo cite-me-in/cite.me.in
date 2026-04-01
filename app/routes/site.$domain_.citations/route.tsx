@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router";
 import Main from "~/components/ui/Main";
-import SitePageHeader from "~/components/ui/SitePageHeader";
+import SitePageHeader from "~/components/ui/SiteHeading";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/Tabs";
 import { requireSiteAccess } from "~/lib/auth.server";
 import { getDomainMeta } from "~/lib/domainMeta.server";

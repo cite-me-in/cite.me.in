@@ -4,7 +4,7 @@ import DateRangeSelector, {
   parseDateRange,
 } from "~/components/ui/DateRangeSelector";
 import Main from "~/components/ui/Main";
-import SitePageHeader from "~/components/ui/SitePageHeader";
+import SitePageHeader from "~/components/ui/SiteHeading";
 import { requireSiteAccess } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";

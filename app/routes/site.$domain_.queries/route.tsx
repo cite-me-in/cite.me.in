@@ -1,5 +1,5 @@
 import Main from "~/components/ui/Main";
-import SitePageHeader from "~/components/ui/SitePageHeader";
+import SitePageHeader from "~/components/ui/SiteHeading";
 import addSiteQueries, {
   addSiteQueryGroup,
   renameSiteQueryGroup,

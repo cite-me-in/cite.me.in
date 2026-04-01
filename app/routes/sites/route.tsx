@@ -2,6 +2,7 @@ import { useState } from "react";
 import { redirect, useFetcher } from "react-router";
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent } from "~/components/ui/Card";
+import Heading from "~/components/ui/Heading";
 import Main from "~/components/ui/Main";
 import { requireUserAccess } from "~/lib/auth.server";
 import getSiteMetrics from "~/lib/getSiteMetrics.server";
@@ -83,12 +84,11 @@ export default function SitesPage({
 
   return (
     <Main variant="wide">
-      <div className="flex flex-row items-center justify-between gap-4">
-        <h1 className="font-heading text-3xl">Your Sites</h1>
+      <Heading title="Your Sites">
         {canAddSite && !isAddSiteFormOpen && (
           <Button onClick={() => setIsAddSiteFormOpen(true)}>Add Site</Button>
         )}
-      </div>
+      </Heading>
 
       {trialExpired ? (
         <TrialExpired />

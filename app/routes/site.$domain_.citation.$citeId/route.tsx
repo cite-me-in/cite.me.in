@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
-import SitePageHeader from "~/components/ui/SitePageHeader";
+import SitePageHeader from "~/components/ui/SiteHeading";
 import { requireUserAccess } from "~/lib/auth.server";
 import externalLink from "~/lib/externalLink";
 import { isSameDomain } from "~/lib/isSameDomain";

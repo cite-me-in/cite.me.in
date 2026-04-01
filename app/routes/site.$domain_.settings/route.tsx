@@ -1,6 +1,6 @@
 import { redirect, useFetcher } from "react-router";
 import Main from "~/components/ui/Main";
-import SitePageHeader from "~/components/ui/SitePageHeader";
+import SitePageHeader from "~/components/ui/SiteHeading";
 import { requireSiteOwner, requireUserAccess } from "~/lib/auth.server";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";

@@ -4,6 +4,7 @@ import { redirect, useNavigate } from "react-router";
 import { useInterval } from "usehooks-ts";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
+import SitePageHeader from "~/components/ui/SiteHeading";
 import Spinner from "~/components/ui/Spinner";
 import { requireSiteAccess } from "~/lib/auth.server";
 import { getStatus } from "~/lib/setupProgress.server";
@@ -23,6 +24,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const status = await getStatus({ siteId: site.id, userId: user.id });
   if (status === "complete") throw redirect(`/site/${params.domain}`);
   return {
+    site,
     domain: params.domain,
     needsStart: status === null,
     hasError: status === "error",
@@ -88,14 +90,15 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
 
   return (
     <Main variant="wide">
-      <div>
-        <h1 className="font-heading text-3xl">Setting up {domain}</h1>
-        <p className="mt-1 text-base text-foreground/60">
-          {done
+      <SitePageHeader
+        site={loaderData.site}
+        title={`Setting up ${domain}`}
+        subtitle={
+          done
             ? "All done — redirecting to your citations…"
-            : "Crawling your site and querying AI platforms. This takes about a minute."}
-        </p>
-      </div>
+            : "Crawling your site and querying AI platforms. This takes about a minute."
+        }
+      />
 
       <Card>
         <CardHeader>

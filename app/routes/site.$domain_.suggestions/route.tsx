@@ -9,6 +9,7 @@ import { Button } from "~/components/ui/Button";
 import { Card, CardContent } from "~/components/ui/Card";
 import { Input } from "~/components/ui/Input";
 import Main from "~/components/ui/Main";
+import SitePageHeader from "~/components/ui/SiteHeading";
 import Spinner from "~/components/ui/Spinner";
 import addSiteQueries from "~/lib/addSiteQueries";
 import { requireSiteAccess } from "~/lib/auth.server";
@@ -106,13 +107,11 @@ export default function Index({ loaderData }: Route.ComponentProps) {
 
   return (
     <Main variant="wide">
-      <div>
-        <h1 className="font-heading text-2xl">Review suggested queries</h1>
-        <p className="mt-1 text-base text-foreground/60">
-          Edit, remove, or add queries before saving. These will be used to
-          track your citation visibility across AI platforms.
-        </p>
-      </div>
+      <SitePageHeader
+        site={loaderData.site}
+        title="Review suggested queries"
+        subtitle="Edit, remove, or add queries before saving. These will be used to track your citation visibility across AI platforms."
+      />
 
       {fetcher.data && "error" in fetcher.data && (
         <Alert variant="destructive">
