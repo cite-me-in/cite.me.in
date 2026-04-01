@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import fetchAioResults from "~/lib/serp/dataForSeo.server";
 
 vi.mock("~/lib/envVars.server", () => ({
@@ -17,8 +17,10 @@ const makeResponse = (items: unknown[]) =>
   }) as Response;
 
 describe("fetchAioResults", () => {
+  afterEach(() => vi.restoreAllMocks());
+
   it("should return aioPresent=true and citations when AIO block exists", async () => {
-    global.fetch = vi.fn().mockResolvedValue(
+    vi.spyOn(global, "fetch").mockResolvedValue(
       makeResponse([
         {
           type: "ai_overview",
@@ -40,7 +42,7 @@ describe("fetchAioResults", () => {
   });
 
   it("should return aioPresent=false and empty citations when no AIO block", async () => {
-    global.fetch = vi.fn().mockResolvedValue(
+    vi.spyOn(global, "fetch").mockResolvedValue(
       makeResponse([
         { type: "organic", url: "https://example.com" },
       ]),
@@ -52,7 +54,7 @@ describe("fetchAioResults", () => {
   });
 
   it("should return aioPresent=true and empty citations when AIO has no references", async () => {
-    global.fetch = vi.fn().mockResolvedValue(
+    vi.spyOn(global, "fetch").mockResolvedValue(
       makeResponse([{ type: "ai_overview", references: [] }]),
     );
 
@@ -62,7 +64,7 @@ describe("fetchAioResults", () => {
   });
 
   it("should throw when the API response is not ok", async () => {
-    global.fetch = vi.fn().mockResolvedValue({
+    vi.spyOn(global, "fetch").mockResolvedValue({
       ok: false,
       status: 401,
       text: async () => "Unauthorized",
