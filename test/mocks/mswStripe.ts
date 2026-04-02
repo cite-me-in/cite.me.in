@@ -1,8 +1,5 @@
-// When STRIPE_SECRET_KEY is set, Stripe calls go to the real API via onUnhandledRequest:"bypass".
-
 import { HttpResponse, http } from "msw";
 
-// When not set, mock checkout session creation so non-Stripe tests still work.
 const stripeHandler = http.post(
   "https://api.stripe.com/v1/checkout/sessions",
   () =>

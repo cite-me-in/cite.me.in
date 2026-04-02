@@ -44,16 +44,8 @@ const handlers = [
   ),
 
   // Block any other external HTTP services not explicitly mocked.
-  // When STRIPE_SECRET_KEY is set, allow Stripe API calls through to the real network.
   http.all(
-    ({ request }: { request: Request }) => {
-      if (process.env.STRIPE_SECRET_KEY) {
-        const host = new URL(request.url).hostname;
-        if (host === "api.stripe.com" || host.endsWith(".stripe.com"))
-          return false;
-      }
-      return true;
-    },
+    () => true,
     ({ request }: { request: Request }) => {
       logger("Blocked %s request to: %s", request.method, request.url);
       return HttpResponse.json(
