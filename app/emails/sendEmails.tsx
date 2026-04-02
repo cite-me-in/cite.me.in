@@ -5,6 +5,7 @@ import Redis from "ioredis";
 import { retry, sleep } from "radashi";
 import { Resend } from "resend";
 import invariant from "tiny-invariant";
+import { EmailLinkContext } from "~/components/email/context";
 import envVars from "~/lib/envVars.server";
 import EmailLayout from "./EmailLayout";
 import generateUnsubscribeToken from "./generateUnsubscribeToken";
@@ -57,12 +58,14 @@ export async function sendEmail({
 
   const html = await pretty(
     await render(
-      <EmailLayout
-        subject={subject}
-        unsubscribeURL={canUnsubscribe ? unsubscribeURL : undefined}
-      >
-        {email}
-      </EmailLayout>,
+      <EmailLinkContext.Provider value={{ email: user.email, token }}>
+        <EmailLayout
+          subject={subject}
+          unsubscribeURL={canUnsubscribe ? unsubscribeURL : undefined}
+        >
+          {email}
+        </EmailLayout>
+      </EmailLinkContext.Provider>,
     ),
   );
 
