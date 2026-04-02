@@ -2,11 +2,10 @@ import { afterEach, describe, it, expect } from "vitest";
 import { hashPassword } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
 import generateUnsubscribeToken from "~/emails/generateUnsubscribeToken";
-import envVars from "~/lib/envVars.server";
 import { port } from "../helpers/launchBrowser";
 
 const BASE = `http://localhost:${port}`;
-const DEST = `${envVars.VITE_APP_URL}/sites`;
+const DEST = "/sites";
 
 afterEach(() => prisma.user.deleteMany({ where: { email: { contains: "r-route-test" } } }));
 

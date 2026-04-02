@@ -7,11 +7,16 @@ type ButtonProps = React.ComponentProps<typeof EmailButton>;
 
 export default function Button({ href, className, ...props }: ButtonProps) {
   const ctx = useEmailLinkContext();
+  const pathname = href?.startsWith(envVars.VITE_APP_URL)
+    ? href.slice(envVars.VITE_APP_URL.length)
+    : href?.startsWith("/")
+      ? href
+      : null;
   const wrappedHref =
-    ctx && href
+    ctx && pathname
       ? (() => {
           const url = new URL("/r", envVars.VITE_APP_URL);
-          url.searchParams.set("url", href);
+          url.searchParams.set("url", pathname);
           url.searchParams.set("email", ctx.email);
           url.searchParams.set("token", ctx.token);
           return url.toString();
