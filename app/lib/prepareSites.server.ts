@@ -13,13 +13,48 @@ const logger = debug("server");
  * This function is called by the cron job to prepare the sites for the digest
  * email.
  *
- * @returns A list of sites that are prepared for the digest email.
+ * It returns a list of sites that are eligible for the digest email. These are
+ * sites that have not been processed in the last 7 days and are either owned by
+ * a user with an active (paid) account or are still in their free trial period.
+ *
+ * It does a citation run and updates the bot insight for each of these site.
+ *
+ * @param trialDays The number of days in the free trial period.
+ * @returns A list of sites that are eligible for the digest email.
  */
-export default async function prepareSites(): Promise<
-  { id: string; domain: string }[]
-> {
-  const trialDays = 25;
-  const sitesForDigest = await getSitesForDigest(trialDays);
+export default async function prepareSites(
+  trialDays: number,
+): Promise<{ id: string; domain: string; digestSentAt: Date | null }[]> {
+  const sitesForDigest = await prisma.site.findMany({
+    select: {
+      id: true,
+      domain: true,
+      digestSentAt: true,
+    },
+    where: {
+      digestSentAt: {
+        lt: new Date(
+          Temporal.Now.instant().subtract({ hours: 7 * 24 }).epochMilliseconds,
+        ),
+      },
+      OR: [
+        // Site owner has an active (paid) account.
+        { owner: { account: { status: "active" } } },
+        // Site owner is still in their free trial period.
+        {
+          owner: {
+            createdAt: {
+              gte: new Date(
+                Temporal.Now.instant().subtract({ hours: trialDays * 24 })
+                  .epochMilliseconds,
+              ),
+            },
+          },
+        },
+      ],
+    },
+  });
+
   logger(
     "[processSites] Processing %d sites: %s",
     sitesForDigest.length,
@@ -32,65 +67,12 @@ export default async function prepareSites(): Promise<
   return sitesForDigest;
 }
 
-async function getSitesForDigest(
-  trialDays: number,
-): Promise<{ id: string; domain: string }[]> {
-  const notRecentlyProcessed = new Date(
-    Temporal.Now.instant().subtract({ hours: 24 }).epochMilliseconds,
-  );
-  const inFreeTrial = new Date(
-    Temporal.Now.instant().subtract({ hours: trialDays * 24 })
-      .epochMilliseconds,
-  );
-
-  const sites = await prisma.site.findMany({
-    select: {
-      id: true,
-      domain: true,
-      createdAt: true,
-      owner: {
-        select: {
-          id: true,
-          createdAt: true,
-          email: true,
-          unsubscribed: true,
-          account: { select: { status: true } },
-        },
-      },
-      siteUsers: {
-        select: {
-          user: {
-            select: { id: true, email: true, unsubscribed: true },
-          },
-        },
-      },
-      citationRuns: {
-        orderBy: { onDate: "desc" },
-        take: 1,
-        select: { onDate: true },
-      },
-    },
-    where: {
-      OR: [
-        // Site owner has an active (paid) account.
-        { owner: { account: { status: "active" } } },
-        // Site owner is still in their free trial period.
-        { owner: { createdAt: { gte: inFreeTrial } } },
-      ],
-    },
-  });
-
-  const qualifying = sites.filter((site) => {
-    // Sites that have not been processed in the last day.
-    const lastRun = site.citationRuns[0];
-    return (
-      !lastRun ||
-      new Date(lastRun.onDate).getTime() <= notRecentlyProcessed.getTime()
-    );
-  });
-  return qualifying;
-}
-
+/**
+ * Run a citation run for a site.
+ *
+ * @param site The site to run a citation run for.
+ * @returns True if the citation run was successful, false otherwise.
+ */
 async function nextCitationRun(site: {
   id: string;
   domain: string;
@@ -117,6 +99,15 @@ async function nextCitationRun(site: {
   }
 }
 
+/**
+ * Update the bot insight for a site.
+ *
+ * It loads the bot visits for the last 7 days and generates a bot insight
+ * report.
+ *
+ * @param site The site to update the bot insight for.
+ * @returns True if the bot insight was updated successfully, false otherwise.
+ */
 async function updateBotInsight(site: {
   id: string;
   domain: string;

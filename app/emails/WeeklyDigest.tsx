@@ -4,6 +4,8 @@ import { twMerge } from "tailwind-merge";
 import Button from "~/components/email/Button";
 import Card from "~/components/email/Card";
 import Link from "~/components/email/Link";
+import prisma from "~/lib/prisma.server";
+import { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
 import type { SentimentLabel } from "~/prisma";
 import { sendEmail } from "./sendEmails";
 
@@ -35,9 +37,21 @@ export type WeeklyDigestEmailProps = {
   topQueries: { query: string; count: number; delta: number }[];
 };
 
-export async function sendSiteDigestEmails(
-  data: Omit<WeeklyDigestEmailProps, "unsubscribeURL">,
-): Promise<{ id: string }[]> {
+/**
+ * Send a digest email to the site owners and site users.
+ *
+ * @param site The site to send the digest email to.
+ * @returns The IDs of the sent emails.
+ */
+export async function sendSiteDigestEmails(site: {
+  id: string;
+}): Promise<{ id: string }[]> {
+  const data = await loadWeeklyDigestMetrics(site.id);
+  await prisma.site.update({
+    where: { id: site.id },
+    data: { digestSentAt: new Date() },
+  });
+
   const emailIds = [];
   for (const to of data.toEmails) {
     const emailId = await sendEmail({

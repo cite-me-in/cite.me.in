@@ -144,15 +144,16 @@ model Session {
 }
 
 model Site {
-  apiKey               String                @map("api_key")    @unique @default("")
+  apiKey               String                @map("api_key")       @unique @default("")
   botInsight           BotInsight?
   botVisits            BotVisit[]
   citationRuns         CitationQueryRun[]
   content              String                @map("content")
-  createdAt            DateTime              @map("created_at") @default(now())
+  createdAt            DateTime              @map("created_at")    @default(now())
+  digestSentAt         DateTime?             @map("digest_sent_at")
   domain               String                @map("domain")
   humanVisits          HumanVisit[]
-  id                   String                                   @id @default(cuid())
+  id                   String                                      @id @default(cuid())
   owner                User                  @relation("OwnedSites", fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId              String                @map("owner_id")
   siteInvitations      SiteInvitation[]
@@ -160,7 +161,7 @@ model Site {
   siteQuerySuggestions SiteQuerySuggestion[]
   siteUsers            SiteUser[]
   summary              String                @map("summary")
-  updatedAt            DateTime              @map("updated_at") @updatedAt
+  updatedAt            DateTime              @map("updated_at")    @updatedAt
   usageEvents          UsageEvent[]
 
   @@index([domain])
