@@ -1,12 +1,6 @@
-import {
-  Button,
-  Column,
-  Img,
-  Link,
-  Row,
-  Section,
-  Text,
-} from "@react-email/components";
+import { Column, Img, Row, Section, Text } from "@react-email/components";
+import Button from "~/components/email/Button";
+import Link from "~/components/email/Link";
 import { alphabetical, last, sort, sum } from "radashi";
 import { twMerge } from "tailwind-merge";
 import Card from "~/components/email/Card";
@@ -76,10 +70,7 @@ export function WeeklyDigestEmail({
       <SentimentBreakdown byPlatform={byPlatform} />
       <TopCompetitors competitors={competitors} />
       <Section className="my-8 text-center">
-        <Button
-          href={citationsURL}
-          className="rounded-md bg-primary px-4 py-2 text-white hover:bg-primary-hover"
-        >
+        <Button href={citationsURL}>
           View your citations
         </Button>
       </Section>

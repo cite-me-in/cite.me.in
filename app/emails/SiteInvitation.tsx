@@ -1,4 +1,5 @@
-import { Button, Section, Text } from "@react-email/components";
+import { Section, Text } from "@react-email/components";
+import Button from "~/components/email/Button";
 import { sendEmail } from "./sendEmails";
 
 export default async function sendSiteInvitationEmail({
@@ -43,10 +44,7 @@ function SiteInvitationEmail({
         on Cite.me.in.
       </Text>
       <Section className="my-8 text-center">
-        <Button
-          href={url}
-          className="rounded-md bg-primary px-4 py-2 text-white hover:bg-primary-hover"
-        >
+        <Button href={url}>
           Accept Invitation
         </Button>
       </Section>

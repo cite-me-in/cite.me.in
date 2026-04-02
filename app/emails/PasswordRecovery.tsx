@@ -1,4 +1,5 @@
-import { Button, CodeInline, Section, Text } from "@react-email/components";
+import { CodeInline, Section, Text } from "@react-email/components";
+import Button from "~/components/email/Button";
 import { sendEmail } from "./sendEmails";
 
 export default async function sendPasswordRecoveryEmail({
@@ -29,10 +30,7 @@ function PasswordRecovery({ url: resetPasswordUrl }: { url: string }) {
       </Text>
 
       <Section className="my-8 text-center">
-        <Button
-          href={resetPasswordUrl}
-          className="rounded-md bg-primary px-4 py-2 text-white hover:bg-primary-hover"
-        >
+        <Button href={resetPasswordUrl}>
           Reset Password
         </Button>
       </Section>

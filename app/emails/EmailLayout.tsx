@@ -5,13 +5,13 @@ import {
   Heading,
   Html,
   Img,
-  Link,
   Preview,
   Section,
   Tailwind,
   Text,
   pixelBasedPreset,
 } from "@react-email/components";
+import Link from "~/components/email/Link";
 
 /**
  * EmailLayout is a component that wraps the email content and provides a consistent layout.
