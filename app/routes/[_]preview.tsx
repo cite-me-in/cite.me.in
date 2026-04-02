@@ -1,4 +1,5 @@
 import { render } from "@react-email/components";
+import { MailIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useFetcher } from "react-router";
 import { EmailLinkContext } from "~/components/email/context";
@@ -16,6 +17,8 @@ export const handle = { siteNav: true };
 
 export async function loader({ request }: Route.LoaderArgs) {
   const { user } = await requireUserAccess(request);
+  if (!user.isAdmin) throw new Response("Forbidden", { status: 403 });
+
   const data = await loadWeeklyDigestMetrics(siteId);
   const token = generateUnsubscribeToken(user.email);
   const html = await render(
@@ -25,11 +28,13 @@ export async function loader({ request }: Route.LoaderArgs) {
       </EmailLayout>
     </EmailLinkContext.Provider>,
   );
-  return { html };
+  return { html, user };
 }
 
 export async function action({ request }: Route.ActionArgs) {
   const { user } = await requireUserAccess(request);
+  if (!user.isAdmin) throw new Response("Forbidden", { status: 403 });
+
   const data = await loadWeeklyDigestMetrics(siteId);
   return await sendSiteDigestEmails({ ...data, toEmails: [user.email] });
 }
@@ -59,7 +64,10 @@ export default function WeeklyDigest({ loaderData }: Route.ComponentProps) {
           }
           disabled={fetcher.state !== "idle"}
         >
-          {fetcher.state === "submitting" ? "Sending..." : "Send Email"}
+          <MailIcon className="size-4" />
+          {fetcher.state === "submitting"
+            ? "Sending..."
+            : `Email ${loaderData.user.email}`}
         </Button>
       </div>
 
