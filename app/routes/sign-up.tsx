@@ -10,13 +10,7 @@ import {
   FieldSet,
 } from "~/components/ui/FieldSet";
 import { Input } from "~/components/ui/Input";
-import sendEmailVerificationEmail from "~/emails/EmailVerification";
-import {
-  createEmailVerificationToken,
-  createSession,
-  hashPassword,
-} from "~/lib/auth.server";
-import captureAndLogError from "~/lib/captureAndLogError.server";
+import { createSession, hashPassword } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/sign-up";
 
@@ -59,16 +53,6 @@ export async function action({ request }: Route.ActionArgs) {
   });
 
   const setCookie = await createSession(user.id, request);
-
-  try {
-    const verifyToken = await createEmailVerificationToken(user.id);
-    await sendEmailVerificationEmail({
-      email: user.email,
-      url: new URL(`/verify-email/${verifyToken}`, request.url).toString(),
-    });
-  } catch (error) {
-    captureAndLogError(error);
-  }
 
   const redirectTo = inviteToken
     ? `/invite/${inviteToken}`

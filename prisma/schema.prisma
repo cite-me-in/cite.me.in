@@ -91,19 +91,6 @@ model CitationQueryRun {
   @@unique([siteId, platform,onDate])
 }
 
-model EmailVerificationToken {
-  createdAt DateTime  @map("created_at") @default(now())
-  expiresAt DateTime  @map("expires_at")
-  id        String                       @id @default(cuid())
-  token     String    @map("token")      @unique
-  usedAt    DateTime? @map("used_at")
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String    @map("user_id")
-
-  @@index([userId])
-  @@map("email_verification_tokens")
-}
-
 model HumanVisit {
   aiReferral String?  @map("ai_referral")
   browser    String   @map("browser")
@@ -254,7 +241,6 @@ model User {
   apiKey                  String?                  @map("api_key")           @unique
   createdAt               DateTime                 @map("created_at")        @default(now())
   email                   String                   @map("email")             @unique
-  emailVerificationTokens EmailVerificationToken[]
   emailVerifiedAt         DateTime?                @map("email_verified_at")
   id                      String                                             @id @default(cuid())
   isAdmin                 Boolean                  @map("is_admin")          @default(false)
