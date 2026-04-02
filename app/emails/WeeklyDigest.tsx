@@ -1,11 +1,10 @@
 import { Column, Img, Row, Section, Text } from "@react-email/components";
-import { alphabetical, last, sort, sum } from "radashi";
+import { alphabetical, last, map, sort, sum } from "radashi";
 import { twMerge } from "tailwind-merge";
 import Button from "~/components/email/Button";
 import Card from "~/components/email/Card";
 import Link from "~/components/email/Link";
 import prisma from "~/lib/prisma.server";
-import { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
 import type { SentimentLabel } from "~/prisma";
 import { sendEmail } from "./sendEmails";
 
@@ -32,37 +31,31 @@ export type WeeklyDigestEmailProps = {
     pct: number;
   }[];
   score: { current: number; previous: number };
+  siteId: string;
   subject: string;
   toEmails: string[];
   topQueries: { query: string; count: number; delta: number }[];
 };
 
-/**
- * Send a digest email to the site owners and site users.
- *
- * @param site The site to send the digest email to.
- * @returns The IDs of the sent emails.
- */
-export async function sendSiteDigestEmails(site: {
-  id: string;
-}): Promise<{ id: string }[]> {
-  const data = await loadWeeklyDigestMetrics(site.id);
-  await prisma.site.update({
-    where: { id: site.id },
+export async function sendSiteDigestEmails(
+  data: Omit<WeeklyDigestEmailProps, "unsubscribeURL">,
+): Promise<{ id: string }[]> {
+  await prisma.site.updateMany({
+    where: { id: { in: [data.siteId] } },
     data: { digestSentAt: new Date() },
   });
 
-  const emailIds = [];
-  for (const to of data.toEmails) {
-    const emailId = await sendEmail({
-      canUnsubscribe: true,
-      email: <WeeklyDigestEmail {...data} />,
-      subject: data.subject,
-      user: { email: to, unsubscribed: false },
-    });
-    if (emailId) emailIds.push(emailId);
-  }
-  return emailIds;
+  const emailIds = await map(
+    data.toEmails,
+    async (to) =>
+      await sendEmail({
+        canUnsubscribe: true,
+        email: <WeeklyDigestEmail {...data} />,
+        subject: data.subject,
+        user: { email: to, unsubscribed: false },
+      }),
+  );
+  return emailIds.filter((emailId) => emailId !== null);
 }
 
 export function WeeklyDigestEmail({

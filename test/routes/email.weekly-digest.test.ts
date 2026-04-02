@@ -1,10 +1,10 @@
-import { expect } from "@playwright/test";
 import { beforeAll, describe, it, vi } from "vitest";
-import { getLastEmailSent } from "~/emails/sendEmails";
 import { sendSiteDigestEmails } from "~/emails/WeeklyDigest";
-import envVars from "~/lib/envVars.server";
+import { getLastEmailSent } from "~/emails/sendEmails";
 import { newContext } from "../helpers/launchBrowser";
+import { expect } from "@playwright/test";
 import chartBase64 from "./email.weekly-digest.png.base64?raw";
+import envVars from "~/lib/envVars.server";
 
 describe("WeeklyDigestEmail", () => {
   let email: NonNullable<Awaited<ReturnType<typeof getLastEmailSent>>>;
@@ -15,6 +15,7 @@ describe("WeeklyDigestEmail", () => {
     vi.spyOn(Math, "random").mockReturnValue(0);
 
     await sendSiteDigestEmails({
+      siteId: "123",
       subject: "Weekly Digest · Mar 17 — Mar 24, 2026",
       citationsURL: new URL(
         "/site/example.com/citations",

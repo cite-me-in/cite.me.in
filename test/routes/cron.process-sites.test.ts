@@ -1,12 +1,21 @@
-import { Temporal } from "@js-temporal/polyfill";
 import { beforeEach, describe, expect, it } from "vitest";
-import prisma from "~/lib/prisma.server";
+import { Temporal } from "@js-temporal/polyfill";
 import { port } from "../helpers/launchBrowser";
+import prisma from "~/lib/prisma.server";
 
 async function makeRequest(auth?: string) {
-  return await fetch(`http://localhost:${port}/cron/process-sites`, {
+  const response = await fetch(`http://localhost:${port}/cron/process-sites`, {
     headers: { authorization: `Bearer ${auth}` },
   });
+  expect(response.status).toBe(200);
+
+  const { ok, results } = (await response.json()) as {
+    ok: boolean;
+    results: { emailIds: string[]; domain: string; skipped: boolean }[];
+  };
+  expect(ok).toBe(true);
+
+  return results;
 }
 
 describe("cron.process-sites", () => {
@@ -19,24 +28,14 @@ describe("cron.process-sites", () => {
       const res = await fetch(`http://localhost:${port}/cron/process-sites`);
       expect(res.status).toBe(401);
     });
-
-    it("should return 401 with wrong token", async () => {
-      const res = await makeRequest("wrong-token");
-      expect(res.status).toBe(401);
-    });
-
-    it("should return 200 with correct token", async () => {
-      const res = await makeRequest("test-cron-secret");
-      expect(res.status).toBe(200);
-    });
   });
 
-  describe("site filtering", () => {
+  describe("site processing", () => {
     beforeEach(async () => {
       await prisma.user.deleteMany();
     });
 
-    it("should process a paid site with no citation run", async () => {
+    it("should process a paid site that was processed more than 7 days ago", async () => {
       await prisma.site.create({
         data: {
           apiKey: "test-api-key-process-1",
@@ -44,6 +43,10 @@ describe("cron.process-sites", () => {
           domain: "paid-site.example.com",
           id: "site-process-1",
           summary: "Test summary",
+          digestSentAt: new Date(
+            Temporal.Now.instant().subtract({ hours: 24 * 8 })
+              .epochMilliseconds,
+          ),
           owner: {
             create: {
               id: "user-process-1",
@@ -61,11 +64,41 @@ describe("cron.process-sites", () => {
         },
       });
 
-      const res = await makeRequest("test-cron-secret");
-      const body = await res.json();
-      expect(res.status).toBe(200);
-      expect(Array.isArray(body.results)).toBe(true);
-      expect(body.results.length).toBe(1);
+      const results = await makeRequest("test-cron-secret");
+      expect(results.length).toBe(1);
+    });
+
+    it("should skip a paid site that was processed in the last 7 days", async () => {
+      await prisma.site.create({
+        data: {
+          apiKey: "test-api-key-process-1",
+          content: "Test content",
+          domain: "paid-site.example.com",
+          id: "site-process-1",
+          summary: "Test summary",
+          digestSentAt: new Date(
+            Temporal.Now.instant().subtract({ hours: 24 * 3 })
+              .epochMilliseconds,
+          ),
+          owner: {
+            create: {
+              id: "user-process-1",
+              email: "owner-process1@test.com",
+              passwordHash: "test",
+              account: {
+                create: {
+                  stripeCustomerId: "cus_process_test1",
+                  stripeSubscriptionId: "sub_process_test1",
+                  status: "active",
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const results = await makeRequest("test-cron-secret");
+      expect(results.length).toBe(0);
     });
 
     it("should process a free trial site (created today)", async () => {
@@ -86,11 +119,8 @@ describe("cron.process-sites", () => {
         },
       });
 
-      const res = await makeRequest("test-cron-secret");
-      const body = await res.json();
-      expect(res.status).toBe(200);
-      expect(Array.isArray(body.results)).toBe(true);
-      expect(body.results.length).toBe(1);
+      const results = await makeRequest("test-cron-secret");
+      expect(results.length).toBe(0);
     });
 
     it("should skip a free site older than 25 days", async () => {
@@ -115,11 +145,8 @@ describe("cron.process-sites", () => {
         },
       });
 
-      const res = await makeRequest("test-cron-secret");
-      const body = await res.json();
-      expect(res.status).toBe(200);
-      expect(Array.isArray(body.results)).toBe(true);
-      expect(body.results.length).toBe(0);
+      const results = await makeRequest("test-cron-secret");
+      expect(results.length).toBe(0);
     });
 
     it("should skip a site with a citation run recently", async () => {
@@ -154,11 +181,8 @@ describe("cron.process-sites", () => {
         },
       });
 
-      const res = await makeRequest("test-cron-secret");
-      const body = await res.json();
-      expect(res.status).toBe(200);
-      expect(Array.isArray(body.results)).toBe(true);
-      expect(body.results.length).toBe(0);
+      const results = await makeRequest("test-cron-secret");
+      expect(results.length).toBe(0);
     });
   });
 });

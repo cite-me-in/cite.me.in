@@ -18,6 +18,9 @@ pnpm react-router typegen
 echo -e "\033[32m  Checking types …\033[0m"
 pnpm tsc --noEmit --strict
 
+echo -e "\033[32m  Installing Playwright …\033[0m"
+pnpm exec playwright install
+
 echo -e "\033[32m  Running tests …\033[0m"
 NODE_OPTIONS="--max-old-space-size=3096" vitest run
 

@@ -1,13 +1,13 @@
+import type { WeeklyDigestEmailProps } from "~/emails/WeeklyDigest";
+import type { SentimentLabel } from "~/prisma";
+import { formatDateShort } from "./formatDate";
+import { topCompetitors } from "~/routes/site.$domain_.citations/TopCompetitors";
+import { getDomainMeta } from "~/lib/domainMeta.server";
 import { Temporal } from "@js-temporal/polyfill";
 import { sum } from "radashi";
-import type { WeeklyDigestEmailProps } from "~/emails/WeeklyDigest";
-import { getDomainMeta } from "~/lib/domainMeta.server";
-import envVars from "~/lib/envVars.server";
 import getSiteMetrics from "~/lib/getSiteMetrics.server";
+import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
-import type { SentimentLabel } from "~/prisma";
-import { topCompetitors } from "~/routes/site.$domain_.citations/TopCompetitors";
-import { formatDateShort } from "./formatDate";
 
 export async function loadWeeklyDigestMetrics(
   siteId: string,
@@ -146,9 +146,12 @@ export async function loadWeeklyDigestMetrics(
   ).toString();
 
   return {
-    subject,
-    citationsURL,
-    toEmails,
+    botVisits: {
+      current: metrics.botVisits.current,
+      previous: metrics.botVisits.previous,
+    },
+    byPlatform,
+    chartBase64,
     citations: {
       total: {
         current: metrics.allCitations.current,
@@ -159,18 +162,16 @@ export async function loadWeeklyDigestMetrics(
         previous: metrics.yourCitations.previous,
       },
     },
-    byPlatform,
+    citationsURL,
+    competitors,
     score: {
       current: metrics.visbilityScore.current,
       previous: metrics.visbilityScore.previous,
     },
-    botVisits: {
-      current: metrics.botVisits.current,
-      previous: metrics.botVisits.previous,
-    },
+    siteId,
+    subject,
+    toEmails,
     topQueries,
-    competitors,
-    chartBase64,
   };
 }
 
