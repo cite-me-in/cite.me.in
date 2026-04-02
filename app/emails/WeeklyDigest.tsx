@@ -1,9 +1,9 @@
 import { Column, Img, Row, Section, Text } from "@react-email/components";
-import Button from "~/components/email/Button";
-import Link from "~/components/email/Link";
 import { alphabetical, last, sort, sum } from "radashi";
 import { twMerge } from "tailwind-merge";
+import Button from "~/components/email/Button";
 import Card from "~/components/email/Card";
+import Link from "~/components/email/Link";
 import type { SentimentLabel } from "~/prisma";
 import { sendEmail } from "./sendEmails";
 
@@ -70,9 +70,7 @@ export function WeeklyDigestEmail({
       <SentimentBreakdown byPlatform={byPlatform} />
       <TopCompetitors competitors={competitors} />
       <Section className="my-8 text-center">
-        <Button href={citationsURL}>
-          View your citations
-        </Button>
+        <Button href={citationsURL}>View your citations</Button>
       </Section>
     </>
   );

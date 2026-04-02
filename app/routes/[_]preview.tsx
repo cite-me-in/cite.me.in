@@ -1,8 +1,10 @@
 import { render } from "@react-email/components";
 import { useEffect, useRef } from "react";
 import { useFetcher } from "react-router";
+import { EmailLinkContext } from "~/components/email/context";
 import { Button } from "~/components/ui/Button";
 import EmailLayout from "~/emails/EmailLayout";
+import generateUnsubscribeToken from "~/emails/generateUnsubscribeToken";
 import { WeeklyDigestEmail, sendSiteDigestEmails } from "~/emails/WeeklyDigest";
 import { requireUserAccess } from "~/lib/auth.server";
 import { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
@@ -13,12 +15,15 @@ const siteId = "cmmi2yfwi000404l9qcci3j0x";
 export const handle = { siteNav: true };
 
 export async function loader({ request }: Route.LoaderArgs) {
-  await requireUserAccess(request);
+  const { user } = await requireUserAccess(request);
   const data = await loadWeeklyDigestMetrics(siteId);
+  const token = generateUnsubscribeToken(user.email);
   const html = await render(
-    <EmailLayout subject={data.subject}>
-      <WeeklyDigestEmail {...data} />
-    </EmailLayout>,
+    <EmailLinkContext.Provider value={{ email: user.email, token }}>
+      <EmailLayout subject={data.subject}>
+        <WeeklyDigestEmail {...data} />
+      </EmailLayout>
+    </EmailLinkContext.Provider>,
   );
   return { html };
 }
@@ -34,12 +39,14 @@ export default function WeeklyDigest({ loaderData }: Route.ComponentProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
-    const iframe = iframeRef.current;
-    if (iframe?.contentDocument) {
-      const doc = iframe.contentDocument;
-      const body = doc.body;
-      if (body) iframe.style.height = `${body.scrollHeight + 20}px`;
-    }
+    setTimeout(() => {
+      const iframe = iframeRef.current;
+      if (iframe?.contentDocument) {
+        const doc = iframe.contentDocument;
+        const body = doc.body;
+        if (body) iframe.style.height = `${body.scrollHeight + 20}px`;
+      }
+    }, 100);
   }, []);
 
   return (

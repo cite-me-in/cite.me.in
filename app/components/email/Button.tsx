@@ -7,29 +7,25 @@ type ButtonProps = React.ComponentProps<typeof EmailButton>;
 
 export default function Button({ href, className, ...props }: ButtonProps) {
   const ctx = useEmailLinkContext();
-  const pathname = href?.startsWith(envVars.VITE_APP_URL)
-    ? href.slice(envVars.VITE_APP_URL.length)
-    : href?.startsWith("/")
-      ? href
-      : null;
-  const wrappedHref =
-    ctx && pathname
-      ? (() => {
-          const url = new URL("/r", envVars.VITE_APP_URL);
-          url.searchParams.set("url", pathname);
-          url.searchParams.set("email", ctx.email);
-          url.searchParams.set("token", ctx.token);
-          return url.toString();
-        })()
-      : href;
-  return (
-    <EmailButton
-      href={wrappedHref}
-      className={twMerge(
-        "rounded-md bg-primary px-4 py-2 text-white hover:bg-primary-hover",
-        className,
-      )}
-      {...props}
-    />
-  );
+  if (!ctx) return <EmailButton href={href} className={className} {...props} />;
+
+  try {
+    const { pathname } = new URL(href ?? "");
+    const wrapped = new URL("/r", envVars.VITE_APP_URL);
+    wrapped.searchParams.set("url", pathname);
+    wrapped.searchParams.set("email", ctx.email);
+    wrapped.searchParams.set("token", ctx.token);
+    return (
+      <EmailButton
+        href={wrapped.href}
+        className={twMerge(
+          "rounded-md bg-primary px-4 py-2 text-white hover:bg-primary-hover",
+          className,
+        )}
+        {...props}
+      />
+    );
+  } catch {
+    return <EmailButton href={href} className={className} {...props} />;
+  }
 }
