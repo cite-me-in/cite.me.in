@@ -3,7 +3,6 @@ import { sendSiteDigestEmails } from "~/emails/WeeklyDigest";
 import { getLastEmailSent } from "~/emails/sendEmails";
 import { newContext } from "../helpers/launchBrowser";
 import { expect } from "@playwright/test";
-import chartBase64 from "./email.weekly-digest.png.base64?raw";
 import envVars from "~/lib/envVars.server";
 
 describe("WeeklyDigestEmail", () => {
@@ -15,18 +14,6 @@ describe("WeeklyDigestEmail", () => {
     vi.spyOn(Math, "random").mockReturnValue(0);
 
     await sendSiteDigestEmails({
-      siteId: "123",
-      subject: "Weekly Digest · Mar 17 — Mar 24, 2026",
-      citationsURL: new URL(
-        "/site/example.com/citations",
-        envVars.VITE_APP_URL,
-      ).toString(),
-      toEmails: ["test@example.com"],
-      citations: {
-        total: { current: 142, previous: 137 },
-        domain: { current: 23, previous: 18 },
-      },
-      score: { current: 72, previous: 64 },
       botVisits: { current: 1204, previous: 892 },
       byPlatform: {
         chatgpt: {
@@ -54,23 +41,18 @@ describe("WeeklyDigestEmail", () => {
             "Rentail.space receives unfavorable mentions in several responses, with competitors ranked more prominently.",
         },
       },
-      topQueries: [
-        {
-          query: "How do I find short-term retail space in shopping malls?",
-          count: 12,
-          delta: 3,
-        },
-        {
-          query: "Best platforms for pop-up shops in shopping centers?",
-          count: 8,
-          delta: -1,
-        },
-        {
-          query: "Where can I lease a kiosk in a mall for 3-6 months?",
-          count: 6,
-          delta: 2,
-        },
-      ],
+      citations: {
+        total: { current: 142, previous: 137 },
+        domain: { current: 23, previous: 18 },
+      },
+      citationsURL: new URL(
+        "/site/example.com/citations",
+        envVars.VITE_APP_URL,
+      ).toString(),
+      citationTrends: {
+        current: [10, 20, 30, 40, 50, 60, 70],
+        previous: [5, 15, 25, 35, 45, 55, 65],
+      },
       competitors: [
         {
           domain: "popupinsider.com",
@@ -94,7 +76,27 @@ describe("WeeklyDigestEmail", () => {
           pct: 11,
         },
       ],
-      chartBase64,
+      score: { current: 72, previous: 64 },
+      siteId: "123",
+      subject: "Weekly Digest · Mar 17 — Mar 24, 2026",
+      toEmails: ["test@example.com"],
+      topQueries: [
+        {
+          query: "How do I find short-term retail space in shopping malls?",
+          count: 12,
+          delta: 3,
+        },
+        {
+          query: "Best platforms for pop-up shops in shopping centers?",
+          count: 8,
+          delta: -1,
+        },
+        {
+          query: "Where can I lease a kiosk in a mall for 3-6 months?",
+          count: 6,
+          delta: 2,
+        },
+      ],
     });
 
     vi.restoreAllMocks();

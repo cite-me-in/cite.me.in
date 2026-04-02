@@ -7,16 +7,13 @@ type LinkProps = React.ComponentProps<typeof EmailLink>;
 export default function Link({ href, ...props }: LinkProps) {
   const ctx = useEmailLinkContext();
   if (!ctx || !href) return <EmailLink href={href} {...props} />;
-  try {
-    const wrapped = new URL("/r", envVars.VITE_APP_URL);
-    wrapped.searchParams.set(
-      "url",
-      href.startsWith(envVars.VITE_APP_URL) ? new URL(href).pathname : href,
-    );
-    wrapped.searchParams.set("email", ctx.email);
-    wrapped.searchParams.set("token", ctx.token);
-    return <EmailLink href={wrapped.href} {...props} />;
-  } catch {
-    return <EmailLink href={href} {...props} />;
-  }
+
+  const wrapped = new URL("/r", envVars.VITE_APP_URL);
+  wrapped.searchParams.set(
+    "url",
+    href.startsWith(envVars.VITE_APP_URL) ? new URL(href).pathname : href,
+  );
+  wrapped.searchParams.set("email", ctx.email);
+  wrapped.searchParams.set("token", ctx.token);
+  return <EmailLink href={wrapped.href} {...props} />;
 }
