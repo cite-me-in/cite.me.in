@@ -9,7 +9,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const email = searchParams.get("email");
   const token = searchParams.get("token");
 
-  const dest = url && url.startsWith(envVars.VITE_APP_URL) ? url : "/";
+  const dest = url?.startsWith(envVars.VITE_APP_URL) ? url : "/";
 
   if (email && token && token === generateUnsubscribeToken(email)) {
     await prisma.user.updateMany({
