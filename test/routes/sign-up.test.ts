@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { beforeEach, describe, it } from "vitest";
+import { afterEach, beforeEach, describe, it } from "vitest";
 import { hashPassword } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
 import { goto, port } from "../helpers/launchBrowser";
@@ -111,6 +111,10 @@ describe("sign-up route", () => {
   });
 
   describe("webhook delivery", () => {
+    afterEach(async () => {
+      await prisma.user.deleteMany({ where: { email: "admin-signup-wh@test.com" } });
+    });
+
     beforeEach(async () => {
       await prisma.user.deleteMany({ where: { email: "admin-signup-wh@test.com" } });
       await prisma.user.create({

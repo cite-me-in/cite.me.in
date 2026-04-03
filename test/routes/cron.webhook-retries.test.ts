@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { port } from "../helpers/launchBrowser";
 import prisma from "~/lib/prisma.server";
 
@@ -9,6 +9,10 @@ async function makeRequest() {
 }
 
 const ENDPOINT_ID = "ep-cron-retry-1";
+
+afterEach(async () => {
+  await prisma.user.deleteMany({ where: { email: "admin-cron-retry@test.com" } });
+});
 
 beforeEach(async () => {
   await prisma.webhookDelivery.deleteMany({ where: { endpointId: ENDPOINT_ID } });
