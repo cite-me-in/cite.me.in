@@ -12,6 +12,7 @@ import {
 import { Input } from "~/components/ui/Input";
 import { createSession, hashPassword } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
+import { emitWebhookEvent } from "~/lib/webhooks.server";
 import type { Route } from "./+types/sign-up";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -51,6 +52,8 @@ export async function action({ request }: Route.ActionArgs) {
   const user = await prisma.user.create({
     data: { email, passwordHash },
   });
+
+  await emitWebhookEvent("user.created", { userId: user.id, email: user.email });
 
   const setCookie = await createSession(user.id, request);
 

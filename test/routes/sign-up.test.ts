@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { describe, it } from "vitest";
+import { beforeEach, describe, it } from "vitest";
 import { hashPassword } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
 import { goto, port } from "../helpers/launchBrowser";
@@ -108,5 +108,50 @@ describe("sign-up route", () => {
     await page.getByRole("link", { name: "Sign in" }).click();
     await page.waitForURL("**/sign-in");
     expect(new URL(page.url()).pathname).toBe("/sign-in");
+  });
+
+  describe("webhook delivery", () => {
+    beforeEach(async () => {
+      await prisma.user.deleteMany({ where: { email: "admin-signup-wh@test.com" } });
+      await prisma.user.create({
+        data: {
+          id: "user-signup-wh-admin",
+          email: "admin-signup-wh@test.com",
+          passwordHash: "test",
+          isAdmin: true,
+          webhookEndpoints: {
+            create: {
+              id: "ep-signup-wh-1",
+              url: "https://admin.test/hook",
+              secret: "test-secret",
+              events: ["user.created"],
+            },
+          },
+        },
+      });
+    });
+
+    it("should emit user.created webhook event on successful sign-up", async () => {
+      const email = `signup-wh-${Date.now()}@example.com`;
+      const res = await fetch(`http://localhost:${port}/sign-up`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          email,
+          password: "password123",
+          confirm: "password123",
+        }).toString(),
+        redirect: "manual",
+      });
+
+      expect([200, 302]).toContain(res.status);
+
+      const delivery = await prisma.webhookDelivery.findFirst({
+        where: { eventType: "user.created", endpointId: "ep-signup-wh-1" },
+      });
+      expect(delivery).not.toBeNull();
+
+      await prisma.user.deleteMany({ where: { email } });
+    });
   });
 });
