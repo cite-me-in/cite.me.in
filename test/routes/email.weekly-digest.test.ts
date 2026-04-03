@@ -1,7 +1,7 @@
 import { beforeAll, describe, it, vi } from "vitest";
 import { sendSiteDigestEmails } from "~/emails/WeeklyDigest";
 import { getLastEmailSent } from "~/emails/sendEmails";
-import { newContext } from "../helpers/launchBrowser";
+import { removeElements } from "~/lib/html/parseHTML";
 import { expect } from "@playwright/test";
 import envVars from "~/lib/envVars.server";
 
@@ -113,21 +113,14 @@ describe("WeeklyDigestEmail", () => {
   });
 
   it("should match visually", async () => {
-    const context = await newContext();
-    const page = await context.newPage();
-    await page.setContent(email.html, { waitUntil: "load" });
-    await page.setViewportSize({ width: 1024, height: 2048 });
-
-    // Hide the chart image before screenshotting — canvas rendering varies
-    // slightly across environments and would cause false diff failures.
-    await page
-      .locator('img[alt="Citation trend: this week vs previous week"]')
-      .evaluate((el) => {
-        (el as HTMLElement).style.visibility = "hidden";
-      });
-
-    await expect(page).toMatchVisual({
+    await expect(email.page).toMatchVisual({
       name: "email/weekly-digest",
+      modify: (html) =>
+        removeElements(
+          html,
+          (node) =>
+            node.tag === "img" && node.attributes["data-slot"] === "chart",
+        ),
     });
   });
 });

@@ -1,8 +1,7 @@
-import { expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vitest";
-import sendSiteSetupEmail from "~/emails/SiteSetupComplete";
 import { getLastEmailSent } from "~/emails/sendEmails";
-import { newContext } from "../helpers/launchBrowser";
+import { expect } from "@playwright/test";
+import sendSiteSetupEmail from "~/emails/SiteSetupComplete";
 
 describe("SiteSetupComplete email", () => {
   let email: NonNullable<Awaited<ReturnType<typeof getLastEmailSent>>>;
@@ -39,16 +38,37 @@ describe("SiteSetupComplete email", () => {
           },
         },
         topQueries: [
-          { query: "Best platforms for finding short-term retail space", count: 12 },
+          {
+            query: "Best platforms for finding short-term retail space",
+            count: 12,
+          },
           { query: "Pop-up shop locations in shopping malls", count: 8 },
           { query: "How to lease a kiosk in a mall", count: 6 },
           { query: "Temporary retail space for sale", count: 4 },
           { query: "Short-term shop rental near me", count: 2 },
         ],
         competitors: [
-          { domain: "popupinsider.com", brandName: "Popup Insider", url: "https://popupinsider.com", count: 22, pct: 31 },
-          { domain: "storeshq.com", brandName: "Stores HQ", url: "https://storeshq.com", count: 14, pct: 20 },
-          { domain: "siteselectiongroup.com", brandName: "Site Selection Group", url: "https://siteselectiongroup.com", count: 9, pct: 13 },
+          {
+            domain: "popupinsider.com",
+            brandName: "Popup Insider",
+            url: "https://popupinsider.com",
+            count: 22,
+            pct: 31,
+          },
+          {
+            domain: "storeshq.com",
+            brandName: "Stores HQ",
+            url: "https://storeshq.com",
+            count: 14,
+            pct: 20,
+          },
+          {
+            domain: "siteselectiongroup.com",
+            brandName: "Site Selection Group",
+            url: "https://siteselectiongroup.com",
+            count: 9,
+            pct: 13,
+          },
         ],
       },
     });
@@ -64,10 +84,8 @@ describe("SiteSetupComplete email", () => {
   });
 
   it("should match visually", async () => {
-    const context = await newContext();
-    const page = await context.newPage();
-    await page.setContent(email.html, { waitUntil: "load" });
-    await page.setViewportSize({ width: 1024, height: 2048 });
-    await expect(page).toMatchVisual({ name: "email/site-setup" });
+    await expect(email.page).toMatchVisual({
+      name: "email/site-setup",
+    });
   });
 });

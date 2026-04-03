@@ -110,6 +110,7 @@ function CitationTrendsChart({
             className="mx-auto block"
             src={src}
             width="520"
+            data-slot="chart"
           />
           <Text className="mt-2 text-center text-light text-sm">
             — This week &nbsp;&nbsp; - - Previous week

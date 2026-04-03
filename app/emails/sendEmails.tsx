@@ -2,11 +2,13 @@ import { pretty, render } from "@react-email/components";
 import { ms } from "convert";
 import debug from "debug";
 import Redis from "ioredis";
+import type { Page } from "playwright";
 import { retry, sleep } from "radashi";
 import { Resend } from "resend";
 import invariant from "tiny-invariant";
 import { EmailLinkContext } from "~/components/email/context";
 import envVars from "~/lib/envVars.server";
+import { newContext } from "~/test/helpers/launchBrowser";
 import EmailLayout from "./EmailLayout";
 import generateUnsubscribeToken from "./generateUnsubscribeToken";
 
@@ -129,18 +131,32 @@ function initRedis() {
  * testing. It is only available in test mode. This function will block until
  * the email is captured by the parent process.
  *
- * @returns The last email that was sent.
+ * @returns The last email that was sent: page, html, subject, to.
  */
-export async function getLastEmailSent(): Promise<
-  NonNullable<typeof lastEmailSent>
-> {
+export async function getLastEmailSent(): Promise<{
+  html: string;
+  page: Page;
+  subject: string;
+  to: string;
+}> {
   initRedis();
   await retry({ times: 10, delay: ms("1s") }, async () => {
     invariant(lastEmailSent, "No email sent");
     return lastEmailSent;
   });
+
   invariant(lastEmailSent, "No email sent");
-  const lastEmail = lastEmailSent;
+  const context = await newContext();
+  const page = await context.newPage();
+  await page.setContent(lastEmailSent.html, { waitUntil: "load" });
+  await page.setViewportSize({ width: 1024, height: 2048 });
+  const lastEmail = {
+    page,
+    html: lastEmailSent.html,
+    subject: lastEmailSent.subject,
+    to: lastEmailSent.to,
+  };
+
   lastEmailSent = null;
   return lastEmail;
 }
