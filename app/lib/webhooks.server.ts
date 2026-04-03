@@ -1,21 +1,22 @@
 import type { Prisma, WebhookDelivery, WebhookEndpoint } from "~/prisma";
+import { ms } from "convert";
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import crypto from "node:crypto";
 import prisma from "~/lib/prisma.server";
+import debug from "debug";
 
-export const WEBHOOK_EVENT_CONFIG = {
+const WEBHOOK_EVENT_CONFIG = {
   "user.created": { scope: "admin" as const },
   "site.created": { scope: "user" as const },
   "site.deleted": { scope: "user" as const },
 } as const;
-
-export type WebhookEventType = keyof typeof WEBHOOK_EVENT_CONFIG;
-
 const MAX_ATTEMPTS = 3;
-const RETRY_DELAY_MS = 5 * 60 * 1000;
+const RETRY_DELAY = ms("5m");
+
+const logger = debug("server");
 
 export async function emitWebhookEvent(
-  eventType: WebhookEventType,
+  eventType: keyof typeof WEBHOOK_EVENT_CONFIG,
   payload: Record<string, unknown>,
 ): Promise<void> {
   try {
@@ -67,6 +68,7 @@ export async function attemptDelivery(
   });
   const signature = computeHmac(body, endpoint.secret);
 
+  logger("[webhooks] ATTEMPT %s to %s", delivery.id, endpoint.url);
   try {
     const res = await fetch(endpoint.url, {
       method: "POST",
@@ -84,11 +86,14 @@ export async function attemptDelivery(
         where: { id: delivery.id },
         data: { status: "DELIVERED", attempts: delivery.attempts + 1 },
       });
+      logger("[webhooks] DELIVERED to %s", endpoint.url);
     } else {
       await scheduleRetry(delivery, `HTTP ${res.status}`);
+      logger("[webhooks] RETRY to %s: %s", endpoint.url, res.status);
     }
   } catch (error) {
     await scheduleRetry(delivery, String(error));
+    logger("[webhooks] RETRY to %s: %s", endpoint.url, error);
   }
 }
 
@@ -106,7 +111,7 @@ async function scheduleRetry(
             status: "RETRY",
             attempts,
             lastError,
-            nextRetryAt: new Date(Date.now() + RETRY_DELAY_MS),
+            nextRetryAt: new Date(Date.now() + RETRY_DELAY),
           },
   });
 }
