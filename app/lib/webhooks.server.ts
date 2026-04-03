@@ -1,7 +1,7 @@
-import crypto from "node:crypto";
-import captureAndLogError from "~/lib/captureAndLogError.server";
-import prisma from "~/lib/prisma.server";
 import type { Prisma, WebhookDelivery, WebhookEndpoint } from "~/prisma";
+import captureAndLogError from "~/lib/captureAndLogError.server";
+import crypto from "node:crypto";
+import prisma from "~/lib/prisma.server";
 
 export const WEBHOOK_EVENT_CONFIG = {
   "user.created": { scope: "admin" as const },
@@ -36,13 +36,17 @@ export async function emitWebhookEvent(
     const endpoints = await prisma.webhookEndpoint.findMany({
       where: { isActive: true, events: { has: eventType }, user: userFilter },
     });
-
     if (endpoints.length === 0) return;
 
     await Promise.all(
       endpoints.map(async (endpoint) => {
         const delivery = await prisma.webhookDelivery.create({
-          data: { endpointId: endpoint.id, eventType, payload: payload as Prisma.InputJsonValue, status: "PENDING" },
+          data: {
+            endpointId: endpoint.id,
+            eventType,
+            payload: payload as Prisma.InputJsonValue,
+            status: "PENDING",
+          },
         });
         await attemptDelivery(delivery, endpoint);
       }),
@@ -88,14 +92,22 @@ export async function attemptDelivery(
   }
 }
 
-async function scheduleRetry(delivery: WebhookDelivery, lastError: string): Promise<void> {
+async function scheduleRetry(
+  delivery: WebhookDelivery,
+  lastError: string,
+): Promise<void> {
   const attempts = delivery.attempts + 1;
   await prisma.webhookDelivery.update({
     where: { id: delivery.id },
     data:
       attempts >= MAX_ATTEMPTS
         ? { status: "FAILED", attempts, lastError }
-        : { status: "RETRY", attempts, lastError, nextRetryAt: new Date(Date.now() + RETRY_DELAY_MS) },
+        : {
+            status: "RETRY",
+            attempts,
+            lastError,
+            nextRetryAt: new Date(Date.now() + RETRY_DELAY_MS),
+          },
   });
 }
 

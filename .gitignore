@@ -1,18 +1,18 @@
-/node_modules
+.claude/
 .env
 .env.test
-.claude/
-prisma/generated
-backup.sql
-server.log
 .infisical.json
+/node_modules
+backup.sql
+prisma/generated
+server.log
 
 # React Router
 /.react-router/
 /build/
 
 # Vercel
-.vercel/*
+.vercel
 
 # Ignore test results
 __screenshots__/**/*.diff.png
@@ -20,5 +20,6 @@ __screenshots__/**/*.new.png
 __screenshots__/**/*.new.html
 __screenshots__/**/*.html.diff
 test-results/
-.vercel
+
+# Ignore worktrees
 .worktrees/

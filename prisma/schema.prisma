@@ -144,16 +144,16 @@ model Session {
 }
 
 model Site {
-  apiKey               String                @map("api_key")       @unique @default("")
+  apiKey               String                @map("api_key")        @unique @default("")
   botInsight           BotInsight?
   botVisits            BotVisit[]
   citationRuns         CitationQueryRun[]
   content              String                @map("content")
-  createdAt            DateTime              @map("created_at")    @default(now())
+  createdAt            DateTime              @map("created_at")     @default(now())
   digestSentAt         DateTime?             @map("digest_sent_at")
   domain               String                @map("domain")
   humanVisits          HumanVisit[]
-  id                   String                                      @id @default(cuid())
+  id                   String                                       @id @default(cuid())
   owner                User                  @relation("OwnedSites", fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId              String                @map("owner_id")
   siteInvitations      SiteInvitation[]
@@ -161,7 +161,7 @@ model Site {
   siteQuerySuggestions SiteQuerySuggestion[]
   siteUsers            SiteUser[]
   summary              String                @map("summary")
-  updatedAt            DateTime              @map("updated_at")    @updatedAt
+  updatedAt            DateTime              @map("updated_at")     @updatedAt
   usageEvents          UsageEvent[]
 
   @@index([domain])
@@ -238,38 +238,38 @@ model UsageEvent {
 }
 
 model User {
-  account                 Account?
-  apiKey                  String?                  @map("api_key")           @unique
-  createdAt               DateTime                 @map("created_at")        @default(now())
-  email                   String                   @map("email")             @unique
-  emailVerifiedAt         DateTime?                @map("email_verified_at")
-  id                      String                                             @id @default(cuid())
-  isAdmin                 Boolean                  @map("is_admin")          @default(false)
-  ownedSites              Site[]                   @relation("OwnedSites")
-  passwordHash            String                   @map("password_hash")
-  passwordRecoveryTokens  PasswordRecoveryToken[]
-  sentInvitations         SiteInvitation[]         @relation("SentInvitations")
-  sessions                Session[]
-  siteUsers               SiteUser[]
-  unsubscribed            Boolean                  @map("unsubscribed")      @default(false)
-  updatedAt               DateTime                 @map("updated_at")        @updatedAt
-  webhookEndpoints        WebhookEndpoint[]
+  account                Account?
+  apiKey                 String?                 @map("api_key")           @unique
+  createdAt              DateTime                @map("created_at")        @default(now())
+  email                  String                  @map("email")             @unique
+  emailVerifiedAt        DateTime?               @map("email_verified_at")
+  id                     String                                            @id @default(cuid())
+  isAdmin                Boolean                 @map("is_admin")          @default(false)
+  ownedSites             Site[]                  @relation("OwnedSites")
+  passwordHash           String                  @map("password_hash")
+  passwordRecoveryTokens PasswordRecoveryToken[]
+  sentInvitations        SiteInvitation[]        @relation("SentInvitations")
+  sessions               Session[]
+  siteUsers              SiteUser[]
+  unsubscribed           Boolean                 @map("unsubscribed")      @default(false)
+  updatedAt              DateTime                @map("updated_at")        @updatedAt
+  webhookEndpoints       WebhookEndpoint[]
 
   @@map("users")
 }
 
 model WebhookDelivery {
-  id          String          @id @default(cuid())
+  id          String                                @id @default(cuid())
   endpoint    WebhookEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
   endpointId  String          @map("endpoint_id")
   eventType   String          @map("event_type")
   payload     Json            @map("payload")
-  status      DeliveryStatus  @map("status")       @default(PENDING)
+  status      DeliveryStatus  @map("status")        @default(PENDING)
   attempts    Int             @map("attempts")      @default(0)
   nextRetryAt DateTime?       @map("next_retry_at")
   lastError   String?         @map("last_error")
-  createdAt   DateTime        @map("created_at")   @default(now())
-  updatedAt   DateTime        @map("updated_at")   @updatedAt
+  createdAt   DateTime        @map("created_at")    @default(now())
+  updatedAt   DateTime        @map("updated_at")    @updatedAt
 
   @@index([status, nextRetryAt])
   @@index([endpointId])
@@ -277,7 +277,7 @@ model WebhookDelivery {
 }
 
 model WebhookEndpoint {
-  id         String            @id @default(cuid())
+  id         String                               @id @default(cuid())
   user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String            @map("user_id")
   url        String            @map("url")
