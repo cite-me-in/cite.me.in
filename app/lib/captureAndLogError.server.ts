@@ -1,12 +1,12 @@
-import { Logtail } from "@logtail/node";
-import {
-  type ExclusiveEventHintOrCaptureContext,
-  captureException as sentryCaptureException,
-} from "@sentry/react-router";
-import debug from "debug";
 import { createWriteStream } from "node:fs";
+import { Logtail } from "@logtail/node";
 import { resolve } from "node:path";
+import {
+  captureException as sentryCaptureException,
+  type ExclusiveEventHintOrCaptureContext,
+} from "@sentry/react-router";
 import envVars from "./envVars.server";
+import debug from "debug";
 
 const logFile =
   process.env.NODE_ENV === "test" &&
@@ -30,8 +30,17 @@ export default function captureAndLogError(
   sentryCaptureException(error, hints);
 
   if (error instanceof Error) {
-    logger(error.stack);
-    console.error(error.stack);
+    // Only log stack trace lines that include 'loader' or 'action'
+    const stack = error.stack
+      ?.split("\n")
+      .filter(
+        (line) =>
+          /\.pnpm\/react-router@[\d.]/i.test(line) ||
+          line.trim().toLowerCase().startsWith("error"),
+      )
+      .join("\n");
+    logger(stack);
+    console.error(stack);
     if (logFile) logFile.write(`${error.stack}\n`);
     if (logtail) logtail.error(error.message, hints).catch(() => {});
   } else {
