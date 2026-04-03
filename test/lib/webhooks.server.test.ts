@@ -88,7 +88,7 @@ describe("emitWebhookEvent", () => {
     it("should mark DELIVERED on 2xx response", async () => {
       mockFetch.mockResolvedValue(new Response(null, { status: 200 }));
       await emitWebhookEvent("user.created", { userId: USER_ID });
-      const delivery = await prisma.webhookDelivery.findFirst({});
+      const delivery = await prisma.webhookDelivery.findFirst({ where: { endpointId: "ep-wh-admin-1" } });
       expect(delivery!.status).toBe("DELIVERED");
       expect(delivery!.attempts).toBe(1);
     });
@@ -96,7 +96,7 @@ describe("emitWebhookEvent", () => {
     it("should mark RETRY on non-2xx response", async () => {
       mockFetch.mockResolvedValue(new Response(null, { status: 500 }));
       await emitWebhookEvent("user.created", { userId: USER_ID });
-      const delivery = await prisma.webhookDelivery.findFirst({});
+      const delivery = await prisma.webhookDelivery.findFirst({ where: { endpointId: "ep-wh-admin-1" } });
       expect(delivery!.status).toBe("RETRY");
       expect(delivery!.attempts).toBe(1);
       expect(delivery!.lastError).toBe("HTTP 500");
@@ -106,7 +106,7 @@ describe("emitWebhookEvent", () => {
     it("should mark FAILED when attempts reach max", async () => {
       mockFetch.mockResolvedValue(new Response(null, { status: 500 }));
       await emitWebhookEvent("user.created", { userId: USER_ID });
-      const delivery = await prisma.webhookDelivery.findFirst({});
+      const delivery = await prisma.webhookDelivery.findFirst({ where: { endpointId: "ep-wh-admin-1" } });
       await prisma.webhookDelivery.update({
         where: { id: delivery!.id },
         data: { attempts: 2, status: "RETRY", nextRetryAt: new Date() },
@@ -122,7 +122,7 @@ describe("emitWebhookEvent", () => {
     it("should mark RETRY on network error", async () => {
       mockFetch.mockRejectedValue(new Error("ECONNREFUSED"));
       await emitWebhookEvent("user.created", { userId: USER_ID });
-      const delivery = await prisma.webhookDelivery.findFirst({});
+      const delivery = await prisma.webhookDelivery.findFirst({ where: { endpointId: "ep-wh-admin-1" } });
       expect(delivery!.status).toBe("RETRY");
       expect(delivery!.lastError).toContain("ECONNREFUSED");
     });
