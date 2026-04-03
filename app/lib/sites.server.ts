@@ -1,21 +1,25 @@
-import { ms } from "convert";
-import { generateApiKey } from "random-password-toolkit";
 import type { Site } from "~/prisma";
 import { emitWebhookEvent } from "~/lib/webhooks.server";
+import { generateApiKey } from "random-password-toolkit";
+import { ms } from "convert";
 import prisma from "./prisma.server";
+import debug from "debug";
 
+const logger = debug("server");
+
+/**
+ * Create a new site for a user. This function verifies the user can add a site
+ * and the site is reachable.  It also emits a webhook for the site.  Setting up
+ * the site is a separate step.
+ *
+ * @param user - The user to create the site for.
+ * @param domain - The domain of the site to create.
+ * @returns The created site object.
+ */
 export async function createSite(
-  user: { id: string; isAdmin: boolean; },
-  url: string,
-): Promise<{ site: Site; existing: boolean; }> {
-  const domain = extractDomain(url);
-  if (!domain) throw new Error("Enter a valid website URL or domain name");
-
-  const existing = await prisma.site.findFirst({
-    where: { ownerId: user.id, domain },
-  });
-  if (existing) return { site: existing, existing: true };
-
+  user: { id: string; isAdmin: boolean },
+  domain: string,
+): Promise<Site> {
   const account = await prisma.account.findUnique({
     where: { userId: user.id },
     select: { status: true },
@@ -24,16 +28,24 @@ export async function createSite(
   const limit = isPro ? 5 : 1;
   const siteCount = await prisma.site.count({ where: { ownerId: user.id } });
   const canAddSite = user.isAdmin || siteCount < limit;
-  if (!canAddSite)
+  if (!canAddSite) {
+    logger(
+      "[createSite] User %s cannot add site %s - over limit %d",
+      user.id,
+      domain,
+      limit,
+    );
     throw new Error(
       isPro
         ? "Pro plan supports up to 5 sites. Contact us if you need more."
         : "Free trial supports 1 site. Upgrade to Pro to add up to 5 sites.",
     );
+  }
 
   // Quick reachability check — the only sync step before backgrounding.
   // Skipped in test environment (no outbound network access).
   if (process.env.NODE_ENV !== "test") {
+    logger("[createSite] Checking reachability of %s", domain);
     try {
       const res = await fetch(`https://${domain}/`, {
         method: "HEAD",
@@ -52,6 +64,7 @@ export async function createSite(
     }
   }
 
+  logger("[createSite] Creating site %s for user %s", domain, user.id);
   const site = await prisma.site.create({
     data: {
       apiKey: `cite.me.in_${generateApiKey(16)}`,
@@ -61,8 +74,13 @@ export async function createSite(
       owner: { connect: { id: user.id } },
     },
   });
-  await emitWebhookEvent("site.created", { siteId: site.id, domain: site.domain });
-  return { site, existing: false };
+
+  logger("[createSite] Emitting webhook for site %s", site.id);
+  await emitWebhookEvent("site.created", {
+    siteId: site.id,
+    domain: site.domain,
+  });
+  return site;
 }
 
 export function extractDomain(url: string): string | null {
@@ -88,7 +106,11 @@ export async function deleteSite({
     where: { id: siteId, ownerId: userId },
   });
   if (site) {
-    await emitWebhookEvent("site.deleted", { siteId: site.id, domain: site.domain });
+    logger("[deleteSite] Deleting site %s for user %s", siteId, userId);
+    await emitWebhookEvent("site.deleted", {
+      siteId: site.id,
+      domain: site.domain,
+    });
     await prisma.site.delete({ where: { id: siteId } });
   }
 }

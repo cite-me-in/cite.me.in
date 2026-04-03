@@ -1,21 +1,24 @@
-import { ms } from "convert";
-import { sleep } from "radashi";
-import invariant from "tiny-invariant";
-import sendSiteSetupEmail from "~/emails/SiteSetupComplete";
-import addSiteQueries from "~/lib/addSiteQueries";
-import loadSetupMetrics from "~/lib/setupMetrics.server";
+import type { QueryFn } from "~/lib/llm-visibility/queryFn";
+import type { Route } from "./+types/site.$domain_.setup.run";
+import { appendLog, getStatus, setStatus } from "~/lib/setupProgress.server";
+import { singleQueryRepetition } from "~/lib/llm-visibility/queryPlatform";
 import { requireSiteAccess } from "~/lib/auth.server";
+import { summarize } from "~/lib/scrape/summarize";
+import { sleep } from "radashi";
+import { crawl } from "~/lib/scrape/crawl";
+import { ms } from "convert";
+import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
+import sendSiteSetupEmail from "~/emails/SiteSetupComplete";
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import analyzeSentiment from "~/lib/llm-visibility/analyzeSentiment";
-import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
+import loadSetupMetrics from "~/lib/setupMetrics.server";
+import addSiteQueries from "~/lib/addSiteQueries";
+import invariant from "tiny-invariant";
 import PLATFORMS from "~/lib/llm-visibility/platformQueries.server";
-import type { QueryFn } from "~/lib/llm-visibility/queryFn";
-import { singleQueryRepetition } from "~/lib/llm-visibility/queryPlatform";
 import prisma from "~/lib/prisma.server";
-import { crawl } from "~/lib/scrape/crawl";
-import { summarize } from "~/lib/scrape/summarize";
-import { appendLog, getStatus, setStatus } from "~/lib/setupProgress.server";
-import type { Route } from "./+types/site.$domain_.setup.run";
+import debug from "debug";
+
+const logger = debug("server");
 
 export async function action({ request, params }: Route.ActionArgs) {
   if (request.method !== "POST")
@@ -31,10 +34,13 @@ export async function action({ request, params }: Route.ActionArgs) {
   if (current === "running" || current === "complete")
     return new Response(null, { status: 204 });
 
+  logger("[setup.run] Starting setup pipeline for site %s", site.domain);
   await setStatus({ siteId: site.id, userId: user.id, status: "running" });
 
-  const log = (line: string) =>
-    appendLog({ siteId: site.id, userId: user.id, line });
+  const log = async (line: string) => {
+    logger("[setup.run] %s: %s", site.domain, line);
+    await appendLog({ siteId: site.id, userId: user.id, line });
+  };
 
   try {
     // Phase 1: Crawl
