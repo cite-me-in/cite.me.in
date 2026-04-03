@@ -1,6 +1,7 @@
+import invariant from "tiny-invariant";
 import envVars from "~/lib/envVars.server";
 
-export const SERP_API_PRICING = 25.0 / 1000;
+export const SERPAPI_PRICING = 25.0 / 1000;
 
 /**
  * Uses the SerpAPI to fetch organic results for a given query and engine.
@@ -29,10 +30,11 @@ export default async function fetchSERPResults({
   text: string;
   usage: { inputTokens: number; outputTokens: number };
 }> {
+  invariant(envVars.SERPAPI_API_KEY, "SERPAPI_API_KEY is not set");
   const url = new URL("https://serpapi.com/search");
   url.searchParams.set("q", query);
   url.searchParams.set("engine", engine);
-  url.searchParams.set("api_key", envVars.SERPAPI_API_KEY ?? "");
+  url.searchParams.set("api_key", envVars.SERPAPI_API_KEY);
 
   const response = await fetch(url, { signal: AbortSignal.timeout(timeout) });
   if (!response.ok) {
