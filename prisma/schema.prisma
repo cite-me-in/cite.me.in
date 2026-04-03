@@ -253,8 +253,43 @@ model User {
   siteUsers               SiteUser[]
   unsubscribed            Boolean                  @map("unsubscribed")      @default(false)
   updatedAt               DateTime                 @map("updated_at")        @updatedAt
+  webhookEndpoints        WebhookEndpoint[]
 
   @@map("users")
+}
+
+model WebhookDelivery {
+  id          String          @id @default(cuid())
+  endpoint    WebhookEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+  endpointId  String          @map("endpoint_id")
+  eventType   String          @map("event_type")
+  payload     Json            @map("payload")
+  status      DeliveryStatus  @map("status")       @default(PENDING)
+  attempts    Int             @map("attempts")      @default(0)
+  nextRetryAt DateTime?       @map("next_retry_at")
+  lastError   String?         @map("last_error")
+  createdAt   DateTime        @map("created_at")   @default(now())
+  updatedAt   DateTime        @map("updated_at")   @updatedAt
+
+  @@index([status, nextRetryAt])
+  @@index([endpointId])
+  @@map("webhook_deliveries")
+}
+
+model WebhookEndpoint {
+  id         String            @id @default(cuid())
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String            @map("user_id")
+  url        String            @map("url")
+  secret     String            @map("secret")
+  events     String[]          @map("events")
+  isActive   Boolean           @map("is_active")  @default(true)
+  createdAt  DateTime          @map("created_at") @default(now())
+  updatedAt  DateTime          @map("updated_at") @updatedAt
+  deliveries WebhookDelivery[]
+
+  @@index([userId])
+  @@map("webhook_endpoints")
 }
 
 
@@ -269,4 +304,11 @@ enum SentimentLabel {
   negative
   neutral
   mixed
+}
+
+enum DeliveryStatus {
+  PENDING
+  DELIVERED
+  RETRY
+  FAILED
 }
