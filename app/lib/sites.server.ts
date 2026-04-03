@@ -1,6 +1,7 @@
 import { ms } from "convert";
 import { generateApiKey } from "random-password-toolkit";
 import type { Site } from "~/prisma";
+import { emitWebhookEvent } from "~/lib/webhooks.server";
 import prisma from "./prisma.server";
 
 export async function createSite(
@@ -60,6 +61,7 @@ export async function createSite(
       owner: { connect: { id: user.id } },
     },
   });
+  await emitWebhookEvent("site.created", { siteId: site.id, domain: site.domain });
   return { site, existing: false };
 }
 
@@ -85,5 +87,8 @@ export async function deleteSite({
   const site = await prisma.site.findFirst({
     where: { id: siteId, ownerId: userId },
   });
-  if (site) await prisma.site.delete({ where: { id: siteId } });
+  if (site) {
+    await emitWebhookEvent("site.deleted", { siteId: site.id, domain: site.domain });
+    await prisma.site.delete({ where: { id: siteId } });
+  }
 }

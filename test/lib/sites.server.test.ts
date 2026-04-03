@@ -1,7 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { crawl } from "~/lib/scrape/crawl";
 import { summarize } from "~/lib/scrape/summarize";
-import { extractDomain } from "~/lib/sites.server";
+import prisma from "~/lib/prisma.server";
+import { createSite, deleteSite, extractDomain } from "~/lib/sites.server";
+import * as webhooks from "~/lib/webhooks.server";
 
 vi.mock("node:dns", () => ({
   default: {
@@ -86,5 +88,79 @@ describe("fetchSiteContent", () => {
         maxSeconds: 10,
       }),
     ).rejects.toThrow("HTTP error fetching example.com");
+  });
+});
+
+describe("webhook emission", () => {
+  let emitSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(async () => {
+    emitSpy = vi.spyOn(webhooks, "emitWebhookEvent").mockResolvedValue();
+    await prisma.user.deleteMany({ where: { email: "sites-wh@test.com" } });
+    await prisma.user.create({
+      data: {
+        id: "user-sites-wh-1",
+        email: "sites-wh@test.com",
+        passwordHash: "test",
+      },
+    });
+  });
+
+  afterEach(async () => {
+    emitSpy.mockRestore();
+    await prisma.user.deleteMany({ where: { email: "sites-wh@test.com" } });
+  });
+
+  it("should emit site.created when a new site is created", async () => {
+    const { site } = await createSite(
+      { id: "user-sites-wh-1", isAdmin: false },
+      "https://my-test-site-wh.example.com",
+    );
+
+    expect(emitSpy).toHaveBeenCalledWith("site.created", {
+      siteId: site.id,
+      domain: site.domain,
+    });
+  });
+
+  it("should not emit site.created when site already exists", async () => {
+    await prisma.site.create({
+      data: {
+        id: "site-sites-wh-1",
+        domain: "existing-wh.example.com",
+        content: "",
+        summary: "",
+        apiKey: "test-api-key-sites-wh-1",
+        ownerId: "user-sites-wh-1",
+      },
+    });
+
+    const { existing } = await createSite(
+      { id: "user-sites-wh-1", isAdmin: false },
+      "existing-wh.example.com",
+    );
+
+    expect(existing).toBe(true);
+    expect(emitSpy).not.toHaveBeenCalled();
+  });
+
+  it("should emit site.deleted when a site is deleted", async () => {
+    const site = await prisma.site.create({
+      data: {
+        id: "site-sites-wh-2",
+        domain: "to-delete-wh.example.com",
+        content: "",
+        summary: "",
+        apiKey: "test-api-key-sites-wh-2",
+        ownerId: "user-sites-wh-1",
+      },
+    });
+
+    await deleteSite({ userId: "user-sites-wh-1", siteId: site.id });
+
+    expect(emitSpy).toHaveBeenCalledWith("site.deleted", {
+      siteId: site.id,
+      domain: site.domain,
+    });
   });
 });
