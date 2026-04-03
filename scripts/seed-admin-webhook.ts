@@ -1,6 +1,6 @@
 // scripts/seed-admin-webhook.ts
 // Run with: infisical --env prod run -- tsx scripts/seed-admin-webhook.ts
-import prisma from "../app/lib/prisma.server.ts";
+import prisma from "../app/lib/prisma.server";
 
 const ADMIN_USER_ID = "<your-admin-user-id>"; // get from DB: SELECT id FROM users WHERE is_admin = true
 const WEBHOOK_URL = "<your-admin-server-webhook-url>";

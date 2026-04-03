@@ -3,6 +3,10 @@
     {
       "path": "/cron/process-sites",
       "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/cron/webhook-retries",
+      "schedule": "*/5 * * * *"
     }
   ],
   "github": {
