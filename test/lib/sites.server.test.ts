@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { crawl } from "~/lib/scrape/crawl";
-import { summarize } from "~/lib/scrape/summarize";
-import prisma from "~/lib/prisma.server";
 import { createSite, deleteSite, extractDomain } from "~/lib/sites.server";
+import { summarize } from "~/lib/scrape/summarize";
+import { crawl } from "~/lib/scrape/crawl";
 import * as webhooks from "~/lib/webhooks.server";
+import prisma from "~/lib/prisma.server";
 
 vi.mock("node:dns", () => ({
   default: {
@@ -112,7 +112,7 @@ describe("webhook emission", () => {
   });
 
   it("should emit site.created when a new site is created", async () => {
-    const { site } = await createSite(
+    const site = await createSite(
       { id: "user-sites-wh-1", isAdmin: false },
       "https://my-test-site-wh.example.com",
     );
@@ -121,27 +121,6 @@ describe("webhook emission", () => {
       siteId: site.id,
       domain: site.domain,
     });
-  });
-
-  it("should not emit site.created when site already exists", async () => {
-    await prisma.site.create({
-      data: {
-        id: "site-sites-wh-1",
-        domain: "existing-wh.example.com",
-        content: "",
-        summary: "",
-        apiKey: "test-api-key-sites-wh-1",
-        ownerId: "user-sites-wh-1",
-      },
-    });
-
-    const { existing } = await createSite(
-      { id: "user-sites-wh-1", isAdmin: false },
-      "existing-wh.example.com",
-    );
-
-    expect(existing).toBe(true);
-    expect(emitSpy).not.toHaveBeenCalled();
   });
 
   it("should emit site.deleted when a site is deleted", async () => {

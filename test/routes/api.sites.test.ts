@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import prisma from "~/lib/prisma.server";
 import { port } from "~/test/helpers/launchBrowser";
+import prisma from "~/lib/prisma.server";
 
 const BASE = `http://localhost:${port}`;
 const USER_ID = "user1";
@@ -58,14 +58,14 @@ beforeAll(async () => {
   });
 });
 
-describe("GET /api/sites/:domain", () => {
+describe("GET /api/site/:domain", () => {
   it("should return 401 without a token", async () => {
-    const response = await get(`/api/sites/${DOMAIN}`);
+    const response = await get(`/api/site/${DOMAIN}`);
     expect(response.status).toBe(401);
   });
 
   it("should return 404 for a domain that doesn't exist", async () => {
-    const response = await get("/api/sites/not-owned.example", API_KEY);
+    const response = await get("/api/site/not-owned.example", API_KEY);
     expect(response.status).toBe(404);
   });
 
@@ -80,7 +80,7 @@ describe("GET /api/sites/:domain", () => {
     };
 
     beforeAll(async () => {
-      response = await get(`/api/sites/${DOMAIN}`, API_KEY);
+      response = await get(`/api/site/${DOMAIN}`, API_KEY);
       body = await response.json();
     });
 
@@ -101,19 +101,19 @@ describe("GET /api/sites/:domain", () => {
   });
 });
 
-describe("GET /api/sites/:domain/metrics", () => {
+describe("GET /api/site/:domain/metrics", () => {
   it("should return 401 without a token", async () => {
-    const res = await get(`/api/sites/${DOMAIN}/metrics`);
+    const res = await get(`/api/site/${DOMAIN}/metrics`);
     expect(res.status).toBe(401);
   });
 
   it("should return 404 for a domain that doesn't exist", async () => {
-    const res = await get("/api/sites/nonexistent.example/metrics", API_KEY);
+    const res = await get("/api/site/nonexistent.example/metrics", API_KEY);
     expect(res.status).toBe(404);
   });
 
   it("should return metrics with summary counts", async () => {
-    const res = await get(`/api/sites/${DOMAIN}/metrics`, API_KEY);
+    const res = await get(`/api/site/${DOMAIN}/metrics`, API_KEY);
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.allCitations.current).toBe(2);
@@ -127,14 +127,14 @@ describe("GET /api/sites/:domain/metrics", () => {
   });
 });
 
-describe("GET /api/sites/:domain/queries", () => {
+describe("GET /api/site/:domain/queries", () => {
   it("should return 401 without a token", async () => {
-    const res = await get(`/api/sites/${DOMAIN}/queries`);
+    const res = await get(`/api/site/${DOMAIN}/queries`);
     expect(res.status).toBe(401);
   });
 
   it("should return 404 for a domain that doesn't exist", async () => {
-    const res = await get("/api/sites/nonexistent.example/queries", API_KEY);
+    const res = await get("/api/site/nonexistent.example/queries", API_KEY);
     expect(res.status).toBe(404);
   });
 
@@ -151,7 +151,7 @@ describe("GET /api/sites/:domain/queries", () => {
     };
 
     beforeAll(async () => {
-      response = await get(`/api/sites/${DOMAIN}/queries`, API_KEY);
+      response = await get(`/api/site/${DOMAIN}/queries`, API_KEY);
       body = await response.json();
     });
 
