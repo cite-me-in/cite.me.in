@@ -185,4 +185,46 @@ describe("cron.process-sites", () => {
       expect(results.length).toBe(0);
     });
   });
+
+  describe("trial emails", () => {
+    beforeEach(async () => {
+      await prisma.user.deleteMany({ where: { email: { contains: "trial-email" } } });
+    });
+
+    it("should send TrialEnded email once and not again", async () => {
+      const user = await prisma.user.create({
+        data: {
+          id: "user-trial-email-1",
+          email: "trial-email-ended@test.com",
+          passwordHash: "test",
+          createdAt: new Date(
+            Temporal.Now.instant().subtract({ hours: 24 * 26 }).epochMilliseconds,
+          ),
+          ownedSites: {
+            create: {
+              id: "site-trial-email-1",
+              apiKey: "test-api-key-trial-email-1",
+              content: "Test content",
+              domain: "trial-ended.example.com",
+              summary: "Test summary",
+            },
+          },
+        },
+      });
+
+      await makeRequest("test-cron-secret");
+
+      const after1 = await prisma.sentEmail.findMany({
+        where: { userId: user.id, type: "TrialEnded" },
+      });
+      expect(after1.length).toBe(1);
+
+      await makeRequest("test-cron-secret");
+
+      const after2 = await prisma.sentEmail.findMany({
+        where: { userId: user.id, type: "TrialEnded" },
+      });
+      expect(after2.length).toBe(1);
+    });
+  });
 });
