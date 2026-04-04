@@ -1,8 +1,9 @@
-import Stripe from "stripe";
 import { beforeAll, describe, expect, it } from "vitest";
-import envVars from "~/lib/envVars.server";
-import prisma from "~/lib/prisma.server";
+import { createHash, createHmac } from "node:crypto";
 import { port } from "~/test/helpers/launchBrowser";
+import envVars from "~/lib/envVars.server";
+import Stripe from "stripe";
+import prisma from "~/lib/prisma.server";
 
 const BASE_URL = `http://localhost:${port}/api/stripe/webhook`;
 const stripe = new Stripe(envVars.STRIPE_SECRET_KEY, {
@@ -11,6 +12,17 @@ const stripe = new Stripe(envVars.STRIPE_SECRET_KEY, {
 
 function signedRequest(payload: string) {
   const sig = stripe.webhooks.generateTestHeaderString({
+    timestamp: Date.now(),
+    scheme: "v1",
+    signature: "",
+    cryptoProvider: {
+      computeHMACSignature: (payload: string, secret: string) =>
+        createHmac("sha256", secret).update(payload).digest("hex"),
+      computeHMACSignatureAsync: (payload: string, secret: string) =>
+        Promise.resolve(createHmac("sha256", secret).update(payload).digest("hex")),
+      computeSHA256Async: (data: Uint8Array) =>
+        Promise.resolve(createHash("sha256").update(data).digest()),
+    },
     payload,
     secret: envVars.STRIPE_WEBHOOK_SECRET,
   });

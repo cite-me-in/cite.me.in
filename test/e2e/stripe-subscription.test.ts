@@ -1,8 +1,9 @@
-import test, { type Page, expect } from "@playwright/test";
-import Stripe from "stripe";
-import envVars from "~/lib/envVars.server";
-import prisma from "~/lib/prisma.server";
+import { createHash, createHmac } from "node:crypto";
 import { goto, port } from "~/test/helpers/launchBrowser";
+import test, { type Page, expect } from "@playwright/test";
+import envVars from "~/lib/envVars.server";
+import Stripe from "stripe";
+import prisma from "~/lib/prisma.server";
 import "~/test/helpers/toMatchVisual";
 
 const TEST_EMAIL = "stripe-e2e@example.com";
@@ -102,6 +103,19 @@ test("should activate account via webhook", async () => {
   });
 
   const sig = stripe.webhooks.generateTestHeaderString({
+    timestamp: Date.now(),
+    scheme: "v1",
+    signature: "",
+    cryptoProvider: {
+      computeHMACSignature: (payload: string, secret: string) =>
+        createHmac("sha256", secret).update(payload).digest("hex"),
+      computeHMACSignatureAsync: (payload: string, secret: string) =>
+        Promise.resolve(
+          createHmac("sha256", secret).update(payload).digest("hex"),
+        ),
+      computeSHA256Async: (data: Uint8Array) =>
+        Promise.resolve(createHash("sha256").update(data).digest()),
+    },
     payload,
     secret: envVars.STRIPE_WEBHOOK_SECRET,
   });
