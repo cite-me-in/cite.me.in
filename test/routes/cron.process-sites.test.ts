@@ -191,6 +191,72 @@ describe("cron.process-sites", () => {
       await prisma.user.deleteMany({ where: { email: { contains: "trial-email" } } });
     });
 
+    it("should not send TrialEnding if TrialEnded already sent", async () => {
+      const user = await prisma.user.create({
+        data: {
+          id: "user-trial-email-2",
+          email: "trial-email-ending-skip@test.com",
+          passwordHash: "test",
+          createdAt: new Date(
+            Temporal.Now.instant().subtract({ hours: 24 * 25 }).epochMilliseconds,
+          ),
+          sentEmails: { create: { type: "TrialEnded" } },
+          ownedSites: {
+            create: {
+              id: "site-trial-email-2",
+              apiKey: "test-api-key-trial-email-2",
+              content: "Test content",
+              domain: "trial-ending-skip.example.com",
+              summary: "Test summary",
+            },
+          },
+        },
+      });
+
+      await makeRequest("test-cron-secret");
+
+      const records = await prisma.sentEmail.findMany({
+        where: { userId: user.id, type: "TrialEnding" },
+      });
+      expect(records.length).toBe(0);
+    });
+
+    it("should send TrialEnding once and not again", async () => {
+      const user = await prisma.user.create({
+        data: {
+          id: "user-trial-email-3",
+          email: "trial-email-ending@test.com",
+          passwordHash: "test",
+          createdAt: new Date(
+            Temporal.Now.instant().subtract({ hours: 24 * 24 }).epochMilliseconds,
+          ),
+          ownedSites: {
+            create: {
+              id: "site-trial-email-3",
+              apiKey: "test-api-key-trial-email-3",
+              content: "Test content",
+              domain: "trial-ending.example.com",
+              summary: "Test summary",
+            },
+          },
+        },
+      });
+
+      await makeRequest("test-cron-secret");
+
+      const after1 = await prisma.sentEmail.findMany({
+        where: { userId: user.id, type: "TrialEnding" },
+      });
+      expect(after1.length).toBe(1);
+
+      await makeRequest("test-cron-secret");
+
+      const after2 = await prisma.sentEmail.findMany({
+        where: { userId: user.id, type: "TrialEnding" },
+      });
+      expect(after2.length).toBe(1);
+    });
+
     it("should send TrialEnded email once and not again", async () => {
       const user = await prisma.user.create({
         data: {
