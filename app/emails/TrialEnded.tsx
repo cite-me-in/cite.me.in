@@ -1,23 +1,15 @@
-import { Temporal } from "@js-temporal/polyfill";
 import { Section, Text } from "@react-email/components";
 import prices from "~/data/stripe-prices.json";
+import { daysAgo } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
 import { sendEmail } from "./sendEmails";
 
-export default async function sendTrialEndedEmails(trialDays: number) {
-  const trialEndedToday = new Date(
-    Temporal.Now.instant().subtract({ hours: trialDays * 24 })
-      .epochMilliseconds,
-  );
-  const trialEndedYesterday = new Date(
-    Temporal.Now.instant().subtract({ hours: (trialDays - 1) * 24 })
-      .epochMilliseconds,
-  );
-
-  const trialEndedUsers = await prisma.user.findMany({
+export default async function sendTrialEndedEmails() {
+  const users = await prisma.user.findMany({
     where: {
-      createdAt: { gte: trialEndedToday, lte: trialEndedYesterday },
+      createdAt: { lte: daysAgo(25) },
       account: null,
+      sentEmails: { none: { type: "TrialEnded" } },
     },
     include: {
       ownedSites: {
@@ -31,16 +23,18 @@ export default async function sendTrialEndedEmails(trialDays: number) {
     },
   });
 
-  for (const user of trialEndedUsers) {
+  for (const user of users) {
     const site = user.ownedSites[0];
     if (!site || user.unsubscribed) continue;
     const citationCount = await countSiteCitations(site.id);
-    await sendTrialEndedEmail({
+    const result = await sendTrialEndedEmail({
       user,
       citationCount,
       domain: site.domain,
       queryCount: site._count.citationRuns,
     });
+    if (result)
+      await prisma.sentEmail.create({ data: { userId: user.id, type: "TrialEnded" } });
   }
 }
 
