@@ -112,10 +112,10 @@ describe("webhook emission", () => {
   });
 
   it("should emit site.created when a new site is created", async () => {
-    const site = await createSite(
-      { id: "user-sites-wh-1", isAdmin: false },
-      "https://my-test-site-wh.example.com",
-    );
+    const site = await createSite({
+      user: { id: "user-sites-wh-1", isAdmin: false },
+      domain: "my-test-site-wh.example.com",
+    });
 
     expect(emitSpy).toHaveBeenCalledWith("site.created", {
       siteId: site.id,

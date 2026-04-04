@@ -16,10 +16,13 @@ const logger = debug("server");
  * @param domain - The domain of the site to create.
  * @returns The created site object.
  */
-export async function createSite(
-  user: { id: string; isAdmin: boolean },
-  domain: string,
-): Promise<Site> {
+export async function createSite({
+  user,
+  domain,
+}: {
+  user: { id: string; isAdmin: boolean };
+  domain: string;
+}): Promise<Site> {
   const account = await prisma.account.findUnique({
     where: { userId: user.id },
     select: { status: true },

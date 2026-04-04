@@ -68,7 +68,7 @@ export async function action({ request }: Route.ActionArgs) {
     });
     if (existing) return redirect(`/site/${domain}/citations`);
 
-    const site = await createSite(user, url);
+    const site = await createSite({ user, domain });
     return redirect(`/site/${site.domain}/setup`);
   } catch (error) {
     return {
