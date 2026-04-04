@@ -1,8 +1,9 @@
-import { z } from "zod";
 import { createDocument } from "zod-openapi";
+import { z } from "zod";
 import envVars from "~/lib/envVars.server";
 
 export const UserSchema = z.object({
+  id: z.string().describe("The ID of the user"),
   email: z.email().describe("The email address of the user"),
   sites: z.array(
     z.object({
@@ -30,6 +31,7 @@ export const SiteSchema = z.object({
   users: z.array(
     z
       .object({
+        id: z.string().describe("The ID of the user"),
         email: z
           .email()
           .describe("The email address of the user e.g. `user@example.com`"),
@@ -174,7 +176,36 @@ export function generateOpenApiSpec(): ReturnType<typeof createDocument> {
         },
       },
 
-      "/api/sites/{domain}": {
+      "/api/user/{id}": {
+        get: {
+          description:
+            "Responds with the details of the given user. Includes all the sites they have access to. You can only use this endpoint with your own user ID.",
+          security: [{ BearerAuth: [] }],
+          parameters: [
+            {
+              description:
+                "The ID of the user to get details for e.g. `clxyz123abc`",
+              in: "path",
+              name: "id",
+              required: true,
+            },
+          ],
+          responses: {
+            200: {
+              description: "User details with sites",
+              content: { "application/json": { schema: UserSchema } },
+            },
+            401: {
+              description: "Unauthorized",
+            },
+            404: {
+              description: "User not found",
+            },
+          },
+        },
+      },
+
+      "/api/site/{domain}": {
         get: {
           description:
             "Responds with the details of the given site. Includes the content of the site, the summary, the date the site was added, and the users who have access to that site and their roles (owner or member).",
@@ -203,7 +234,7 @@ export function generateOpenApiSpec(): ReturnType<typeof createDocument> {
         },
       },
 
-      "/api/sites/{domain}/metrics": {
+      "/api/site/{domain}/metrics": {
         get: {
           description:
             "Responds with the metrics for the given site. Overall citations, your citations, visibility score, and bot visits. For each metric includes value for the current week and for the previous week.",
@@ -231,7 +262,7 @@ export function generateOpenApiSpec(): ReturnType<typeof createDocument> {
           },
         },
       },
-      "/api/sites/{domain}/queries": {
+      "/api/site/{domain}/queries": {
         get: {
           description:
             "Responds with the queries for the given site. For each platform list all the queries run against that platform, the citations found, and the platform sentiment.",
