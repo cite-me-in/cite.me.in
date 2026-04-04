@@ -254,6 +254,7 @@ model User {
   unsubscribed           Boolean                 @map("unsubscribed")      @default(false)
   updatedAt              DateTime                @map("updated_at")        @updatedAt
   webhookEndpoints       WebhookEndpoint[]
+  sentEmails             SentEmail[]
 
   @@map("users")
 }
@@ -311,4 +312,15 @@ enum DeliveryStatus {
   DELIVERED
   RETRY
   FAILED
+}
+
+model SentEmail {
+  id     String   @id @default(cuid())
+  sentAt DateTime @map("sent_at") @default(now())
+  type   String   @map("type")
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String   @map("user_id")
+
+  @@index([userId, type])
+  @@map("sent_emails")
 }
