@@ -1,3 +1,5 @@
+import { Temporal } from "@js-temporal/polyfill";
+
 const mediumDate = new Intl.DateTimeFormat("en-US", {
   dateStyle: "medium",
   timeZone: "UTC",
@@ -37,4 +39,10 @@ export function formatDateMed(date: Date): string {
  */
 export function formatDateHuge(date: Date): string {
   return fullDate.format(date);
+}
+
+export function daysAgo(days: number): Date {
+  return new Date(
+    Temporal.Now.instant().subtract({ hours: days * 24 }).epochMilliseconds,
+  );
 }
