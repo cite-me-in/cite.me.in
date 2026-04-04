@@ -38,11 +38,10 @@ export async function loader({ request }: Route.LoaderArgs) {
       };
     });
 
-    // Send trial-ending and trial-ended emails after all sites have been processed.
-    await Promise.all([
-      sendTrialEndingEmails(trialDays),
-      sendTrialEndedEmails(trialDays),
-    ]);
+    // Send trial emails sequentially: TrialEnded first so its SentEmail record
+    // exists before TrialEnding checks, preventing both sending in the same run.
+    await sendTrialEndedEmails();
+    await sendTrialEndingEmails();
 
     if (envVars.HEARTBEAT_CRON_PROCESS_SITES)
       await fetch(envVars.HEARTBEAT_CRON_PROCESS_SITES);
