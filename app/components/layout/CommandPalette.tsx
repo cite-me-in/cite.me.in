@@ -322,8 +322,7 @@ function CommandItem({
       onClick={() => onSelect(item.to)}
       onMouseEnter={() => onHover(index)}
       className={twMerge(
-        "flex w-full items-center gap-3 px-4 py-2 text-left font-medium text-black text-sm",
-        "transition-colors hover:bg-[hsl(47,100%,95%)] hover:text-[#F59E0B]",
+        "flex w-full items-center gap-3 px-4 py-2 text-left font-medium text-black text-sm transition-colors",
         "data-[active=true]:bg-[hsl(47,100%,95%)] data-[active=true]:text-[#F59E0B]",
       )}
     >
