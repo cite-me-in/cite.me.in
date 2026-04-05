@@ -10,22 +10,10 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   return data(
     SiteMetricsSchema.parse({
-      allCitations: {
-        current: metrics.allCitations.current,
-        previous: metrics.allCitations.previous,
-      },
-      yourCitations: {
-        current: metrics.yourCitations.current,
-        previous: metrics.yourCitations.previous,
-      },
-      visbilityScore: {
-        current: metrics.visbilityScore.current,
-        previous: metrics.visbilityScore.previous,
-      },
-      botVisits: {
-        current: metrics.botVisits.current,
-        previous: metrics.botVisits.previous,
-      },
+      allCitations: metrics.allCitations,
+      yourCitations: metrics.yourCitations,
+      visbilityScore: metrics.visbilityScore,
+      botVisits: metrics.botVisits,
     }),
   );
 }

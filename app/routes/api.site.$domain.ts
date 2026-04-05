@@ -20,7 +20,6 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   return data(
     SiteSchema.parse({
-      content: site.content,
       createdAt: site.createdAt.toISOString().split("T")[0],
       domain: site.domain,
       summary: site.summary,

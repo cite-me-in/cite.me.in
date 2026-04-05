@@ -17,7 +17,6 @@ export async function loader({ request, params }: Route.LoaderArgs) {
       ownedSites: {
         select: {
           summary: true,
-          content: true,
           domain: true,
           createdAt: true,
         },

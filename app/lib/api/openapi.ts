@@ -8,6 +8,9 @@ export const UserSchema = z.object({
   sites: z.array(
     z.object({
       domain: z.string().describe("The domain of the site e.g. `example.com`"),
+      summary: z
+        .string()
+        .describe("The summary of the site e.g. `This product is fantastic`"),
       createdAt: z.iso
         .date()
         .describe("The date the site was created e.g. `2024-01-01`"),
@@ -16,11 +19,6 @@ export const UserSchema = z.object({
 });
 
 export const SiteSchema = z.object({
-  content: z
-    .string()
-    .describe(
-      "The content of the site, originally retrieved from the website (Markdown format).",
-    ),
   createdAt: z.iso
     .date()
     .describe("The date the site was created e.g. `2024-01-01`"),
@@ -48,39 +46,22 @@ export const SiteSchema = z.object({
 export const SiteMetricsSchema = z.object({
   allCitations: z.object({
     current: z.number().int().describe("Total citations for the current week"),
-    previous: z
-      .number()
-      .int()
-      .describe("Total citations for the previous week"),
+    previous: z.number().describe("Total citations for the previous week"),
   }),
   yourCitations: z.object({
-    current: z
-      .number()
-      .int()
-      .describe("Your citations only for the current week"),
-    previous: z
-      .number()
-      .int()
-      .describe("Your citations only for the previous week"),
+    current: z.number().describe("Your citations only for the current week"),
+    previous: z.number().describe("Your citations only for the previous week"),
   }),
   visbilityScore: z.object({
-    current: z
-      .number()
-      .int()
-      .describe("LLM visibility score for the current week"),
-    previous: z
-      .number()
-      .int()
-      .describe("LLM visibility score for the previous week"),
+    current: z.number().describe("LLM visibility score for the current week"),
+    previous: z.number().describe("LLM visibility score for the previous week"),
   }),
   botVisits: z.object({
     current: z
       .number()
-      .int()
       .describe("Total unique bot visits for the current week"),
     previous: z
       .number()
-      .int()
       .describe("Total unique bot visits for the previous week"),
   }),
 });
