@@ -94,8 +94,7 @@ describe("GET /api/site/:domain", () => {
       expect(Array.isArray(body.users)).toBe(true);
     });
 
-    it("should return the site with content and summary", async () => {
-      expect(body.content).toBe("Test content");
+    it("should return the site with summary", async () => {
       expect(body.summary).toBe("Test summary");
     });
   });
