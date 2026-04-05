@@ -124,7 +124,7 @@ export async function loadWeeklyDigestMetrics(
   );
 
   const { owner, siteUsers } = siteInfo;
-  const toEmails = [owner, ...siteUsers.map((su) => su.user)]
+  const toEmails = [owner, ...siteUsers.map((siteUser) => siteUser.user)]
     .filter(({ unsubscribed }) => !unsubscribed)
     .map(({ email }) => email);
   const subject = `${formatDateShort(new Date(weekStart))} — ${formatDateShort(
