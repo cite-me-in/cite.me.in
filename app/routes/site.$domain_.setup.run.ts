@@ -1,22 +1,22 @@
-import type { QueryFn } from "~/lib/llm-visibility/queryFn";
-import type { Route } from "./+types/site.$domain_.setup.run";
-import { appendLog, getStatus, setStatus } from "~/lib/setupProgress.server";
-import { singleQueryRepetition } from "~/lib/llm-visibility/queryPlatform";
-import { requireSiteAccess } from "~/lib/auth.server";
-import { summarize } from "~/lib/scrape/summarize";
-import { sleep } from "radashi";
-import { crawl } from "~/lib/scrape/crawl";
 import { ms } from "convert";
-import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
+import debug from "debug";
+import { sleep } from "radashi";
+import invariant from "tiny-invariant";
 import sendSiteSetupEmail from "~/emails/SiteSetupComplete";
+import addSiteQueries from "~/lib/addSiteQueries";
+import { requireSiteAccess } from "~/lib/auth.server";
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import analyzeSentiment from "~/lib/llm-visibility/analyzeSentiment";
-import loadSetupMetrics from "~/lib/setupMetrics.server";
-import addSiteQueries from "~/lib/addSiteQueries";
-import invariant from "tiny-invariant";
+import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import PLATFORMS from "~/lib/llm-visibility/platformQueries.server";
+import type { QueryFn } from "~/lib/llm-visibility/queryFn";
+import { singleQueryRepetition } from "~/lib/llm-visibility/queryPlatform";
 import prisma from "~/lib/prisma.server";
-import debug from "debug";
+import { crawl } from "~/lib/scrape/crawl";
+import { summarize } from "~/lib/scrape/summarize";
+import loadSetupMetrics from "~/lib/setupMetrics.server";
+import { appendLog, getStatus, setStatus } from "~/lib/setupProgress.server";
+import type { Route } from "./+types/site.$domain_.setup.run";
 
 const logger = debug("server");
 
@@ -97,7 +97,7 @@ export async function action({ request, params }: Route.ActionArgs) {
       select: { email: true, unsubscribed: true },
     });
     const metrics = await loadSetupMetrics(site.id);
-    await sendSiteSetupEmail({ domain: site.domain, user: owner, metrics });
+    await sendSiteSetupEmail({ domain: site.domain, sendTo: owner, metrics });
 
     await log("Done! Your citations are ready.");
     await setStatus({ siteId: site.id, userId: user.id, status: "complete" });

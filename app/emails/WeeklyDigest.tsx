@@ -32,9 +32,9 @@ export type WeeklyDigestEmailProps = {
     pct: number;
   }[];
   score: { current: number; previous: number };
+  sendTo: { email: string; unsubscribed: boolean }[];
   siteId: string;
   subject: string;
-  toEmails: string[];
   topQueries: { query: string; count: number; delta: number }[];
 };
 
@@ -47,13 +47,13 @@ export async function sendSiteDigestEmails(
   });
 
   const emailIds = await map(
-    data.toEmails,
-    async (to) =>
+    data.sendTo,
+    async (sendTo) =>
       await sendEmail({
-        canUnsubscribe: true,
+        isTransactional: false,
         email: <WeeklyDigestEmail {...data} />,
         subject: data.subject,
-        user: { email: to, unsubscribed: false },
+        sendTo,
       }),
   );
   return emailIds.filter((emailId) => emailId !== null);

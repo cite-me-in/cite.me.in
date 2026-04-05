@@ -14,7 +14,7 @@ export default async function sendSiteInvitationEmail({
   url: string;
 }) {
   await sendEmail({
-    canUnsubscribe: false,
+    isTransactional: true,
     email: (
       <SiteInvitationEmail
         siteDomain={siteDomain}
@@ -23,7 +23,7 @@ export default async function sendSiteInvitationEmail({
       />
     ),
     subject: `${invitedByEmail} invited you to ${siteDomain} on Cite.me.in`,
-    user: { email, unsubscribed: false },
+    sendTo: { email, unsubscribed: false },
   });
 }
 
@@ -44,9 +44,7 @@ function SiteInvitationEmail({
         on Cite.me.in.
       </Text>
       <Section className="my-8 text-center">
-        <Button href={url}>
-          Accept Invitation
-        </Button>
+        <Button href={url}>Accept Invitation</Button>
       </Section>
       <Text className="my-4 text-base text-text leading-relaxed">
         This invitation expires in 7 days. If you don't have an account yet,

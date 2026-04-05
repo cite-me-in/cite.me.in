@@ -1,9 +1,9 @@
+import type { Route } from "./+types/site.$domain_.invite";
+import { requireSiteOwner } from "~/lib/auth.server";
 import { redirect } from "react-router";
 import sendSiteInvitationEmail from "~/emails/SiteInvitation";
-import { requireSiteOwner } from "~/lib/auth.server";
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import prisma from "~/lib/prisma.server";
-import type { Route } from "./+types/site.$domain_.invite";
 
 export async function action({ request, params }: Route.ActionArgs) {
   const { site, user } = await requireSiteOwner({

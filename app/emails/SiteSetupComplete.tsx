@@ -1,9 +1,9 @@
 import { Column, Row, Section, Text } from "@react-email/components";
-import Button from "~/components/email/Button";
-import Link from "~/components/email/Link";
 import { alphabetical } from "radashi";
 import { twMerge } from "tailwind-merge";
+import Button from "~/components/email/Button";
 import Card from "~/components/email/Card";
+import Link from "~/components/email/Link";
 import envVars from "~/lib/envVars.server";
 import type { SentimentLabel } from "~/prisma";
 import { sendEmail } from "./sendEmails";
@@ -30,19 +30,19 @@ export type SetupMetrics = {
 
 export default async function sendSiteSetupEmail({
   domain,
-  user,
   metrics,
+  sendTo,
 }: {
   domain: string;
-  user: { email: string; unsubscribed: boolean };
   metrics: SetupMetrics;
+  sendTo: { email: string; unsubscribed: boolean };
 }) {
   const citationsURL = new URL(
     `/site/${domain}/citations`,
     envVars.VITE_APP_URL,
   ).toString();
   await sendEmail({
-    canUnsubscribe: true,
+    isTransactional: true,
     email: (
       <SiteSetupComplete
         domain={domain}
@@ -50,8 +50,8 @@ export default async function sendSiteSetupEmail({
         metrics={metrics}
       />
     ),
+    sendTo: sendTo,
     subject: `${domain} is set up on cite.me.in`,
-    user,
   });
 }
 
@@ -81,9 +81,7 @@ function SiteSetupComplete({
       <SetupTopCompetitors competitors={metrics.competitors} />
 
       <Section className="my-8 text-center">
-        <Button href={citationsURL}>
-          View your citations
-        </Button>
+        <Button href={citationsURL}>View your citations</Button>
       </Section>
 
       <Text className="my-4 text-base text-text leading-relaxed">

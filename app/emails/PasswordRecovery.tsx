@@ -10,10 +10,10 @@ export default async function sendPasswordRecoveryEmail({
   url: string;
 }) {
   await sendEmail({
-    canUnsubscribe: false,
+    isTransactional: true,
     email: <PasswordRecovery url={url} />,
     subject: "Reset your Cite.me.in password",
-    user: { email, unsubscribed: false },
+    sendTo: { email, unsubscribed: false },
   });
 }
 
@@ -30,9 +30,7 @@ function PasswordRecovery({ url: resetPasswordUrl }: { url: string }) {
       </Text>
 
       <Section className="my-8 text-center">
-        <Button href={resetPasswordUrl}>
-          Reset Password
-        </Button>
+        <Button href={resetPasswordUrl}>Reset Password</Button>
       </Section>
 
       <Text className="my-4 text-base text-text leading-relaxed">

@@ -124,9 +124,9 @@ export async function loadWeeklyDigestMetrics(
   );
 
   const { owner, siteUsers } = siteInfo;
-  const toEmails = [owner, ...siteUsers.map((siteUser) => siteUser.user)]
-    .filter(({ unsubscribed }) => !unsubscribed)
-    .map(({ email }) => email);
+  const sendTo = [owner, ...siteUsers.map((siteUser) => siteUser.user)].filter(
+    ({ unsubscribed }) => !unsubscribed,
+  );
   const subject = `${formatDateShort(new Date(weekStart))} — ${formatDateShort(
     new Date(today.toJSON()),
   )} • ${domain}`;
@@ -159,9 +159,9 @@ export async function loadWeeklyDigestMetrics(
       current: metrics.visbilityScore.current,
       previous: metrics.visbilityScore.previous,
     },
+    sendTo,
     siteId,
     subject,
-    toEmails,
     topQueries,
   };
 }

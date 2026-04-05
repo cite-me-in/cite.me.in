@@ -36,7 +36,10 @@ export async function action({ request }: Route.ActionArgs) {
   if (!user.isAdmin) throw new Response("Forbidden", { status: 403 });
 
   const data = await loadWeeklyDigestMetrics(siteId);
-  return await sendSiteDigestEmails({ ...data, toEmails: [user.email] });
+  return await sendSiteDigestEmails({
+    ...data,
+    sendTo: [{ email: user.email, unsubscribed: false }],
+  });
 }
 
 export default function WeeklyDigest({ loaderData }: Route.ComponentProps) {

@@ -77,9 +77,9 @@ describe("WeeklyDigestEmail", () => {
         },
       ],
       score: { current: 72, previous: 64 },
+      sendTo: [{ email: "test@example.com", unsubscribed: false }],
       siteId: "123",
       subject: "Weekly Digest · Mar 17 — Mar 24, 2026",
-      toEmails: ["test@example.com"],
       topQueries: [
         {
           query: "How do I find short-term retail space in shopping malls?",

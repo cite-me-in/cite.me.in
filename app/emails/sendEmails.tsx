@@ -25,45 +25,47 @@ const logger = debug("email");
  * Send an email using Resend. If an error occurs, it will be captured by Sentry.
  * The email will be stored in `lastEmailSent` for visual regression testing.
  *
- * @param canUnsubscribe - Whether the email can be unsubscribed from.
+ * @param email - The email to send.
  * @param headers - The headers to send with the email.
- * @param render - The function to render the email.
+ * @param isTransactional - Whether the email is transactional. You can
+ * unsubscribe from all emails except for transactional emails.
+ * @param sendTo - The email address and unsubscribe status of the recipient.
  * @param subject - The subject of the email.
- * @param user - The user to send the email to.
- * @returns The ID of the email that was sent.
+ * @returns The ID of the email that was sent. If the email is transactional,
+ * the ID will be `null`.
  */
 export async function sendEmail({
-  canUnsubscribe,
   email,
   headers,
+  isTransactional,
+  sendTo,
   subject,
-  user,
 }: {
-  canUnsubscribe: boolean;
   email: React.ReactNode;
   headers?: Record<string, string>;
-  subject: string;
-  user: {
+  isTransactional: boolean;
+  sendTo: {
     email: string;
     unsubscribed: boolean;
   };
+  subject: string;
 }): Promise<{
   id: string;
 } | null> {
-  if (canUnsubscribe && user.unsubscribed) return null;
+  if (!isTransactional && sendTo.unsubscribed) return null;
 
-  const token = generateUnsubscribeToken(user.email);
+  const token = generateUnsubscribeToken(sendTo.email);
   const url = new URL("/unsubscribe", envVars.VITE_APP_URL);
   url.searchParams.set("token", token);
-  url.searchParams.set("email", user.email);
+  url.searchParams.set("email", sendTo.email);
   const unsubscribeURL = url.toString();
 
   const html = await pretty(
     await render(
-      <EmailLinkContext.Provider value={{ email: user.email, token }}>
+      <EmailLinkContext.Provider value={{ email: sendTo.email, token }}>
         <EmailLayout
           subject={subject}
-          unsubscribeURL={canUnsubscribe ? unsubscribeURL : undefined}
+          unsubscribeURL={!isTransactional && unsubscribeURL}
         >
           {email}
         </EmailLayout>
@@ -73,24 +75,24 @@ export async function sendEmail({
 
   // In tests, we don't want to actually send emails, we just want to render them
   if (process.env.NODE_ENV === "test") {
-    await captureLastEmail({ html, to: user.email, subject });
+    await captureLastEmail({ html, to: sendTo.email, subject });
     return { id: "test-email-id" };
   } else {
     const { error, data } = await resend.emails.send({
       from: `cite.me.in <${import.meta.env.VITE_EMAIL_FROM}>`,
       html,
       subject,
-      to: [user.email],
-      headers: canUnsubscribe
-        ? {
+      to: [sendTo.email],
+      headers: isTransactional
+        ? headers
+        : {
             ...headers,
             "List-Unsubscribe": `<${unsubscribeURL}>`,
             "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-          }
-        : headers,
+          },
     });
     if (error) throw error;
-    logger("Sent %s to %s", subject, user.email);
+    logger("Sent %s to %s", subject, sendTo.email);
     await sleep(ms("1s"));
     return data;
   }

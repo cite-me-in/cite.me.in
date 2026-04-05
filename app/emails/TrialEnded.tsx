@@ -29,31 +29,33 @@ export default async function sendTrialEndedEmails() {
     if (!site || user.unsubscribed) continue;
     const citationCount = await countSiteCitations(site.id);
     const result = await sendTrialEndedEmail({
-      user,
+      sendTo: user,
       citationCount,
       domain: site.domain,
       queryCount: site._count.citationRuns,
     });
     if (result)
-      await prisma.sentEmail.create({ data: { userId: user.id, type: "TrialEnded" } });
+      await prisma.sentEmail.create({
+        data: { userId: user.id, type: "TrialEnded" },
+      });
   }
 }
 
 async function sendTrialEndedEmail({
-  user,
   citationCount,
   domain,
   queryCount,
+  sendTo,
 }: {
-  user: { id: string; email: string; unsubscribed: boolean };
   citationCount: number;
   domain: string;
   queryCount: number;
+  sendTo: { id: string; email: string; unsubscribed: boolean };
 }): Promise<{ id: string } | null> {
   return await sendEmail({
-    canUnsubscribe: true,
+    isTransactional: false,
     subject: "Your cite.me.in data is waiting",
-    user,
+    sendTo: sendTo,
     email: (
       <Section>
         <Text>
@@ -67,7 +69,9 @@ async function sendTrialEndedEmail({
           /month or ${prices.annualAmount}/year.
         </Text>
         <Section className="my-8 text-center">
-          <Button href={new URL("/upgrade", import.meta.env.VITE_APP_URL).toString()}>
+          <Button
+            href={new URL("/upgrade", import.meta.env.VITE_APP_URL).toString()}
+          >
             Upgrade to Pro
           </Button>
         </Section>

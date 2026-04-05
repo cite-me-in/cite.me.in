@@ -32,7 +32,7 @@ export default function EmailLayout({
   children: React.ReactNode;
   preview?: string;
   subject: string;
-  unsubscribeURL?: string;
+  unsubscribeURL?: string | false;
 }) {
   return (
     <Html>
@@ -88,7 +88,7 @@ function Header({ subject }: { subject: string }) {
   );
 }
 
-function Footer({ unsubscribeURL }: { unsubscribeURL?: string }) {
+function Footer({ unsubscribeURL }: { unsubscribeURL?: string | false }) {
   return (
     <Section className="mt-8 border-gray-200 border-t pt-6">
       {unsubscribeURL && (
