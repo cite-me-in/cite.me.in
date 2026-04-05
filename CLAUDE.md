@@ -1,3 +1,9 @@
+## Overall
+
+1. Before touching the code, write a plan so you can continue later
+2. Prove that it works — run tests and check the output
+3. Self-improve — did you learn anything from the user? keep in memory so you will remember later
+
 ## Approach
 
 * Think before acting. Read existing files before writing code.
