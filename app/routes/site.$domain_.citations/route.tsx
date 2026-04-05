@@ -1,4 +1,4 @@
-import { alphabetical } from "radashi";
+import { alphabetical, unique } from "radashi";
 import { useSearchParams } from "react-router";
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
@@ -75,15 +75,18 @@ export default function SiteCitationsPage({
   const recentRuns = runs.filter((r) => r.platform === platform.name);
   const run = recentRuns[0];
 
-  const mergedQueries = siteQueries
-    .map((sq) => {
-      for (const r of recentRuns) {
-        const found = r.queries.find((q) => q.query === sq.query);
-        if (found) return { ...found, onDate: r.onDate };
-      }
-      return null;
-    })
-    .filter((q) => q !== null);
+  const mergedQueries = unique(
+    siteQueries
+      .map((sq) => {
+        for (const r of recentRuns) {
+          const found = r.queries.find((q) => q.query === sq.query);
+          if (found) return { ...found, onDate: r.onDate };
+        }
+        return null;
+      })
+      .filter((q) => q !== null),
+    (q) => q.id,
+  );
 
   const sentiment = [...recentRuns]
     .filter((r) => r.sentimentLabel !== null)
