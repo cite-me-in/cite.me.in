@@ -121,6 +121,12 @@ logger("[%s:%s] Failed: %o", site.id, platform, error);
 - Override component styles via `className` — `twMerge` handles conflicts, so e.g. `bg-transparent shadow-none` correctly wins over defaults
 - `PageLoadingBouncer`: add to any page with date-range tabs or other navigation triggers — shows bouncing-dot overlay while `useNavigation()` is not idle
 
+## Emails
+
+- All links and buttons in email templates must go through the `/r` proxy route (e.g. `https://cite.me.in/r?url=...`) — this handles link click tracking and user verification
+- Use the `SentEmail` model to deduplicate automated emails (e.g. trial reminders); check for an existing record before sending, insert after sending
+- Send emails via helpers in `~/emails/`; never call Resend directly from route handlers
+
 ## Prisma / schema
 
 - All child relations use `onDelete: Cascade`
