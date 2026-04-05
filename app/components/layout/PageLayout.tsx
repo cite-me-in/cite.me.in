@@ -2,6 +2,7 @@ import { CSPProvider } from "@base-ui/react";
 import { Links, Meta, Scripts, ScrollRestoration } from "react-router";
 import PageLoadingBouncer from "~/components/ui/PageLoadingBouncer";
 import "~/global.css";
+import CommandPalette from "./CommandPalette";
 import PageAnalytics from "./PageAnalytics";
 import PageFooter from "./PageFooter";
 import PageHeader from "./PageHeader";
@@ -55,6 +56,7 @@ export default function PageLayout({
         <Links />
       </head>
       <body className="relative">
+        <CommandPalette />
         {hideLayout ? (
           children
         ) : (
