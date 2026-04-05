@@ -1,4 +1,5 @@
 import { Section, Text } from "@react-email/components";
+import Button from "~/components/email/Button";
 import prices from "~/data/stripe-prices.json";
 import { daysAgo } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
@@ -59,9 +60,14 @@ async function sendTrialEndingEmail({
           Perplexity. No pressure — just a heads up.
         </Text>
         <Text>
-          If you'd like to keep your history and continue daily runs, you can
-          upgrade at any time for ${prices.monthlyAmount}/month.
+          If you'd like to keep your history and continue daily runs, upgrade to
+          Pro for ${prices.monthlyAmount}/month.
         </Text>
+        <Section className="my-8 text-center">
+          <Button href={new URL("/upgrade", import.meta.env.VITE_APP_URL).toString()}>
+            Upgrade to Pro
+          </Button>
+        </Section>
       </Section>
     ),
   });
