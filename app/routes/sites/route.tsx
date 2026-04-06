@@ -34,7 +34,9 @@ export async function loader({ request }: Route.LoaderArgs) {
   // trialExpired is true if the user's trial has ended (isPro is false)
   const trialEnd = new Date(user.createdAt);
   trialEnd.setDate(trialEnd.getDate() + 25);
-  const trialExpired = user.plan === "cancelled" || (user.plan === "trial" && new Date() > trialEnd);
+  const trialExpired =
+    user.plan === "cancelled" ||
+    (user.plan === "trial" && new Date() > trialEnd);
 
   return { sites, trialExpired, canAddSite, isPro };
 }
