@@ -1,9 +1,9 @@
+import type { Route } from "./+types/api.track";
 import { data } from "react-router";
 import { z } from "zod";
-import recordBotVisit from "~/lib/botTracking.server";
 import recordHumanVisit, { isHumanBrowser } from "~/lib/humanTracking.server";
+import recordBotVisit from "~/lib/botTracking.server";
 import prisma from "~/lib/prisma.server";
-import type { Route } from "./+types/api.track";
 
 const TrackSchema = z.object({
   url: z.url(),

@@ -64,7 +64,10 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   if (!site) throw new Response("Not found", { status: 404 });
 
   const isOwner = site.ownerId === user.id;
-  const script = buildScript(site.apiKey, envVars.BOT_TRACKER_URL);
+  const script = buildScript(
+    site.apiKey,
+    new URL("/api/track", envVars.VITE_APP_URL).toString(),
+  );
   return { site, isOwner, script };
 }
 

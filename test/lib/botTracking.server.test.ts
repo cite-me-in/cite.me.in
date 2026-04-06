@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import recordBotVisit from "~/lib/botTracking.server";
 import { normalizeDomain } from "~/lib/isSameDomain";
+import recordBotVisit from "~/lib/botTracking.server";
 import prisma from "~/lib/prisma.server";
 
 async function makeRequest(

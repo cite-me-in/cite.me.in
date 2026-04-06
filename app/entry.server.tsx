@@ -9,9 +9,8 @@ import type {
 } from "react-router";
 import "~/lib/logger.server";
 import setupTestServer from "~/test/helpers/worker.setup";
-import { createBotTracker } from "./lib/botTracker";
 import captureAndLogError from "./lib/captureAndLogError.server";
-import envVars from "./lib/envVars.server";
+import { trackVisits } from "./lib/trackVisits.server";
 
 switch (process.env.NODE_ENV) {
   case "production": {
@@ -42,11 +41,6 @@ switch (process.env.NODE_ENV) {
 
 const logger = debug("server");
 
-const tracker = createBotTracker({
-  apiKey: envVars.BOT_TRACKER_API_KEY,
-  endpoint: envVars.BOT_TRACKER_URL,
-});
-
 export function getLoadContext() {
   return {};
 }
@@ -61,7 +55,7 @@ export default wrapTraced(
       // biome-ignore lint/suspicious/noExplicitAny: Sentry wrapper requires flexible type
       loadContext?: any,
     ) => {
-      if (import.meta.env.PROD) tracker.track(request); // fire-and-forget, production only
+      if (import.meta.env.PROD) trackVisits(request);
       const start = Date.now();
       logger("%s %s", request.method, request.url);
 
