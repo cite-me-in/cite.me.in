@@ -2,6 +2,7 @@ import type { Site } from "~/prisma";
 import { emitWebhookEvent } from "~/lib/webhooks.server";
 import { generateApiKey } from "random-password-toolkit";
 import { ms } from "convert";
+import prices from "~/data/stripe-prices.json";
 import prisma from "./prisma.server";
 import debug from "debug";
 
@@ -24,7 +25,7 @@ export async function createSite({
   domain: string;
 }): Promise<Site> {
   const isPro = user.plan === "paid" || user.plan === "gratis";
-  const limit = isPro ? 5 : 1;
+  const limit = isPro ? prices.sites : 1;
   const siteCount = await prisma.site.count({ where: { ownerId: user.id } });
   const canAddSite = user.isAdmin || siteCount < limit;
   if (!canAddSite) {

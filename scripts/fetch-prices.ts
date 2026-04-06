@@ -2,8 +2,8 @@
 
 import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import Stripe from "stripe";
 import envVars from "../app/lib/envVars.server";
+import Stripe from "stripe";
 
 const stripe = new Stripe(envVars.STRIPE_SECRET_KEY);
 
@@ -16,7 +16,7 @@ const monthlyAmount = (monthly.unit_amount ?? 0) / 100;
 const annualAmount = (annual.unit_amount ?? 0) / 100;
 const annualSavings = Math.round(monthlyAmount * 12 - annualAmount);
 
-const prices = { monthlyAmount, annualAmount, annualSavings };
+const prices = { monthlyAmount, annualAmount, annualSavings, sites: 5 };
 const json = JSON.stringify(prices, null, 2);
 console.info("JSON:", json);
 

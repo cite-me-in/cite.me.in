@@ -1,17 +1,21 @@
 import { Button } from "~/components/ui/Button";
 import prices from "~/data/stripe-prices.json";
+import platforms from "~/lib/llm-visibility/platforms";
 
 export default function OfferSubscription() {
   return (
     <div className="rounded-base border-2 border-black bg-white p-6 shadow-[4px_4px_0px_0px_black]">
       <h2 className="mb-1 font-heading text-xl">Upgrade to Pro</h2>
       <p className="mb-5 text-foreground/70 text-sm">
-        Monitor all 4 AI platforms. Full citation history. Up to 5 sites.
+        Monitor all {platforms.length} AI platforms. Full citation history. Up
+        to {prices.sites} sites.
       </p>
       <div className="flex flex-wrap gap-3">
         <form method="post" action="/upgrade">
           <input type="hidden" name="interval" value="monthly" />
-          <Button type="submit">Subscribe — ${prices.monthlyAmount}/month</Button>
+          <Button type="submit">
+            Subscribe — ${prices.monthlyAmount}/month
+          </Button>
         </form>
         <form method="post" action="/upgrade">
           <input type="hidden" name="interval" value="annual" />
