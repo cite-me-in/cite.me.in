@@ -92,10 +92,11 @@ describe("api.stripe.webhook", () => {
       const response = await signedRequest(payload);
       expect(response.status).toBe(200);
 
+      const user = await prisma.user.findUnique({ where: { id: "user-webhook-1" } });
+      expect(user?.plan).toBe("paid");
       const account = await prisma.account.findUnique({
         where: { userId: "user-webhook-1" },
       });
-      expect(account?.status).toBe("active");
       expect(account?.interval).toBe("monthly");
       expect(account?.stripeCustomerId).toBe("cus_webhook_1");
       expect(account?.stripeSubscriptionId).toBe("sub_webhook_1");
@@ -127,19 +128,21 @@ describe("api.stripe.webhook", () => {
 
   describe("customer.subscription.deleted", () => {
     it("should cancel account when subscription is deleted", async () => {
-      // Ensure account exists and is active first
-      await prisma.account.upsert({
-        where: { userId: "user-webhook-1" },
-        create: {
-          userId: "user-webhook-1",
-          stripeCustomerId: "cus_webhook_1",
-          stripeSubscriptionId: "sub_webhook_cancel",
-          status: "active",
-          interval: "monthly",
-        },
-        update: {
-          stripeSubscriptionId: "sub_webhook_cancel",
-          status: "active",
+      // Ensure account exists and user is paid first
+      await prisma.user.update({
+        where: { id: "user-webhook-1" },
+        data: {
+          plan: "paid",
+          account: {
+            upsert: {
+              create: {
+                stripeCustomerId: "cus_webhook_1",
+                stripeSubscriptionId: "sub_webhook_cancel",
+                interval: "monthly",
+              },
+              update: { stripeSubscriptionId: "sub_webhook_cancel" },
+            },
+          },
         },
       });
 
@@ -153,10 +156,8 @@ describe("api.stripe.webhook", () => {
       const response = await signedRequest(payload);
       expect(response.status).toBe(200);
 
-      const account = await prisma.account.findUnique({
-        where: { userId: "user-webhook-1" },
-      });
-      expect(account?.status).toBe("cancelled");
+      const user = await prisma.user.findUnique({ where: { id: "user-webhook-1" } });
+      expect(user?.plan).toBe("cancelled");
     });
 
     it("should return 200 when subscription is not found", async () => {

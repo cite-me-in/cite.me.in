@@ -5,6 +5,7 @@ import captureAndLogError from "~/lib/captureAndLogError.server";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
 import stripe from "~/lib/stripe.server";
+import { emitWebhookEvent } from "~/lib/webhooks.server";
 import type { Route } from "./+types/api.stripe.webhook";
 
 const logger = debug("server");
@@ -50,22 +51,22 @@ export async function action({ request }: Route.ActionArgs) {
 
       if (!userId) throw new Error("Missing userId in session metadata");
 
-      await prisma.account.upsert({
-        where: { userId },
-        create: {
-          user: { connect: { id: userId } },
-          stripeCustomerId,
-          stripeSubscriptionId,
-          status: "active",
-          interval,
-        },
-        update: {
-          stripeCustomerId,
-          stripeSubscriptionId,
-          status: "active",
-          interval,
-        },
-      });
+      await prisma.$transaction([
+        prisma.user.update({
+          where: { id: userId },
+          data: { plan: "paid" },
+        }),
+        prisma.account.upsert({
+          where: { userId },
+          create: {
+            user: { connect: { id: userId } },
+            stripeCustomerId,
+            stripeSubscriptionId,
+            interval,
+          },
+          update: { stripeCustomerId, stripeSubscriptionId, interval },
+        }),
+      ]);
 
       logger(
         "[stripe] Activated account for user %s (interval: %s)",
@@ -78,14 +79,18 @@ export async function action({ request }: Route.ActionArgs) {
       const subscription = event.data.object;
       const account = await prisma.account.findFirst({
         where: { stripeSubscriptionId: subscription.id },
+        select: { userId: true },
       });
       if (account) {
-        await prisma.account.update({
-          where: { id: account.id },
-          data: { status: "cancelled" },
+        await prisma.user.update({
+          where: { id: account.userId },
+          data: { plan: "cancelled" },
+        });
+        await emitWebhookEvent("subscription.cancelled", {
+          userId: account.userId,
         });
         logger(
-          "[stripe] Deactivated account for subscription %s",
+          "[stripe] Cancelled account for subscription %s",
           subscription.id,
         );
       }
