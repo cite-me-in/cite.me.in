@@ -13,6 +13,10 @@ if (import.meta.env.PROD) {
       Sentry.browserTracingIntegration(),
       Sentry.browserProfilingIntegration(),
     ],
+    ignoreErrors: [
+      // Browser password manager extensions (LastPass, Bitwarden, Chrome autofill)
+      /Object Not Found Matching Id:\d+, MethodName:\w+, ParamCount:\d+/,
+    ],
     replaysOnErrorSampleRate: 1.0,
     replaysSessionSampleRate: 0.1,
     sendDefaultPii: true,
