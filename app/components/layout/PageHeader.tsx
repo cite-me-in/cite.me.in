@@ -28,6 +28,7 @@ function HeaderLinks() {
   if (siteDomain)
     navLinks.push(
       { to: `/site/${siteDomain}/citations`, label: "Citations" },
+      { to: `/site/${siteDomain}/visitors`, label: "Human Visitors" },
       { to: `/site/${siteDomain}/bots`, label: "Bot Traffic" },
       { to: `/site/${siteDomain}/settings`, label: <SettingsIcon size={20} /> },
     );
