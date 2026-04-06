@@ -135,7 +135,12 @@ describe("site visitors page", () => {
 
     it("should show total unique visitors", async () => {
       // 3 visits = 3 unique visitors (one row per visitor per day)
-      await expect(page.getByText("3")).toBeVisible();
+      await expect(
+        page
+          .locator('[data-slot="card"]')
+          .filter({ hasText: "Unique Visitors" })
+          .getByText("3"),
+      ).toBeVisible();
     });
 
     it("should show AI platforms in the breakdown table", async () => {
