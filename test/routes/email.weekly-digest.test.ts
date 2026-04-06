@@ -97,6 +97,12 @@ describe("WeeklyDigestEmail", () => {
           delta: 2,
         },
       ],
+      visits: {
+        pageViews: 100,
+        uniqueVisitors: 50,
+        aiReferredVisitors: 0.2,
+        botVisits: 0.3,
+      },
     });
 
     vi.restoreAllMocks();
@@ -113,6 +119,7 @@ describe("WeeklyDigestEmail", () => {
   });
 
   it("should match visually", async () => {
+    email.page.setViewportSize({ width: 1024, height: 2300 });
     await expect(email.page).toMatchVisual({
       name: "email/weekly-digest",
       modify: (html) =>

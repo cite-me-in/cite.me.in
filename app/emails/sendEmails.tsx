@@ -151,7 +151,7 @@ export async function getLastEmailSent(): Promise<{
   const context = await newContext();
   const page = await context.newPage();
   await page.setContent(lastEmailSent.html, { waitUntil: "load" });
-  await page.setViewportSize({ width: 1024, height: 2048 });
+  await page.setViewportSize({ width: 1024, height: 1500 });
   const lastEmail = {
     page,
     html: lastEmailSent.html,

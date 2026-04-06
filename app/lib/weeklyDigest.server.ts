@@ -136,6 +136,41 @@ export async function loadWeeklyDigestMetrics(
     envVars.VITE_APP_URL,
   ).toString();
 
+  const humanVisits = await prisma.humanVisit.findMany({
+    where: { date: { gte: new Date(weekStart) }, siteId },
+    select: {
+      aiReferral: true,
+      count: true,
+      visitorId: true,
+    },
+  });
+  const botVisits = await prisma.botVisit.findMany({
+    where: { date: { gte: new Date(weekStart) }, siteId },
+    select: {
+      count: true,
+      botType: true,
+    },
+  });
+
+  const botPageViews = sum(botVisits, (d) => d.count);
+  const humanPageViews = sum(humanVisits, (d) => d.count);
+  const humanUniqueVisitors = new Set(
+    humanVisits.map(({ visitorId }) => visitorId),
+  ).size;
+  const botUniqueVisitors = new Set(botVisits.map(({ botType }) => botType))
+    .size;
+  const allPageViews = humanPageViews + botPageViews;
+  const visits = {
+    pageViews: allPageViews,
+    uniqueVisitors: humanUniqueVisitors + botUniqueVisitors,
+    aiReferredVisitors:
+      humanUniqueVisitors > 0
+        ? sum(humanVisits, ({ aiReferral }) => (aiReferral ? 1 : 0)) /
+          humanUniqueVisitors
+        : 0,
+    botVisits: allPageViews > 0 ? botPageViews / allPageViews : 0,
+  };
+
   return {
     botVisits: {
       current: metrics.botVisits.current,
@@ -163,5 +198,6 @@ export async function loadWeeklyDigestMetrics(
     siteId,
     subject,
     topQueries,
+    visits,
   };
 }

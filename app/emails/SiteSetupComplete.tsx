@@ -76,13 +76,13 @@ function SiteSetupComplete({
       </Text>
 
       <PlatformCitations byPlatform={metrics.byPlatform} />
-      <SetupTopQueries topQueries={metrics.topQueries} />
-      <SetupSentiment byPlatform={metrics.byPlatform} />
-      <SetupTopCompetitors competitors={metrics.competitors} />
-
       <Section className="my-8 text-center">
         <Button href={citationsURL}>View your citations</Button>
       </Section>
+
+      <SetupTopQueries topQueries={metrics.topQueries} />
+      <SetupSentiment byPlatform={metrics.byPlatform} />
+      <SetupTopCompetitors competitors={metrics.competitors} />
 
       <Text className="my-4 text-base text-text leading-relaxed">
         Best regards,

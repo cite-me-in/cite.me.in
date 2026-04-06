@@ -36,6 +36,16 @@ export type WeeklyDigestEmailProps = {
   siteId: string;
   subject: string;
   topQueries: { query: string; count: number; delta: number }[];
+  visits: {
+    // Total page views (human + bot)
+    pageViews: number;
+    // Total unique visitors (human + bot)
+    uniqueVisitors: number;
+    // Percentage of visitors that are AI-referred
+    aiReferredVisitors: number;
+    // Percentage of visitors that are bot visits
+    botVisits: number;
+  };
 };
 
 export async function sendSiteDigestEmails(
@@ -68,6 +78,7 @@ export function WeeklyDigestEmail({
   competitors,
   score,
   topQueries,
+  visits,
 }: WeeklyDigestEmailProps) {
   return (
     <>
@@ -79,10 +90,18 @@ export function WeeklyDigestEmail({
       />
       <TopQueries topQueries={topQueries} />
       <SentimentBreakdown byPlatform={byPlatform} />
-      <TopCompetitors competitors={competitors} />
+
       <Section className="my-8 text-center">
         <Button href={citationsURL}>View your citations</Button>
       </Section>
+
+      <TopCompetitors competitors={competitors} />
+      <VisitorKeyMetrics
+        pageViews={visits.pageViews}
+        uniqueVisitors={visits.uniqueVisitors}
+        aiReferredVisitors={visits.aiReferredVisitors}
+        botVisits={visits.botVisits}
+      />
     </>
   );
 }
@@ -150,7 +169,7 @@ function TopMetrics({
           >
             <Section className="w-full overflow-hidden rounded-lg border border-border bg-white">
               <Row>
-                <Column className="px-4 text-center">
+                <Column className="bg-gray-100 px-4 text-center">
                   <Text className="mb-1.5 whitespace-nowrap text-light text-xs uppercase tracking-wide">
                     {item.label}
                   </Text>
@@ -193,6 +212,7 @@ function PlatformBreakdown({
     ([name]) => name,
   ).slice(0, 4);
   const total = sum(first4, ([, { count }]) => count);
+  if (total === 0) return null;
 
   return (
     <Card title="Citations by platform" className="pb-8">
@@ -330,6 +350,55 @@ function TopCompetitors({
           ))}
         </tbody>
       </table>
+    </Card>
+  );
+}
+
+function VisitorKeyMetrics({
+  pageViews,
+  uniqueVisitors,
+  aiReferredVisitors,
+  botVisits,
+}: {
+  pageViews: number;
+  uniqueVisitors: number;
+  aiReferredVisitors: number;
+  botVisits: number;
+}) {
+  const metrics = [
+    { label: "Page Views", value: pageViews.toLocaleString() },
+    { label: "Unique Visitors", value: uniqueVisitors.toLocaleString() },
+    {
+      label: "AI-Referred Visitors",
+      value: `${(aiReferredVisitors * 100).toFixed(2)}%`,
+    },
+    { label: "Bot Visits", value: `${(botVisits * 100).toFixed(2)}%` },
+  ];
+  if (pageViews === 0) return null;
+
+  return (
+    <Card>
+      <Row>
+        {metrics.map((item, i) => (
+          <Column
+            key={item.label}
+            className={twMerge(i < metrics.length - 1 ? "pr-2" : "", "w-1/4")}
+          >
+            <Section className="w-full overflow-hidden rounded-lg border border-border bg-white">
+              <Row>
+                <Column className="bg-gray-100 px-4 text-center">
+                  <Text className="mb-1.5 whitespace-nowrap text-light text-xs uppercase tracking-wide">
+                    {item.label}
+                  </Text>
+                  <Text className="font-bold text-2xl text-dark tabular-nums">
+                    {item.value}
+                  </Text>
+                </Column>
+              </Row>
+            </Section>
+          </Column>
+        ))}
+      </Row>
     </Card>
   );
 }

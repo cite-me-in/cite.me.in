@@ -1,7 +1,7 @@
-import { expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vitest";
-import sendSiteSetupEmail from "~/emails/SiteSetupComplete";
 import { getLastEmailSent } from "~/emails/sendEmails";
+import { expect } from "@playwright/test";
+import sendSiteSetupEmail from "~/emails/SiteSetupComplete";
 
 describe("SiteSetupComplete email", () => {
   let email: NonNullable<Awaited<ReturnType<typeof getLastEmailSent>>>;
@@ -84,6 +84,7 @@ describe("SiteSetupComplete email", () => {
   });
 
   it("should match visually", async () => {
+    email.page.setViewportSize({ width: 1024, height: 2000 });
     await expect(email.page).toMatchVisual({
       name: "email/site-setup",
     });
