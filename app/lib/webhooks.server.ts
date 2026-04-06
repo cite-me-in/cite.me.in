@@ -9,6 +9,7 @@ const WEBHOOK_EVENT_CONFIG = {
   "user.created": { scope: "admin" as const },
   "site.created": { scope: "user" as const },
   "site.deleted": { scope: "user" as const },
+  "subscription.cancelled": { scope: "owner" as const },
 } as const;
 const MAX_ATTEMPTS = 3;
 const RETRY_DELAY = ms("5m");
@@ -25,6 +26,9 @@ export async function emitWebhookEvent(
 
     if (config.scope === "admin") {
       userFilter = { isAdmin: true };
+    } else if (config.scope === "owner") {
+      const userId = payload.userId as string;
+      userFilter = { OR: [{ id: userId }, { isAdmin: true }] };
     } else {
       const siteId = payload.siteId as string;
       const site = await prisma.site.findUniqueOrThrow({

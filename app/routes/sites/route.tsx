@@ -22,25 +22,19 @@ export const handle = { siteNav: true };
 
 export async function loader({ request }: Route.LoaderArgs) {
   const { user } = await requireUserAccess(request);
-  const [sites, account] = await Promise.all([
-    getSiteMetrics({ userId: user.id }),
-    prisma.account.findUnique({
-      where: { userId: user.id },
-      select: { status: true },
-    }),
-  ]);
+  const sites = await getSiteMetrics({ userId: user.id });
 
   // isPro is true if the user has an active account
   // ownedSiteCount is the number of sites the user owns
   // canAddSite is true if the user can add a site (5 if pro, 1 if not)
-  const isPro = account?.status === "active";
+  const isPro = user.plan === "paid" || user.plan === "gratis";
   const ownedSiteCount = sites.filter((s) => s.site.ownerId === user.id).length;
   const canAddSite = user.isAdmin || ownedSiteCount < (isPro ? 5 : 1);
 
   // trialExpired is true if the user's trial has ended (isPro is false)
   const trialEnd = new Date(user.createdAt);
   trialEnd.setDate(trialEnd.getDate() + 25);
-  const trialExpired = !account && new Date() > trialEnd;
+  const trialExpired = user.plan === "cancelled" || (user.plan === "trial" && new Date() > trialEnd);
 
   return { sites, trialExpired, canAddSite, isPro };
 }

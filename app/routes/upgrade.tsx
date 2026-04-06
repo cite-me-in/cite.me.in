@@ -13,8 +13,8 @@ export function meta(): Route.MetaDescriptors {
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const { account } = await requireUserAccess(request);
-  if (account?.status === "active") return redirect("/sites");
+  const { user } = await requireUserAccess(request);
+  if (user.plan === "paid" || user.plan === "gratis") return redirect("/sites");
   else return {};
 }
 

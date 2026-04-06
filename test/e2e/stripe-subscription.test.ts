@@ -131,8 +131,9 @@ test("should activate account via webhook", async () => {
 
   expect(response.status).toBe(200);
 
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  expect(user?.plan).toBe("paid");
   const account = await prisma.account.findUnique({ where: { userId } });
-  expect(account?.status).toBe("active");
   expect(account?.interval).toBe("monthly");
   expect(account?.stripeCustomerId).toBe(customer.id);
   expect(account?.stripeSubscriptionId).toBe(subscription.id);

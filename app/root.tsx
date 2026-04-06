@@ -15,9 +15,9 @@ import socialLinks from "./lib/socialLinks";
 export async function loader({ request }: Route.LoaderArgs) {
   const baseUrl = new URL(request.url).origin;
   try {
-    const { user, account, ownedSites, siteUsers } =
+    const { user, ownedSites, siteUsers } =
       await requireUserAccess(request);
-    const isPro = account?.status === "active";
+    const isPro = user.plan === "paid" || user.plan === "gratis";
     const sites = [...ownedSites, ...siteUsers.map(({ site }) => site)];
     return { user, baseUrl, sites, isPro };
   } catch {
