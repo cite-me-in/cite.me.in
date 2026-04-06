@@ -8,8 +8,8 @@ import { sendEmail } from "./sendEmails";
 export default async function sendTrialEndingEmails() {
   const users = await prisma.user.findMany({
     where: {
+      plan: "trial",
       createdAt: { lte: daysAgo(24) },
-      account: null,
       sentEmails: { none: { type: { in: ["TrialEnding", "TrialEnded"] } } },
     },
     include: {
