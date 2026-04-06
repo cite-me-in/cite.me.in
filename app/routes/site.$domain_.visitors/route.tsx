@@ -82,16 +82,11 @@ async function getVisitorData(
   const platformBreakdown = platforms.map((p) => ({
     platform: p,
     visitors: platformTotals[p],
-    pct:
-      totalVisitors > 0
-        ? Math.round((platformTotals[p] / totalVisitors) * 100)
-        : 0,
+    pct: totalVisitors > 0 ? (platformTotals[p] / totalVisitors) * 100 : 0,
   }));
 
   const aiPct =
-    totalVisitors > 0
-      ? Math.round((aiReferredVisitors / totalVisitors) * 100)
-      : 0;
+    totalVisitors > 0 ? (aiReferredVisitors / totalVisitors) * 100 : 0;
 
   return {
     chartData,

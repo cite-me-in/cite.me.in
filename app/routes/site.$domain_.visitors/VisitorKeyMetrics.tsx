@@ -25,7 +25,7 @@ export default function VisitorKeyMetrics({
           label: "AI-Referred Visitors",
           value: aiReferredVisitors.toLocaleString(),
         },
-        { label: "% from AI", value: `${aiPct}%` },
+        { label: "% from AI", value: `${aiPct.toFixed(2)}%` },
       ].map(({ label, value }) => (
         <Card key={label}>
           <CardHeader className="text-center">

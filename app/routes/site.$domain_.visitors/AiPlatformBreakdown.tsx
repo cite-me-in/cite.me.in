@@ -30,7 +30,10 @@ export default function AiPlatformBreakdown({
           <TableBody>
             {platformBreakdown.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={3} className="text-center text-foreground/60">
+                <TableCell
+                  colSpan={3}
+                  className="text-center text-foreground/60"
+                >
                   No AI referrals in this period
                 </TableCell>
               </TableRow>
@@ -41,7 +44,9 @@ export default function AiPlatformBreakdown({
                   <TableCell className="text-right">
                     {row.visitors.toLocaleString()}
                   </TableCell>
-                  <TableCell className="text-right">{row.pct}%</TableCell>
+                  <TableCell className="text-right">
+                    {row.pct.toFixed(2)}%
+                  </TableCell>
                 </TableRow>
               ))
             )}
