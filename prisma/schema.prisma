@@ -18,7 +18,6 @@ model Account {
   createdAt            DateTime @map("created_at")             @default(now())
   id                   String                                  @id @default(cuid())
   interval             String   @map("interval")               @default("monthly")
-  status               String   @map("status")
   stripeCustomerId     String   @map("stripe_customer_id")
   stripeSubscriptionId String   @map("stripe_subscription_id")
   updatedAt            DateTime @map("updated_at")             @updatedAt
@@ -154,6 +153,7 @@ model Site {
   domain               String                @map("domain")
   humanVisits          HumanVisit[]
   id                   String                                       @id @default(cuid())
+  lastProcessedAt      DateTime?             @map("last_processed_at")
   owner                User                  @relation("OwnedSites", fields: [ownerId], references: [id], onDelete: Cascade)
   ownerId              String                @map("owner_id")
   siteInvitations      SiteInvitation[]
@@ -247,6 +247,7 @@ model User {
   isAdmin                Boolean                 @map("is_admin")          @default(false)
   ownedSites             Site[]                  @relation("OwnedSites")
   passwordHash           String                  @map("password_hash")
+  plan                   Plan                    @map("plan")              @default(trial)
   passwordRecoveryTokens PasswordRecoveryToken[]
   sentInvitations        SiteInvitation[]        @relation("SentInvitations")
   sessions               Session[]
@@ -312,6 +313,13 @@ enum DeliveryStatus {
   DELIVERED
   RETRY
   FAILED
+}
+
+enum Plan {
+  trial     // First 25 days — weekly processing and digest, then stops
+  paid      // Active subscription — daily processing, weekly digest
+  cancelled // Subscription ended — no processing, no digest
+  gratis    // Manually granted — daily processing, weekly digest, no subscription required
 }
 
 model SentEmail {
