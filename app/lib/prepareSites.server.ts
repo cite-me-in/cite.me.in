@@ -1,12 +1,13 @@
 import type { Plan } from "~/lib/userPlan.server";
-import {
-  TRIAL_DAYS,
-  isProcessingEligible,
-  processingIntervalHours,
-} from "~/lib/userPlan.server";
 import { UsageLimitExceededError } from "~/lib/usage/UsageLimitExceededError";
 import { Temporal } from "@js-temporal/polyfill";
+import { daysAgo } from "./formatDate";
 import { map } from "radashi";
+import {
+  processingIntervalHours,
+  isProcessingEligible,
+  TRIAL_DAYS,
+} from "~/lib/userPlan.server";
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import generateBotInsight from "~/lib/llm-visibility/generateBotInsight";
 import queryAccount from "~/lib/llm-visibility/queryAccount";
@@ -46,16 +47,7 @@ export default async function prepareSites(): Promise<
         OR: [
           { plan: { in: ["paid", "gratis"] } },
           // Only trial owners still within the trial window.
-          {
-            plan: "trial",
-            createdAt: {
-              gte: new Date(
-                Temporal.Now.instant()
-                  .subtract({ hours: TRIAL_DAYS * 24 })
-                  .epochMilliseconds,
-              ),
-            },
-          },
+          { plan: "trial", createdAt: { gte: daysAgo(TRIAL_DAYS) } },
         ],
       },
     },

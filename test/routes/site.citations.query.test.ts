@@ -6,10 +6,6 @@ import { expect } from "@playwright/test";
 import { signIn } from "../helpers/signIn";
 import prisma from "~/lib/prisma.server";
 
-// ---------------------------------------------------------------------------
-// Fixed seed data
-// ---------------------------------------------------------------------------
-
 const HOSTNAME = "citation-detail-test.com";
 const QUERY_ID = "query-cite-detail-1";
 const RUN_ID = "cite-detail-run-1";
@@ -23,8 +19,6 @@ const CITATIONS = [
 const QUERY_TEXT = "Where can I find short-term retail space in malls?";
 const RESPONSE_TEXT =
   "Short-term retail space in malls can be found through several platforms. **citation-detail-test.com** offers a marketplace for pop-up and kiosk leasing. You can also check competitor.com and mallspace.com for listings.";
-
-// ---------------------------------------------------------------------------
 
 describe("unauthenticated access", () => {
   it("should redirect to /sign-in", async () => {
