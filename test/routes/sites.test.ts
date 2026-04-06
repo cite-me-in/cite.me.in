@@ -1,12 +1,12 @@
-import { type Locator, type Page, expect } from "@playwright/test";
-import { afterAll, beforeAll, describe, it } from "vitest";
-import { hashPassword } from "~/lib/auth.server";
-import type { HTMLNode } from "~/lib/html/HTMLNode";
-import { modifyElements, removeElements } from "~/lib/html/parseHTML";
-import prisma from "~/lib/prisma.server";
 import type { Site, User } from "~/prisma";
-import { goto } from "../helpers/launchBrowser";
+import type { HTMLNode } from "~/lib/html/HTMLNode";
+import { afterAll, beforeAll, describe, it } from "vitest";
+import { type Locator, type Page, expect } from "@playwright/test";
+import { modifyElements, removeElements } from "~/lib/html/parseHTML";
+import { hashPassword } from "~/lib/auth.server";
 import { signIn } from "../helpers/signIn";
+import { goto } from "../helpers/launchBrowser";
+import prisma from "~/lib/prisma.server";
 
 describe("unauthenticated access", () => {
   it("should redirect to /sign-in", async () => {
@@ -25,13 +25,12 @@ describe("sites route", () => {
         id: "user-sites-test",
         email: "sites-test@example.com",
         passwordHash: await hashPassword("correct-password-123"),
-
+        plan: "paid",
         account: {
           create: {
             id: "account-sites-test",
             stripeCustomerId: "test-stripe-customer-id",
             stripeSubscriptionId: "test-stripe-subscription-id",
-            status: "active",
             interval: "monthly",
           },
         },

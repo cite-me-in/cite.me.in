@@ -1,8 +1,8 @@
-import { expect } from "@playwright/test";
 import { describe, it } from "vitest";
-import prisma from "~/lib/prisma.server";
 import { goto, port } from "~/test/helpers/launchBrowser";
+import { expect } from "@playwright/test";
 import { signIn } from "~/test/helpers/signIn";
+import prisma from "~/lib/prisma.server";
 
 const EMAIL_A = "pricing-flow-a@example.com";
 const EMAIL_B = "pricing-flow-b@example.com";
@@ -74,12 +74,17 @@ describe("pricing user flows", () => {
       const user = await prisma.user.findUniqueOrThrow({
         where: { email: EMAIL_A },
       });
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          plan: "paid",
+        },
+      });
       await prisma.account.create({
         data: {
           userId: user.id,
           stripeCustomerId: "cus_test_fake",
           stripeSubscriptionId: "sub_test_fake",
-          status: "active",
           interval: "monthly",
         },
       });

@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
-  TRIAL_DAYS,
-  isDigestEligible,
-  isProcessingEligible,
   processingIntervalHours,
+  isProcessingEligible,
+  isDigestEligible,
+  TRIAL_DAYS,
 } from "~/lib/userPlan.server";
 
 const daysAgo = (n: number) => new Date(Date.now() - n * 86_400_000);
@@ -19,7 +19,7 @@ describe("processingIntervalHours", () => {
     expect(processingIntervalHours("gratis")).toBe(24);
   });
   it("should return Infinity for cancelled", () => {
-    expect(processingIntervalHours("cancelled")).toBe(Infinity);
+    expect(processingIntervalHours("cancelled")).toBe(Number.POSITIVE_INFINITY);
   });
 });
 

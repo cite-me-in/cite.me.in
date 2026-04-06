@@ -10,7 +10,7 @@ export const TRIAL_DAYS = 25;
 export function processingIntervalHours(plan: Plan): number {
   if (plan === "trial") return 7 * 24;
   if (plan === "paid" || plan === "gratis") return 24;
-  return Infinity;
+  return Number.POSITIVE_INFINITY;
 }
 
 // Whether a site should be processed right now.
