@@ -113,7 +113,7 @@ describe("webhook emission", () => {
 
   it("should emit site.created when a new site is created", async () => {
     const site = await createSite({
-      user: { id: "user-sites-wh-1", isAdmin: false },
+      user: { id: "user-sites-wh-1", isAdmin: false, plan: "trial" },
       domain: "my-test-site-wh.example.com",
     });
 

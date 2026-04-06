@@ -20,14 +20,10 @@ export async function createSite({
   user,
   domain,
 }: {
-  user: { id: string; isAdmin: boolean };
+  user: { id: string; isAdmin: boolean; plan: string };
   domain: string;
 }): Promise<Site> {
-  const account = await prisma.account.findUnique({
-    where: { userId: user.id },
-    select: { status: true },
-  });
-  const isPro = account?.status === "active";
+  const isPro = user.plan === "paid" || user.plan === "gratis";
   const limit = isPro ? 5 : 1;
   const siteCount = await prisma.site.count({ where: { ownerId: user.id } });
   const canAddSite = user.isAdmin || siteCount < limit;
