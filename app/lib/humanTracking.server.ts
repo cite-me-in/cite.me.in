@@ -1,5 +1,6 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { createHash } from "node:crypto";
+import { Prisma } from "~/prisma";
 import prisma from "~/lib/prisma.server";
 import captureAndLogError from "./captureAndLogError.server";
 
@@ -143,6 +144,15 @@ export default async function recordHumanVisit({
     });
     return { tracked: true };
   } catch (error) {
+    // Race condition: two concurrent requests for the same visitor both attempted
+    // insert. Retry as a plain update — the row now exists.
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      await prisma.humanVisit.update({
+        where: { date_siteId_visitorId: { date, siteId: site.id, visitorId } },
+        data: { count: { increment: 1 }, lastSeen: new Date() },
+      });
+      return { tracked: true };
+    }
     captureAndLogError(error, { extra: { visitorId, browser, deviceType } });
     return { tracked: false, reason: "db error" };
   }
