@@ -5,6 +5,11 @@ import envVars from "~/lib/envVars.server";
 export const UserSchema = z.object({
   id: z.string().describe("The ID of the user"),
   email: z.email().describe("The email address of the user"),
+  plan: z
+    .enum(["trial", "paid", "gratis", "cancelled"])
+    .describe(
+      "The plan of the user e.g. `trial`, `paid`, `gratis`, `cancelled`",
+    ),
   sites: z.array(
     z.object({
       domain: z.string().describe("The domain of the site e.g. `example.com`"),

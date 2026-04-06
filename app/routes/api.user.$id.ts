@@ -14,6 +14,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     select: {
       id: true,
       email: true,
+      plan: true,
       ownedSites: {
         select: {
           summary: true,
@@ -40,6 +41,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     UserSchema.parse({
       id: user.id,
       email: user.email,
+      plan: user.plan,
       sites: sites.map(({ summary, domain, createdAt }) => ({
         createdAt: createdAt.toISOString().split("T")[0],
         domain,

@@ -18,7 +18,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       domain: true,
       summary: true,
       createdAt: true,
-      owner: { select: { email: true } },
+      owner: { select: { email: true, plan: true } },
       citationRuns: {
         select: {
           platform: true,
@@ -64,7 +64,9 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
                   >
                     {site.domain}
                   </ActiveLink>
-                  <span className="text-foreground/40">{site.owner.email}</span>
+                  <span className="text-foreground/40">
+                    {site.owner.email} ({site.owner.plan})
+                  </span>
                 </div>
                 <p className="text-foreground/60 italic">{site.summary}</p>
                 <div className="flex flex-row justify-between gap-2">
