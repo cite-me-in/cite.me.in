@@ -28,15 +28,23 @@ export default function AiPlatformBreakdown({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {platformBreakdown.map((row) => (
-              <TableRow key={row.platform}>
-                <TableCell className="font-medium">{row.platform}</TableCell>
-                <TableCell className="text-right">
-                  {row.visitors.toLocaleString()}
+            {platformBreakdown.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center text-foreground/60">
+                  No AI referrals in this period
                 </TableCell>
-                <TableCell className="text-right">{row.pct}%</TableCell>
               </TableRow>
-            ))}
+            ) : (
+              platformBreakdown.map((row) => (
+                <TableRow key={row.platform}>
+                  <TableCell className="font-medium">{row.platform}</TableCell>
+                  <TableCell className="text-right">
+                    {row.visitors.toLocaleString()}
+                  </TableCell>
+                  <TableCell className="text-right">{row.pct}%</TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </CardContent>
