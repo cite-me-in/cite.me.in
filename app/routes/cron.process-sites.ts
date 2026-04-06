@@ -19,9 +19,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (request.headers.get("authorization") !== `Bearer ${envVars.CRON_SECRET}`)
     throw new Response("Unauthorized", { status: 401 });
 
-  const trialDays = 25;
   try {
-    const sites = await prepareSites(trialDays);
+    const sites = await prepareSites();
     const oneWeekAgo = new Date(
       Temporal.Now.instant().subtract({ hours: 24 * 7 }).epochMilliseconds,
     );

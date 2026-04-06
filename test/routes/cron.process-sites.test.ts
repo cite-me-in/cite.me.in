@@ -35,7 +35,7 @@ describe("cron.process-sites", () => {
       await prisma.user.deleteMany();
     });
 
-    it("should process a paid site that was processed more than 7 days ago", async () => {
+    it("should process a paid site never processed before (lastProcessedAt null)", async () => {
       await prisma.site.create({
         data: {
           apiKey: "test-api-key-process-1",
@@ -43,32 +43,28 @@ describe("cron.process-sites", () => {
           domain: "paid-site.example.com",
           id: "site-process-1",
           summary: "Test summary",
-          digestSentAt: new Date(
-            Temporal.Now.instant().subtract({ hours: 24 * 8 })
-              .epochMilliseconds,
-          ),
           owner: {
             create: {
               id: "user-process-1",
               email: "owner-process1@test.com",
               passwordHash: "test",
+              plan: "paid",
               account: {
                 create: {
                   stripeCustomerId: "cus_process_test1",
                   stripeSubscriptionId: "sub_process_test1",
-                  status: "active",
+                  interval: "monthly",
                 },
               },
             },
           },
         },
       });
-
       const results = await makeRequest("test-cron-secret");
       expect(results.length).toBe(1);
     });
 
-    it("should skip a paid site that was processed in the last 7 days", async () => {
+    it("should process a paid site last processed more than 24 hours ago", async () => {
       await prisma.site.create({
         data: {
           apiKey: "test-api-key-process-1",
@@ -76,32 +72,63 @@ describe("cron.process-sites", () => {
           domain: "paid-site.example.com",
           id: "site-process-1",
           summary: "Test summary",
-          digestSentAt: new Date(
-            Temporal.Now.instant().subtract({ hours: 24 * 3 })
-              .epochMilliseconds,
+          lastProcessedAt: new Date(
+            Temporal.Now.instant().subtract({ hours: 25 }).epochMilliseconds,
           ),
           owner: {
             create: {
               id: "user-process-1",
               email: "owner-process1@test.com",
               passwordHash: "test",
+              plan: "paid",
               account: {
                 create: {
                   stripeCustomerId: "cus_process_test1",
                   stripeSubscriptionId: "sub_process_test1",
-                  status: "active",
+                  interval: "monthly",
                 },
               },
             },
           },
         },
       });
+      const results = await makeRequest("test-cron-secret");
+      expect(results.length).toBe(1);
+    });
 
+    it("should skip a paid site processed within the last 24 hours", async () => {
+      await prisma.site.create({
+        data: {
+          apiKey: "test-api-key-process-1",
+          content: "Test content",
+          domain: "paid-site.example.com",
+          id: "site-process-1",
+          summary: "Test summary",
+          lastProcessedAt: new Date(
+            Temporal.Now.instant().subtract({ hours: 12 }).epochMilliseconds,
+          ),
+          owner: {
+            create: {
+              id: "user-process-1",
+              email: "owner-process1@test.com",
+              passwordHash: "test",
+              plan: "paid",
+              account: {
+                create: {
+                  stripeCustomerId: "cus_process_test1",
+                  stripeSubscriptionId: "sub_process_test1",
+                  interval: "monthly",
+                },
+              },
+            },
+          },
+        },
+      });
       const results = await makeRequest("test-cron-secret");
       expect(results.length).toBe(0);
     });
 
-    it("should process a free trial site (created today)", async () => {
+    it("should process a trial site created today (lastProcessedAt null)", async () => {
       await prisma.site.create({
         data: {
           apiKey: "test-api-key-process-2",
@@ -118,15 +145,35 @@ describe("cron.process-sites", () => {
           },
         },
       });
+      const results = await makeRequest("test-cron-secret");
+      expect(results.length).toBe(1);
+    });
 
+    it("should skip a trial site processed within the last 7 days", async () => {
+      await prisma.site.create({
+        data: {
+          apiKey: "test-api-key-process-2",
+          content: "Test content",
+          domain: "free-trial.example.com",
+          id: "site-process-2",
+          summary: "Test summary",
+          lastProcessedAt: new Date(
+            Temporal.Now.instant().subtract({ hours: 24 * 3 }).epochMilliseconds,
+          ),
+          owner: {
+            create: {
+              id: "user-process-2",
+              email: "owner-process2@test.com",
+              passwordHash: "test",
+            },
+          },
+        },
+      });
       const results = await makeRequest("test-cron-secret");
       expect(results.length).toBe(0);
     });
 
-    it("should skip a free site older than 25 days", async () => {
-      const twentyFiveDaysAgo = new Date(
-        Temporal.Now.instant().subtract({ hours: 24 * 26 }).epochMilliseconds,
-      );
+    it("should skip a trial site older than 25 days", async () => {
       await prisma.site.create({
         data: {
           apiKey: "test-api-key-process-3",
@@ -139,48 +186,60 @@ describe("cron.process-sites", () => {
               id: "user-process-3",
               email: "owner-process3@test.com",
               passwordHash: "test",
-              createdAt: twentyFiveDaysAgo,
+              createdAt: new Date(
+                Temporal.Now.instant().subtract({ hours: 24 * 26 }).epochMilliseconds,
+              ),
             },
           },
         },
       });
-
       const results = await makeRequest("test-cron-secret");
       expect(results.length).toBe(0);
     });
 
-    it("should skip a site with a citation run recently", async () => {
+    it("should process a gratis site not processed in 24 hours", async () => {
       await prisma.site.create({
         data: {
-          apiKey: "test-api-key-process-4",
+          apiKey: "test-api-key-process-5",
           content: "Test content",
-          domain: "recent-run.example.com",
-          id: "site-process-4",
+          domain: "gratis-site.example.com",
+          id: "site-process-5",
           summary: "Test summary",
+          lastProcessedAt: new Date(
+            Temporal.Now.instant().subtract({ hours: 25 }).epochMilliseconds,
+          ),
           owner: {
             create: {
-              id: "user-process-4",
-              email: "owner-process4@test.com",
+              id: "user-process-5",
+              email: "owner-process5@test.com",
               passwordHash: "test",
-              account: {
-                create: {
-                  stripeCustomerId: "cus_process_test4",
-                  stripeSubscriptionId: "sub_process_test4",
-                  status: "active",
-                },
-              },
-            },
-          },
-          citationRuns: {
-            create: {
-              platform: "chatgpt",
-              model: "gpt-4o",
-              onDate: new Date().toISOString().split("T")[0],
+              plan: "gratis",
             },
           },
         },
       });
+      const results = await makeRequest("test-cron-secret");
+      expect(results.length).toBe(1);
+    });
 
+    it("should skip a cancelled site", async () => {
+      await prisma.site.create({
+        data: {
+          apiKey: "test-api-key-process-6",
+          content: "Test content",
+          domain: "cancelled-site.example.com",
+          id: "site-process-6",
+          summary: "Test summary",
+          owner: {
+            create: {
+              id: "user-process-6",
+              email: "owner-process6@test.com",
+              passwordHash: "test",
+              plan: "cancelled",
+            },
+          },
+        },
+      });
       const results = await makeRequest("test-cron-secret");
       expect(results.length).toBe(0);
     });

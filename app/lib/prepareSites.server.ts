@@ -1,3 +1,9 @@
+import type { Plan } from "~/lib/userPlan.server";
+import {
+  TRIAL_DAYS,
+  isProcessingEligible,
+  processingIntervalHours,
+} from "~/lib/userPlan.server";
 import { UsageLimitExceededError } from "~/lib/usage/UsageLimitExceededError";
 import { Temporal } from "@js-temporal/polyfill";
 import { map } from "radashi";
@@ -10,61 +16,76 @@ import debug from "debug";
 const logger = debug("server");
 
 /**
- * This function is called by the cron job to prepare the sites for the digest
- * email.
+ * Prepare sites for the digest email.
  *
- * It returns a list of sites that are eligible for the digest email. These are
- * sites that have not been processed in the last 7 days and are either owned by
- * a user with an active (paid) account or are still in their free trial period.
+ * Selects sites whose owner is eligible for processing based on their plan:
+ * - paid/gratis: process if lastProcessedAt is null or older than 24 hours
+ * - trial: process if lastProcessedAt is null or older than 7 days, and owner
+ *   account is less than 25 days old
+ * - cancelled: never processed
  *
- * It does a citation run and updates the bot insight for each of these site.
+ * Runs a citation pass and updates the bot insight for each eligible site,
+ * then sets lastProcessedAt = now.
  *
- * @param trialDays The number of days in the free trial period.
- * @returns A list of sites that are eligible for the digest email.
+ * Returns the processed sites so the caller can decide which also need a
+ * digest email (digestSentAt is a separate concern).
  */
-export default async function prepareSites(
-  trialDays: number,
-): Promise<{ id: string; domain: string; digestSentAt: Date | null }[]> {
-  const sitesForDigest = await prisma.site.findMany({
+export default async function prepareSites(): Promise<
+  { id: string; domain: string; digestSentAt: Date | null }[]
+> {
+  const candidates = await prisma.site.findMany({
     select: {
       id: true,
       domain: true,
       digestSentAt: true,
+      lastProcessedAt: true,
+      owner: { select: { plan: true, createdAt: true } },
     },
     where: {
-      digestSentAt: {
-        lt: new Date(
-          Temporal.Now.instant().subtract({ hours: 7 * 24 }).epochMilliseconds,
-        ),
-      },
-      OR: [
-        // Site owner has an active (paid) account.
-        { owner: { account: { status: "active" } } },
-        // Site owner is still in their free trial period.
-        {
-          owner: {
+      owner: {
+        OR: [
+          { plan: { in: ["paid", "gratis"] } },
+          // Only trial owners still within the trial window.
+          {
+            plan: "trial",
             createdAt: {
               gte: new Date(
-                Temporal.Now.instant().subtract({ hours: trialDays * 24 })
+                Temporal.Now.instant()
+                  .subtract({ hours: TRIAL_DAYS * 24 })
                   .epochMilliseconds,
               ),
             },
           },
-        },
-      ],
+        ],
+      },
     },
   });
 
+  // Filter to sites due for processing based on their tier's interval.
+  // null lastProcessedAt means never processed — always due.
+  const due = candidates.filter((site) => {
+    const { plan, createdAt } = site.owner;
+    if (!isProcessingEligible({ plan: plan as Plan, createdAt })) return false;
+    const intervalMs = processingIntervalHours(plan as Plan) * 60 * 60 * 1000;
+    const lastRun = site.lastProcessedAt ?? new Date(0);
+    return Date.now() - lastRun.getTime() >= intervalMs;
+  });
+
   logger(
-    "[processSites] Processing %d sites: %s",
-    sitesForDigest.length,
-    sitesForDigest.map((s) => s.domain).join(", "),
+    "[prepareSites] Processing %d sites: %s",
+    due.length,
+    due.map((s) => s.domain).join(", "),
   );
 
-  await map(sitesForDigest, async (site) => {
+  await map(due, async (site) => {
     await Promise.all([nextCitationRun(site), updateBotInsight(site)]);
+    await prisma.site.update({
+      where: { id: site.id },
+      data: { lastProcessedAt: new Date() },
+    });
   });
-  return sitesForDigest;
+
+  return due;
 }
 
 /**
