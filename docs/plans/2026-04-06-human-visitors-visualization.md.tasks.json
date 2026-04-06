@@ -1,0 +1,14 @@
+{
+  "planPath": "docs/plans/2026-04-06-human-visitors-visualization.md",
+  "tasks": [
+    {"id": 7, "subject": "Task 1: Add Human Visitors nav link", "status": "pending"},
+    {"id": 8, "subject": "Task 2: Write failing Playwright test", "status": "pending", "blockedBy": [7]},
+    {"id": 9, "subject": "Task 3: Create NoVisitors empty state component", "status": "pending"},
+    {"id": 10, "subject": "Task 4: Create VisitorKeyMetrics component", "status": "pending"},
+    {"id": 11, "subject": "Task 5: Create VisitorTrafficChart component", "status": "pending"},
+    {"id": 12, "subject": "Task 6: Create AiPlatformBreakdown component", "status": "pending"},
+    {"id": 13, "subject": "Task 7: Create route.tsx with loader", "status": "pending", "blockedBy": [8, 9, 10, 11, 12]},
+    {"id": 14, "subject": "Task 8: Run tests and verify", "status": "pending", "blockedBy": [13]}
+  ],
+  "lastUpdated": "2026-04-06T00:00:00.000Z"
+}
