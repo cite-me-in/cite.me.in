@@ -11,10 +11,10 @@ export async function loader({ request }: Route.LoaderArgs) {
     select: {
       id: true,
       email: true,
+      plan: true,
       createdAt: true,
       account: {
         select: {
-          status: true,
           interval: true,
           updatedAt: true,
           stripeCustomerId: true,
@@ -35,8 +35,8 @@ export async function loader({ request }: Route.LoaderArgs) {
         id: user.id,
         email: user.email,
         createdAt: user.createdAt.toISOString().split("T")[0],
-        status: account?.status ?? "free_trial",
-        plan: account?.status === "active" ? account?.interval : null,
+        status: user.plan,
+        plan: user.plan === "paid" ? account?.interval : null,
         sites: ownedSites.map(({ domain, createdAt }) => ({
           createdAt: createdAt.toISOString().split("T")[0],
           domain,
@@ -63,7 +63,7 @@ const AdminUsersSchema = z.object({
       id: z.string(),
       plan: z.enum(["monthly", "yearly"]).nullable(),
       sites: z.array(z.object({ createdAt: z.iso.date(), domain: z.string() })),
-      status: z.enum(["free_trial", "active", "cancelled"]),
+      status: z.enum(["trial", "paid", "cancelled", "gratis"]),
       updatedAt: z.iso.date(),
     }),
   ),

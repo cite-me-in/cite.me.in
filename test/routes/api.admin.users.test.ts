@@ -32,11 +32,11 @@ describe("api.admin.users", () => {
         id: "admin-users-test-user-1",
         email: "admin-users-test@test.example",
         passwordHash: "test",
+        plan: "paid",
         account: {
           create: {
             stripeCustomerId: "cus_test123",
             stripeSubscriptionId: "sub_test123",
-            status: "active",
             interval: "monthly",
             updatedAt: new Date("2024-02-24"),
           },
@@ -122,7 +122,7 @@ describe("api.admin.users", () => {
     it("should return details for a user with an account", async () => {
       const user = body.users.find((u) => u.id === "admin-users-test-user-1");
       invariant(user, "User not found");
-      expect(user.status).toBe("active");
+      expect(user.status).toBe("paid");
       expect(user.plan).toBe("monthly");
       expect(user.updatedAt).toBe("2024-02-24");
     });
@@ -130,7 +130,7 @@ describe("api.admin.users", () => {
     it("should return free trial details for a user without an account", async () => {
       const user = body.users.find((u) => u.id === "admin-users-test-user-2");
       invariant(user, "User not found");
-      expect(user.status).toBe("free_trial");
+      expect(user.status).toBe("trial");
       expect(user.plan).toBeNull();
       expect(user.updatedAt).toBe("2024-01-01");
     });
