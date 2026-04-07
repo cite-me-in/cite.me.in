@@ -1,8 +1,8 @@
 import type { Route } from "./+types/api.track";
 import { data } from "react-router";
 import { z } from "zod";
-import recordHumanVisit, { isHumanBrowser } from "~/lib/humanTracking.server";
-import recordBotVisit from "~/lib/botTracking.server";
+import recordBotVisit, { classifyBot } from "~/lib/botTracking.server";
+import recordHumanVisit from "~/lib/humanTracking.server";
 import prisma from "~/lib/prisma.server";
 
 const TrackSchema = z.object({
@@ -48,7 +48,17 @@ export async function action({ request }: Route.ActionArgs) {
   const { userAgent } = inputs;
   if (!userAgent) return new Response("No user agent", { status: 400 });
 
-  if (isHumanBrowser(userAgent)) {
+  if (classifyBot(userAgent)) {
+    const { tracked } = await recordBotVisit({
+      accept: inputs.accept,
+      ip: inputs.ip,
+      referer: inputs.referer,
+      site,
+      url: inputs.url,
+      userAgent,
+    });
+    return data({ ok: tracked }, { headers: CORS_HEADERS });
+  } else {
     const utmSource = searchParams.get("utm_source");
     await recordHumanVisit({
       ip: inputs.ip,
@@ -59,16 +69,6 @@ export async function action({ request }: Route.ActionArgs) {
     });
     return data({ ok: true }, { headers: CORS_HEADERS });
   }
-
-  const { tracked } = await recordBotVisit({
-    accept: inputs.accept,
-    ip: inputs.ip,
-    referer: inputs.referer,
-    site,
-    url: inputs.url,
-    userAgent,
-  });
-  return data({ ok: tracked }, { headers: CORS_HEADERS });
 }
 
 export async function loader() {

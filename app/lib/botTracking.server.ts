@@ -1,7 +1,7 @@
-import { Temporal } from "@js-temporal/polyfill";
-import prisma from "~/lib/prisma.server";
-import captureAndLogError from "./captureAndLogError.server";
 import { normalizeDomain } from "./isSameDomain";
+import { Temporal } from "@js-temporal/polyfill";
+import captureAndLogError from "./captureAndLogError.server";
+import prisma from "~/lib/prisma.server";
 
 /**
  * Known bot patterns for classification
@@ -62,7 +62,13 @@ const BOT_PATTERNS = [
   { pattern: /bot|crawl|spider|scrape/i, type: "Other Bot" },
 ] as const;
 
-function classifyBot(userAgent: string): string | null {
+/**
+ * Classify a user agent as a bot.
+ *
+ * @param userAgent - The user agent.
+ * @returns The bot type, or `null` if it's not suspected to be a bot.
+ */
+export function classifyBot(userAgent: string): string | null {
   return (
     BOT_PATTERNS.find(({ pattern }) => pattern.test(userAgent))?.type ?? null
   );
