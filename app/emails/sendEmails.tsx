@@ -8,6 +8,7 @@ import { Resend } from "resend";
 import invariant from "tiny-invariant";
 import { EmailLinkContext } from "~/components/email/context";
 import envVars from "~/lib/envVars.server";
+import prisma from "~/lib/prisma.server";
 import { newContext } from "~/test/helpers/launchBrowser";
 import EmailLayout from "./EmailLayout";
 import generateUnsubscribeToken from "./generateUnsubscribeToken";
@@ -73,16 +74,20 @@ export async function sendEmail({
     ),
   );
 
+  // Send bcc copy to all admins
+  const admins = await prisma.user.findMany({
+    select: { email: true },
+    where: { isAdmin: true, email: { not: sendTo.email } },
+  });
+
   // In tests, we don't want to actually send emails, we just want to render them
   if (process.env.NODE_ENV === "test") {
     await captureLastEmail({ html, to: sendTo.email, subject });
     return { id: "test-email-id" };
   } else {
     const { error, data } = await resend.emails.send({
+      bcc: admins.map(({ email }) => email),
       from: `cite.me.in <${import.meta.env.VITE_EMAIL_FROM}>`,
-      html,
-      subject,
-      to: [sendTo.email],
       headers: isTransactional
         ? headers
         : {
@@ -90,6 +95,9 @@ export async function sendEmail({
             "List-Unsubscribe": `<${unsubscribeURL}>`,
             "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
           },
+      html,
+      subject,
+      to: [sendTo.email],
     });
     if (error) throw error;
     logger("Sent %s to %s", subject, sendTo.email);
