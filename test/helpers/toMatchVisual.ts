@@ -1,16 +1,16 @@
 // DO NOT add to setup.ts as vitest.config.js cannot upload file that imports vitest
 
-import { expect } from "@playwright/test";
-import invariant from "tiny-invariant";
-import { sleep } from "radashi";
-import { readdirSync, unlinkSync } from "node:fs";
-import { mkdir } from "node:fs/promises";
-import path from "node:path";
 import type { Locator, Page } from "playwright";
 import type { HTMLNode } from "~/lib/html/HTMLNode";
+import { readdirSync, unlinkSync } from "node:fs";
+import { expect } from "@playwright/test";
+import { mkdir } from "node:fs/promises";
+import { sleep } from "radashi";
+import vitestConfig from "../../vitest.config";
+import invariant from "tiny-invariant";
+import path from "node:path";
 import "~/test/helpers/toMatchInnerHTML";
 import "~/test/helpers/toMatchScreenshot";
-import vitestConfig from "../../vitest.config";
 
 declare global {
   namespace PlaywrightTest {
@@ -58,7 +58,7 @@ expect.extend({
     )
       await locator.waitForLoadState("networkidle");
     // Wait for all possible animations/transitions (tweak ms if needed for your UI)
-    await sleep(150);
+    await sleep(200);
 
     // Run both matchers in parallel and fail if either fails.
     const [screenshot, html] = await Promise.allSettled([
