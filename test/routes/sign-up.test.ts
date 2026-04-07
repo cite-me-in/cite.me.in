@@ -1,8 +1,8 @@
-import { expect } from "@playwright/test";
-import { afterEach, beforeEach, describe, it } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, it } from "vitest";
+import { type Page, expect } from "@playwright/test";
 import { hashPassword } from "~/lib/auth.server";
-import prisma from "~/lib/prisma.server";
 import { goto, port } from "../helpers/launchBrowser";
+import prisma from "~/lib/prisma.server";
 
 const EXISTING_EMAIL = "sign-up-existing@example.com";
 
@@ -80,20 +80,36 @@ describe("sign-up route", () => {
     ).toBeVisible();
   });
 
-  it("should create account and redirect to home", async () => {
-    const page = await goto("/sign-up");
-    await page
-      .getByRole("textbox", { name: "Email", exact: true })
-      .fill("brand-new@example.com");
-    await page
-      .getByRole("textbox", { name: "Password", exact: true })
-      .fill("password123");
-    await page
-      .getByRole("textbox", { name: "Confirm password", exact: true })
-      .fill("password123");
-    await page.getByRole("button", { name: "Create account" }).click();
-    await page.waitForURL(`http://localhost:${port}/sites`);
-    expect(new URL(page.url()).pathname).toBe("/sites");
+  describe("valid sign-up", () => {
+    let page: Page;
+
+    beforeAll(async () => {
+      page = await goto("/sign-up");
+      await page
+        .getByRole("textbox", { name: "Email", exact: true })
+        .fill("brand-new@example.com");
+      await page
+        .getByRole("textbox", { name: "Password", exact: true })
+        .fill("password123");
+      await page
+        .getByRole("textbox", { name: "Confirm password", exact: true })
+        .fill("password123");
+      await page.getByRole("button", { name: "Create account" }).click();
+      await page.waitForURL(`http://localhost:${port}/sites`);
+    });
+
+    it("should redirect to home", async () => {
+      expect(new URL(page.url()).pathname).toBe("/sites");
+    });
+
+    it("should create account ", async () => {
+      const user = await prisma.user.findUnique({
+        where: { email: "brand-new@example.com" },
+      });
+      expect(user).not.toBeNull();
+      expect(user?.email).toBe("brand-new@example.com");
+      expect(user?.passwordHash).not.toBeNull();
+    });
   });
 
   it("should match visually", async () => {
@@ -112,11 +128,15 @@ describe("sign-up route", () => {
 
   describe("webhook delivery", () => {
     afterEach(async () => {
-      await prisma.user.deleteMany({ where: { email: "admin-signup-wh@test.com" } });
+      await prisma.user.deleteMany({
+        where: { email: "admin-signup-wh@test.com" },
+      });
     });
 
     beforeEach(async () => {
-      await prisma.user.deleteMany({ where: { email: "admin-signup-wh@test.com" } });
+      await prisma.user.deleteMany({
+        where: { email: "admin-signup-wh@test.com" },
+      });
       await prisma.user.create({
         data: {
           id: "user-signup-wh-admin",
