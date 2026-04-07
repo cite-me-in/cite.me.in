@@ -32,3 +32,6 @@ infisical --env prod run -- pnpm prisma db push
 
 echo -e "\033[32m  Deploying to Vercel …\033[0m"
 vercel deploy --prod
+
+echo -e "\033[32m  Opening dashboard …\033[0m"
+open "https://cite.me.in"
