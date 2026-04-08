@@ -1,4 +1,3 @@
-import type { Route } from "./+types/api.track";
 import { data } from "react-router";
 import { z } from "zod";
 import recordBotVisit, { classifyBot } from "~/lib/botTracking.server";
@@ -19,7 +18,7 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Headers": "Authorization, Content-Type",
 };
 
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request }: { request: Request }) {
   if (request.method === "OPTIONS")
     return new Response(null, { status: 204, headers: CORS_HEADERS });
 

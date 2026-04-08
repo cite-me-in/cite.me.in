@@ -11,10 +11,8 @@ import PageLayout from "./components/layout/PageLayout";
 import Main from "./components/ui/Main";
 import "./global.css";
 import socialLinks from "./lib/socialLinks";
-import { trackVisits } from "./lib/trackVisits.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
-  trackVisits(request);
   const baseUrl = new URL(request.url).origin;
   try {
     const { user, ownedSites, siteUsers } = await requireUserAccess(request);
