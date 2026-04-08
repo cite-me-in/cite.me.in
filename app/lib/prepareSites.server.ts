@@ -31,9 +31,11 @@ const logger = debug("server");
  * Returns the processed sites so the caller can decide which also need a
  * digest email (digestSentAt is a separate concern).
  */
-export default async function prepareSites(): Promise<
-  { id: string; domain: string; digestSentAt: Date | null }[]
-> {
+export default async function prepareSites({
+  maxSites = 3,
+}: {
+  maxSites?: number;
+} = {}): Promise<{ id: string; domain: string; digestSentAt: Date | null }[]> {
   const candidates = await prisma.site.findMany({
     select: {
       id: true,
@@ -46,22 +48,27 @@ export default async function prepareSites(): Promise<
       owner: {
         OR: [
           { plan: { in: ["paid", "gratis"] } },
-          // Only trial owners still within the trial window.
           { plan: "trial", createdAt: { gte: daysAgo(TRIAL_DAYS) } },
         ],
       },
     },
   });
 
-  // Filter to sites due for processing based on their tier's interval.
-  // null lastProcessedAt means never processed — always due.
-  const due = candidates.filter((site) => {
-    const { plan, createdAt } = site.owner;
-    if (!isProcessingEligible({ plan: plan as Plan, createdAt })) return false;
-    const intervalMs = processingIntervalHours(plan as Plan) * 60 * 60 * 1000;
-    const lastRun = site.lastProcessedAt ?? new Date(0);
-    return Date.now() - lastRun.getTime() >= intervalMs;
-  });
+  const due = candidates
+    .filter((site) => {
+      const { plan, createdAt } = site.owner;
+      if (!isProcessingEligible({ plan: plan as Plan, createdAt }))
+        return false;
+      const intervalMs = processingIntervalHours(plan as Plan) * 60 * 60 * 1000;
+      const lastRun = site.lastProcessedAt ?? new Date(0);
+      return Date.now() - lastRun.getTime() >= intervalMs;
+    })
+    .sort((a, b) => {
+      if (a.lastProcessedAt === null && b.lastProcessedAt !== null) return -1;
+      if (a.lastProcessedAt !== null && b.lastProcessedAt === null) return 1;
+      return 0;
+    })
+    .slice(0, maxSites);
 
   logger(
     "[prepareSites] Processing %d sites: %s",
@@ -70,11 +77,15 @@ export default async function prepareSites(): Promise<
   );
 
   await map(due, async (site) => {
-    await Promise.all([nextCitationRun(site), updateBotInsight(site)]);
-    await prisma.site.update({
-      where: { id: site.id },
-      data: { lastProcessedAt: new Date() },
-    });
+    const [citationOk] = await Promise.all([
+      nextCitationRun(site),
+      updateBotInsight(site),
+    ]);
+    if (citationOk)
+      await prisma.site.update({
+        where: { id: site.id },
+        data: { lastProcessedAt: new Date() },
+      });
   });
 
   return due;
