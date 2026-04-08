@@ -1,10 +1,10 @@
-import { expect } from "@playwright/test";
+import type { User } from "~/prisma";
 import { beforeAll, describe, it } from "vitest";
 import { removeElements } from "~/lib/html/parseHTML";
-import prisma from "~/lib/prisma.server";
-import type { User } from "~/prisma";
 import { goto, port } from "../helpers/launchBrowser";
+import { expect } from "@playwright/test";
 import { signIn } from "../helpers/signIn";
+import prisma from "~/lib/prisma.server";
 
 // ---------------------------------------------------------------------------
 // Fixed seed data — deterministic so HTML/screenshot baselines never drift
@@ -95,7 +95,6 @@ const CITATION_SETS: Array<{ citations: string[] }> = [
 
 const PLATFORMS = [
   { platform: "chatgpt", model: "gpt-5-chat-latest" },
-  { platform: "perplexity", model: "sonar" },
   { platform: "claude", model: "claude-haiku-4-5-20251001" },
   { platform: "gemini", model: "gemini-2.5-flash" },
 ] as const;
@@ -184,7 +183,7 @@ describe("site page", () => {
               sentimentLabel:
                 platform === "chatgpt"
                   ? "positive"
-                  : platform === "perplexity"
+                  : platform === "gemini"
                     ? "negative"
                     : platform === "claude"
                       ? "neutral"
@@ -192,7 +191,7 @@ describe("site page", () => {
               sentimentSummary:
                 platform === "chatgpt"
                   ? "Rentail.space is cited positively across multiple queries, frequently appearing as a top recommendation for finding short-term retail space. It ranks prominently in citations and is described as a reliable marketplace for pop-up and kiosk leasing."
-                  : platform === "perplexity"
+                  : platform === "gemini"
                     ? "Rentail.space receives unfavorable mentions in several responses, with competitors ranked more prominently. Some responses question the platform's selection compared to established alternatives."
                     : platform === "claude"
                       ? "Rentail.space is mentioned neutrally, appearing as one of several options without particular emphasis. Citations are factual with no positive or negative framing."
@@ -213,11 +212,9 @@ describe("site page", () => {
     ).toBeVisible();
   });
 
-  it("should show negative sentiment for Perplexity", async () => {
+  it("should show negative sentiment for Gemini", async () => {
     await signIn(user.id);
-    const page = await goto(
-      `/site/${siteDomain}/citations?platform=perplexity`,
-    );
+    const page = await goto(`/site/${siteDomain}/citations?platform=gemini`);
     await expect(page.getByText("Negative", { exact: true })).toBeVisible();
     await expect(page.getByText(/unfavorable mentions/)).toBeVisible();
   });

@@ -22,8 +22,7 @@ export function meta(): Route.MetaDescriptors {
     { title: "Pricing | Cite.me.in" },
     {
       name: "description",
-      content:
-        `Start free for 25 days. Upgrade to Pro for $${prices.monthlyAmount}/month to keep your citation history and continue monitoring.`,
+      content: `Start free for 25 days. Upgrade to Pro for $${prices.monthlyAmount}/month to keep your citation history and continue monitoring.`,
     },
   ];
 }
@@ -59,7 +58,7 @@ function FreeTierCard() {
       <TierFeatures
         features={[
           "1 domain",
-          "All 4 platforms: ChatGPT, Claude, Gemini, Perplexity",
+          "All 4 platforms: ChatGPT, Claude, Gemini, Copilot",
           "We'll monitor citations for you",
         ]}
         description="Most tools give you a week. We give you enough time to actually see results."

@@ -34,7 +34,7 @@ describe("WeeklyDigestEmail", () => {
           sentimentSummary:
             "Rentail.space receives a mix of positive and critical mentions across queries.",
         },
-        perplexity: {
+        copilot: {
           count: 28,
           sentimentLabel: "negative",
           sentimentSummary:

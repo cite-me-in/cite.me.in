@@ -1,5 +1,5 @@
-import { generateText } from "ai";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { generateText } from "ai";
 import generateBotInsight from "~/lib/llm-visibility/generateBotInsight";
 
 vi.mock("ai", () => ({ generateText: vi.fn(), gateway: vi.fn() }));
@@ -27,7 +27,7 @@ describe("generateBotInsight", () => {
 
     await generateBotInsight("mysite.com", [
       { botType: "Claude", total: 5, topPaths: ["/about"] },
-      { botType: "Perplexity", total: 12, topPaths: ["/", "/faq"] },
+      { botType: "Gemini", total: 12, topPaths: ["/", "/faq"] },
     ]);
 
     const call = vi.mocked(generateText).mock.calls[0][0];
@@ -36,7 +36,7 @@ describe("generateBotInsight", () => {
     expect(userMsg?.content).toContain("Domain: mysite.com");
     expect(userMsg?.content).toContain("- Claude: 5 visits. Top pages: /about");
     expect(userMsg?.content).toContain(
-      "- Perplexity: 12 visits. Top pages: /, /faq",
+      "- Gemini: 12 visits. Top pages: /, /faq",
     );
   });
 

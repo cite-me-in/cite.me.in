@@ -1,10 +1,10 @@
-import { expect } from "@playwright/test";
+import type { User } from "~/prisma";
 import { afterAll, beforeAll, describe, it } from "vitest";
 import { removeElements } from "~/lib/html/parseHTML";
-import prisma from "~/lib/prisma.server";
-import type { User } from "~/prisma";
 import { goto, port } from "../helpers/launchBrowser";
+import { expect } from "@playwright/test";
 import { signIn } from "../helpers/signIn";
+import prisma from "~/lib/prisma.server";
 
 // ---------------------------------------------------------------------------
 // Fixed seed data — deterministic so baselines never drift
@@ -41,8 +41,8 @@ const BOT_VISITS = [
     daysAgo: 1,
   },
   {
-    botType: "Perplexity",
-    userAgent: "PerplexityBot/1.0",
+    botType: "Gemini",
+    userAgent: "GeminiBot/1.0",
     path: "/about",
     accept: ["text/html"],
     count: 3,
@@ -153,7 +153,7 @@ describe("site bots page", () => {
         page.getByRole("cell", { name: "ChatGPT", exact: true }),
       ).toBeVisible();
       await expect(
-        page.getByRole("cell", { name: "Perplexity", exact: true }),
+        page.getByRole("cell", { name: "Gemini", exact: true }),
       ).toBeVisible();
     });
 

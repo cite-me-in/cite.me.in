@@ -1,10 +1,10 @@
-import { expect } from "@playwright/test";
+import type { User } from "~/prisma";
 import { afterAll, beforeAll, describe, it } from "vitest";
 import { removeElements } from "~/lib/html/parseHTML";
-import prisma from "~/lib/prisma.server";
-import type { User } from "~/prisma";
 import { goto, port } from "../helpers/launchBrowser";
+import { expect } from "@playwright/test";
 import { signIn } from "../helpers/signIn";
+import prisma from "~/lib/prisma.server";
 
 const BASE_DATE = new Date("2026-02-26T00:00:00.000Z");
 
@@ -21,7 +21,7 @@ const HUMAN_VISITS = [
     visitorId: "hv-visitor-2",
     browser: "Firefox",
     deviceType: "mobile",
-    aiReferral: "perplexity",
+    aiReferral: "gemini",
     count: 1,
     daysAgo: 1,
   },
@@ -96,9 +96,7 @@ describe("site visitors page", () => {
     });
 
     it("should show site domain breadcrumb", async () => {
-      await expect(
-        page.getByRole("link", { name: siteDomain }),
-      ).toBeVisible();
+      await expect(page.getByRole("link", { name: siteDomain })).toBeVisible();
     });
 
     it("should match visually", { timeout: 30_000 }, async () => {
@@ -148,7 +146,7 @@ describe("site visitors page", () => {
         page.getByRole("cell", { name: "chatgpt", exact: true }),
       ).toBeVisible();
       await expect(
-        page.getByRole("cell", { name: "perplexity", exact: true }),
+        page.getByRole("cell", { name: "gemini", exact: true }),
       ).toBeVisible();
     });
 

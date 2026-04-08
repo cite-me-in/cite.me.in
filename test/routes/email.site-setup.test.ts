@@ -30,7 +30,7 @@ describe("SiteSetupComplete email", () => {
             sentimentSummary:
               "Example.com receives mixed mentions — positive in some contexts, absent in others.",
           },
-          perplexity: {
+          copilot: {
             citations: 9,
             sentimentLabel: "negative",
             sentimentSummary:

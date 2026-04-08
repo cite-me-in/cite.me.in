@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import prisma from "~/lib/prisma.server";
 import { port } from "~/test/helpers/launchBrowser";
+import prisma from "~/lib/prisma.server";
 
 const BASE_URL = `http://localhost:${port}/api/track`;
 
@@ -152,7 +152,7 @@ describe("api.track", () => {
       await post(
         {
           url: "https://apitrack.example.com/repeated",
-          userAgent: "PerplexityBot/1.0",
+          userAgent: "GeminiBot/1.0",
           accept: "text/html",
           ip: "1.2.3.4",
         },
@@ -161,7 +161,7 @@ describe("api.track", () => {
       await post(
         {
           url: "https://apitrack.example.com/repeated",
-          userAgent: "PerplexityBot/1.0",
+          userAgent: "GeminiBot/1.0",
           accept: "text/html",
           ip: "1.2.3.4",
         },

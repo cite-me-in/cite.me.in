@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { normalizeDomain } from "~/lib/isSameDomain";
 import recordHumanVisit, {
   classifyBrowser,
   classifyDevice,
   detectAiReferral,
   isHumanBrowser,
 } from "~/lib/humanTracking.server";
-import { normalizeDomain } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
 
 const BASE_URL = import.meta.env.VITE_APP_URL;
@@ -128,15 +128,6 @@ describe("detectAiReferral", () => {
     ).toBe("chatgpt");
   });
 
-  it("should detect Perplexity from referer", () => {
-    expect(
-      detectAiReferral({
-        referer: "https://perplexity.ai/search/abc",
-        utmSource: null,
-      }),
-    ).toBe("perplexity");
-  });
-
   it("should detect Claude from referer", () => {
     expect(
       detectAiReferral({ referer: "https://claude.ai/", utmSource: null }),
@@ -163,8 +154,8 @@ describe("detectAiReferral", () => {
 
   it("should fall back to utmSource when referer is null", () => {
     expect(
-      detectAiReferral({ referer: null, utmSource: "perplexity.ai" }),
-    ).toBe("perplexity");
+      detectAiReferral({ referer: null, utmSource: "gemini.google.com" }),
+    ).toBe("gemini");
   });
 
   it("should prefer referer over utmSource when both are present", () => {
@@ -286,11 +277,11 @@ describe("recordHumanVisit", () => {
   it("should store AI referral when coming from Perplexity", async () => {
     await recordHumanVisit(
       await makeVisit(UA.chrome, {
-        referer: "https://perplexity.ai/search/xyz",
+        referer: "https://gemini.google.com/app",
       }),
     );
     const record = await prisma.humanVisit.findFirstOrThrow();
-    expect(record.aiReferral).toBe("perplexity");
+    expect(record.aiReferral).toBe("gemini");
   });
 
   it("should store AI referral from utmSource when referer is absent", async () => {

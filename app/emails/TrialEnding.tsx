@@ -59,7 +59,7 @@ async function sendTrialEndingEmail({
         <Text>
           So far you've collected {citationCount} citation
           {citationCount !== 1 ? "s" : ""} across ChatGPT, Claude, Gemini, and
-          Perplexity. No pressure — just a heads up.
+          Copilot. No pressure — just a heads up.
         </Text>
         <Text>
           If you'd like to keep your history and continue daily runs, upgrade to

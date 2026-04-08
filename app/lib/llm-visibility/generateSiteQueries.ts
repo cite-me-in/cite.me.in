@@ -1,8 +1,8 @@
 import { Output, generateText } from "ai";
-import { z } from "zod";
-import prisma from "~/lib/prisma.server";
 import { haiku } from "./claudeClient.server";
+import { z } from "zod";
 import queryGroups from "./queryGroups";
+import prisma from "~/lib/prisma.server";
 
 /**
  * Generate site queries for a given site. Use the content from the database if
@@ -30,7 +30,7 @@ export default async function generateSiteQueries(site: {
     messages: [
       {
         role: "system" as const,
-        content: `You generate search queries a user might type into an AI platform (ChatGPT, Perplexity, Claude, Gemini) that should ideally return a citation to the given website.
+        content: `You generate search queries a user might type into an AI platform (ChatGPT, Copilot, Claude, Gemini) that should ideally return a citation to the given website.
 
 Return exactly 9 queries: 3 per group.
 

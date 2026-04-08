@@ -34,7 +34,7 @@ export default function AddSiteForm({
             <p className="text-base text-foreground/60">
               Be patient, nothing will happen for a few seconds. We're going to
               check the domain and generate queries to ask Claude, OpenAI,
-              Google, and Perplexity to see if they return any citations.
+              Google, and Copilot to see if they return any citations.
             </p>
             {url && (
               <p className="text-base text-foreground/60">

@@ -23,7 +23,7 @@ const PERSONAS = [
   {
     icon: MessageSquareIcon,
     title: "Small businesses",
-    body: "Your customers use ChatGPT and Perplexity to find services like yours. Are you in those answers?",
+    body: "Your customers use ChatGPT and Copilot to find services like yours. Are you in those answers?",
   },
   {
     icon: LineChartIcon,
@@ -70,7 +70,7 @@ export function meta(): Route.MetaDescriptors {
     {
       name: "description",
       content:
-        "Track when ChatGPT, Claude, Gemini, and Perplexity cite your brand. Cite.me.in is the Search Console for AI platforms.",
+        "Track when ChatGPT, Claude, Gemini, and Copilot cite your brand. Cite.me.in is the Search Console for AI platforms.",
     },
   ];
 }
@@ -132,8 +132,8 @@ function HeroSection({ isSignedIn }: { isSignedIn: boolean }) {
 
         <p className="mb-10 max-w-2xl font-medium text-black text-xl leading-relaxed md:text-2xl">
           Most founders are running blind on AI visibility. Cite.me.in runs your
-          queries across ChatGPT, Claude, Gemini, and Perplexity and records
-          every time they cite your website. See what's working. Fix what's not.
+          queries across ChatGPT, Claude, Gemini, and Copilot and records every
+          time they cite your website. See what's working. Fix what's not.
         </p>
 
         <div className="flex flex-col gap-4 sm:flex-row">
