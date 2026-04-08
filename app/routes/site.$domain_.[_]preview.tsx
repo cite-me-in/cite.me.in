@@ -8,18 +8,15 @@ import EmailLayout from "~/emails/EmailLayout";
 import generateUnsubscribeToken from "~/emails/generateUnsubscribeToken";
 import { WeeklyDigestEmail, sendSiteDigestEmails } from "~/emails/WeeklyDigest";
 import { requireUserAccess } from "~/lib/auth.server";
+import prisma from "~/lib/prisma.server";
 import { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
-import type { Route } from "./+types/[_]preview";
-
-const siteId = "cmmi2yfwi000404l9qcci3j0x";
+import type { Route } from "./+types/site.$domain_.[_]preview";
 
 export const handle = { siteNav: true };
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const { user } = await requireUserAccess(request);
-  if (!user.isAdmin) throw new Response("Forbidden", { status: 403 });
-
-  const data = await loadWeeklyDigestMetrics(siteId);
+export async function loader({ request, params }: Route.LoaderArgs) {
+  const { site, user } = await findAdminAndSite(request, params.domain);
+  const data = await loadWeeklyDigestMetrics(site.id);
   const token = generateUnsubscribeToken(user.email);
   const html = await render(
     <EmailLinkContext.Provider value={{ email: user.email, token }}>
@@ -31,15 +28,22 @@ export async function loader({ request }: Route.LoaderArgs) {
   return { html, user };
 }
 
-export async function action({ request }: Route.ActionArgs) {
-  const { user } = await requireUserAccess(request);
-  if (!user.isAdmin) throw new Response("Forbidden", { status: 403 });
-
-  const data = await loadWeeklyDigestMetrics(siteId);
+export async function action({ request, params }: Route.ActionArgs) {
+  const { site, user } = await findAdminAndSite(request, params.domain);
+  const data = await loadWeeklyDigestMetrics(site.id);
   return await sendSiteDigestEmails({
     ...data,
     sendTo: [{ email: user.email, unsubscribed: false }],
   });
+}
+
+async function findAdminAndSite(request: Request, domain: string) {
+  const { user } = await requireUserAccess(request);
+  if (!user.isAdmin) throw new Response("Forbidden", { status: 403 });
+
+  const site = await prisma.site.findFirst({ where: { domain } });
+  if (!site) throw new Response("Not found", { status: 404 });
+  return { site, user };
 }
 
 export default function WeeklyDigest({ loaderData }: Route.ComponentProps) {
