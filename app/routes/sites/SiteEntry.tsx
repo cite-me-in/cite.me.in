@@ -7,13 +7,13 @@ import type { Site } from "~/prisma";
 
 export default function SiteEntry({
   site,
-  botVisits,
+  queryCoverageRate,
   allCitations,
   yourCitations,
   visibilityScore,
 }: {
   site: Pick<Site, "id" | "domain" | "ownerId" | "summary">;
-  botVisits: { current: number; previous: number };
+  queryCoverageRate: { current: number; previous: number };
   allCitations: { current: number; previous: number };
   yourCitations: { current: number; previous: number };
   visibilityScore: { current: number; previous: number };
@@ -57,9 +57,9 @@ export default function SiteEntry({
           previous={visibilityScore.previous}
         />
         <Metric
-          label="Bot Visits"
-          current={botVisits.current}
-          previous={botVisits.previous}
+          label="Query Coverage"
+          current={queryCoverageRate.current}
+          previous={queryCoverageRate.previous}
         />
       </Link>
 

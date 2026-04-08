@@ -167,9 +167,9 @@ export async function loadWeeklyDigestMetrics(
   };
 
   return {
-    botVisits: {
-      current: metrics.botVisits.current,
-      previous: metrics.botVisits.previous,
+    queryCoverageRate: {
+      current: metrics.queryCoverageRate.current,
+      previous: metrics.queryCoverageRate.previous,
     },
     byPlatform,
     citationTrends: { current, previous },

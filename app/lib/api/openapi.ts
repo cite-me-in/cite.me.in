@@ -61,13 +61,17 @@ export const SiteMetricsSchema = z.object({
     current: z.number().describe("LLM visibility score for the current week"),
     previous: z.number().describe("LLM visibility score for the previous week"),
   }),
-  botVisits: z.object({
+  queryCoverageRate: z.object({
     current: z
       .number()
-      .describe("Total unique bot visits for the current week"),
+      .describe(
+        "Percentage of queries where domain appears in citations for the current week (0-100)",
+      ),
     previous: z
       .number()
-      .describe("Total unique bot visits for the previous week"),
+      .describe(
+        "Percentage of queries where domain appears in citations for the previous week (0-100)",
+      ),
   }),
 });
 
@@ -223,7 +227,7 @@ export function generateOpenApiSpec(): ReturnType<typeof createDocument> {
       "/api/site/{domain}/metrics": {
         get: {
           description:
-            "Responds with the metrics for the given site. Overall citations, your citations, visibility score, and bot visits. For each metric includes value for the current week and for the previous week.",
+            "Responds with the metrics for the given site. Overall citations, your citations, visibility score, and query coverage rate. For each metric includes value for the current week and for the previous week.",
           security: [{ BearerAuth: [] }],
           parameters: [
             {

@@ -10,7 +10,7 @@ import type { SentimentLabel } from "~/prisma";
 import { sendEmail } from "./sendEmails";
 
 export type WeeklyDigestEmailProps = {
-  botVisits: { current: number; previous: number };
+  queryCoverageRate: { current: number; previous: number };
   byPlatform: {
     [k: string]: {
       count: number;
@@ -70,7 +70,7 @@ export async function sendSiteDigestEmails(
 }
 
 export function WeeklyDigestEmail({
-  botVisits,
+  queryCoverageRate,
   byPlatform,
   citationTrends,
   citations,
@@ -82,7 +82,11 @@ export function WeeklyDigestEmail({
 }: WeeklyDigestEmailProps) {
   return (
     <>
-      <TopMetrics citations={citations} score={score} botVisits={botVisits} />
+      <TopMetrics
+        citations={citations}
+        score={score}
+        queryCoverageRate={queryCoverageRate}
+      />
       <PlatformBreakdown byPlatform={byPlatform} />
       <CitationTrendsChart
         current={citationTrends.current}
@@ -143,20 +147,20 @@ function CitationTrendsChart({
 function TopMetrics({
   citations,
   score,
-  botVisits,
+  queryCoverageRate,
 }: {
   citations: {
     total: { current: number; previous: number };
     domain: { current: number; previous: number };
   };
   score: { current: number; previous: number };
-  botVisits: { current: number; previous: number };
+  queryCoverageRate: { current: number; previous: number };
 }) {
   const metrics = [
     { label: "Your citations", ...citations.domain },
     { label: "All citations", ...citations.total },
     { label: "Score", ...score },
-    { label: "Bot visits", ...botVisits },
+    { label: "Query Coverage", ...queryCoverageRate },
   ];
 
   return (

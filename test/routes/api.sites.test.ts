@@ -121,8 +121,8 @@ describe("GET /api/site/:domain/metrics", () => {
     expect(body.yourCitations.previous).toBe(0);
     expect(body.visbilityScore.current).toBe(70);
     expect(body.visbilityScore.previous).toBe(0);
-    expect(body.botVisits.current).toBe(0);
-    expect(body.botVisits.previous).toBe(0);
+    expect(body.queryCoverageRate.current).toBe(100);
+    expect(body.queryCoverageRate.previous).toBe(0);
   });
 });
 

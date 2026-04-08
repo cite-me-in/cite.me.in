@@ -192,7 +192,7 @@ describe("sites route", () => {
         container.getByText("Visibility Score", { exact: true }),
       ).toBeVisible();
       await expect(
-        container.getByText("Bot Visits", { exact: true }),
+        container.getByText("Query Coverage", { exact: true }),
       ).toBeVisible();
     });
 

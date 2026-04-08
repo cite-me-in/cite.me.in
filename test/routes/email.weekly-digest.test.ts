@@ -14,7 +14,7 @@ describe("WeeklyDigestEmail", () => {
     vi.spyOn(Math, "random").mockReturnValue(0);
 
     await sendSiteDigestEmails({
-      botVisits: { current: 1204, previous: 892 },
+      queryCoverageRate: { current: 68, previous: 52 },
       byPlatform: {
         chatgpt: {
           count: 45,

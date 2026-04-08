@@ -13,7 +13,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
       allCitations: metrics.allCitations,
       yourCitations: metrics.yourCitations,
       visbilityScore: metrics.visbilityScore,
-      botVisits: metrics.botVisits,
+      queryCoverageRate: metrics.queryCoverageRate,
     }),
   );
 }

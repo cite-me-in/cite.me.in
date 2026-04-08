@@ -5,6 +5,8 @@ import { normalizeDomain } from "./isSameDomain";
 import calculateVisibilityScore from "./llm-visibility/calculateVisibilityScore";
 import prisma from "./prisma.server";
 
+type WeekMetrics = { current: number; previous: number };
+
 /**
  * Get site metrics for the current and previous week for all sites the user has access to.
  *
@@ -16,14 +18,10 @@ export default async function getSiteMetrics(
 ): Promise<
   {
     site: Pick<Site, "id" | "domain" | "ownerId" | "summary">;
-    // Total citations for the current and previous week
-    allCitations: { current: number; previous: number };
-    // Your citations only for the current and previous week
-    yourCitations: { current: number; previous: number };
-    // Visibility score for the current and previous week
-    visbilityScore: { current: number; previous: number };
-    // Unique bot visits for the current and previous week
-    botVisits: { current: number; previous: number };
+    allCitations: WeekMetrics;
+    yourCitations: WeekMetrics;
+    visbilityScore: WeekMetrics;
+    queryCoverageRate: WeekMetrics;
   }[]
 > {
   const weekStart = Temporal.Now.plainDateISO("UTC").subtract({ days: 7 });
@@ -71,16 +69,6 @@ export default async function getSiteMetrics(
     },
   });
 
-  // Unique bot visits for the current and previous week (total counts)
-  const botVisits = await prisma.botVisit.groupBy({
-    by: ["siteId", "date"],
-    _sum: { count: true },
-    where: {
-      siteId: { in: sites.map((s) => s.id) },
-      date: { gte: new Date(prevWeekStart.toJSON()) },
-    },
-  });
-
   return sites.map((site) => {
     const domain = normalizeDomain(site.domain);
 
@@ -89,10 +77,14 @@ export default async function getSiteMetrics(
       (q) => q.run.onDate >= weekStart.toJSON(),
     );
 
-    const [currentVisits, previousVisits] = fork(
-      botVisits.filter((v) => v.siteId === site.id),
-      (v) => v.date >= new Date(weekStart.toJSON()),
-    );
+    const currentScore = calculateVisibilityScore({
+      domain: site.domain,
+      queries: currentQueries,
+    });
+    const previousScore = calculateVisibilityScore({
+      domain: site.domain,
+      queries: previousQueries,
+    });
 
     return {
       allCitations: {
@@ -112,18 +104,12 @@ export default async function getSiteMetrics(
         ),
       },
       visbilityScore: {
-        current: calculateVisibilityScore({
-          domain: site.domain,
-          queries: currentQueries,
-        }).visibilityScore,
-        previous: calculateVisibilityScore({
-          domain: site.domain,
-          queries: previousQueries,
-        }).visibilityScore,
+        current: currentScore.visibilityScore,
+        previous: previousScore.visibilityScore,
       },
-      botVisits: {
-        current: sum(currentVisits, (v) => v._sum.count ?? 0),
-        previous: sum(previousVisits, (v) => v._sum.count ?? 0),
+      queryCoverageRate: {
+        current: currentScore.queryCoverageRate,
+        previous: previousScore.queryCoverageRate,
       },
       site,
     };

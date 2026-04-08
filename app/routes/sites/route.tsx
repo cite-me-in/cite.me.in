@@ -108,7 +108,7 @@ export default function SitesPage({
                 key={item.site.id}
                 visibilityScore={item.visbilityScore}
                 site={item.site}
-                botVisits={item.botVisits}
+                queryCoverageRate={item.queryCoverageRate}
                 allCitations={item.allCitations}
                 yourCitations={item.yourCitations}
               />
