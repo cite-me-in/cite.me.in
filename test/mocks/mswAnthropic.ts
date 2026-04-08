@@ -6,7 +6,7 @@ const logger = debug("msw");
 export default http.post(
   "https://api.anthropic.com/v1/messages",
   async ({ request }) => {
-    const body = await request.text();
+    const body = await request.clone().text();
     const requestQueries = body.includes(
       "generate search queries a user might type into an AI platform",
     );
