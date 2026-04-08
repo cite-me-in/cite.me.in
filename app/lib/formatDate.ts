@@ -41,6 +41,28 @@ export function formatDateHuge(date: Date): string {
   return fullDate.format(date);
 }
 
+/**
+ * Returns the date that is the number of hours ago
+ *
+ * @param hours - The number of hours to subtract from the current date
+ * @returns The date that is the number of hours ago
+ * @example
+ * hoursAgo(1) // The date that is 1 hour ago
+ */
+export function hoursAgo(hours: number): Date {
+  return new Date(
+    Temporal.Now.instant().subtract({ hours: hours }).epochMilliseconds,
+  );
+}
+
+/**
+ * Returns the date that is the number of days ago
+ *
+ * @param days - The number of days to subtract from the current date
+ * @returns The date that is the number of days ago
+ * @example
+ * daysAgo(1) // The date that is 1 day ago
+ */
 export function daysAgo(days: number): Date {
   return new Date(
     Temporal.Now.instant().subtract({ hours: days * 24 }).epochMilliseconds,

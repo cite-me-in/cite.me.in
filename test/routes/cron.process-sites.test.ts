@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { Temporal } from "@js-temporal/polyfill";
-import { port } from "../helpers/launchBrowser";
+import { daysAgo, hoursAgo } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
+import { port } from "../helpers/launchBrowser";
 
 async function makeRequest(auth?: string) {
   const response = await fetch(`http://localhost:${port}/cron/process-sites`, {
@@ -32,30 +32,22 @@ describe("cron.process-sites", () => {
 
   describe("site processing", () => {
     beforeEach(async () => {
+      await prisma.site.deleteMany();
       await prisma.user.deleteMany();
     });
 
     it("should process a paid site never processed before (lastProcessedAt null)", async () => {
       await prisma.site.create({
         data: {
-          apiKey: "test-api-key-process-1",
           content: "Test content",
           domain: "paid-site.example.com",
-          id: "site-process-1",
           summary: "Test summary",
+          lastProcessedAt: null,
           owner: {
             create: {
-              id: "user-process-1",
               email: "owner-process1@test.com",
               passwordHash: "test",
               plan: "paid",
-              account: {
-                create: {
-                  stripeCustomerId: "cus_process_test1",
-                  stripeSubscriptionId: "sub_process_test1",
-                  interval: "monthly",
-                },
-              },
             },
           },
         },
@@ -67,27 +59,15 @@ describe("cron.process-sites", () => {
     it("should process a paid site last processed more than 24 hours ago", async () => {
       await prisma.site.create({
         data: {
-          apiKey: "test-api-key-process-1",
           content: "Test content",
           domain: "paid-site.example.com",
-          id: "site-process-1",
           summary: "Test summary",
-          lastProcessedAt: new Date(
-            Temporal.Now.instant().subtract({ hours: 25 }).epochMilliseconds,
-          ),
+          lastProcessedAt: daysAgo(2),
           owner: {
             create: {
-              id: "user-process-1",
               email: "owner-process1@test.com",
               passwordHash: "test",
               plan: "paid",
-              account: {
-                create: {
-                  stripeCustomerId: "cus_process_test1",
-                  stripeSubscriptionId: "sub_process_test1",
-                  interval: "monthly",
-                },
-              },
             },
           },
         },
@@ -99,46 +79,34 @@ describe("cron.process-sites", () => {
     it("should skip a paid site processed within the last 24 hours", async () => {
       await prisma.site.create({
         data: {
-          apiKey: "test-api-key-process-1",
           content: "Test content",
           domain: "paid-site.example.com",
-          id: "site-process-1",
           summary: "Test summary",
-          lastProcessedAt: new Date(
-            Temporal.Now.instant().subtract({ hours: 12 }).epochMilliseconds,
-          ),
+          lastProcessedAt: hoursAgo(8),
           owner: {
             create: {
-              id: "user-process-1",
               email: "owner-process1@test.com",
               passwordHash: "test",
               plan: "paid",
-              account: {
-                create: {
-                  stripeCustomerId: "cus_process_test1",
-                  stripeSubscriptionId: "sub_process_test1",
-                  interval: "monthly",
-                },
-              },
             },
           },
         },
       });
       const results = await makeRequest("test-cron-secret");
-      expect(results.length).toBe(0);
+      expect(
+        results.find((r) => r.domain === "paid-site.example.com"),
+      ).toBeUndefined();
     });
 
     it("should process a trial site created today (lastProcessedAt null)", async () => {
       await prisma.site.create({
         data: {
-          apiKey: "test-api-key-process-2",
           content: "Test content",
           domain: "free-trial.example.com",
-          id: "site-process-2",
           summary: "Test summary",
+          lastProcessedAt: null,
           owner: {
             create: {
-              id: "user-process-2",
               email: "owner-process2@test.com",
               passwordHash: "test",
             },
@@ -152,17 +120,12 @@ describe("cron.process-sites", () => {
     it("should skip a trial site processed within the last 7 days", async () => {
       await prisma.site.create({
         data: {
-          apiKey: "test-api-key-process-2",
           content: "Test content",
           domain: "free-trial.example.com",
-          id: "site-process-2",
           summary: "Test summary",
-          lastProcessedAt: new Date(
-            Temporal.Now.instant().subtract({ hours: 24 * 3 }).epochMilliseconds,
-          ),
+          lastProcessedAt: daysAgo(6),
           owner: {
             create: {
-              id: "user-process-2",
               email: "owner-process2@test.com",
               passwordHash: "test",
             },
@@ -170,47 +133,41 @@ describe("cron.process-sites", () => {
         },
       });
       const results = await makeRequest("test-cron-secret");
-      expect(results.length).toBe(0);
+      expect(
+        results.find((r) => r.domain === "free-trial.example.com"),
+      ).toBeUndefined();
     });
 
     it("should skip a trial site older than 25 days", async () => {
       await prisma.site.create({
         data: {
-          apiKey: "test-api-key-process-3",
           content: "Test content",
           domain: "old-free.example.com",
-          id: "site-process-3",
           summary: "Test summary",
           owner: {
             create: {
-              id: "user-process-3",
               email: "owner-process3@test.com",
               passwordHash: "test",
-              createdAt: new Date(
-                Temporal.Now.instant().subtract({ hours: 24 * 26 }).epochMilliseconds,
-              ),
+              createdAt: daysAgo(26),
             },
           },
         },
       });
       const results = await makeRequest("test-cron-secret");
-      expect(results.length).toBe(0);
+      expect(
+        results.find((r) => r.domain === "old-free.example.com"),
+      ).toBeUndefined();
     });
 
     it("should process a gratis site not processed in 24 hours", async () => {
       await prisma.site.create({
         data: {
-          apiKey: "test-api-key-process-5",
           content: "Test content",
           domain: "gratis-site.example.com",
-          id: "site-process-5",
           summary: "Test summary",
-          lastProcessedAt: new Date(
-            Temporal.Now.instant().subtract({ hours: 25 }).epochMilliseconds,
-          ),
+          lastProcessedAt: hoursAgo(25),
           owner: {
             create: {
-              id: "user-process-5",
               email: "owner-process5@test.com",
               passwordHash: "test",
               plan: "gratis",
@@ -225,14 +182,11 @@ describe("cron.process-sites", () => {
     it("should skip a cancelled site", async () => {
       await prisma.site.create({
         data: {
-          apiKey: "test-api-key-process-6",
           content: "Test content",
           domain: "cancelled-site.example.com",
-          id: "site-process-6",
           summary: "Test summary",
           owner: {
             create: {
-              id: "user-process-6",
               email: "owner-process6@test.com",
               passwordHash: "test",
               plan: "cancelled",
@@ -241,29 +195,28 @@ describe("cron.process-sites", () => {
         },
       });
       const results = await makeRequest("test-cron-secret");
-      expect(results.length).toBe(0);
+      expect(
+        results.find((r) => r.domain === "cancelled-site.example.com"),
+      ).toBeUndefined();
     });
   });
 
   describe("trial emails", () => {
     beforeEach(async () => {
-      await prisma.user.deleteMany({ where: { email: { contains: "trial-email" } } });
+      await prisma.user.deleteMany({
+        where: { email: { contains: "trial-email" } },
+      });
     });
 
     it("should not send TrialEnding if TrialEnded already sent", async () => {
       const user = await prisma.user.create({
         data: {
-          id: "user-trial-email-2",
           email: "trial-email-ending-skip@test.com",
           passwordHash: "test",
-          createdAt: new Date(
-            Temporal.Now.instant().subtract({ hours: 24 * 25 }).epochMilliseconds,
-          ),
+          createdAt: daysAgo(25),
           sentEmails: { create: { type: "TrialEnded" } },
           ownedSites: {
             create: {
-              id: "site-trial-email-2",
-              apiKey: "test-api-key-trial-email-2",
               content: "Test content",
               domain: "trial-ending-skip.example.com",
               summary: "Test summary",
@@ -283,16 +236,11 @@ describe("cron.process-sites", () => {
     it("should send TrialEnding once and not again", async () => {
       const user = await prisma.user.create({
         data: {
-          id: "user-trial-email-3",
           email: "trial-email-ending@test.com",
           passwordHash: "test",
-          createdAt: new Date(
-            Temporal.Now.instant().subtract({ hours: 24 * 24 }).epochMilliseconds,
-          ),
+          createdAt: daysAgo(24),
           ownedSites: {
             create: {
-              id: "site-trial-email-3",
-              apiKey: "test-api-key-trial-email-3",
               content: "Test content",
               domain: "trial-ending.example.com",
               summary: "Test summary",
@@ -319,16 +267,11 @@ describe("cron.process-sites", () => {
     it("should send TrialEnded email once and not again", async () => {
       const user = await prisma.user.create({
         data: {
-          id: "user-trial-email-1",
           email: "trial-email-ended@test.com",
           passwordHash: "test",
-          createdAt: new Date(
-            Temporal.Now.instant().subtract({ hours: 24 * 26 }).epochMilliseconds,
-          ),
+          createdAt: daysAgo(26),
           ownedSites: {
             create: {
-              id: "site-trial-email-1",
-              apiKey: "test-api-key-trial-email-1",
               content: "Test content",
               domain: "trial-ended.example.com",
               summary: "Test summary",

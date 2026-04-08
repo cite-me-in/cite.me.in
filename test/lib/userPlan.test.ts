@@ -25,22 +25,34 @@ describe("processingIntervalHours", () => {
 
 describe("isProcessingEligible", () => {
   it("should return true for a paid user", () => {
-    expect(isProcessingEligible({ plan: "paid", createdAt: daysAgo(30) })).toBe(true);
+    expect(isProcessingEligible({ plan: "paid", createdAt: daysAgo(30) })).toBe(
+      true,
+    );
   });
   it("should return true for a gratis user", () => {
-    expect(isProcessingEligible({ plan: "gratis", createdAt: daysAgo(100) })).toBe(true);
+    expect(
+      isProcessingEligible({ plan: "gratis", createdAt: daysAgo(100) }),
+    ).toBe(true);
   });
   it("should return false for a cancelled user", () => {
-    expect(isProcessingEligible({ plan: "cancelled", createdAt: daysAgo(10) })).toBe(false);
+    expect(
+      isProcessingEligible({ plan: "cancelled", createdAt: daysAgo(10) }),
+    ).toBe(false);
   });
   it("should return true for a trial user within 25 days", () => {
-    expect(isProcessingEligible({ plan: "trial", createdAt: daysAgo(10) })).toBe(true);
+    expect(
+      isProcessingEligible({ plan: "trial", createdAt: daysAgo(10) }),
+    ).toBe(true);
   });
   it("should return false for a trial user older than 25 days", () => {
-    expect(isProcessingEligible({ plan: "trial", createdAt: daysAgo(26) })).toBe(false);
+    expect(
+      isProcessingEligible({ plan: "trial", createdAt: daysAgo(26) }),
+    ).toBe(false);
   });
   it("should return false for a trial user at exactly 25 days", () => {
-    expect(isProcessingEligible({ plan: "trial", createdAt: daysAgo(25) })).toBe(false);
+    expect(
+      isProcessingEligible({ plan: "trial", createdAt: daysAgo(25) }),
+    ).toBe(false);
   });
 });
 

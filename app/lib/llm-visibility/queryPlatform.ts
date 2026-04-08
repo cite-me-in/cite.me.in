@@ -22,7 +22,7 @@ const logger = debug("server");
  * @param queryFn - The function to use to query the LLM.
  * @param site - The site to query.
  */
-export default async function queryPlatform({
+export async function queryPlatform({
   model,
   platform,
   queries,
@@ -37,29 +37,40 @@ export default async function queryPlatform({
 }) {
   invariant(platform, "Platform is required");
   invariant(model, "Model is required");
+
   try {
     const onDate = new Date().toISOString().split("T")[0];
     const run = await prisma.citationQueryRun.upsert({
       where: { siteId_platform_onDate: { onDate, platform, siteId: site.id } },
       update: { model: model },
       create: { onDate, model: model, platform, siteId: site.id },
+      select: { id: true, queries: { select: { query: true } } },
     });
     logger("[%s:%s] Created citation query run %s", site.id, platform, run.id);
 
-    for (const [index, query] of queries.entries()) {
-      if (process.env.NODE_ENV !== "test") await sleep(ms("1s") * index);
-      await singleQueryRepetition({
-        group: query.group,
-        model,
-        platform,
-        query: query.query,
-        queryFn,
-        runId: run.id,
-        site,
-      });
-    }
+    const notEmptyQueries = queries.filter((q) => q.query.trim());
+    const existingQueries = run.queries.map(({ query }) => query);
+    const newQueries = notEmptyQueries.filter(
+      ({ query }) => !existingQueries.includes(query),
+    );
 
-    await updateRunSentiment({ site, platform, runId: run.id });
+    if (newQueries.length > 0) {
+      for (const [index, query] of newQueries.entries()) {
+        if (process.env.NODE_ENV !== "test") await sleep(ms("1s") * index);
+
+        await singleQueryRepetition({
+          group: query.group,
+          model,
+          platform,
+          query: query.query,
+          queryFn,
+          runId: run.id,
+          site,
+        });
+      }
+
+      await updateRunSentiment({ site, platform, runId: run.id });
+    }
   } catch (error) {
     captureAndLogError(error, {
       extra: { siteId: site.id, platform },

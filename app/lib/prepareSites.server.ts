@@ -1,18 +1,18 @@
-import type { Plan } from "~/lib/userPlan.server";
-import { UsageLimitExceededError } from "~/lib/usage/UsageLimitExceededError";
 import { Temporal } from "@js-temporal/polyfill";
-import { daysAgo } from "./formatDate";
+import debug from "debug";
 import { map } from "radashi";
-import {
-  processingIntervalHours,
-  isProcessingEligible,
-  TRIAL_DAYS,
-} from "~/lib/userPlan.server";
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import generateBotInsight from "~/lib/llm-visibility/generateBotInsight";
-import queryAccount from "~/lib/llm-visibility/queryAccount";
+import PLATFORMS from "~/lib/llm-visibility/platformQueries.server";
+import { queryPlatform as runPlatform } from "~/lib/llm-visibility/queryPlatform";
 import prisma from "~/lib/prisma.server";
-import debug from "debug";
+import { UsageLimitExceededError } from "~/lib/usage/UsageLimitExceededError";
+import {
+  TRIAL_DAYS,
+  canLastProcess,
+  isProcessingEligible,
+} from "~/lib/userPlan.server";
+import { daysAgo } from "./formatDate";
 
 const logger = debug("server");
 
@@ -55,14 +55,17 @@ export default async function prepareSites({
   });
 
   const due = candidates
-    .filter((site) => {
-      const { plan, createdAt } = site.owner;
-      if (!isProcessingEligible({ plan: plan as Plan, createdAt }))
-        return false;
-      const intervalMs = processingIntervalHours(plan as Plan) * 60 * 60 * 1000;
-      const lastRun = site.lastProcessedAt ?? new Date(0);
-      return Date.now() - lastRun.getTime() >= intervalMs;
-    })
+    .filter(
+      (site) =>
+        isProcessingEligible({
+          plan: site.owner.plan,
+          createdAt: site.owner.createdAt,
+        }) &&
+        canLastProcess({
+          plan: site.owner.plan,
+          lastProcessedAt: site.lastProcessedAt,
+        }),
+    )
     .sort((a, b) => {
       if (a.lastProcessedAt === null && b.lastProcessedAt !== null) return -1;
       if (a.lastProcessedAt !== null && b.lastProcessedAt === null) return 1;
@@ -76,18 +79,8 @@ export default async function prepareSites({
     due.map((s) => s.domain).join(", "),
   );
 
-  await map(due, async (site) => {
-    const [citationOk] = await Promise.all([
-      nextCitationRun(site),
-      updateBotInsight(site),
-    ]);
-    if (citationOk)
-      await prisma.site.update({
-        where: { id: site.id },
-        data: { lastProcessedAt: new Date() },
-      });
-  });
-
+  await map(due, nextCitationRun);
+  await map(due, updateBotInsight);
   return due;
 }
 
@@ -102,15 +95,21 @@ async function nextCitationRun(site: {
   domain: string;
 }): Promise<boolean> {
   try {
-    const siteQueryRows = await prisma.siteQuery.findMany({
-      where: { siteId: site.id },
+    const queries = await prisma.siteQuery.findMany({
       orderBy: [{ group: "asc" }, { query: "asc" }],
+      select: { query: true, group: true },
+      where: { siteId: site.id },
     });
-    const queries = siteQueryRows
-      .filter((q) => q.query.trim())
-      .map((q) => ({ query: q.query, group: q.group }));
-    await queryAccount({ site, queries });
+    await map(PLATFORMS, ({ name: platform, model, queryFn }) =>
+      runPlatform({ model, platform, queries, queryFn, site }),
+    );
+
     logger("[processSites] Citation run done — %s", site.domain);
+    await prisma.site.update({
+      where: { id: site.id },
+      data: { lastProcessedAt: new Date() },
+    });
+
     return true;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

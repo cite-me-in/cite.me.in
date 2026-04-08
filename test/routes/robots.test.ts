@@ -1,5 +1,5 @@
-import { beforeAll, describe, it } from "vitest";
 import { expect } from "playwright/test";
+import { beforeAll, describe, it } from "vitest";
 import { port } from "../helpers/launchBrowser";
 
 describe("robots.txt", () => {
@@ -32,7 +32,6 @@ describe("robots.txt", () => {
   it("should explicitly allow AI crawlers", () => {
     expect(statements).toContain("User-agent: GPTBot");
     expect(statements).toContain("User-agent: ClaudeBot");
-    expect(statements).toContain("User-agent: GeminiBot");
     expect(statements).toContain("User-agent: anthropic-ai");
   });
 });

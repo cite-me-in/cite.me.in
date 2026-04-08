@@ -1,14 +1,14 @@
-import type { Route } from "./+types/cron.process-sites";
-import { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
-import { sendSiteDigestEmails } from "~/emails/WeeklyDigest";
-import { Temporal } from "@js-temporal/polyfill";
-import { data } from "react-router";
 import { map } from "radashi";
-import sendTrialEndingEmails from "~/emails/TrialEnding";
+import { data } from "react-router";
 import sendTrialEndedEmails from "~/emails/TrialEnded";
+import sendTrialEndingEmails from "~/emails/TrialEnding";
+import { sendSiteDigestEmails } from "~/emails/WeeklyDigest";
 import captureAndLogError from "~/lib/captureAndLogError.server";
-import prepareSites from "~/lib/prepareSites.server";
 import envVars from "~/lib/envVars.server";
+import { daysAgo } from "~/lib/formatDate";
+import prepareSites from "~/lib/prepareSites.server";
+import { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
+import type { Route } from "./+types/cron.process-sites";
 
 // This function can run for a maximum of 300 seconds (5 minutes)
 export const config = {
@@ -21,9 +21,8 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   try {
     const sites = await prepareSites();
-    const oneWeekAgo = new Date(
-      Temporal.Now.instant().subtract({ hours: 24 * 7 }).epochMilliseconds,
-    );
+
+    const oneWeekAgo = daysAgo(7);
     const results = await map(sites, async (site) => {
       if (site.digestSentAt && site.digestSentAt > oneWeekAgo)
         return { emailIds: [], domain: site.domain, skipped: true };

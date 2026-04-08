@@ -1,7 +1,7 @@
 import invariant from "tiny-invariant";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { isSameDomain } from "~/lib/isSameDomain";
-import queryPlatform from "~/lib/llm-visibility/queryPlatform";
+import { queryPlatform } from "~/lib/llm-visibility/queryPlatform";
 import prisma from "~/lib/prisma.server";
 
 vi.mock("@sentry/node", () => ({ captureException: vi.fn() }));
