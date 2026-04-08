@@ -29,6 +29,16 @@ const charts = [
     explainer:
       "Composite visibility score (0-100) weighting query coverage (35%), position-decayed citation rank (30%), share of voice (20%), and soft text mentions (15%).",
   },
+  {
+    config: {
+      coverage: { label: "Query Coverage", color: "var(--chart-2)" },
+    },
+    dataKey: "coverage",
+    name: "Query Coverage",
+    color: "var(--chart-2)",
+    explainer:
+      "Percentage of queries (0-100) where this site appears in citations.",
+  },
 ] as const;
 
 export default function VisibilityCharts({
@@ -88,15 +98,18 @@ function runToPoint(
   date: string;
   citations: number;
   score: number;
+  coverage: number;
 } {
-  const { visibilityScore, domainCitations } = calculateVisibilityScore({
-    domain: site.domain,
-    queries: run.queries,
-  });
+  const { visibilityScore, domainCitations, queryCoverageRate } =
+    calculateVisibilityScore({
+      domain: site.domain,
+      queries: run.queries,
+    });
 
   return {
     date: run.onDate,
     citations: domainCitations,
     score: visibilityScore,
+    coverage: queryCoverageRate,
   };
 }
