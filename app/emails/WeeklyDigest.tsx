@@ -163,36 +163,13 @@ function TopMetrics({
     <Card>
       <Row>
         {metrics.map((item, i) => (
-          <Column
+          <KeyMetric
+            current={item.current}
+            isLast={i === metrics.length - 1}
             key={item.label}
-            className={twMerge(i < metrics.length - 1 ? "pr-2" : "", "w-1/4")}
-          >
-            <Section className="w-full overflow-hidden rounded-lg border border-border bg-white">
-              <Row>
-                <Column className="bg-gray-100 px-4 text-center">
-                  <Text className="mb-1.5 whitespace-nowrap text-light text-xs uppercase tracking-wide">
-                    {item.label}
-                  </Text>
-                  <Text className="font-bold text-2xl text-dark tabular-nums">
-                    {item.current.toLocaleString()}
-                  </Text>
-                  <Text className="flex items-center justify-center gap-1">
-                    <span
-                      className={twMerge(
-                        "text-center font-semibold text-sm",
-                        pctDeltaColor(item.current, item.previous),
-                      )}
-                    >
-                      {pctDelta(item.current, item.previous)}
-                    </span>
-                    <span className="text-light text-xs">
-                      {item.previous.toLocaleString()}
-                    </span>
-                  </Text>
-                </Column>
-              </Row>
-            </Section>
-          </Column>
+            label={item.label}
+            previous={item.previous}
+          />
         ))}
       </Row>
     </Card>
@@ -217,21 +194,13 @@ function PlatformBreakdown({
   return (
     <Card title="Citations by platform" className="pb-8">
       <Row>
-        {first4.map(([platform, { count }]) => (
-          <Column key={platform} className="w-1/4 px-1">
-            <Section className="w-full overflow-hidden rounded-lg border border-border bg-white">
-              <Row>
-                <Column className="px-4 text-center">
-                  <Text className="font-bold text-2xl text-dark tabular-nums">
-                    {total > 0 ? `${((count / total) * 100).toFixed(1)}%` : "—"}
-                  </Text>
-                  <Text className="text-light text-xs uppercase tracking-wide">
-                    {platform}
-                  </Text>
-                </Column>
-              </Row>
-            </Section>
-          </Column>
+        {first4.map(([platform, { count }], i) => (
+          <KeyMetric
+            current={`${((count / total) * 100).toFixed(1)}%`}
+            isLast={i === first4.length - 1}
+            key={platform}
+            label={platform}
+          />
         ))}
       </Row>
     </Card>
@@ -366,13 +335,13 @@ function VisitorKeyMetrics({
   botVisits: number;
 }) {
   const metrics = [
-    { label: "Page Views", value: pageViews.toLocaleString() },
-    { label: "Unique Visitors", value: uniqueVisitors.toLocaleString() },
+    { label: "Page Views", current: pageViews.toLocaleString() },
+    { label: "Unique Visitors", current: uniqueVisitors.toLocaleString() },
     {
       label: "AI-Referred Visitors",
-      value: `${(aiReferredVisitors * 100).toFixed(2)}%`,
+      current: `${(aiReferredVisitors * 100).toFixed(2)}%`,
     },
-    { label: "Bot Visits", value: `${(botVisits * 100).toFixed(2)}%` },
+    { label: "Bot Visits", current: `${(botVisits * 100).toFixed(2)}%` },
   ];
   if (pageViews === 0) return null;
 
@@ -380,26 +349,60 @@ function VisitorKeyMetrics({
     <Card>
       <Row>
         {metrics.map((item, i) => (
-          <Column
+          <KeyMetric
+            current={item.current}
+            isLast={i === metrics.length - 1}
             key={item.label}
-            className={twMerge(i < metrics.length - 1 ? "pr-2" : "", "w-1/4")}
-          >
-            <Section className="w-full overflow-hidden rounded-lg border border-border bg-white">
-              <Row>
-                <Column className="bg-gray-100 px-4 text-center">
-                  <Text className="mb-1.5 whitespace-nowrap text-light text-xs uppercase tracking-wide">
-                    {item.label}
-                  </Text>
-                  <Text className="font-bold text-2xl text-dark tabular-nums">
-                    {item.value}
-                  </Text>
-                </Column>
-              </Row>
-            </Section>
-          </Column>
+            label={item.label}
+          />
         ))}
       </Row>
     </Card>
+  );
+}
+
+function KeyMetric({
+  label,
+  isLast,
+  current,
+  previous,
+}: {
+  label: string;
+  isLast: boolean;
+  current: number | string;
+  previous?: number;
+}) {
+  return (
+    <Column className={twMerge(isLast ? "" : "pr-2", "w-1/4")}>
+      <Section className="w-full overflow-hidden rounded-lg border border-border bg-white">
+        <Row>
+          <Column className="bg-gray-100 px-4 text-center">
+            <Text className="mb-1.5 whitespace-nowrap text-light text-xs uppercase tracking-wide">
+              {label}
+            </Text>
+            <Text className="font-bold text-2xl text-dark tabular-nums">
+              {current.toLocaleString()}
+            </Text>
+
+            {typeof current === "number" && previous && (
+              <Text className="flex items-center justify-center gap-1">
+                <span
+                  className={twMerge(
+                    "text-center font-semibold text-sm",
+                    pctDeltaColor(current, previous),
+                  )}
+                >
+                  {pctDelta(current, previous)}
+                </span>
+                <span className="text-light text-xs">
+                  {previous.toLocaleString()}
+                </span>
+              </Text>
+            )}
+          </Column>
+        </Row>
+      </Section>
+    </Column>
   );
 }
 

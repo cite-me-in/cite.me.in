@@ -3,8 +3,8 @@ import type { SentimentLabel } from "~/prisma";
 import { formatDateShort } from "./formatDate";
 import { topCompetitors } from "~/routes/site.$domain_.citations/TopCompetitors";
 import { getDomainMeta } from "~/lib/domainMeta.server";
+import { fork, sum } from "radashi";
 import { Temporal } from "@js-temporal/polyfill";
-import { sum } from "radashi";
 import getSiteMetrics from "~/lib/getSiteMetrics.server";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
@@ -16,35 +16,30 @@ export async function loadWeeklyDigestMetrics(
   const weekStart = today.subtract({ days: 7 }).toJSON();
   const prevWeekStart = today.subtract({ days: 14 }).toJSON();
 
-  const [metricsResult, siteInfo, currentRuns, prevRuns] = await Promise.all([
-    getSiteMetrics({ siteIds: [siteId] }),
-    prisma.site.findUniqueOrThrow({
-      where: { id: siteId },
-      select: {
-        owner: { select: { email: true, unsubscribed: true } },
-        siteUsers: {
-          select: { user: { select: { email: true, unsubscribed: true } } },
-        },
+  const siteInfo = await prisma.site.findUniqueOrThrow({
+    where: { id: siteId },
+    select: {
+      owner: { select: { email: true, unsubscribed: true } },
+      siteUsers: {
+        select: { user: { select: { email: true, unsubscribed: true } } },
       },
-    }),
-    prisma.citationQueryRun.findMany({
-      where: { siteId, onDate: { gte: weekStart, lt: today.toJSON() } },
-      select: {
-        onDate: true,
-        platform: true,
-        queries: { select: { query: true, citations: true } },
-        sentimentLabel: true,
-        sentimentSummary: true,
-      },
-    }),
-    prisma.citationQueryRun.findMany({
-      where: { siteId, onDate: { gte: prevWeekStart, lt: weekStart } },
-      select: {
-        onDate: true,
-        queries: { select: { query: true, citations: true } },
-      },
-    }),
-  ]);
+    },
+  });
+  const metricsResult = await getSiteMetrics({ siteIds: [siteId] });
+  const runs = await prisma.citationQueryRun.findMany({
+    where: { siteId, onDate: { gte: prevWeekStart } },
+    select: {
+      onDate: true,
+      platform: true,
+      queries: { select: { query: true, citations: true } },
+      sentimentLabel: true,
+      sentimentSummary: true,
+    },
+  });
+  const [currentRuns, prevRuns] = fork(
+    runs,
+    ({ onDate }) => onDate >= weekStart,
+  );
 
   const metrics = metricsResult[0];
   if (!metrics) throw new Error(`Site not found: ${siteId}`);
