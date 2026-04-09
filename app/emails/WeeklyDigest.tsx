@@ -161,8 +161,8 @@ function TopMetrics({
     { label: "Your citations", ...citations.domain },
     { label: "All citations", ...citations.total },
     { label: "Score", ...score },
-    { label: "Query Coverage", ...queryCoverageRate },
-  ] as { label: string; current: number; previous: number }[];
+    { label: "Query Coverage", current: `${queryCoverageRate.current}%` },
+  ];
 
   return (
     <Card>

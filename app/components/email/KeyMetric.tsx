@@ -1,6 +1,22 @@
 import { Column, Row, Section, Text } from "@react-email/components";
 import { twMerge } from "tailwind-merge";
 
+type KeyMetric =
+  | {
+      label: string;
+      current: number | string;
+    }
+  | {
+      label: string;
+      current: number;
+      previous: number;
+    }
+  | {
+      label: string;
+      current: string;
+      previous: never;
+    };
+
 /**
  * Renders a row of key metrics. Each metric is displayed in a column with a
  * width of 1/N, where N is the number of metrics. The metric must have a label
@@ -11,83 +27,53 @@ import { twMerge } from "tailwind-merge";
  * @param metrics - The metrics to display.
  * @returns A row of key metrics.
  */
-export default function KeyMetrics({
-  metrics,
-}: {
-  metrics: {
-    label: string;
-    current: number | string;
-    previous?: number;
-    count?: number;
-  }[];
-}) {
+export default function KeyMetrics({ metrics }: { metrics: KeyMetric[] }) {
   const width = `w-1/${metrics.length}`;
   return (
     <Row>
       {metrics.map((metric, i) => (
-        <KeyMetric
+        <Column
+          key={i.toString()}
           className={twMerge(i === metrics.length - 1 ? "" : "pr-2", width)}
-          count={metric.count}
-          current={metric.current}
-          key={metric.label}
-          label={metric.label}
-          previous={metric.previous}
-        />
+        >
+          <Section className="w-full overflow-hidden rounded-lg border border-border bg-white">
+            <Row>
+              <Column className="bg-gray-100 px-4 text-center">
+                <Text className="mb-1.5 whitespace-nowrap text-light text-xs uppercase tracking-wide">
+                  {metric.label}
+                </Text>
+                <Text className="font-bold text-2xl text-dark tabular-nums">
+                  {metric.current.toLocaleString()}
+                </Text>
+
+                {"count" in metric ? (
+                  <Text className="text-light text-xs">
+                    {(metric.count as number).toLocaleString()}
+                  </Text>
+                ) : "previous" in metric && metric.previous !== 0 ? (
+                  <Text className="flex items-center justify-center gap-1">
+                    <span
+                      className={twMerge(
+                        "text-center font-semibold text-sm",
+                        pctDeltaColor(
+                          metric.current as number,
+                          metric.previous,
+                        ),
+                      )}
+                    >
+                      {pctDelta(metric.current as number, metric.previous)}
+                    </span>
+                    <span className="text-light text-xs">
+                      {metric.previous.toLocaleString()}
+                    </span>
+                  </Text>
+                ) : null}
+              </Column>
+            </Row>
+          </Section>
+        </Column>
       ))}
     </Row>
-  );
-}
-
-function KeyMetric({
-  className,
-  current,
-  label,
-  previous,
-  count,
-}: {
-  className: string;
-  current: number | string;
-  label: string;
-  previous?: number;
-  count?: number;
-}) {
-  return (
-    <Column className={twMerge(className)}>
-      <Section className="w-full overflow-hidden rounded-lg border border-border bg-white">
-        <Row>
-          <Column className="bg-gray-100 px-4 text-center">
-            <Text className="mb-1.5 whitespace-nowrap text-light text-xs uppercase tracking-wide">
-              {label}
-            </Text>
-            <Text className="font-bold text-2xl text-dark tabular-nums">
-              {current.toLocaleString()}
-            </Text>
-
-            {count != null ? (
-              <Text className="text-light text-xs">
-                {count.toLocaleString()}
-              </Text>
-            ) : typeof current === "number" &&
-              previous != null &&
-              previous !== 0 ? (
-              <Text className="flex items-center justify-center gap-1">
-                <span
-                  className={twMerge(
-                    "text-center font-semibold text-sm",
-                    pctDeltaColor(current, previous),
-                  )}
-                >
-                  {pctDelta(current, previous)}
-                </span>
-                <span className="text-light text-xs">
-                  {previous.toLocaleString()}
-                </span>
-              </Text>
-            ) : null}
-          </Column>
-        </Row>
-      </Section>
-    </Column>
   );
 }
 
