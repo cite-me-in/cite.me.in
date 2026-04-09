@@ -1,4 +1,3 @@
-import { HeartIcon } from "lucide-react";
 import { NavLink } from "react-router";
 import socialLinks from "~/lib/socialLinks";
 import { ActiveLink } from "../ui/ActiveLink";
@@ -45,9 +44,8 @@ export default function PageFooter() {
             businesses and seasonal sellers. AI powered.
           </p>
           <p className="flex flex-row items-center gap-1 font-medium">
-            © {new Date().getFullYear()} cite.me.in
-            <HeartIcon className="h-4 w-4 text-red-500" fill="currentColor" />
-            Made in Los Angeles, CA.
+            © {new Date().getFullYear()} cite.me.in &mdash; Squirrel-brain
+            friendly 🐿️
           </p>
         </div>
         <SocialLinks />

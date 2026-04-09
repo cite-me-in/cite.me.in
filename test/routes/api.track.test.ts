@@ -12,10 +12,6 @@ async function post(body: unknown, headers: Record<string, string> = {}) {
   });
 }
 
-function authHeader() {
-  return { Authorization: "Bearer test-api-key-apitrack-1" };
-}
-
 describe("api.track", () => {
   beforeAll(async () => {
     await prisma.user.create({
@@ -54,9 +50,16 @@ describe("api.track", () => {
   });
 
   describe("method handling", () => {
-    it("should return 405 for GET", async () => {
+    it("should return 204 with CORS headers", async () => {
       const res = await fetch(BASE_URL);
-      expect(res.status).toBe(405);
+      expect(res.status).toBe(204);
+      expect(res.headers.get("access-control-allow-origin")).toBe("*");
+      expect(res.headers.get("access-control-allow-methods")).toBe(
+        "POST, OPTIONS",
+      );
+      expect(res.headers.get("access-control-allow-headers")).toBe(
+        "Content-Type",
+      );
     });
   });
 

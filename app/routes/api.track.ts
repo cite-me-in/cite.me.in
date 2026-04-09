@@ -16,17 +16,14 @@ const TrackSchema = z.object({
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Authorization, Content-Type",
+  "Access-Control-Allow-Headers": "Content-Type",
 };
 
 export async function loader() {
-  return new Response("Method not allowed", { status: 405 });
+  return new Response(null, { status: 204, headers: CORS_HEADERS });
 }
 
 export async function action({ request }: { request: Request }) {
-  if (request.method === "OPTIONS")
-    return new Response(null, { status: 204, headers: CORS_HEADERS });
-
   if (request.method !== "POST")
     return new Response("Method not allowed", { status: 405 });
 
