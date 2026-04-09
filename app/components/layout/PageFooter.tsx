@@ -2,7 +2,6 @@ import { HeartIcon } from "lucide-react";
 import { NavLink } from "react-router";
 import socialLinks from "~/lib/socialLinks";
 import { ActiveLink } from "../ui/ActiveLink";
-import CiteMeInLogo from "./CiteMeInLogo";
 
 const links = [
   {
@@ -37,7 +36,11 @@ export default function PageFooter() {
   return (
     <footer className="flex flex-col gap-8 border-black border-t-2 bg-[hsl(60,100%,99%)] px-6 py-12 text-base text-black sm:flex-row sm:justify-between print:hidden">
       <aside className="flex flex-col gap-4">
-        <CiteMeInLogo />
+        <script
+          async
+          src={`${import.meta.env.VITE_APP_URL}/pixel.js`}
+          crossOrigin="anonymous"
+        />
         <div className="flex flex-col gap-2">
           <p className="font-medium">
             Monitor AI citation visibility for your brand. Built for small

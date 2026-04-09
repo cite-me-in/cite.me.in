@@ -5,29 +5,53 @@ import { twMerge } from "tailwind-merge";
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent, CardFooter } from "~/components/ui/Card";
 import { Textarea } from "~/components/ui/Textarea";
+import DeleteSiteButton from "./DeleteSiteButton";
 import type { action } from "./route";
 
-export default function SiteContentButton({ content }: { content: string }) {
+export default function SiteContentButton({
+  content,
+  isOwner,
+  domain,
+}: {
+  content: string;
+  isOwner: boolean;
+  domain: string;
+}) {
   const [showSource, setShowSource] = useState(false);
+  const deleteFetcher = useFetcher();
 
   return (
-    <div className="space-y-4">
-      <Button
-        aria-controls="our-source-content"
-        aria-expanded={showSource}
-        onClick={() => setShowSource((source) => !source)}
-        type="button"
-        variant="outline"
-        size="sm"
-      >
-        <span>Site content</span>
-        <ChevronRightIcon
-          className={twMerge(
-            "size-4 transition-transform duration-150",
-            showSource ? "rotate-90" : "rotate-0",
-          )}
-        />
-      </Button>
+    <div className="w-full space-y-4">
+      <div className="flex items-center justify-between">
+        <Button
+          aria-controls="our-source-content"
+          aria-expanded={showSource}
+          onClick={() => setShowSource((source) => !source)}
+          type="button"
+          variant="outline"
+          size="sm"
+        >
+          <span>Site content</span>
+          <ChevronRightIcon
+            className={twMerge(
+              "size-4 transition-transform duration-150",
+              showSource ? "rotate-90" : "rotate-0",
+            )}
+          />
+        </Button>
+        {isOwner && (
+          <DeleteSiteButton
+            domain={domain}
+            isSubmitting={deleteFetcher.state !== "idle"}
+            onConfirm={() =>
+              deleteFetcher.submit(
+                { intent: "delete-site" },
+                { method: "post" },
+              )
+            }
+          />
+        )}
+      </div>
 
       {showSource && <EditSourceForm content={content} />}
     </div>
@@ -44,7 +68,7 @@ function EditSourceForm({ content }: { content: string }) {
 
   return (
     <fetcher.Form method="put">
-      <Card>
+      <Card className="w-full">
         <CardContent>
           <Textarea
             className="h-96"
@@ -54,10 +78,6 @@ function EditSourceForm({ content }: { content: string }) {
           />
         </CardContent>
         <CardFooter>
-          <p className="mt-2 text-foreground/60 text-sm">
-            This is content we retrieved from the site. We use this content to
-            suggest citation queries.
-          </p>
           <Button
             disabled={fetcher.state !== "idle"}
             size="sm"
