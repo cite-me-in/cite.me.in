@@ -4,7 +4,7 @@ import { alphabetical, last, map, sort, sum } from "radashi";
 import { twMerge } from "tailwind-merge";
 import Button from "~/components/email/Button";
 import Card from "~/components/email/Card";
-import KeyMetric from "~/components/email/KeyMetric";
+import KeyMetrics from "~/components/email/KeyMetric";
 import Link from "~/components/email/Link";
 import prisma from "~/lib/prisma.server";
 import type { SentimentLabel } from "~/prisma";
@@ -166,17 +166,7 @@ function TopMetrics({
 
   return (
     <Card>
-      <Row>
-        {metrics.map((item, i) => (
-          <KeyMetric
-            current={item.current}
-            isLast={i === metrics.length - 1}
-            key={item.label}
-            label={item.label}
-            previous={item.previous}
-          />
-        ))}
-      </Row>
+      <KeyMetrics metrics={metrics} />
     </Card>
   );
 }
@@ -198,16 +188,13 @@ function PlatformBreakdown({
 
   return (
     <Card title="Citations by platform" className="pb-8">
-      <Row>
-        {first4.map(([platform, { count }], i) => (
-          <KeyMetric
-            current={`${((count / total) * 100).toFixed(1)}%`}
-            isLast={i === first4.length - 1}
-            key={platform}
-            label={platform}
-          />
-        ))}
-      </Row>
+      <KeyMetrics
+        metrics={first4.map(([platform, { count }]) => ({
+          label: platform,
+          current: `${((count / total) * 100).toFixed(1)}%`,
+          count,
+        }))}
+      />
     </Card>
   );
 }
@@ -352,16 +339,7 @@ function VisitorKeyMetrics({
 
   return (
     <Card>
-      <Row>
-        {metrics.map((item, i) => (
-          <KeyMetric
-            current={item.current}
-            isLast={i === metrics.length - 1}
-            key={item.label}
-            label={item.label}
-          />
-        ))}
-      </Row>
+      <KeyMetrics metrics={metrics} />
     </Card>
   );
 }
