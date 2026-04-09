@@ -38,7 +38,7 @@ export default function KeyMetrics({ metrics }: { metrics: KeyMetric[] }) {
         >
           <Section className="w-full overflow-hidden rounded-lg border border-border bg-white">
             <Row>
-              <Column className="bg-gray-100 px-4 text-center">
+              <Column className="bg-gray-50/50 px-4 text-center">
                 <Text className="mb-1.5 whitespace-nowrap text-light text-xs uppercase tracking-wide">
                   {metric.label}
                 </Text>
