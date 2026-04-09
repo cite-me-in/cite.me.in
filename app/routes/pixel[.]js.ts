@@ -27,6 +27,13 @@ xhr.onerror = function() {
   console.error("Error tracking visit");
 };
 `,
-    { headers: { "Content-Type": "application/javascript" } },
+    {
+      headers: {
+        "Content-Type": "application/javascript",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+    },
   );
 }
