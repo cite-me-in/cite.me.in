@@ -8,6 +8,9 @@ export default function AboutHeader() {
         We built Cite.me.in because we needed it ourselves — a clear answer to
         "does AI actually mention us?"
       </p>
+      <p className="mt-2 font-bold text-black text-lg">
+        Squirrel-brain friendly, ADHD-approved 🐿️
+      </p>
     </section>
   );
 }

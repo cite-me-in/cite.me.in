@@ -147,7 +147,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           org-id: ${{ env.VERCEL_ORG_ID }}
-          prebuilt: false
+          prebuilt: true
           production: false
           project-id: ${{ env.VERCEL_PROJECT_ID }}
           token: ${{ env.VERCEL_TOKEN }}

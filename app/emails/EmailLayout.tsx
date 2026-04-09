@@ -122,6 +122,10 @@ function Footer({ unsubscribeURL }: { unsubscribeURL?: string | false }) {
           Terms of Service
         </Link>
       </Text>
+
+      <Text className="my-2 text-center text-light text-xs">
+        Squirrel-brain friendly 🐿️
+      </Text>
     </Section>
   );
 }

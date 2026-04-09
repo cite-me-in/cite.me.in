@@ -5,7 +5,6 @@ import {
   MessageSquareIcon,
   SearchIcon,
   SparklesIcon,
-  StarIcon,
   TrendingUpIcon,
 } from "lucide-react";
 import CiteMeInLogo from "~/components/layout/CiteMeInLogo";
@@ -70,7 +69,7 @@ export function meta(): Route.MetaDescriptors {
     {
       name: "description",
       content:
-        "Track when ChatGPT, Claude, Gemini, and Copilot cite your brand. Cite.me.in is the Search Console for AI platforms.",
+        "Track when ChatGPT, Claude, Gemini, and Copilot cite your brand. Cite.me.in is the Search Console for AI platforms. Squirrel-brain friendly.",
     },
   ];
 }
@@ -119,9 +118,8 @@ function HeroSection({ isSignedIn }: { isSignedIn: boolean }) {
     <section className="border-black border-b-2 bg-[#F59E0B] px-6 py-20 md:py-32">
       <div className="mx-auto max-w-4xl">
         <blockquote className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border-2 bg-white px-4 py-1.5 font-bold text-base text-black shadow-md">
-          <StarIcon className="h-4 w-4" />
-          The Search Console for AI
           <SparklesIcon className="h-4 w-4" />
+          Squirrel-brain friendly 🐿️
         </blockquote>
 
         <h1 className="mb-6 font-bold text-4xl text-black leading-tight md:text-6xl">
