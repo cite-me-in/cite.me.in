@@ -18,6 +18,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       domain: true,
       summary: true,
       createdAt: true,
+      lastProcessedAt: true,
       owner: { select: { email: true, plan: true } },
       citationRuns: {
         select: {
@@ -88,8 +89,18 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
                   ))}
                 </div>
 
-                <p className="text-right text-foreground/40">
-                  Created: {site.createdAt.toLocaleDateString()}
+                <p className="flex justify-between gap-8 text-right text-foreground/40">
+                  <span>
+                    Created: {site.createdAt.toISOString().split("T")[0]}
+                  </span>
+                  <span>
+                    Last run: {site.citationRuns[0]?.onDate ?? "Never"}
+                  </span>
+                  <span>
+                    Last processed:{" "}
+                    {site.lastProcessedAt?.toISOString().split("T")[0] ??
+                      "Never"}
+                  </span>
                 </p>
               </div>
             ),

@@ -20,7 +20,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw new Response("Unauthorized", { status: 401 });
 
   try {
-    const sites = await prepareSites();
+    const sites = await prepareSites({ maxSites: 5 });
 
     const oneWeekAgo = daysAgo(7);
     const results = await map(sites, async (site) => {

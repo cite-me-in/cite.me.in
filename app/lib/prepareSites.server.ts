@@ -7,12 +7,7 @@ import PLATFORMS from "~/lib/llm-visibility/platformQueries.server";
 import { queryPlatform as runPlatform } from "~/lib/llm-visibility/queryPlatform";
 import prisma from "~/lib/prisma.server";
 import { UsageLimitExceededError } from "~/lib/usage/UsageLimitExceededError";
-import {
-  TRIAL_DAYS,
-  canLastProcess,
-  isProcessingEligible,
-} from "~/lib/userPlan.server";
-import { daysAgo } from "./formatDate";
+import { queryNextToProcess } from "~/lib/userPlan.server";
 
 const logger = debug("server");
 
@@ -44,28 +39,11 @@ export default async function prepareSites({
       lastProcessedAt: true,
       owner: { select: { plan: true, createdAt: true } },
     },
-    where: {
-      owner: {
-        OR: [
-          { plan: { in: ["paid", "gratis"] } },
-          { plan: "trial", createdAt: { gte: daysAgo(TRIAL_DAYS) } },
-        ],
-      },
-    },
+    where: queryNextToProcess(),
   });
 
+  // Prioritize sites that haven't been processed yet.
   const due = candidates
-    .filter(
-      (site) =>
-        isProcessingEligible({
-          plan: site.owner.plan,
-          createdAt: site.owner.createdAt,
-        }) &&
-        canLastProcess({
-          plan: site.owner.plan,
-          lastProcessedAt: site.lastProcessedAt,
-        }),
-    )
     .sort((a, b) => {
       if (a.lastProcessedAt === null && b.lastProcessedAt !== null) return -1;
       if (a.lastProcessedAt !== null && b.lastProcessedAt === null) return 1;

@@ -1,3 +1,4 @@
+import type { Prisma } from "~/prisma";
 import { daysAgo } from "./formatDate";
 
 type Plan = "trial" | "paid" | "cancelled" | "gratis";
@@ -16,27 +17,28 @@ export function processingIntervalHours(plan: Plan): number {
 }
 
 /**
- * Returns true if the lastProcessedAt is before the earliest date for the plan.
- * Trials have to wait 7 days, paid and gratis have to wait 1 day.
- * Cancelled users can never be processed.
- * @param plan - The plan of the user
- * @param lastProcessedAt - The lastProcessedAt date of the site
- * @returns true if the site should be processed
+ * Query the next site to process:
+ *
+ * - paid/gratis: process if lastProcessedAt is null or older than 24 hours
+ * - trial: process if lastProcessedAt is null or older than 7 days and owner
+ *   is less than 25 days old
+ * - cancelled: never processed
+ *
+ * @returns Prisma WhereClause for the next site to process
  */
-export function canLastProcess({
-  lastProcessedAt,
-  plan,
-}: {
-  lastProcessedAt: Date | null;
-  plan: Plan;
-}): boolean {
-  const before =
-    plan === "trial"
-      ? daysAgo(7)
-      : plan === "paid" || plan === "gratis"
-        ? daysAgo(1)
-        : new Date();
-  return !lastProcessedAt || lastProcessedAt < before;
+export function queryNextToProcess(): Prisma.SiteWhereInput {
+  return {
+    OR: [
+      {
+        owner: { plan: { in: ["paid", "gratis"] } },
+        lastProcessedAt: { lte: daysAgo(1) },
+      },
+      {
+        lastProcessedAt: { lte: daysAgo(7) },
+        owner: { plan: "trial", createdAt: { gte: daysAgo(TRIAL_DAYS) } },
+      },
+    ],
+  };
 }
 
 // Whether a site should be processed right now.
