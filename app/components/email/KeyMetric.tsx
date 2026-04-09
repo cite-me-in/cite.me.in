@@ -50,7 +50,7 @@ export default function KeyMetrics({ metrics }: { metrics: KeyMetric[] }) {
                   <Text className="text-light text-xs">
                     {(metric.count as number).toLocaleString()}
                   </Text>
-                ) : "previous" in metric && metric.previous !== 0 ? (
+                ) : "previous" in metric ? (
                   <Text className="flex items-center justify-center gap-1">
                     <span
                       className={twMerge(
@@ -77,9 +77,10 @@ export default function KeyMetrics({ metrics }: { metrics: KeyMetric[] }) {
   );
 }
 
-function pctDelta(current: number, previous: number): string {
-  if (previous === 0) return current === 0 ? "—" : "+∞%";
-  const pct = Math.round(((current - previous) / previous) * 100);
+function pctDelta(current: number | string, previous: number): string {
+  const float = Number.parseFloat(current as string);
+  if (previous === 0) return float === 0 ? "—" : "+∞%";
+  const pct = Math.round(((float - previous) / previous) * 100);
   if (pct === 0) return "—";
   return pct > 0 ? `+${pct}%` : `${pct}%`;
 }

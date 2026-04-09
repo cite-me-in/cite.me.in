@@ -161,7 +161,11 @@ function TopMetrics({
     { label: "Your citations", ...citations.domain },
     { label: "All citations", ...citations.total },
     { label: "Score", ...score },
-    { label: "Query Coverage", current: `${queryCoverageRate.current}%` },
+    {
+      label: "Query Coverage",
+      current: `${queryCoverageRate.current}%`,
+      previous: queryCoverageRate.previous,
+    },
   ];
 
   return (
