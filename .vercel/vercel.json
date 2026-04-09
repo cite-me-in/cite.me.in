@@ -1,4 +1,5 @@
 {
+  "framework": "react-router",
   "crons": [
     {
       "path": "/cron/process-sites",
