@@ -1,3 +1,4 @@
+import { map } from "radashi";
 import { data } from "react-router";
 import { z } from "zod";
 import recordBotVisit, { classifyBot } from "~/lib/botTracking.server";
@@ -18,6 +19,10 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Headers": "Authorization, Content-Type",
 };
 
+export async function loader() {
+  return new Response("Method not allowed", { status: 405 });
+}
+
 export async function action({ request }: { request: Request }) {
   if (request.method === "OPTIONS")
     return new Response(null, { status: 204, headers: CORS_HEADERS });
@@ -35,41 +40,35 @@ export async function action({ request }: { request: Request }) {
     return new Response("Invalid JSON", { status: 400 });
   }
 
-  const authHeader = request.headers.get("authorization");
-  const [tokenType, token] = authHeader?.split(" ") ?? [];
-  if (tokenType !== "Bearer") return new Response("Forbidden", { status: 403 });
   const { hostname, searchParams } = new URL(inputs.url);
-  const site = await prisma.site.findFirst({
-    where: { domain: hostname, apiKey: token },
-  });
-  if (!site) return new Response("Forbidden", { status: 403 });
+  const sites = await prisma.site.findMany({ where: { domain: hostname } });
 
-  const { userAgent } = inputs;
-  if (!userAgent) return new Response("No user agent", { status: 400 });
+  const userAgent =
+    inputs.userAgent ?? request.headers.get("user-agent") ?? "Unknown";
+  const ip = inputs.ip ?? request.headers.get("x-forwarded-for");
 
   if (classifyBot(userAgent)) {
-    const { tracked } = await recordBotVisit({
-      accept: inputs.accept,
-      ip: inputs.ip,
-      referer: inputs.referer,
-      site,
-      url: inputs.url,
-      userAgent,
-    });
-    return data({ ok: tracked }, { headers: CORS_HEADERS });
+    await map(sites, (site) =>
+      recordBotVisit({
+        accept: inputs.accept,
+        ip,
+        referer: inputs.referer,
+        site,
+        url: inputs.url,
+        userAgent,
+      }),
+    );
+    return data({ ok: true }, { headers: CORS_HEADERS });
   } else {
-    const utmSource = searchParams.get("utm_source");
-    await recordHumanVisit({
-      ip: inputs.ip,
-      referer: inputs.referer,
-      site,
-      userAgent,
-      utmSource,
-    });
+    await map(sites, (site) =>
+      recordHumanVisit({
+        ip,
+        referer: inputs.referer,
+        site,
+        userAgent,
+        utmSource: searchParams.get("utm_source"),
+      }),
+    );
     return data({ ok: true }, { headers: CORS_HEADERS });
   }
-}
-
-export async function loader() {
-  return new Response("Method not allowed", { status: 405 });
 }
