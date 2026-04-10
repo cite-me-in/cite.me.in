@@ -1,5 +1,5 @@
 import { Temporal } from "@js-temporal/polyfill";
-import msw from "../mocks/msw";
+import "~/test/mocks/msw";
 
 export const fixedTime = new Date("2023-11-14T22:13:20.000Z");
 
@@ -39,6 +39,4 @@ export default function setupTestServer() {
       fixedTime.getMonth() + 1,
       fixedTime.getDate(),
     );
-
-  msw();
 }

@@ -1,8 +1,8 @@
-import { http, HttpResponse } from "msw";
+import { HttpResponse, http } from "msw";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { emitWebhookEvent } from "~/lib/webhooks.server";
 import prisma from "~/lib/prisma.server";
-import { server } from "../mocks/msw";
+import { emitWebhookEvent } from "~/lib/webhooks.server";
+import msw from "../mocks/msw";
 
 const ADMIN_ID = "user-wh-admin-1";
 const USER_ID = "user-wh-user-1";
@@ -14,7 +14,7 @@ let webhookResponseStatus = 200;
 function setupWebhookHandlers() {
   capturedRequests = [];
   webhookResponseStatus = 200;
-  server.use(
+  msw.use(
     http.post(/https:\/\/(admin|user)\.test\/hook/, ({ request }) => {
       capturedRequests.push(request.clone());
       if (webhookResponseStatus === 0) return HttpResponse.error();
@@ -24,7 +24,7 @@ function setupWebhookHandlers() {
 }
 
 describe("emitWebhookEvent", () => {
-  afterEach(() => server.resetHandlers());
+  afterEach(() => msw.resetHandlers());
 
   beforeEach(async () => {
     setupWebhookHandlers();

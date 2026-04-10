@@ -1,35 +1,25 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { server } from "~/test/mocks/msw";
+import { HttpResponse, http } from "msw";
+import { afterEach, describe, expect, it } from "vitest";
+import fetchSERPResults from "~/lib/llm-visibility/serpApi.server";
+import msw from "~/test/mocks/msw";
 
-let mockFetch: ReturnType<typeof vi.fn>;
-
-afterEach(() => {
-  mockFetch.mockRestore();
-  server.listen({ onUnhandledRequest: "warn" });
-});
+afterEach(() => msw.resetHandlers());
 
 describe.each([
   "google",
   "bing",
 ] as const)("fetchOrganicResults (%s)", (engine) => {
   it("should return organic URLs from the first page", async () => {
-    mockFetch = vi.fn().mockResolvedValueOnce(
-      new Response(
-        JSON.stringify({
+    msw.use(
+      http.get("https://serpapi.com/search", () =>
+        HttpResponse.json({
           organic_results: [
             { link: "https://example.com/page", title: "Example" },
             { link: "https://other.com/article", title: "Other" },
             { link: "https://third.com/", title: "Third" },
           ],
         }),
-        { status: 200 },
       ),
-    );
-    server.close();
-    vi.stubGlobal("fetch", mockFetch);
-
-    const { default: fetchSERPResults } = await import(
-      "~/lib/llm-visibility/serpApi.server"
     );
 
     const result = await fetchSERPResults({
@@ -46,16 +36,10 @@ describe.each([
   });
 
   it("should return empty array when no organic results", async () => {
-    mockFetch = vi
-      .fn()
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify({ organic_results: [] }), { status: 200 }),
-      );
-    server.close();
-    vi.stubGlobal("fetch", mockFetch);
-
-    const { default: fetchSERPResults } = await import(
-      "~/lib/llm-visibility/serpApi.server"
+    msw.use(
+      http.get("https://serpapi.com/search", () =>
+        HttpResponse.json({ organic_results: [] }),
+      ),
     );
 
     const result = await fetchSERPResults({
@@ -76,38 +60,25 @@ describe.each([
   });
 
   it("should pass the correct params in the request", async () => {
-    mockFetch = vi
-      .fn()
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify({ organic_results: [] }), { status: 200 }),
-      );
-    server.close();
-    vi.stubGlobal("fetch", mockFetch);
-
-    const { default: fetchSERPResults } = await import(
-      "~/lib/llm-visibility/serpApi.server"
+    let capturedUrl: URL | undefined;
+    msw.use(
+      http.get("https://serpapi.com/search", ({ request }) => {
+        capturedUrl = new URL(request.url);
+        return HttpResponse.json({ organic_results: [] });
+      }),
     );
 
     await fetchSERPResults({ query: "test query", engine, timeout: 0 });
 
-    const calledUrl = new URL(mockFetch.mock.calls[0][0] as string);
-    expect(calledUrl.searchParams.get("engine")).toBe(engine);
-    expect(calledUrl.searchParams.get("q")).toBe("test query");
+    expect(capturedUrl?.searchParams.get("engine")).toBe(engine);
+    expect(capturedUrl?.searchParams.get("q")).toBe("test query");
   });
 
   it("should throw when the API response is not ok", async () => {
-    mockFetch = vi
-      .fn()
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify({ error: "Unauthorized" }), {
-          status: 401,
-        }),
-      );
-    server.close();
-    vi.stubGlobal("fetch", mockFetch);
-
-    const { default: fetchSERPResults } = await import(
-      "~/lib/llm-visibility/serpApi.server"
+    msw.use(
+      http.get("https://serpapi.com/search", () =>
+        HttpResponse.json({ error: "Unauthorized" }, { status: 401 }),
+      ),
     );
 
     await expect(

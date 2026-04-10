@@ -4,6 +4,7 @@ import envVars from "../envVars.server";
 const client = new OpenAI({
   apiKey: envVars.ZHIPU_API_KEY,
   baseURL: "https://api.z.ai/api/paas/v4/",
+  fetch: process.env.NODE_ENV === "test" ? global.fetch : undefined,
 });
 
 export default async function generateBotInsight(
@@ -33,7 +34,7 @@ export default async function generateBotInsight(
         role: "user" as const,
         content: `Domain: ${domain}\nLast 7 days of bot activity:\n${statLines}`,
       },
-    ]
+    ],
   });
 
   return completion.choices[0].message.content ?? "";

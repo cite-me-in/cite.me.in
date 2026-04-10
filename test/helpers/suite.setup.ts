@@ -5,7 +5,7 @@
 import * as Sentry from "@sentry/react-router";
 import { afterAll, beforeAll, vi } from "vitest";
 import prisma from "~/lib/prisma.server";
-import msw from "~/test/mocks/msw";
+import "~/test/mocks/msw";
 import "./toMatchInnerHTML";
 import "./toMatchScreenshot";
 import "./toMatchVisual";
@@ -20,9 +20,6 @@ beforeAll(async () => {
 
   // Freeze time at a fixed timestamp for deterministic visual and time-based tests
   vi.setSystemTime(fixedTime.getTime());
-
-  // MSH handlers mock 3rd party APIs
-  msw();
 });
 
 afterAll(async () => {

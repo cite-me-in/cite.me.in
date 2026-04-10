@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createSite, deleteSite, extractDomain } from "~/lib/sites.server";
-import { summarize } from "~/lib/scrape/summarize";
-import { crawl } from "~/lib/scrape/crawl";
-import * as webhooks from "~/lib/webhooks.server";
 import prisma from "~/lib/prisma.server";
+import { crawl } from "~/lib/scrape/crawl";
+import { summarize } from "~/lib/scrape/summarize";
+import { createSite, deleteSite, extractDomain } from "~/lib/sites.server";
+import * as webhooks from "~/lib/webhooks.server";
 
 vi.mock("node:dns", () => ({
   default: {
@@ -54,9 +54,8 @@ describe("fetchSiteContent", () => {
       maxWords: 1000,
       maxSeconds: 10,
     });
-    vi.clearAllMocks();
     const summary = await summarize({ domain, content });
-    expect(summary).toContain("Summar of the content of example.com");
+    expect(summary).toContain('Mocked AI insight');
   });
 
   it("should return null when response is not ok", async () => {
