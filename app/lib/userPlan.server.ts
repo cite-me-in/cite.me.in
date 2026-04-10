@@ -30,14 +30,19 @@ export function processingIntervalHours(plan: Plan): number {
 export function queryNextToProcess(): Prisma.SiteWhereInput {
   return {
     OR: [
-      { lastProcessedAt: null },
       {
         owner: { plan: { in: ["paid", "gratis"] } },
-        lastProcessedAt: { lte: daysAgo(1) },
+        OR: [
+          { lastProcessedAt: null },
+          { lastProcessedAt: { lte: daysAgo(1) } },
+        ],
       },
       {
-        lastProcessedAt: { lte: daysAgo(7) },
         owner: { plan: "trial", createdAt: { gte: daysAgo(TRIAL_DAYS) } },
+        OR: [
+          { lastProcessedAt: null },
+          { lastProcessedAt: { lte: daysAgo(7) } },
+        ],
       },
     ],
   };

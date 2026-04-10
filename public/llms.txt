@@ -1,0 +1,33 @@
+# cite.me.in
+
+> Monitor your brand's visibility in AI-generated responses. Cite.me.in tracks when and where AI platforms — ChatGPT, Claude, Gemini, Perplexity — cite your website in their answers. Think of it as Google Search Console, but for LLMs. Squirrel-brain friendly.
+
+## How it works
+
+1. Add your website domain
+2. We suggest ready-to-run queries based on your content
+3. Each week we run your queries across every major AI platform with web search enabled
+4. Every URL that appears in an AI response gets recorded — you see which platforms cite you, how often, and for which queries
+
+## Who it's for
+
+- **Solo founders** — know if AI platforms are sending you traffic or ignoring you
+- **Small businesses** — find out if ChatGPT and Copilot mention you in their answers
+- **Marketing teams** — track AI citation visibility as a channel, see trends, compare platforms
+
+## Pages
+
+- [/](/) — Landing page
+- [/pricing](/pricing) — Plans and pricing
+- [/faq](/faq) — Frequently asked questions
+- [/docs](/docs) — API documentation and OpenAPI spec
+- [/about](/about) — About cite.me.in
+- [/sign-up](/sign-up) — Create an account
+- [/sign-in](/sign-in) — Sign in to your account
+
+## Optional details
+
+You can find more about us here:
+
+- [Blog](https://blog.cite.me.in) — Updates and insights
+- [GitHub](https://github.com/cite-me-in/cite.me.in) — Source code
