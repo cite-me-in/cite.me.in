@@ -1,7 +1,7 @@
 import { ChevronDownIcon } from "lucide-react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
-import { ActiveLink } from "~/components/ui/ActiveLink";
+import MailtoLink from "~/components/ui/MailtoLink";
 import type { Route } from "./+types/route";
 import faq from "./faq";
 
@@ -50,14 +50,15 @@ export default function FAQ() {
           Our team is here to help. Reach out and we'll get back to you within
           24 hours.
         </p>
-        <ActiveLink
+        <MailtoLink
+          email={import.meta.env.VITE_EMAIL_FROM}
+          subject="I have questions"
+          variant="button"
           bg="yellow"
           size="xl"
-          to={`mailto:${import.meta.env.VITE_EMAIL_FROM}?subject=${encodeURIComponent("I have questions")}`}
-          variant="button"
         >
           Contact Support
-        </ActiveLink>
+        </MailtoLink>
       </section>
     </main>
   );

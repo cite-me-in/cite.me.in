@@ -1,4 +1,5 @@
 import { TrendingUpIcon } from "lucide-react";
+import MailtoLink from "~/components/ui/MailtoLink";
 import { ActiveLink } from "~/components/ui/ActiveLink";
 
 export default function AboutCTA() {
@@ -21,14 +22,14 @@ export default function AboutCTA() {
           <ActiveLink variant="button" to="/sign-up" bg="yellow" size="xl">
             Get Started Free
           </ActiveLink>
-          <ActiveLink
+          <MailtoLink
             className="px-8"
+            email={import.meta.env.VITE_EMAIL_FROM}
             size="xl"
-            to={`mailto:${import.meta.env.VITE_EMAIL_FROM}`}
             variant="button"
           >
             Get in Touch
-          </ActiveLink>
+          </MailtoLink>
         </div>
       </div>
     </section>

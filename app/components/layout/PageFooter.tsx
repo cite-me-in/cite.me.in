@@ -1,4 +1,5 @@
 import { NavLink } from "react-router";
+import MailtoLink from "~/components/ui/MailtoLink";
 import socialLinks from "~/lib/socialLinks";
 import { ActiveLink } from "../ui/ActiveLink";
 
@@ -16,10 +17,6 @@ const links = [
     links: [
       { to: "/about", label: "About" },
       { to: "https://blog.cite.me.in", label: "Blog" },
-      {
-        to: `mailto:${import.meta.env.VITE_EMAIL_FROM}`,
-        label: "Contact",
-      },
     ],
   },
   {
@@ -65,6 +62,15 @@ export default function PageFooter() {
                 {link.label}
               </NavLink>
             ))}
+            {column.title === "Resources" && (
+              <MailtoLink
+                email={import.meta.env.VITE_EMAIL_FROM}
+                variant="footer"
+                aria-label="Contact us by email"
+              >
+                Contact
+              </MailtoLink>
+            )}
           </nav>
         ))}
       </div>
