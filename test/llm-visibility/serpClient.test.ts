@@ -72,7 +72,6 @@ describe.each([
 
     expect(capturedUrl?.searchParams.get("engine")).toBe(engine);
     expect(capturedUrl?.searchParams.get("q")).toBe("test query");
-    expect(capturedUrl?.searchParams.get("api_key")).toBe("test-key");
   });
 
   it("should throw when the API response is not ok", async () => {

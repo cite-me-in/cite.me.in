@@ -1,19 +1,11 @@
+import debug from "debug";
 import { HttpResponse, http, passthrough } from "msw";
 import { setupServer } from "msw/node";
-import perplexity from "./mswPerplexity";
-import anthropic from "./mswAnthropic";
-import gemini from "./mswGemini";
-import openai from "./mswOpenAI";
 import stripe from "./mswStripe";
-import debug from "debug";
 
 const logger = debug("msw");
 
 const handlers = [
-  anthropic,
-  gemini,
-  ...openai,
-  perplexity,
   stripe,
 
   http.get("https://example.com/", () =>
@@ -32,7 +24,7 @@ const handlers = [
 
   // Allow all localhost requests to pass through (for dev server communication)
   http.all(
-    ({ request }: { request: Request }) =>
+    ({ request }: { request: Request; }) =>
       new URL(request.url).hostname === "localhost",
     () => passthrough(), // Pass through to real server
   ),
@@ -46,7 +38,7 @@ const handlers = [
   // Block any other external HTTP services not explicitly mocked.
   http.all(
     () => true,
-    ({ request }: { request: Request }) => {
+    ({ request }: { request: Request; }) => {
       logger("Blocked %s request to: %s", request.method, request.url);
       return HttpResponse.json(
         { error: "External HTTP requests are not allowed in tests" },
@@ -60,16 +52,16 @@ export const server = setupServer(...handlers);
 
 // Add logging for debugging
 server.events
-  .on("request:start", ({ request }: { request: Request }) =>
+  .on("request:start", ({ request }: { request: Request; }) =>
     logger("%s", request.method, request.url),
   )
   .on(
     "response:mocked",
-    ({ request, response }: { request: Request; response: Response }) => {
+    ({ request, response }: { request: Request; response: Response; }) => {
       logger("%s %s => %s", request.method, request.url, response.status);
     },
   )
-  .on("request:unhandled", ({ request }: { request: Request }) => {
+  .on("request:unhandled", ({ request }: { request: Request; }) => {
     // Only log external requests that are being bypassed
     const url = new URL(request.url);
     if (url.hostname !== "localhost" && url.hostname !== "127.0.0.1") {
@@ -82,7 +74,7 @@ server.events
   })
   .on(
     "unhandledException",
-    ({ request, error }: { request: Request; error: Error }) => {
+    ({ request, error }: { request: Request; error: Error; }) => {
       debug("server:msw")("%s %s errored!", request.method, request.url, error);
     },
   );
