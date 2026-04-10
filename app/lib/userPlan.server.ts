@@ -19,9 +19,10 @@ export function processingIntervalHours(plan: Plan): number {
 /**
  * Query the next site to process:
  *
- * - paid/gratis: process if lastProcessedAt is null or older than 24 hours
- * - trial: process if lastProcessedAt is null or older than 7 days and owner
- *   is less than 25 days old
+ * - lastProcessedAt is null: process for first time
+ * - paid/gratis: process if older than 24 hours
+ * - trial: process if older than 7 days and owner
+ *   is less than 25 days old and lastProcessedAt is null
  * - cancelled: never processed
  *
  * @returns Prisma WhereClause for the next site to process
@@ -29,6 +30,7 @@ export function processingIntervalHours(plan: Plan): number {
 export function queryNextToProcess(): Prisma.SiteWhereInput {
   return {
     OR: [
+      { lastProcessedAt: null },
       {
         owner: { plan: { in: ["paid", "gratis"] } },
         lastProcessedAt: { lte: daysAgo(1) },

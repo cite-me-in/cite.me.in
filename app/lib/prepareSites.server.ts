@@ -41,6 +41,7 @@ export default async function prepareSites({
     },
     where: queryNextToProcess(),
   });
+  console.log("candidates", candidates);
 
   // Prioritize sites that haven't been processed yet.
   const due = candidates
