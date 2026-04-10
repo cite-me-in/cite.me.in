@@ -1,8 +1,10 @@
-import { wrapAISDK } from "braintrust";
-import { haiku } from "./claudeClient.server";
-import * as ai from "ai";
+import OpenAI from "openai";
+import envVars from "../envVars.server";
 
-const { generateText } = wrapAISDK(ai);
+const client = new OpenAI({
+  apiKey: envVars.ZHIPU_API_KEY,
+  baseURL: "https://api.z.ai/api/paas/v4/",
+});
 
 export default async function generateBotInsight(
   domain: string,
@@ -19,8 +21,8 @@ export default async function generateBotInsight(
     )
     .join("\n");
 
-  const { text } = await generateText({
-    model: haiku,
+  const completion = await client.chat.completions.create({
+    model: "glm-5",
     messages: [
       {
         role: "system" as const,
@@ -31,9 +33,8 @@ export default async function generateBotInsight(
         role: "user" as const,
         content: `Domain: ${domain}\nLast 7 days of bot activity:\n${statLines}`,
       },
-    ],
-    maxOutputTokens: 300,
+    ]
   });
 
-  return text;
+  return completion.choices[0].message.content ?? "";
 }

@@ -1,11 +1,7 @@
 import { HttpResponse, http } from "msw";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import fetchSERPResults from "~/lib/llm-visibility/serpApi.server";
 import { server } from "~/test/mocks/msw";
-
-vi.mock("~/lib/envVars.server", () => ({
-  default: { SERPAPI_API_KEY: "test-key" },
-}));
 
 afterEach(() => server.resetHandlers());
 

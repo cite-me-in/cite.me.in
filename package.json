@@ -52,6 +52,7 @@
 		"env-var": "^7.5.0",
 		"ioredis": "^5.10.1",
 		"lucide-react": "^1.8.0",
+		"openai": "^6.34.0",
 		"prisma": "^7.7.0",
 		"radashi": "^12.7.2",
 		"random-password-toolkit": "^1.0.2",

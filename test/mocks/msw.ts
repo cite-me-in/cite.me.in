@@ -12,7 +12,7 @@ const logger = debug("msw");
 const handlers = [
   anthropic,
   gemini,
-  openai,
+  ...openai,
   perplexity,
   stripe,
 

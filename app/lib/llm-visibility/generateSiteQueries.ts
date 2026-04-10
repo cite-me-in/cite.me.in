@@ -1,8 +1,13 @@
+import { createAnthropic } from "@ai-sdk/anthropic";
 import { Output, generateText } from "ai";
-import { haiku } from "./claudeClient.server";
 import { z } from "zod";
-import queryGroups from "./queryGroups";
 import prisma from "~/lib/prisma.server";
+import envVars from "../envVars.server";
+import queryGroups from "./queryGroups";
+
+const model = createAnthropic({
+  apiKey: envVars.ANTHROPIC_API_KEY,
+})("claude-haiku-4-5");
 
 /**
  * Generate site queries for a given site. Use the content from the database if
@@ -14,13 +19,13 @@ import prisma from "~/lib/prisma.server";
 export default async function generateSiteQueries(site: {
   id: string;
   domain: string;
-}): Promise<{ group: string; query: string }[]> {
+}): Promise<{ group: string; query: string; }[]> {
   const { content } = await prisma.site.findUniqueOrThrow({
     where: { id: site.id },
     select: { content: true },
   });
   const { output } = await generateText({
-    model: haiku,
+    model: model,
     output: Output.array({
       element: z.object({
         group: z.string(),

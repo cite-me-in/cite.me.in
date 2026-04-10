@@ -2,10 +2,6 @@ import { generateText } from "ai";
 import { describe, expect, it, vi } from "vitest";
 import queryGemini from "~/lib/llm-visibility/geminiClient";
 
-vi.mock("~/lib/envVars", () => ({
-  default: { GOOGLE_GENERATIVE_AI_API_KEY: "test-key" },
-}));
-
 vi.mock("@ai-sdk/google", () => {
   const google = Object.assign(
     vi.fn(() => "mock-model"),

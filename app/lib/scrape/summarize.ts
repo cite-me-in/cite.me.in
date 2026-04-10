@@ -1,8 +1,10 @@
-import * as ai from "ai";
-import { wrapAISDK } from "braintrust";
-import { haiku } from "~/lib/llm-visibility/claudeClient.server";
+import OpenAI from "openai";
+import envVars from "../envVars.server";
 
-const { generateText } = wrapAISDK(ai);
+const client = new OpenAI({
+  apiKey: envVars.ZHIPU_API_KEY,
+  baseURL: "https://api.z.ai/api/paas/v4/"
+});
 
 /**
  * Summarize the given content. Used to generate a summary for a site based on
@@ -18,9 +20,9 @@ export async function summarize({
   domain: string;
   content: string;
 }): Promise<string> {
-  const { text: summary } = await generateText({
-    model: haiku,
-    prompt: [
+  const response = await client.chat.completions.create({
+    model: "glm-5",
+    messages: [
       {
         role: "system",
         content: `You are a summary generator. You are given the content of ${domain} and you need to summarize it. Be concise and to the point. Limit to two sentences, 200 characters. Do not include title or any other formatting.`,
@@ -31,5 +33,5 @@ export async function summarize({
       },
     ],
   });
-  return summary;
+  return response.choices[0].message.content ?? "";
 }

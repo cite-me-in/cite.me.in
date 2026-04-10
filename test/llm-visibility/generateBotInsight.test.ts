@@ -1,19 +1,32 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { generateText } from "ai";
-import generateBotInsight from "~/lib/llm-visibility/generateBotInsight";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("ai", () => ({ generateText: vi.fn(), gateway: vi.fn() }));
-vi.mock("~/lib/llm-visibility/anthropic", () => ({
-  haiku: "mock-haiku-model",
+const mockCreate = vi.fn();
+
+class MockOpenAI {
+  chat = {
+    completions: {
+      create: mockCreate,
+    },
+  };
+}
+
+vi.mock("openai", () => ({
+  default: MockOpenAI,
 }));
 
-describe("generateBotInsight", () => {
-  beforeEach(() => vi.clearAllMocks());
+afterEach(() => {
+  mockCreate.mockReset();
+});
 
-  it("should return the text from generateText", async () => {
-    vi.mocked(generateText).mockResolvedValue({
-      text: "GPTBot visited 47 times this week.",
-    } as never);
+describe("generateBotInsight", () => {
+  it("should return the text from the completion", async () => {
+    mockCreate.mockResolvedValueOnce({
+      choices: [{ message: { content: "GPTBot visited 47 times this week." } }],
+    });
+
+    const { default: generateBotInsight } = await import(
+      "~/lib/llm-visibility/generateBotInsight"
+    );
 
     const result = await generateBotInsight("example.com", [
       { botType: "ChatGPT", total: 47, topPaths: ["/", "/blog"] },
@@ -23,16 +36,24 @@ describe("generateBotInsight", () => {
   });
 
   it("should include domain and bot stats in the user message", async () => {
-    vi.mocked(generateText).mockResolvedValue({ text: "insight" } as never);
+    let capturedMessages: { role: string; content: string }[] | undefined;
+    mockCreate.mockImplementationOnce(
+      async (args: { messages: typeof capturedMessages }) => {
+        capturedMessages = args.messages;
+        return { choices: [{ message: { content: "insight" } }] };
+      },
+    );
+
+    const { default: generateBotInsight } = await import(
+      "~/lib/llm-visibility/generateBotInsight"
+    );
 
     await generateBotInsight("mysite.com", [
       { botType: "Claude", total: 5, topPaths: ["/about"] },
       { botType: "Gemini", total: 12, topPaths: ["/", "/faq"] },
     ]);
 
-    const call = vi.mocked(generateText).mock.calls[0][0];
-    const messages = call.messages as { role: string; content: string }[];
-    const userMsg = messages.find((m) => m.role === "user");
+    const userMsg = capturedMessages?.find((m) => m.role === "user");
     expect(userMsg?.content).toContain("Domain: mysite.com");
     expect(userMsg?.content).toContain("- Claude: 5 visits. Top pages: /about");
     expect(userMsg?.content).toContain(
@@ -40,8 +61,12 @@ describe("generateBotInsight", () => {
     );
   });
 
-  it("should propagate errors from generateText", async () => {
-    vi.mocked(generateText).mockRejectedValue(new Error("API error"));
+  it("should propagate errors from the completion", async () => {
+    mockCreate.mockRejectedValueOnce(new Error("API error"));
+
+    const { default: generateBotInsight } = await import(
+      "~/lib/llm-visibility/generateBotInsight"
+    );
 
     await expect(generateBotInsight("example.com", [])).rejects.toThrow(
       "API error",

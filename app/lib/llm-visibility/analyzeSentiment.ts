@@ -1,12 +1,17 @@
-import { generateText } from "ai";
+import OpenAI from "openai";
 import { z } from "zod";
 import type { SentimentLabel } from "~/prisma";
+import envVars from "../envVars.server";
 import { isSameDomain } from "../isSameDomain";
-import { haiku } from "./claudeClient.server";
 
 const schema = z.object({
   label: z.enum(["positive", "negative", "neutral", "mixed"]),
   summary: z.string(),
+});
+
+const client = new OpenAI({
+  apiKey: envVars.ZHIPU_API_KEY,
+  baseURL: "https://api.z.ai/api/paas/v4/"
 });
 
 export default async function analyzeSentiment({
@@ -19,7 +24,7 @@ export default async function analyzeSentiment({
     query: string;
     text: string;
   }[];
-}): Promise<{ label: SentimentLabel; summary: string }> {
+}): Promise<{ label: SentimentLabel; summary: string; }> {
   if (queries.length === 0)
     return {
       label: "neutral",
@@ -36,29 +41,30 @@ export default async function analyzeSentiment({
     })
     .join("\n\n---\n\n");
 
-  const { text } = await generateText({
-    model: haiku,
-    messages: [
-      {
-        role: "system" as const,
-        content: `You are a brand visibility analyst. Read these AI platform responses and assess whether ${domain} is mentioned positively, negatively, neutrally, or with mixed sentiment. Also note whether it appears prominently in citations. Be concise and factual — no preamble.
+  const completion = await client
+    .chat.completions.create({
+      model: "glm-5",
+      messages: [
+        {
+          role: "system" as const,
+          content: `You are a brand visibility analyst. Read these AI platform responses and assess whether ${domain} is mentioned positively, negatively, neutrally, or with mixed sentiment. Also note whether it appears prominently in citations. Be concise and factual — no preamble.
 
 Respond with a JSON object only, no markdown fences:
 {"label":"positive"|"negative"|"neutral"|"mixed","summary":"2-3 sentence plain-English assessment"}`,
-      },
-      {
-        role: "user" as const,
-        content: `Domain: ${domain}\n\nResponses:\n\n${queryLines}`,
-      },
-    ],
-  });
+        },
+        {
+          role: "user" as const,
+          content: `Domain: ${domain}\n\nResponses:\n\n${queryLines}`,
+        },
+      ],
+      response_format: { type: "json_object" },
+    });
 
   try {
-    const json = text
-      .replace(/^```(?:json)?\s*/i, "")
+    const json = completion.choices[0].message.content?.replace(/^```(?:json)?\s*/i, "")
       .replace(/\s*```$/, "")
       .trim();
-    const parsed = schema.parse(JSON.parse(json));
+    const parsed = schema.parse(JSON.parse(json ?? "{}"));
     return { label: parsed.label as SentimentLabel, summary: parsed.summary };
   } catch {
     return { label: "neutral", summary: "Sentiment analysis unavailable." };
