@@ -46,6 +46,7 @@ const envVars = {
   SESSION_SECRET: env.get("SESSION_SECRET").required().asString(),
   VITE_APP_URL: env.get("VITE_APP_URL").required().asUrlString(),
   VITE_EMAIL_FROM: env.get("VITE_EMAIL_FROM").required().asString(),
+  ZHIPU_API_KEY: env.get("ZHIPU_API_KEY").required().asString(),
 
   USAGE_LIMIT_COST_USD_HOURLY: env
     .get("USAGE_LIMIT_COST_USD_HOURLY")
