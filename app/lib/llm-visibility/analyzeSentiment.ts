@@ -36,7 +36,7 @@ export default async function analyzeSentiment({
       const position =
         q.citations.findIndex((c) => isSameDomain({ domain, url: c })) + 1;
       const cited =
-        position !== null ? `cited at position #${position + 1}` : "not cited";
+        position > 0 ? `cited at position #${position}` : "not cited";
       return `Query: ${q.query}\nCitation status: ${cited}\nResponse:\n$<response>${q.text}</response>`;
     })
     .join("\n\n---\n\n");
