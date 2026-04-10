@@ -5,9 +5,11 @@ import prisma from "~/lib/prisma.server";
 import envVars from "../envVars.server";
 import queryGroups from "./queryGroups";
 
-const model = createAnthropic({
+const anthropic = createAnthropic({
   apiKey: envVars.ANTHROPIC_API_KEY,
-})("claude-haiku-4-5");
+});
+
+const model = anthropic("claude-haiku-4-5");
 
 /**
  * Generate site queries for a given site. Use the content from the database if

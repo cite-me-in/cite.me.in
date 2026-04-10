@@ -3,7 +3,7 @@ import envVars from "../envVars.server";
 
 const client = new OpenAI({
   apiKey: envVars.ZHIPU_API_KEY,
-  baseURL: "https://api.z.ai/api/paas/v4/"
+  baseURL: "https://api.z.ai/api/paas/v4/",
 });
 
 /**
