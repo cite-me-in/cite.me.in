@@ -36,7 +36,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         email: user.email,
         createdAt: user.createdAt.toISOString().split("T")[0],
         status: user.plan,
-        plan: user.plan === "paid" ? account?.interval : null,
+        plan: (user.plan === "paid" && account?.interval) || null,
         sites: ownedSites.map(({ domain, createdAt }) => ({
           createdAt: createdAt.toISOString().split("T")[0],
           domain,
