@@ -1,0 +1,13 @@
+{
+  "planPath": "docs/plans/2026-04-10-brand-reminder-emails.md",
+  "tasks": [
+    {"id": 1, "subject": "Task 1: Create BrandReminder.tsx", "status": "pending"},
+    {"id": 2, "subject": "Task 2: Thread domain through WeeklyDigest", "status": "pending", "blockedBy": []},
+    {"id": 3, "subject": "Task 3: Add BrandReminderCard to WeeklyDigest", "status": "pending", "blockedBy": [1, 2]},
+    {"id": 4, "subject": "Task 4: Add BrandReminderCard to SiteSetupComplete", "status": "pending", "blockedBy": [1]},
+    {"id": 5, "subject": "Task 5: Update TrialEnding", "status": "pending", "blockedBy": [1]},
+    {"id": 6, "subject": "Task 6: Update TrialEnded", "status": "pending", "blockedBy": [1]},
+    {"id": 7, "subject": "Task 7: Full verification", "status": "pending", "blockedBy": [3, 4, 5, 6]}
+  ],
+  "lastUpdated": "2026-04-10T00:00:00Z"
+}
