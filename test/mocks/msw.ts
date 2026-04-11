@@ -74,11 +74,26 @@ const handlers = [
   http.post("https://api.openai.com/v1/responses", () =>
     HttpResponse.json({
       id: "resp_test",
+      model: "gpt-5-chat-latest",
+      created_at: Date.now(),
       output: [
         {
+          type: "web_search_call",
+          id: "ws_test",
+          status: "completed",
+        },
+        {
+          id: "msg_test",
           type: "message",
+          status: "completed",
           role: "assistant",
-          content: [{ type: "output_text", text: "Mocked OpenAI response" }],
+          content: [
+            {
+              type: "output_text",
+              text: "Mocked OpenAI response with citations [1].",
+              annotations: [],
+            },
+          ],
         },
       ],
     }),

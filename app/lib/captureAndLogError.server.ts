@@ -30,17 +30,8 @@ export default function captureAndLogError(
   sentryCaptureException(error, hints);
 
   if (error instanceof Error) {
-    // Only log stack trace lines that include 'loader' or 'action'
-    const stack = error.stack
-      ?.split("\n")
-      .filter(
-        (line) =>
-          /\.pnpm\/react-router@[\d.]/i.test(line) ||
-          line.trim().toLowerCase().startsWith("error"),
-      )
-      .join("\n");
-    logger(stack);
-    console.error(stack);
+    logger(error);
+    console.error(error);
     if (logFile) logFile.write(`${error.stack}\n`);
     if (logtail) logtail.error(error.message, hints).catch(() => {});
   } else {
