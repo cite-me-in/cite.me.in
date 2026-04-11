@@ -1,5 +1,6 @@
 import { Section, Text } from "@react-email/components";
 import Button from "~/components/email/Button";
+import { brandReminderText } from "~/components/email/BrandReminder";
 import prices from "~/data/stripe-prices.json";
 import { daysAgo } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
@@ -59,14 +60,9 @@ async function sendTrialEndedEmail({
     email: (
       <Section>
         <Text>
-          Over the last 25 days, you tracked {citationCount} citation
-          {citationCount !== 1 ? "s" : ""} for {domain} across {queryCount}{" "}
-          {queryCount !== 1 ? "queries" : "query"}.
-        </Text>
-        <Text>
-          Your free trial has ended and daily runs have paused. Upgrade to Pro
-          to keep your history and resume monitoring — ${prices.monthlyAmount}
-          /month or ${prices.annualAmount}/year.
+          {brandReminderText({ domain, citations: citationCount })} Your free trial has
+          ended and daily runs have paused. Upgrade to Pro to keep your history and
+          resume monitoring — ${prices.monthlyAmount}/month or ${prices.annualAmount}/year.
         </Text>
         <Section className="my-8 text-center">
           <Button
