@@ -12,11 +12,7 @@ export default defineConfig(async (config) =>
       dedupe: ["react", "react-dom", "react-router"],
     },
     plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
-    optimizeDeps: {
-      exclude: ["@napi-rs/canvas"],
-    },
     ssr: {
-      external: ["@napi-rs/canvas"],
       noExternal: [
         // NOTE: recommended by the Streamdown docs
         // @see https://streamdown.ai/docs/faq#why-do-i-get-a-css-loading-error-when-using-streamdown-with-vite-ssr

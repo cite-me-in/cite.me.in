@@ -8,7 +8,6 @@ import type {
   LoaderFunctionArgs,
 } from "react-router";
 import "~/lib/logger.server";
-import setupTestServer from "~/test/helpers/worker.setup";
 import captureAndLogError from "./lib/captureAndLogError.server";
 import { trackVisits } from "./lib/trackVisits.server";
 
@@ -34,7 +33,12 @@ switch (process.env.NODE_ENV) {
     break;
   }
   case "test": {
-    setupTestServer();
+    // NOTE: Make sure we don't accidentally load MSW in dev/production.
+    import("~/test/helpers/worker.setup").then(
+      ({ default: setupTestServer }) => {
+        setupTestServer();
+      },
+    );
     break;
   }
 }
