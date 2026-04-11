@@ -1,7 +1,7 @@
-import { beforeAll, describe, it } from "vitest";
-import { getLastEmailSent } from "~/emails/sendEmails";
 import { expect } from "@playwright/test";
+import { beforeAll, describe, it } from "vitest";
 import sendSiteSetupEmail from "~/emails/SiteSetupComplete";
+import { getLastEmailSent } from "~/emails/sendEmails";
 
 describe("SiteSetupComplete email", () => {
   let email: NonNullable<Awaited<ReturnType<typeof getLastEmailSent>>>;
@@ -9,7 +9,7 @@ describe("SiteSetupComplete email", () => {
   beforeAll(async () => {
     await sendSiteSetupEmail({
       domain: "example.com",
-      sendTo: { email: "test@example.com", unsubscribed: false },
+      sendTo: { id: "123", email: "test@example.com", unsubscribed: false },
       metrics: {
         totalCitations: 42,
         byPlatform: {

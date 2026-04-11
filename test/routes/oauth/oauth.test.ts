@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import prisma from "~/lib/prisma.server";
-import { port } from "../helpers/launchBrowser";
+import { port } from "../../helpers/launchBrowser";
 
 describe("OAuth Routes", () => {
   let user: { id: string; email: string };

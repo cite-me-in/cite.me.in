@@ -3,14 +3,6 @@ import { beforeAll } from "vitest";
 import prisma from "~/lib/prisma.server";
 import { port } from "~/test/helpers/launchBrowser";
 
-export const BASE = `http://localhost:${port}`;
-export const USER_ID = "mcp-test-user-1";
-export const EMAIL = "mcp-test@example.com";
-export const SITE_DOMAIN = "mcp-test.example";
-
-export const OAUTH_CLIENT_ID = "mcp-test-client";
-export const OAUTH_CLIENT_SECRET = "mcp-test-secret";
-
 export const accessToken = `test-access-token-${Date.now()}`;
 
 export function parseSSEResponse(body: string): Record<string, unknown> {
@@ -37,7 +29,7 @@ export async function mcpRequest({
   };
   if (sessionId) headers["MCP-Session-ID"] = sessionId;
 
-  return fetch(`${BASE}/mcp`, {
+  return fetch(`http://localhost:${port}/mcp`, {
     method: "POST",
     headers,
     body: JSON.stringify(body),
@@ -65,15 +57,15 @@ export async function initSession(): Promise<string> {
 
 beforeAll(async () => {
   await prisma.user.upsert({
-    where: { id: USER_ID },
+    where: { id: "mcp-test-user-1" },
     create: {
-      id: USER_ID,
-      email: EMAIL,
+      id: "mcp-test-user-1",
+      email: "mcp-test-user-1@example.com",
       passwordHash: "test",
       ownedSites: {
         create: {
           content: "Test content",
-          domain: SITE_DOMAIN,
+          domain: "mcp-test-site-1.example",
           summary: "Test summary",
         },
       },
@@ -82,17 +74,17 @@ beforeAll(async () => {
   });
 
   await prisma.oAuthClient.upsert({
-    where: { clientId: OAUTH_CLIENT_ID },
+    where: { clientId: "mcp-test-client" },
     create: {
       name: "MCP Test Client",
-      clientId: OAUTH_CLIENT_ID,
-      clientSecret: OAUTH_CLIENT_SECRET,
+      clientId: "mcp-test-client",
+      clientSecret: "mcp-test-secret",
       redirectUris: [],
       scopes: ["sites:read"],
       accessTokens: {
         create: {
           token: accessToken,
-          userId: USER_ID,
+          userId: "mcp-test-user-1",
           scopes: ["sites:read"],
           expiresAt: new Date(Date.now() + 3600000),
         },

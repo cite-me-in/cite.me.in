@@ -6,8 +6,6 @@ import {
   initSession,
   mcpRequest,
   parseSSEResponse,
-  SITE_DOMAIN,
-  USER_ID,
 } from "./setup";
 
 const CITATIONS_DOMAIN = "citations-test.example";
@@ -22,7 +20,7 @@ describe("get_site_citations", () => {
         content: "",
         summary: "",
         apiKey: crypto.randomUUID(),
-        ownerId: USER_ID,
+        ownerId: "mcp-test-user-1",
       },
     });
 
@@ -240,7 +238,7 @@ describe("get_site_citations", () => {
           method: "tools/call",
           params: {
             name: "get_site_citations",
-            arguments: { domain: SITE_DOMAIN },
+            arguments: { domain: "mcp-test-site-1.example" },
           },
         },
         sessionId,
@@ -262,7 +260,7 @@ describe("get_site_citations", () => {
         date: string | null;
         queries: unknown[];
       };
-      expect(content.domain).toBe(SITE_DOMAIN);
+      expect(content.domain).toBe("mcp-test-site-1.example");
       expect(content.date).toBeNull();
       expect(content.queries).toEqual([]);
     });

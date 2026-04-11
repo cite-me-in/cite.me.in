@@ -1,7 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import {
-  EMAIL,
-  SITE_DOMAIN,
   accessToken,
   initSession,
   mcpRequest,
@@ -32,7 +30,10 @@ describe("get_site", () => {
           jsonrpc: "2.0",
           id: 20,
           method: "tools/call",
-          params: { name: "get_site", arguments: { domain: SITE_DOMAIN } },
+          params: {
+            name: "get_site",
+            arguments: { domain: "mcp-test-site-1.example" },
+          },
         },
         sessionId,
       });
@@ -59,12 +60,12 @@ describe("get_site", () => {
         runCount: number;
       };
       expect(content.id).toBeDefined();
-      expect(content.domain).toBe(SITE_DOMAIN);
+      expect(content.domain).toBe("mcp-test-site-1.example");
       expect(content.summary).toBe("Test summary");
       expect(content.createdAt).toMatch(
         /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,
       );
-      expect(content.owner).toBe(EMAIL);
+      expect(content.owner).toBe("mcp-test-user-1@example.com");
       expect(typeof content.queryCount).toBe("number");
       expect(typeof content.runCount).toBe("number");
     });
@@ -138,7 +139,7 @@ describe("get_site", () => {
           method: "tools/call",
           params: {
             name: "get_site",
-            arguments: { domain: SITE_DOMAIN },
+            arguments: { domain: "mcp-test-site-1.example" },
           },
         },
       });

@@ -1,7 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import prisma from "~/lib/prisma.server";
 import {
-  SITE_DOMAIN,
   accessToken,
   initSession,
   mcpRequest,
@@ -89,7 +88,7 @@ describe("create_site", () => {
           method: "tools/call",
           params: {
             name: "create_site",
-            arguments: { domain: SITE_DOMAIN },
+            arguments: { domain: "mcp-test-site-1.example" },
           },
         },
         sessionId,

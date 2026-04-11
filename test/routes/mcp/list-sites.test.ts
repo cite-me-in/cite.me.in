@@ -1,6 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import {
-  SITE_DOMAIN,
   accessToken,
   initSession,
   mcpRequest,
@@ -125,7 +124,7 @@ describe("list_sites", () => {
       };
       const site = content.sites[0];
       expect(site.id).toBeDefined();
-      expect(site.domain).toBe(SITE_DOMAIN);
+      expect(site.domain).toBe("mcp-test-site-1.example");
       expect(site.summary).toBe("Test summary");
       expect(site.createdAt).toMatch(
         /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,

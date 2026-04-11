@@ -1,9 +1,9 @@
-import { beforeAll, describe, it, vi } from "vitest";
-import { sendSiteDigestEmails } from "~/emails/WeeklyDigest";
-import { getLastEmailSent } from "~/emails/sendEmails";
-import { removeElements } from "~/lib/html/parseHTML";
 import { expect } from "@playwright/test";
+import { beforeAll, describe, it, vi } from "vitest";
+import { getLastEmailSent } from "~/emails/sendEmails";
+import { sendSiteDigestEmails } from "~/emails/WeeklyDigest";
 import envVars from "~/lib/envVars.server";
+import { removeElements } from "~/lib/html/parseHTML";
 
 describe("WeeklyDigestEmail", () => {
   let email: NonNullable<Awaited<ReturnType<typeof getLastEmailSent>>>;
@@ -78,7 +78,7 @@ describe("WeeklyDigestEmail", () => {
         },
       ],
       score: { current: 72, previous: 64 },
-      sendTo: [{ email: "test@example.com", unsubscribed: false }],
+      sendTo: [{ id: "123", email: "test@example.com", unsubscribed: false }],
       siteId: "123",
       subject: "Weekly Digest · Mar 17 — Mar 24, 2026",
       topQueries: [
