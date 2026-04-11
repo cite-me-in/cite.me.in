@@ -8,7 +8,7 @@ export function BrandReminderCard({
   domain: string;
   citations: number;
 }) {
-  const n = citations.toLocaleString();
+  const n = citations.toLocaleString("en-US");
   const noun = citations === 1 ? "citation" : "citations";
   return (
     <Card withBorder>
@@ -29,7 +29,7 @@ export function brandReminderText({
   domain: string;
   citations: number;
 }): string {
-  const n = citations.toLocaleString();
+  const n = citations.toLocaleString("en-US");
   const noun = citations === 1 ? "citation" : "citations";
   return (
     `A quick reminder of why you're here: cite.me.in tracks every time ` +
