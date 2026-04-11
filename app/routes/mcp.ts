@@ -305,19 +305,34 @@ function createMcpServer(): McpServer {
   );
 
   server.registerTool(
-    "get_site_queries",
+    "get_site_citations",
     {
-      description: "Get recent citation queries for a site",
+      description:
+        "Get recent citations for a site - shows which queries mention your site across all platforms",
       inputSchema: z.object({
         domain: z.string().describe("The domain of the site"),
-        limit: z
-          .number()
-          .optional()
-          .default(10)
-          .describe("Max queries per run"),
+      }),
+      outputSchema: z.object({
+        domain: z.string(),
+        date: z.string().nullable(),
+        queries: z.array(
+          z.object({
+            query: z.string(),
+            group: z.string(),
+            platforms: z.array(
+              z.object({
+                platform: z.string(),
+                model: z.string(),
+                response: z.string(),
+                citations: z.array(z.string()),
+                mentionsYourSite: z.number(),
+              }),
+            ),
+          }),
+        ),
       }),
     },
-    async ({ domain, limit = 10 }, extra) => {
+    async ({ domain }, extra) => {
       try {
         const userId = await verifyBearerToken(extra.authInfo?.token);
 
@@ -331,49 +346,97 @@ function createMcpServer(): McpServer {
 
         if (!site) throw new Error(`Site ${domain} not found`);
 
-        const runs = await prisma.citationQueryRun.findMany({
+        const latestRun = await prisma.citationQueryRun.findFirst({
           where: { siteId: site.id },
+          orderBy: { onDate: "desc" },
+          select: { onDate: true },
+        });
+
+        if (!latestRun) {
+          const result = { domain, date: null, queries: [] };
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: JSON.stringify(result, null, 2),
+              },
+            ],
+            structuredContent: result,
+          };
+        }
+
+        const runs = await prisma.citationQueryRun.findMany({
+          where: { siteId: site.id, onDate: latestRun.onDate },
           select: {
             platform: true,
             model: true,
             onDate: true,
             queries: {
               select: { query: true, group: true, citations: true, text: true },
-              orderBy: { query: "asc" },
-              take: limit,
             },
           },
-          orderBy: { onDate: "desc" },
-          take: 3,
         });
+
+        const queryMap = new Map<
+          string,
+          {
+            query: string;
+            group: string;
+            platforms: {
+              platform: string;
+              model: string;
+              response: string;
+              citations: string[];
+              mentionsYourSite: number;
+            }[];
+          }
+        >();
+
+        for (const run of runs) {
+          for (const q of run.queries) {
+            const existing = queryMap.get(q.query);
+            const mentionsYourSite = q.citations.filter((c) =>
+              c.toLowerCase().includes(domain.toLowerCase()),
+            ).length;
+
+            const platformResult = {
+              platform: run.platform,
+              model: run.model,
+              response: q.text,
+              citations: q.citations,
+              mentionsYourSite,
+            };
+
+            if (existing) {
+              existing.platforms.push(platformResult);
+            } else {
+              queryMap.set(q.query, {
+                query: q.query,
+                group: q.group,
+                platforms: [platformResult],
+              });
+            }
+          }
+        }
+
+        const queries = Array.from(queryMap.values()).sort((a, b) =>
+          a.query.localeCompare(b.query),
+        );
+
+        const result = {
+          domain,
+          date: latestRun.onDate,
+          queries,
+        };
 
         return {
           content: [
             {
               type: "text" as const,
-              text: JSON.stringify(
-                {
-                  domain,
-                  runs: runs.map((run) => ({
-                    platform: run.platform,
-                    model: run.model,
-                    date: run.onDate,
-                    queries: run.queries.map((q) => ({
-                      group: q.group,
-                      query: q.query,
-                      response: q.text,
-                      citationCount: q.citations.length,
-                      mentionsYourSite: q.citations.some((c) =>
-                        c.toLowerCase().includes(domain.toLowerCase()),
-                      ),
-                    })),
-                  })),
-                },
-                null,
-                2,
-              ),
+              text: JSON.stringify(result, null, 2),
             },
           ],
+          structuredContent: result,
         };
       } catch (error) {
         return {
