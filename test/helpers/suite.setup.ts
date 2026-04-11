@@ -17,6 +17,7 @@ Sentry.init({ enabled: false });
 beforeAll(async () => {
   // Cleanup database
   await prisma.user.deleteMany();
+  await prisma.oAuthClient.deleteMany();
 
   // Freeze time at a fixed timestamp for deterministic visual and time-based tests
   vi.setSystemTime(fixedTime.getTime());

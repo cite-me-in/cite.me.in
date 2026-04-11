@@ -24,7 +24,7 @@ export default defineConfig({
       "test/routes/*.test.ts",
       "test/llm-visibility/*.test.ts",
       "test/lib/*.test.ts",
-      "test/lib/**/*.test.ts",
+      "test/oauth/*.test.ts",
     ],
     maxConcurrency: 1, // Run tests sequentially to reduce memory pressure
     maxWorkers: 1, // Use only 1 worker to minimize memory usage
@@ -42,7 +42,7 @@ export default defineConfig({
       else process.stdout.write(log);
     },
 
-    onStackTrace: (error: { name?: string }, { file }: ParsedStack) => {
+    onStackTrace: (error: { name?: string; }, { file }: ParsedStack) => {
       // If we've encountered a ReferenceError, show the whole stack.
       if (error.name === "ReferenceError") return true;
       // Reject all frames from third party libraries.

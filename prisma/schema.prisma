@@ -14,10 +14,6 @@ datasource db {
   relationMode = "foreignKeys"
 }
 
-/**
- * The Account model is a pure Stripe metadata store for a user's account
- * (`stripeCustomerId`, `stripeSubscriptionId`, `interval`).
- */
 model Account {
   createdAt            DateTime @map("created_at")             @default(now())
   id                   String                                  @id @default(cuid())
@@ -31,9 +27,6 @@ model Account {
   @@map("accounts")
 }
 
-/**
- * The BotInsight model is a record of a bot insight generated for a site.
- */
 model BotInsight {
   content     String   @map("content")
   createdAt   DateTime @map("created_at")   @default(now())
@@ -46,9 +39,6 @@ model BotInsight {
   @@map("bot_insights")
 }
 
-/**
- * The BotVisit model is a record of a bot visit to a site.
- */
 model BotVisit {
   accept    String[] @map("accept")
   botType   String   @map("bot_type")
@@ -70,9 +60,6 @@ model BotVisit {
   @@map("bot_visits")
 }
 
-/**
- * Used to track a query result for a citation query run.
- */
 model CitationQuery {
   citations    String[]         @map("citations")
   createdAt    DateTime         @map("created_at")    @default(now())
@@ -88,12 +75,9 @@ model CitationQuery {
   @@map("citation_queries")
 }
 
-/**
- * Used to track citation query runs for a site.
- */
 model CitationQueryRun {
-  onDate           String          @map("on_date") // ISO 8601 date string
-  id               String                                                  @id @default(cuid())
+  onDate           String          @map("on_date")
+  id               String                                  @id @default(cuid())
   model            String          @map("model")
   platform         String          @map("platform")
   queries          CitationQuery[]
@@ -103,12 +87,9 @@ model CitationQueryRun {
   siteId           String          @map("site_id")
 
   @@map("citation_query_runs")
-  @@unique([siteId, platform,onDate])
+  @@unique([siteId, platform, onDate])
 }
 
-/**
- * Used to track human visits to a site.
- */
 model HumanVisit {
   aiReferral String?  @map("ai_referral")
   browser    String   @map("browser")
@@ -129,9 +110,88 @@ model HumanVisit {
   @@map("human_visits")
 }
 
-/**
- * Used to reset a user's password.
- */
+model OAuthAccessToken {
+  id        String                         @id @default(cuid())
+  token     String      @map("token")      @unique
+  userId    String      @map("user_id")
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientId  String      @map("client_id")
+  client    OAuthClient @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  scopes    String[]    @map("scopes")
+  expiresAt DateTime    @map("expires_at")
+  createdAt DateTime    @map("created_at") @default(now())
+
+  @@index([token])
+  @@index([userId])
+  @@map("oauth_access_tokens")
+}
+
+model OAuthAuthorizationCode {
+  id            String                             @id @default(cuid())
+  code          String      @map("code")           @unique
+  userId        String      @map("user_id")
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientId      String      @map("client_id")
+  client        OAuthClient @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  redirectUri   String      @map("redirect_uri")
+  scopes        String[]    @map("scopes")
+  codeChallenge String?     @map("code_challenge")
+  expiresAt     DateTime    @map("expires_at")
+  createdAt     DateTime    @map("created_at")     @default(now())
+
+  @@index([code])
+  @@map("oauth_authorization_codes")
+}
+
+model OAuthClient {
+  id                 String                                         @id @default(cuid())
+  name               String                   @map("name")
+  clientId           String                   @map("client_id")     @unique @default(cuid())
+  clientSecret       String                   @map("client_secret")
+  redirectUris       String[]                 @map("redirect_uris")
+  scopes             String[]                 @map("scopes")
+  createdAt          DateTime                 @map("created_at")    @default(now())
+  updatedAt          DateTime                 @map("updated_at")    @updatedAt
+  accessTokens       OAuthAccessToken[]
+  refreshTokens      OAuthRefreshToken[]
+  authorizationCodes OAuthAuthorizationCode[]
+  deviceCodes        OAuthDeviceCode[]
+
+  @@map("oauth_clients")
+}
+
+model OAuthDeviceCode {
+  id         String                          @id @default(cuid())
+  code       String      @map("code")        @unique
+  userId     String?     @map("user_id")
+  user       User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientId   String      @map("client_id")
+  client     OAuthClient @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  scopes     String[]    @map("scopes")
+  expiresIn  Int         @map("expires_in")
+  createdAt  DateTime    @map("created_at")  @default(now())
+  verifiedAt DateTime?   @map("verified_at")
+
+  @@index([code])
+  @@map("oauth_device_codes")
+}
+
+model OAuthRefreshToken {
+  id        String                         @id @default(cuid())
+  token     String      @map("token")      @unique
+  userId    String      @map("user_id")
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientId  String      @map("client_id")
+  client    OAuthClient @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  scopes    String[]    @map("scopes")
+  expiresAt DateTime    @map("expires_at")
+  createdAt DateTime    @map("created_at") @default(now())
+
+  @@index([token])
+  @@index([userId])
+  @@map("oauth_refresh_tokens")
+}
+
 model PasswordRecoveryToken {
   createdAt DateTime  @map("created_at") @default(now())
   expiresAt DateTime  @map("expires_at")
@@ -145,15 +205,22 @@ model PasswordRecoveryToken {
   @@map("password_recovery_tokens")
 }
 
-/**
- * Used to track user sessions.  Sessions are created when a user signs in and
- * are deleted when a user signs out.
- */
+model SentEmail {
+  id     String                   @id @default(cuid())
+  sentAt DateTime @map("sent_at") @default(now())
+  type   String   @map("type")
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String   @map("user_id")
+
+  @@index([userId, type])
+  @@map("sent_emails")
+}
+
 model Session {
   createdAt   DateTime @map("created_at")                                        @default(now())
   id          String                                                             @id @default(cuid())
   ipAddress   String?  @map("ip_address")
-  referer     String?  @map("referer") // misspelled for backwards compatibility
+  referer     String?  @map("referer")
   token       String   @map("token")                                             @unique
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userAgent   String?  @map("user_agent")
@@ -168,11 +235,6 @@ model Session {
   @@map("sessions")
 }
 
-/**
- * The Site model is a record of a site. The owner of the site is the user who
- * created the site and can invite other users to view site metrics. API key is
- * used to authenticate API requests that track bot and human visits.
- */
 model Site {
   apiKey               String                @map("api_key")           @unique @default("")
   botInsight           BotInsight?
@@ -196,13 +258,10 @@ model Site {
   usageEvents          UsageEvent[]
 
   @@index([domain])
-  @@unique([ownerId,   domain])
+  @@unique([ownerId, domain])
   @@map("sites")
 }
 
-/**
- * Used to invite a user to access a site.
- */
 model SiteInvitation {
   acceptedAt  DateTime?        @map("accepted_at")
   createdAt   DateTime         @map("created_at")    @default(now())
@@ -220,9 +279,6 @@ model SiteInvitation {
   @@map("site_invitations")
 }
 
-/**
- * A site query — ask LLM the query and see how many citations it returns.
- */
 model SiteQuery {
   createdAt DateTime @map("created_at") @default(now())
   group     String   @map("group")
@@ -236,9 +292,6 @@ model SiteQuery {
   @@map("site_queries")
 }
 
-/**
- * Suggestions for site queries generated by the AI.
- */
 model SiteQuerySuggestion {
   createdAt DateTime @map("created_at") @default(now())
   group     String   @map("group")
@@ -252,9 +305,6 @@ model SiteQuerySuggestion {
   @@map("site_query_suggestions")
 }
 
-/**
- * A user who has access to a site.
- */
 model SiteUser {
   createdAt DateTime @map("created_at") @default(now())
   site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
@@ -266,9 +316,6 @@ model SiteUser {
   @@map("site_users")
 }
 
-/**
- * Usage of an API (LLM, SerpAPI, etc.) for limiting usage.
- */
 model UsageEvent {
   cost         Decimal  @map("cost")          @db.Decimal(10, 6)
   createdAt    DateTime @map("created_at")    @default(now())
@@ -283,37 +330,35 @@ model UsageEvent {
   @@map("usage_events")
 }
 
-/**
- * A user of the cite.me.in platform.
- */
 model User {
-  account                Account?
-  apiKey                 String?                 @map("api_key")           @unique
-  createdAt              DateTime                @map("created_at")        @default(now())
-  email                  String                  @map("email")             @unique
-  emailVerifiedAt        DateTime?               @map("email_verified_at")
-  id                     String                                            @id @default(cuid())
-  isAdmin                Boolean                 @map("is_admin")          @default(false)
-  ownedSites             Site[]                  @relation("OwnedSites")
-  passwordHash           String                  @map("password_hash")
-  plan                   Plan                    @map("plan")              @default(trial)
-  passwordRecoveryTokens PasswordRecoveryToken[]
-  sentInvitations        SiteInvitation[]        @relation("SentInvitations")
-  sessions               Session[]
-  siteUsers              SiteUser[]
-  unsubscribed           Boolean                 @map("unsubscribed")      @default(false)
-  updatedAt              DateTime                @map("updated_at")        @updatedAt
-  webhookEndpoints       WebhookEndpoint[]
-  sentEmails             SentEmail[]
+  account                 Account?
+  apiKey                  String?                  @map("api_key")           @unique
+  createdAt               DateTime                 @map("created_at")        @default(now())
+  email                   String                   @map("email")             @unique
+  emailVerifiedAt         DateTime?                @map("email_verified_at")
+  id                      String                                             @id @default(cuid())
+  isAdmin                 Boolean                  @map("is_admin")          @default(false)
+  oauthAccessTokens       OAuthAccessToken[]
+  oauthAuthorizationCodes OAuthAuthorizationCode[]
+  oauthDeviceCodes        OAuthDeviceCode[]
+  oauthRefreshTokens      OAuthRefreshToken[]
+  ownedSites              Site[]                   @relation("OwnedSites")
+  passwordHash            String                   @map("password_hash")
+  passwordRecoveryTokens  PasswordRecoveryToken[]
+  plan                    Plan                     @map("plan")              @default(trial)
+  sentEmails              SentEmail[]
+  sentInvitations         SiteInvitation[]         @relation("SentInvitations")
+  sessions                Session[]
+  siteUsers               SiteUser[]
+  unsubscribed            Boolean                  @map("unsubscribed")      @default(false)
+  updatedAt               DateTime                 @map("updated_at")        @updatedAt
+  webhookEndpoints        WebhookEndpoint[]
 
   @@map("users")
 }
 
-/**
- * A delivery attempt to a webhook.
- */
 model WebhookDelivery {
-  id          String                                @id @default(cuid())
+  id          String                               @id @default(cuid())
   endpoint    WebhookEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
   endpointId  String          @map("endpoint_id")
   eventType   String          @map("event_type")
@@ -330,9 +375,6 @@ model WebhookDelivery {
   @@map("webhook_deliveries")
 }
 
-/**
- * A webhook endpoint — a URL to send webhooks to.
- */
 model WebhookEndpoint {
   id         String                               @id @default(cuid())
   user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -349,19 +391,6 @@ model WebhookEndpoint {
   @@map("webhook_endpoints")
 }
 
-enum InvitationStatus {
-  PENDING
-  ACCEPTED
-  EXPIRED
-}
-
-enum SentimentLabel {
-  positive
-  negative
-  neutral
-  mixed
-}
-
 enum DeliveryStatus {
   PENDING
   DELIVERED
@@ -369,20 +398,22 @@ enum DeliveryStatus {
   FAILED
 }
 
-enum Plan {
-  trial     // First 25 days — weekly processing and digest, then stops
-  paid      // Active subscription — daily processing, weekly digest
-  cancelled // Subscription ended — no processing, no digest
-  gratis    // Manually granted — daily processing, weekly digest, no subscription required
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
 }
 
-model SentEmail {
-  id     String                   @id @default(cuid())
-  sentAt DateTime @map("sent_at") @default(now())
-  type   String   @map("type")
-  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String   @map("user_id")
+enum Plan {
+  trial
+  paid
+  cancelled
+  gratis
+}
 
-  @@index([userId, type])
-  @@map("sent_emails")
+enum SentimentLabel {
+  positive
+  negative
+  neutral
+  mixed
 }
