@@ -114,6 +114,7 @@ function createMcpServer(): McpServer {
             domain,
             content: "",
             summary: "",
+            apiKey: crypto.randomUUID(),
             owner: { connect: { id: userId } },
           },
           select: { id: true, domain: true, createdAt: true },
