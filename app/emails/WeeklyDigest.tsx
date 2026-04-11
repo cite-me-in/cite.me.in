@@ -2,6 +2,7 @@ import { createCanvas } from "@napi-rs/canvas";
 import { Column, Img, Row, Section, Text } from "@react-email/components";
 import { alphabetical, last, map, sort, sum } from "radashi";
 import { twMerge } from "tailwind-merge";
+import { BrandReminderCard } from "~/components/email/BrandReminder";
 import Button from "~/components/email/Button";
 import Card from "~/components/email/Card";
 import KeyMetrics from "~/components/email/KeyMetric";
@@ -108,6 +109,10 @@ export function WeeklyDigestEmail({
         uniqueVisitors={visits.uniqueVisitors}
         aiReferredVisitors={visits.aiReferredVisitors}
         botVisits={visits.botVisits}
+      />
+      <BrandReminderCard
+        domain={domain}
+        citations={citations.domain.current}
       />
     </>
   );
