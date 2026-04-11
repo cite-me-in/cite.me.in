@@ -1,5 +1,6 @@
 import { Section, Text } from "@react-email/components";
 import Button from "~/components/email/Button";
+import { brandReminderText } from "~/components/email/BrandReminder";
 import prices from "~/data/stripe-prices.json";
 import { daysAgo } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
@@ -57,13 +58,8 @@ async function sendTrialEndingEmail({
       <Section>
         <Text>Your free trial for {domain} ends in 2 days.</Text>
         <Text>
-          So far you've collected {citationCount} citation
-          {citationCount !== 1 ? "s" : ""} across ChatGPT, Claude, Gemini, and
-          Copilot. No pressure — just a heads up.
-        </Text>
-        <Text>
-          If you'd like to keep your history and continue daily runs, upgrade to
-          Pro for ${prices.monthlyAmount}/month.
+          {brandReminderText({ domain, citations: citationCount })} If you'd like to
+          keep your history and continue daily runs, upgrade to Pro for ${prices.monthlyAmount}/month.
         </Text>
         <Section className="my-8 text-center">
           <Button
