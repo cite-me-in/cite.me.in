@@ -35,7 +35,7 @@ export type WeeklyDigestEmailProps = {
     pct: number;
   }[];
   score: { current: number; previous: number };
-  sendTo: { email: string; unsubscribed: boolean }[];
+  sendTo: { id: string; email: string; unsubscribed: boolean }[];
   siteId: string;
   subject: string;
   topQueries: { query: string; count: number; delta: number }[];
@@ -59,16 +59,18 @@ export async function sendSiteDigestEmails(
     data: { digestSentAt: new Date() },
   });
 
-  const emailIds = await map(
-    data.sendTo,
-    async (sendTo) =>
-      await sendEmail({
-        isTransactional: false,
-        email: <WeeklyDigestEmail {...data} />,
-        subject: data.subject,
-        sendTo,
-      }),
-  );
+  const emailIds = await map(data.sendTo, async (sendTo) => {
+    const emailId = await sendEmail({
+      isTransactional: false,
+      email: <WeeklyDigestEmail {...data} />,
+      subject: data.subject,
+      sendTo,
+    });
+    await prisma.sentEmail.create({
+      data: { userId: sendTo.id, type: "WeeklyDigest" },
+    });
+    return emailId;
+  });
   return emailIds.filter((emailId) => emailId !== null);
 }
 
@@ -110,10 +112,7 @@ export function WeeklyDigestEmail({
         aiReferredVisitors={visits.aiReferredVisitors}
         botVisits={visits.botVisits}
       />
-      <BrandReminderCard
-        domain={domain}
-        citations={citations.domain.current}
-      />
+      <BrandReminderCard domain={domain} citations={citations.domain.current} />
     </>
   );
 }

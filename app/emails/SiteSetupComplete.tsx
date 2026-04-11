@@ -6,6 +6,7 @@ import Button from "~/components/email/Button";
 import Card from "~/components/email/Card";
 import Link from "~/components/email/Link";
 import envVars from "~/lib/envVars.server";
+import prisma from "~/lib/prisma.server";
 import type { SentimentLabel } from "~/prisma";
 import { sendEmail } from "./sendEmails";
 
@@ -36,7 +37,7 @@ export default async function sendSiteSetupEmail({
 }: {
   domain: string;
   metrics: SetupMetrics;
-  sendTo: { email: string; unsubscribed: boolean };
+  sendTo: { id: string; email: string; unsubscribed: boolean };
 }) {
   const citationsURL = new URL(
     `/site/${domain}/citations`,
@@ -53,6 +54,9 @@ export default async function sendSiteSetupEmail({
     ),
     sendTo: sendTo,
     subject: `${domain} is set up on cite.me.in`,
+  });
+  await prisma.sentEmail.create({
+    data: { userId: sendTo.id, type: "SiteSetupComplete" },
   });
 }
 

@@ -1,13 +1,13 @@
-import type { WeeklyDigestEmailProps } from "~/emails/WeeklyDigest";
-import type { SentimentLabel } from "~/prisma";
-import { formatDateShort } from "./formatDate";
-import { topCompetitors } from "~/routes/site.$domain_.citations/TopCompetitors";
-import { getDomainMeta } from "~/lib/domainMeta.server";
-import { fork, sum } from "radashi";
 import { Temporal } from "@js-temporal/polyfill";
-import getSiteMetrics from "~/lib/getSiteMetrics.server";
+import { fork, sum } from "radashi";
+import type { WeeklyDigestEmailProps } from "~/emails/WeeklyDigest";
+import { getDomainMeta } from "~/lib/domainMeta.server";
 import envVars from "~/lib/envVars.server";
+import getSiteMetrics from "~/lib/getSiteMetrics.server";
 import prisma from "~/lib/prisma.server";
+import type { SentimentLabel } from "~/prisma";
+import { topCompetitors } from "~/routes/site.$domain_.citations/TopCompetitors";
+import { formatDateShort } from "./formatDate";
 
 export async function loadWeeklyDigestMetrics(
   siteId: string,
@@ -19,9 +19,11 @@ export async function loadWeeklyDigestMetrics(
   const siteInfo = await prisma.site.findUniqueOrThrow({
     where: { id: siteId },
     select: {
-      owner: { select: { email: true, unsubscribed: true } },
+      owner: { select: { id: true, email: true, unsubscribed: true } },
       siteUsers: {
-        select: { user: { select: { email: true, unsubscribed: true } } },
+        select: {
+          user: { select: { id: true, email: true, unsubscribed: true } },
+        },
       },
     },
   });
@@ -47,7 +49,7 @@ export async function loadWeeklyDigestMetrics(
 
   const byPlatform: Record<
     string,
-    { count: number; sentimentLabel: SentimentLabel; sentimentSummary: string }
+    { count: number; sentimentLabel: SentimentLabel; sentimentSummary: string; }
   > = {};
   for (const run of currentRuns) {
     const entry = byPlatform[run.platform];
@@ -73,7 +75,7 @@ export async function loadWeeklyDigestMetrics(
   for (const run of currentRuns) {
     const dayIndex = Math.floor(
       (new Date(run.onDate).getTime() - new Date(weekStart).getTime()) /
-        (1000 * 60 * 60 * 24),
+      (1000 * 60 * 60 * 24),
     );
     if (dayIndex >= 0 && dayIndex < 7)
       current[dayIndex] += run.queries.flatMap((q) => q.citations).length;
@@ -81,14 +83,14 @@ export async function loadWeeklyDigestMetrics(
   for (const run of prevRuns) {
     const dayIndex = Math.floor(
       (new Date(run.onDate).getTime() - new Date(prevWeekStart).getTime()) /
-        (1000 * 60 * 60 * 24),
+      (1000 * 60 * 60 * 24),
     );
     if (dayIndex >= 0 && dayIndex < 7)
       previous[dayIndex] += run.queries.flatMap((q) => q.citations).length;
   }
 
   // Top queries
-  const queryCounts: Record<string, { current: number; prev: number }> = {};
+  const queryCounts: Record<string, { current: number; prev: number; }> = {};
   for (const run of currentRuns)
     for (const q of run.queries) {
       queryCounts[q.query] ??= { current: 0, prev: 0 };
@@ -161,7 +163,7 @@ export async function loadWeeklyDigestMetrics(
     aiReferredVisitors:
       humanUniqueVisitors > 0
         ? sum(humanVisits, ({ aiReferral }) => (aiReferral ? 1 : 0)) /
-          humanUniqueVisitors
+        humanUniqueVisitors
         : 0,
     botVisits: allPageViews > 0 ? botPageViews / allPageViews : 0,
   };
