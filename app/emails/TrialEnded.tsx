@@ -19,7 +19,6 @@ export default async function sendTrialEndedEmails() {
         select: {
           id: true,
           domain: true,
-          _count: { select: { citationRuns: true } },
         },
       },
     },
@@ -33,7 +32,6 @@ export default async function sendTrialEndedEmails() {
       sendTo: user,
       citationCount,
       domain: site.domain,
-      queryCount: site._count.citationRuns,
     });
     if (result)
       await prisma.sentEmail.create({
@@ -45,12 +43,10 @@ export default async function sendTrialEndedEmails() {
 async function sendTrialEndedEmail({
   citationCount,
   domain,
-  queryCount,
   sendTo,
 }: {
   citationCount: number;
   domain: string;
-  queryCount: number;
   sendTo: { id: string; email: string; unsubscribed: boolean };
 }): Promise<{ id: string } | null> {
   return await sendEmail({
