@@ -1,6 +1,7 @@
 import { Column, Row, Section, Text } from "@react-email/components";
 import { alphabetical } from "radashi";
 import { twMerge } from "tailwind-merge";
+import { BrandReminderCard } from "~/components/email/BrandReminder";
 import Button from "~/components/email/Button";
 import Card from "~/components/email/Card";
 import Link from "~/components/email/Link";
@@ -83,6 +84,7 @@ function SiteSetupComplete({
       <SetupTopQueries topQueries={metrics.topQueries} />
       <SetupSentiment byPlatform={metrics.byPlatform} />
       <SetupTopCompetitors competitors={metrics.competitors} />
+      <BrandReminderCard domain={domain} citations={metrics.totalCitations} />
 
       <Text className="my-4 text-base text-text leading-relaxed">
         Best regards,
