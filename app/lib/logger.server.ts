@@ -1,5 +1,6 @@
 import { Logtail } from "@logtail/node";
 import { logger as sentry } from "@sentry/react-router";
+import debug from "debug";
 import { createWriteStream } from "node:fs";
 import { resolve } from "node:path";
 import { format, styleText } from "node:util";
@@ -15,8 +16,9 @@ const colors = {
 };
 
 const logFile =
-  process.env.NODE_ENV === "test" &&
-  createWriteStream(resolve("server.log"), { flags: "a" });
+  process.env.NODE_ENV === "test"
+    ? createWriteStream(resolve("server.log"), { flags: "a" })
+    : null;
 
 const logtail =
   envVars.LOGTAIL_TOKEN &&
@@ -37,6 +39,7 @@ for (const level of ["debug", "error", "info", "log", "trace", "warn"]) {
 
   Reflect.set(console, level, (message: string, ...metadata: unknown[]) => {
     const formattedMessage = format(message, ...metadata);
+    if (logFile) logFile.write(`${formattedMessage}\n`);
 
     process.stdout.write(
       isColorEnabled
@@ -56,7 +59,8 @@ for (const level of ["debug", "error", "info", "log", "trace", "warn"]) {
         error instanceof Error ? error.message : String(error);
       process.stderr.write(`${errorMessage}\n`);
     }
-
-    if (logFile) logFile.write(`${formattedMessage}\n`);
   });
 }
+
+// Override debug.log to use console.log so we get the same general benefits
+debug.log = console.log;
