@@ -28,6 +28,7 @@
 		"@forge42/seo-tools": "^1.4.5",
 		"@js-temporal/polyfill": "^0.5.1",
 		"@logtail/node": "^0.5.8",
+		"@modelcontextprotocol/sdk": "^1.29.0",
 		"@napi-rs/canvas": "^0.1.97",
 		"@prisma/adapter-pg": "^7.7.0",
 		"@prisma/client": "^7.7.0",

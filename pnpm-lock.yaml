@@ -32,6 +32,9 @@ importers:
       '@logtail/node':
         specifier: ^0.5.8
         version: 0.5.8
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.29.0
+        version: 1.29.0(zod@4.3.6)
       '@napi-rs/canvas':
         specifier: ^0.1.97
         version: 0.1.97
@@ -104,6 +107,9 @@ importers:
       lucide-react:
         specifier: ^1.8.0
         version: 1.8.0(react@19.2.5)
+      mcp.js:
+        specifier: link:@modelcontextprotocol/sdk/server/mcp.js
+        version: link:@modelcontextprotocol/sdk/server/mcp.js
       openai:
         specifier: ^6.34.0
         version: 6.34.0(zod@4.3.6)

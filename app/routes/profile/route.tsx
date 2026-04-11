@@ -168,7 +168,8 @@ export default function ProfilePage() {
               <h2 className="mb-4 font-heading text-xl">Subscription</h2>
               <p className="mb-4 text-foreground/70 text-sm">
                 You're on Pro (
-                {account?.interval === "annual" ? "annual" : "monthly"} billing).
+                {account?.interval === "annual" ? "annual" : "monthly"}{" "}
+                billing).
               </p>
               <Form method="post">
                 <input type="hidden" name="intent" value="billingPortal" />

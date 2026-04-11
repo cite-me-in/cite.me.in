@@ -1,6 +1,6 @@
 import { TrendingUpIcon } from "lucide-react";
-import MailtoLink from "~/components/ui/MailtoLink";
 import { ActiveLink } from "~/components/ui/ActiveLink";
+import MailtoLink from "~/components/ui/MailtoLink";
 
 export default function AboutCTA() {
   return (
