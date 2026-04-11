@@ -14,6 +14,7 @@ describe("WeeklyDigestEmail", () => {
     vi.spyOn(Math, "random").mockReturnValue(0);
 
     await sendSiteDigestEmails({
+      domain: "rentail.space",
       queryCoverageRate: { current: 68, previous: 52 },
       byPlatform: {
         chatgpt: {

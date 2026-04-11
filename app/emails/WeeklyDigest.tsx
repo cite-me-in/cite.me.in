@@ -11,6 +11,7 @@ import type { SentimentLabel } from "~/prisma";
 import { sendEmail } from "./sendEmails";
 
 export type WeeklyDigestEmailProps = {
+  domain: string;
   queryCoverageRate: { current: number; previous: number };
   byPlatform: {
     [k: string]: {
@@ -71,6 +72,7 @@ export async function sendSiteDigestEmails(
 }
 
 export function WeeklyDigestEmail({
+  domain,
   queryCoverageRate,
   byPlatform,
   citationTrends,

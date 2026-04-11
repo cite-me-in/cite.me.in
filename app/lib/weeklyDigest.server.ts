@@ -167,6 +167,7 @@ export async function loadWeeklyDigestMetrics(
   };
 
   return {
+    domain,
     queryCoverageRate: {
       current: metrics.queryCoverageRate.current,
       previous: metrics.queryCoverageRate.previous,
