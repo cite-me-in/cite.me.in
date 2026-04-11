@@ -33,7 +33,7 @@ export async function action({ request, params }: Route.ActionArgs) {
   const data = await loadWeeklyDigestMetrics(site.id);
   return await sendSiteDigestEmails({
     ...data,
-    sendTo: [{ email: user.email, unsubscribed: false }],
+    sendTo: [{ email: user.email, id: user.id, unsubscribed: false }],
   });
 }
 

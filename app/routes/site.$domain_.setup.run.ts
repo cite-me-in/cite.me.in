@@ -94,7 +94,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     await log("Sending confirmation email...");
     const owner = await prisma.user.findUniqueOrThrow({
       where: { id: user.id },
-      select: { email: true, unsubscribed: true },
+      select: { email: true, id: true, unsubscribed: true },
     });
     const metrics = await loadSetupMetrics(site.id);
     await sendSiteSetupEmail({ domain: site.domain, sendTo: owner, metrics });
