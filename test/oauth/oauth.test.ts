@@ -4,8 +4,8 @@ import prisma from "~/lib/prisma.server";
 import { port } from "../helpers/launchBrowser";
 
 describe("OAuth Routes", () => {
-  let user: { id: string; email: string; };
-  let oauthClient: { id: string; clientId: string; clientSecret: string; };
+  let user: { id: string; email: string };
+  let oauthClient: { id: string; clientId: string; clientSecret: string };
 
   beforeAll(async () => {
     user = await prisma.user.create({
@@ -32,15 +32,18 @@ describe("OAuth Routes", () => {
 
   describe("Device Flow", () => {
     it("should start device flow", async () => {
-      const res = await fetch(`http://localhost:${port}/oauth/device/authorize`, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          client_id: oauthClient.clientId,
-          client_secret: oauthClient.clientSecret,
-          scope: "sites:read",
-        }),
-      });
+      const res = await fetch(
+        `http://localhost:${port}/oauth/device/authorize`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            client_id: oauthClient.clientId,
+            client_secret: oauthClient.clientSecret,
+            scope: "sites:read",
+          }),
+        },
+      );
 
       expect(res.ok).toBe(true);
       const data = await res.json();
@@ -52,15 +55,18 @@ describe("OAuth Routes", () => {
     });
 
     it("should reject invalid client", async () => {
-      const res = await fetch(`http://localhost:${port}/oauth/device/authorize`, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          client_id: "invalid",
-          client_secret: "invalid",
-          scope: "sites:read",
-        }),
-      });
+      const res = await fetch(
+        `http://localhost:${port}/oauth/device/authorize`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            client_id: "invalid",
+            client_secret: "invalid",
+            scope: "sites:read",
+          }),
+        },
+      );
 
       expect(res.status).toBe(401);
     });
@@ -81,16 +87,19 @@ describe("OAuth Routes", () => {
 
       const { device_code } = await startRes.json();
 
-      const tokenRes = await fetch(`http://localhost:${port}/oauth/device/token`, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          grant_type: "urn:ietf:params:oauth:grant-type:device_code",
-          client_id: oauthClient.clientId,
-          client_secret: oauthClient.clientSecret,
-          device_code,
-        }),
-      });
+      const tokenRes = await fetch(
+        `http://localhost:${port}/oauth/device/token`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            grant_type: "urn:ietf:params:oauth:grant-type:device_code",
+            client_id: oauthClient.clientId,
+            client_secret: oauthClient.clientSecret,
+            device_code,
+          }),
+        },
+      );
 
       expect(tokenRes.status).toBe(400);
       const data = await tokenRes.json();
@@ -118,16 +127,19 @@ describe("OAuth Routes", () => {
         data: { userId: user.id },
       });
 
-      const tokenRes = await fetch(`http://localhost:${port}/oauth/device/token`, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          grant_type: "urn:ietf:params:oauth:grant-type:device_code",
-          client_id: oauthClient.clientId,
-          client_secret: oauthClient.clientSecret,
-          device_code,
-        }),
-      });
+      const tokenRes = await fetch(
+        `http://localhost:${port}/oauth/device/token`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            grant_type: "urn:ietf:params:oauth:grant-type:device_code",
+            client_id: oauthClient.clientId,
+            client_secret: oauthClient.clientSecret,
+            device_code,
+          }),
+        },
+      );
 
       expect(tokenRes.ok).toBe(true);
       const data = await tokenRes.json();

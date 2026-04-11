@@ -21,7 +21,7 @@ export default defineConfig({
     globalSetup: "test/helpers/global.setup.ts",
     hookTimeout: 30_000, // 30 seconds for beforeAll/afterAll (server + browser startup)
     include: [
-      "test/routes/*.test.ts",
+      "test/routes/**/*.test.ts",
       "test/llm-visibility/*.test.ts",
       "test/lib/*.test.ts",
       "test/oauth/*.test.ts",
@@ -42,7 +42,7 @@ export default defineConfig({
       else process.stdout.write(log);
     },
 
-    onStackTrace: (error: { name?: string; }, { file }: ParsedStack) => {
+    onStackTrace: (error: { name?: string }, { file }: ParsedStack) => {
       // If we've encountered a ReferenceError, show the whole stack.
       if (error.name === "ReferenceError") return true;
       // Reject all frames from third party libraries.
