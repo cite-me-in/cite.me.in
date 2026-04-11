@@ -4,6 +4,7 @@ import { getLastEmailSent } from "~/emails/sendEmails";
 import { sendSiteDigestEmails } from "~/emails/WeeklyDigest";
 import envVars from "~/lib/envVars.server";
 import { removeElements } from "~/lib/html/parseHTML";
+import prisma from "~/lib/prisma.server";
 
 describe("WeeklyDigestEmail", () => {
   let email: NonNullable<Awaited<ReturnType<typeof getLastEmailSent>>>;
@@ -12,6 +13,14 @@ describe("WeeklyDigestEmail", () => {
     // Pin Math.random so SentimentBreakdown's sample() always picks the same
     // platform and the visual baseline stays stable across runs.
     vi.spyOn(Math, "random").mockReturnValue(0);
+
+    const user = await prisma.user.create({
+      data: {
+        email: "test@example.com",
+        passwordHash: "test",
+        unsubscribed: false,
+      },
+    });
 
     await sendSiteDigestEmails({
       domain: "rentail.space",
@@ -78,7 +87,7 @@ describe("WeeklyDigestEmail", () => {
         },
       ],
       score: { current: 72, previous: 64 },
-      sendTo: [{ id: "123", email: "test@example.com", unsubscribed: false }],
+      sendTo: [user],
       siteId: "123",
       subject: "Weekly Digest · Mar 17 — Mar 24, 2026",
       topQueries: [

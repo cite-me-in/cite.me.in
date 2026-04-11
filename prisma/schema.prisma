@@ -77,7 +77,7 @@ model CitationQuery {
 
 model CitationQueryRun {
   onDate           String          @map("on_date")
-  id               String                                  @id @default(cuid())
+  id               String                                    @id @default(cuid())
   model            String          @map("model")
   platform         String          @map("platform")
   queries          CitationQuery[]
@@ -212,16 +212,15 @@ model SentEmail {
   user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String   @map("user_id")
 
-  @@index([userId, type])
   @@map("sent_emails")
 }
 
 model Session {
-  createdAt   DateTime @map("created_at")                                        @default(now())
-  id          String                                                             @id @default(cuid())
+  createdAt   DateTime @map("created_at")   @default(now())
+  id          String                        @id @default(cuid())
   ipAddress   String?  @map("ip_address")
   referer     String?  @map("referer")
-  token       String   @map("token")                                             @unique
+  token       String   @map("token")        @unique
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userAgent   String?  @map("user_agent")
   userId      String   @map("user_id")
@@ -258,7 +257,7 @@ model Site {
   usageEvents          UsageEvent[]
 
   @@index([domain])
-  @@unique([ownerId, domain])
+  @@unique([ownerId,   domain])
   @@map("sites")
 }
 
@@ -358,7 +357,7 @@ model User {
 }
 
 model WebhookDelivery {
-  id          String                               @id @default(cuid())
+  id          String                                @id @default(cuid())
   endpoint    WebhookEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
   endpointId  String          @map("endpoint_id")
   eventType   String          @map("event_type")

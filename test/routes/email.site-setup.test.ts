@@ -2,14 +2,22 @@ import { expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vitest";
 import sendSiteSetupEmail from "~/emails/SiteSetupComplete";
 import { getLastEmailSent } from "~/emails/sendEmails";
+import prisma from "~/lib/prisma.server";
 
 describe("SiteSetupComplete email", () => {
   let email: NonNullable<Awaited<ReturnType<typeof getLastEmailSent>>>;
 
   beforeAll(async () => {
+    const user = await prisma.user.create({
+      data: {
+        email: "test@example.com",
+        passwordHash: "test",
+        unsubscribed: false,
+      },
+    });
     await sendSiteSetupEmail({
       domain: "example.com",
-      sendTo: { id: "123", email: "test@example.com", unsubscribed: false },
+      sendTo: user,
       metrics: {
         totalCitations: 42,
         byPlatform: {
