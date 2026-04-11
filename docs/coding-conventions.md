@@ -141,6 +141,7 @@ logger("[%s:%s] Failed: %o", site.id, platform, error);
 - Prefer integration tests against a real DB over mocked unit tests
 - Use fixed IDs in test seed data to avoid conflicts across test files (`id: "user-bots-1"`, etc.)
 - Playwright strict mode: `getByRole` / `getByText` throw when multiple elements match — use `{ exact: true }` or scope the locator to a parent element
+- When mocking SDK responses, include ALL fields the SDK's internal schema expects — even ones your code doesn't use. The AI SDK validates responses against Zod schemas, so missing fields cause validation errors. Trust Zod error paths (e.g., `expected array, received undefined` at `output[1].content[0].annotations`)
 
 ## Project structure
 
