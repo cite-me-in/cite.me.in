@@ -16,7 +16,11 @@ export function BrandReminderCard({
         cite.me.in is your window into how AI talks about your brand. Every day
         it asks ChatGPT, Claude, Gemini, and Perplexity the questions your
         customers ask — and records every time <strong>{domain}</strong> shows
-        up. So far: <strong>{n} {noun}</strong> and counting.
+        up. So far:{" "}
+        <strong>
+          {n} {noun}
+        </strong>{" "}
+        and counting.
       </Text>
     </Card>
   );

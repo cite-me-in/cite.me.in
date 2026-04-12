@@ -26,7 +26,7 @@ export default function TopCompetitors({
     <Card>
       <CardHeader>
         <CardTitle>Top Competitors</CardTitle>
-        <CardDescription>
+        <CardDescription className="text-foreground/60">
           Domains most cited alongside your queries
         </CardDescription>
       </CardHeader>

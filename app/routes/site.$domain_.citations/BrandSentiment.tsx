@@ -22,7 +22,7 @@ export default function BrandSentiment({
     <Card>
       <CardHeader>
         <CardTitle>Brand Sentiment</CardTitle>
-        <CardDescription>
+        <CardDescription className="text-foreground/60">
           How {platformLabel} talks about your brand
         </CardDescription>
       </CardHeader>

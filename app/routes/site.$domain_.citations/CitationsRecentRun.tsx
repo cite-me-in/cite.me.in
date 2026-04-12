@@ -38,7 +38,7 @@ export default function RecentVisibility({
     <Card>
       <CardHeader>
         <CardTitle>Latest Results</CardTitle>
-        <CardDescription>
+        <CardDescription className="text-foreground/60">
           {meta?.model} · {queries.length} queries
         </CardDescription>
       </CardHeader>

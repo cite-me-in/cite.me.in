@@ -28,9 +28,10 @@ export default async function loadSetupMetrics(
   const byPlatform: SetupMetrics["byPlatform"] = {};
   for (const run of runs) {
     byPlatform[run.platform] = {
-      citations: sum(run.queries, (q) => q.citations.length),
-      sentimentLabel: run.sentimentLabel,
-      sentimentSummary: run.sentimentSummary,
+      count: sum(run.queries, (q) => q.citations.length),
+      sentimentLabel: run.sentimentLabel ?? "neutral",
+      sentimentSummary:
+        run.sentimentSummary ?? "No sentiment analysis available.",
     };
   }
 
@@ -48,7 +49,10 @@ export default async function loadSetupMetrics(
     .map(([query, count]) => ({ query, count }));
 
   const allQueries = runs.flatMap((r) => r.queries);
-  const { competitors: rawCompetitors } = topCompetitors(allQueries, site.domain);
+  const { competitors: rawCompetitors } = topCompetitors(
+    allQueries,
+    site.domain,
+  );
   const competitors = await Promise.all(
     rawCompetitors.map(async (c) => ({
       ...c,
@@ -57,7 +61,7 @@ export default async function loadSetupMetrics(
   );
 
   return {
-    totalCitations: sum(Object.values(byPlatform), (p) => p.citations),
+    totalCitations: sum(Object.values(byPlatform), (p) => p.count),
     byPlatform,
     topQueries,
     competitors,

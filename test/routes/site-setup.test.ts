@@ -1,12 +1,12 @@
-import { afterAll, beforeAll, describe, it } from "vitest";
-import { appendLog, setStatus } from "~/lib/setupProgress.server";
 import { type Page, expect } from "@playwright/test";
+import Redis from "ioredis";
+import { afterAll, beforeAll, describe, it } from "vitest";
 import { hashPassword } from "~/lib/auth.server";
-import { signIn } from "../helpers/signIn";
-import { goto } from "../helpers/launchBrowser";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
-import Redis from "ioredis";
+import { appendLog, setStatus } from "~/lib/setupProgress.server";
+import { goto } from "../helpers/launchBrowser";
+import { signIn } from "../helpers/signIn";
 
 const USER_ID = "user-setup-test";
 const SITE_ID = "site-setup-test";

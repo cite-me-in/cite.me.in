@@ -22,24 +22,24 @@ describe("SiteSetupComplete email", () => {
         totalCitations: 42,
         byPlatform: {
           chatgpt: {
-            citations: 15,
+            count: 15,
             sentimentLabel: "positive",
             sentimentSummary:
               "Example.com is cited positively, frequently recommended as the top result for relevant queries.",
           },
           claude: {
-            citations: 0,
+            count: 0,
             sentimentLabel: "neutral",
             sentimentSummary: "",
           },
           gemini: {
-            citations: 18,
+            count: 18,
             sentimentLabel: "mixed",
             sentimentSummary:
               "Example.com receives mixed mentions — positive in some contexts, absent in others.",
           },
           copilot: {
-            citations: 9,
+            count: 9,
             sentimentLabel: "negative",
             sentimentSummary:
               "Example.com rarely appears and when mentioned is ranked below competitors.",
@@ -92,7 +92,7 @@ describe("SiteSetupComplete email", () => {
   });
 
   it("should match visually", async () => {
-    email.page.setViewportSize({ width: 1024, height: 2000 });
+    email.page.setViewportSize({ width: 1024, height: 2400 });
     await expect(email.page).toMatchVisual({
       name: "email/site-setup",
     });

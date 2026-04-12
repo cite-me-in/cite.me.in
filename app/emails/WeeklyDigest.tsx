@@ -1,13 +1,15 @@
 import { Column, Img, Row, Section, Text } from "@react-email/components";
-import { alphabetical, last, map, sort, sum } from "radashi";
+import { map } from "radashi";
 import { twMerge } from "tailwind-merge";
 import { BrandReminderCard } from "~/components/email/BrandReminder";
 import Button from "~/components/email/Button";
 import Card from "~/components/email/Card";
 import KeyMetrics from "~/components/email/KeyMetric";
-import Link from "~/components/email/Link";
+import PlatformBreakdown from "~/components/email/PlatformBreakdown";
+import SentimentBreakdown from "~/components/email/SentimentBreakdown";
 import prisma from "~/lib/prisma.server";
 import type { SentimentLabel } from "~/prisma";
+import { TopCompetitors } from "../components/email/TopCompetitors";
 import { sendEmail } from "./sendEmails";
 
 export type WeeklyDigestEmailProps = {
@@ -180,34 +182,6 @@ function TopMetrics({
   );
 }
 
-function PlatformBreakdown({
-  byPlatform,
-}: {
-  byPlatform: Record<
-    string,
-    { count: number; sentimentLabel: SentimentLabel; sentimentSummary: string }
-  >;
-}) {
-  const first4 = alphabetical(
-    Object.entries(byPlatform),
-    ([name]) => name,
-  ).slice(0, 4);
-  const total = sum(first4, ([, { count }]) => count);
-  if (total === 0) return null;
-
-  return (
-    <Card title="Citations by platform" className="pb-8">
-      <KeyMetrics
-        metrics={first4.map(([platform, { count }]) => ({
-          label: platform,
-          current: `${((count / total) * 100).toFixed(1)}%`,
-          count,
-        }))}
-      />
-    </Card>
-  );
-}
-
 function TopQueries({
   topQueries,
 }: {
@@ -236,86 +210,6 @@ function TopQueries({
               <td className={twMerge("p-4 text-center", deltaColor(delta))}>
                 {deltaValue(delta)}
               </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </Card>
-  );
-}
-
-function SentimentBreakdown({
-  byPlatform,
-}: {
-  byPlatform: Record<
-    string,
-    { sentimentLabel: SentimentLabel; sentimentSummary: string }
-  >;
-}) {
-  const sentiment = last(
-    sort(
-      Object.values(byPlatform).filter((p) => p.sentimentSummary.length),
-      ({ sentimentLabel }) =>
-        ["positive", "mixed", "negative"].indexOf(sentimentLabel),
-    ),
-  );
-  if (!sentiment?.sentimentSummary.length) return null;
-
-  const sentimentColors: Record<SentimentLabel, string> = {
-    positive: "text-green-500",
-    negative: "text-red-500",
-    neutral: "text-gray-500",
-    mixed: "text-yellow-500",
-  };
-  return (
-    <Card title="AI sentiment this week" withBorder>
-      <Text
-        className={twMerge(
-          "text-right text-sm uppercase",
-          sentimentColors[sentiment.sentimentLabel],
-        )}
-      >
-        {sentiment.sentimentLabel}
-      </Text>
-      <Text className="text-light text-sm leading-6">
-        {sentiment.sentimentSummary ?? "No sentiment analysis available."}
-      </Text>
-    </Card>
-  );
-}
-
-function TopCompetitors({
-  competitors,
-}: {
-  competitors: {
-    domain: string;
-    brandName: string;
-    url: string;
-    count: number;
-    pct: number;
-  }[];
-}) {
-  if (competitors.length === 0) return null;
-  return (
-    <Card
-      title="Top competitors"
-      subtitle="Sites appearing in your queries this week"
-      withBorder
-    >
-      <table>
-        <tbody>
-          {competitors.map(({ domain, brandName, url, count, pct }) => (
-            <tr key={domain} className="border-border border-t">
-              <td className="w-full py-4">
-                <Link href={url} className="text-dark no-underline">
-                  {brandName}
-                </Link>
-              </td>
-              <td className="w-30 whitespace-nowrap px-2 py-4 font-bold tabular-nums">
-                {count.toLocaleString()}{" "}
-                {count === 1 ? "citation" : "citations"}
-              </td>
-              <td className="w-15 px-2 py-4 text-right tabular-nums">{pct}%</td>
             </tr>
           ))}
         </tbody>
