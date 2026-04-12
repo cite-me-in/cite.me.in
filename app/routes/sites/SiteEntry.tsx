@@ -52,15 +52,15 @@ export default function SiteEntry({
           previous={allCitations.previous}
         />
         <Metric
-          label="Visibility Score"
-          current={visibilityScore.current}
-          previous={visibilityScore.previous}
-          suffix="%"
-        />
-        <Metric
           label="Query Coverage"
           current={queryCoverageRate.current}
           previous={queryCoverageRate.previous}
+          suffix="%"
+        />
+        <Metric
+          label="Visibility Score"
+          current={visibilityScore.current}
+          previous={visibilityScore.previous}
           suffix="%"
         />
       </Link>
