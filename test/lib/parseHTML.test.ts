@@ -73,6 +73,29 @@ describe("htmlToMarkdown", () => {
     expect(htmlToMarkdown(tree)).toContain("*italic*");
   });
 
+  it("should add space around bold text", () => {
+    const tree = parseHTMLTree("<p>before<strong>bold</strong>after</p>");
+    const md = htmlToMarkdown(tree);
+    expect(md).toContain("before **bold** after");
+  });
+
+  it("should render code with backticks", () => {
+    const tree = parseHTMLTree(
+      "<p>use <code>npm install</code> to install</p>",
+    );
+    expect(htmlToMarkdown(tree)).toContain("`npm install`");
+  });
+
+  it("should render tt with backticks", () => {
+    const tree = parseHTMLTree("<p>press <tt>Enter</tt> to continue</p>");
+    expect(htmlToMarkdown(tree)).toContain("`Enter`");
+  });
+
+  it("should render pre with triple backticks", () => {
+    const tree = parseHTMLTree("<pre>const x = 1;</pre>");
+    expect(htmlToMarkdown(tree)).toContain("```\nconst x = 1;\n```");
+  });
+
   it("should render list items with - prefix", () => {
     const tree = parseHTMLTree("<ul><li>one</li><li>two</li></ul>");
     expect(htmlToMarkdown(tree)).toContain("- one\n");
@@ -98,5 +121,37 @@ describe("htmlToMarkdown", () => {
   it("should render br as newline", () => {
     const tree = parseHTMLTree("<p>line1<br/>line2</p>");
     expect(htmlToMarkdown(tree)).toContain("line1\nline2");
+  });
+
+  it("should add space between inline elements", () => {
+    const tree = parseHTMLTree(
+      "<span>Home</span><span>Pricing</span><span>Manifesto</span><span>Blog</span>",
+    );
+    expect(htmlToMarkdown(tree)).toBe("Home Pricing Manifesto Blog");
+  });
+
+  it("should not add space between block elements", () => {
+    const tree = parseHTMLTree("<div>one</div><div>two</div>");
+    expect(htmlToMarkdown(tree)).toBe("one\ntwo\n");
+  });
+
+  it("should decode HTML entities", () => {
+    const tree = parseHTMLTree("<p>Tom &amp; Jerry</p>");
+    expect(htmlToMarkdown(tree).trim()).toEqual("Tom & Jerry");
+  });
+
+  it("should decode &mdash; entity", () => {
+    const tree = parseHTMLTree("<p>2020&mdash;2024</p>");
+    expect(htmlToMarkdown(tree).trim()).toEqual("2020—2024");
+  });
+
+  it("should decode numeric entities like &#39;", () => {
+    const tree = parseHTMLTree("<p>It&#39;s working</p>");
+    expect(htmlToMarkdown(tree).trim()).toEqual("It's working");
+  });
+
+  it("should decode hex entities like &#x27;", () => {
+    const tree = parseHTMLTree("<p>It&#x27;s working</p>");
+    expect(htmlToMarkdown(tree).trim()).toEqual("It's working");
   });
 });

@@ -35,7 +35,12 @@ export async function fetchAndExtract({
 } | null> {
   try {
     const response = await fetch(url, {
-      headers: { Accept: "text/markdown, text/html;q=0.9" },
+      headers: {
+        Accept: "text/markdown, text/html;q=0.9",
+        "User-Agent": "Mozilla/5.0 (compatible; cite.me.in/1.0)",
+        "sec-ch-ua":
+          '"Google Chrome";v="124", "Chromium";v="124", "Not_A Brand";v="24"',
+      },
       redirect: "follow",
       signal: AbortSignal.any([signal, AbortSignal.timeout(ms("5s"))]),
     });

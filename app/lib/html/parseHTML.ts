@@ -57,6 +57,25 @@ const blockElements = [
   "th",
 ];
 
+const inlineElements = new Set([
+  "span",
+  "a",
+  "strong",
+  "b",
+  "em",
+  "i",
+  "code",
+  "tt",
+  "abbr",
+  "cite",
+  "mark",
+  "small",
+  "sub",
+  "sup",
+  "time",
+  "u",
+]);
+
 const NOISE_TAGS = new Set(["nav", "header", "footer", "aside", "form"]);
 
 /**
@@ -371,7 +390,27 @@ function findByAttribute(
 }
 
 export function htmlToMarkdown(nodes: HTMLNode[]): string {
-  return nodes.map((node) => nodeToMarkdown(node)).join("");
+  const parts = nodes.map((node) => nodeToMarkdown(node));
+  return parts
+    .map((part, i) => {
+      if (i === 0) return part;
+      const prev = nodes[i - 1];
+      const curr = nodes[i];
+      const prevIsText = prev.type === "text";
+      const currIsText = curr.type === "text";
+      const prevIsInline =
+        prev.type === "element" && inlineElements.has(prev.tag);
+      const currIsInline =
+        curr.type === "element" && inlineElements.has(curr.tag);
+      if ((prevIsText && currIsInline) || (prevIsInline && currIsText)) {
+        return ` ${part}`;
+      }
+      if (prevIsInline && currIsInline) {
+        return ` ${part}`;
+      }
+      return part;
+    })
+    .join("");
 }
 
 function nodeToMarkdown(node: HTMLNode): string {
@@ -405,6 +444,9 @@ function nodeToMarkdown(node: HTMLNode): string {
     case "em":
     case "i":
       return `*${inner()}*`;
+    case "code":
+    case "tt":
+      return `\`${inner()}\``;
     case "li":
       return `- ${inner()}\n`;
     case "ul":
@@ -419,8 +461,11 @@ function nodeToMarkdown(node: HTMLNode): string {
     case "div":
     case "section":
     case "blockquote":
-    case "pre":
       return `${inner()}\n`;
+    case "pre": {
+      const preContent = inner().trimEnd();
+      return `\`\`\`\n${preContent}\n\`\`\`\n`;
+    }
     default:
       return inner();
   }
@@ -441,6 +486,13 @@ function decodeHTMLEntities(content: string): string {
     .replace(/&pound;/g, "£")
     .replace(/&yen;/g, "¥")
     .replace(/&mdash;/g, "—")
+    .replace(/&ndash;/g, "–")
+    .replace(/\\&#x([0-9a-fA-F]+);/g, (_, hex) =>
+      String.fromCharCode(Number.parseInt(hex, 16)),
+    )
+    .replace(/\\&#([0-9]+);/g, (_, dec) =>
+      String.fromCharCode(Number.parseInt(dec, 10)),
+    )
     .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) =>
       String.fromCharCode(Number.parseInt(hex, 16)),
     )
