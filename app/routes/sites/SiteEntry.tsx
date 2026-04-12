@@ -60,6 +60,7 @@ export default function SiteEntry({
           label="Query Coverage"
           current={queryCoverageRate.current}
           previous={queryCoverageRate.previous}
+          suffix="%"
         />
       </Link>
 
@@ -77,21 +78,27 @@ function Metric({
   label,
   current: value,
   previous,
+  suffix,
 }: {
   label: string;
   current: number;
   previous: number | null;
+  suffix?: string;
 }) {
   return (
     <div className={`metric-${label.toLowerCase().replace(" ", "-")}`}>
       <div className="whitespace-nowrap font-light">{label}</div>
       <div className="font-bold text-3xl tabular-nums">
         {value.toLocaleString()}
+        {suffix}
       </div>
       <div className="flex items-center justify-center gap-1 text-muted-foreground text-sm">
         <Delta current={value} previous={previous} />
         {previous !== null && previous !== 0 && (
-          <span className="tabular-nums">{previous.toLocaleString()}</span>
+          <span className="tabular-nums">
+            {previous.toLocaleString()}
+            {suffix}
+          </span>
         )}
       </div>
     </div>

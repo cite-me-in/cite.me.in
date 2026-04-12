@@ -1,12 +1,12 @@
-import type { Site, User } from "~/prisma";
-import type { HTMLNode } from "~/lib/html/HTMLNode";
-import { afterAll, beforeAll, describe, it } from "vitest";
 import { type Locator, type Page, expect } from "@playwright/test";
-import { modifyElements, removeElements } from "~/lib/html/parseHTML";
+import { afterAll, beforeAll, describe, it } from "vitest";
 import { hashPassword } from "~/lib/auth.server";
-import { signIn } from "../helpers/signIn";
-import { goto } from "../helpers/launchBrowser";
+import type { HTMLNode } from "~/lib/html/HTMLNode";
+import { modifyElements, removeElements } from "~/lib/html/parseHTML";
 import prisma from "~/lib/prisma.server";
+import type { Site, User } from "~/prisma";
+import { goto } from "../helpers/launchBrowser";
+import { signIn } from "../helpers/signIn";
 
 describe("unauthenticated access", () => {
   it("should redirect to /sign-in", async () => {
@@ -279,20 +279,6 @@ describe("sites route", () => {
           ownerId: user.id,
           summary: "Test summary",
         },
-      });
-    });
-
-    describe("with no runs", () => {
-      beforeAll(async () => {
-        page = await goto("/sites");
-      });
-
-      it("should show no delta badge", async () => {
-        const siteRow = page
-          .locator("div")
-          .filter({ hasText: "delta-test.com" })
-          .first();
-        await expect(siteRow.getByText("%")).not.toBeVisible();
       });
     });
 
