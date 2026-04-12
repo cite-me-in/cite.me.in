@@ -62,6 +62,7 @@ export default function SiteEntry({
           current={visibilityScore.current}
           previous={visibilityScore.previous}
           suffix="%"
+          highlightScore
         />
       </Link>
 
@@ -80,16 +81,25 @@ function Metric({
   current: value,
   previous,
   suffix,
+  highlightScore,
 }: {
   label: string;
   current: number;
   previous: number | null;
   suffix?: string;
+  highlightScore?: boolean;
 }) {
+  const scoreColor = highlightScore ? getScoreColor(value) : null;
   return (
     <div className={`metric-${label.toLowerCase().replace(" ", "-")}`}>
       <div className="whitespace-nowrap font-light">{label}</div>
-      <div className="font-bold text-3xl tabular-nums">
+      <div
+        className={twMerge(
+          "font-bold text-3xl tabular-nums",
+          scoreColor === "green" && "text-green-600",
+          scoreColor === "red" && "text-red-600",
+        )}
+      >
         {value.toLocaleString()}
         {suffix}
       </div>
@@ -104,6 +114,12 @@ function Metric({
       </div>
     </div>
   );
+}
+
+function getScoreColor(score: number): "green" | "gray" | "red" {
+  if (score >= 70) return "green";
+  if (score >= 30) return "gray";
+  return "red";
 }
 
 function Delta({
