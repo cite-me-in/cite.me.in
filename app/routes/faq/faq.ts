@@ -45,6 +45,11 @@ export default [
           "A citation is any URL that appears in an AI platform's response to a query. We record the full list of cited URLs and check whether your domain appears — and at what position.",
       },
       {
+        question: "How is the visibility score calculated?",
+        answer:
+          "The visibility score (0-100) is a composite metric combining query coverage (35%), position-weighted citation rank (30%), share of voice (20%), and mention rate (15%). See our visibility score explainer for details on each component and how to improve your score.",
+      },
+      {
         question: "Do I have to write my own queries?",
         answer:
           "No. When you add a site, Cite.me.in reads your page content and automatically suggests 9 queries across three intent categories: discovery (users who don't know your brand yet), active search (users looking for exactly what you offer), and comparison (users evaluating their options). You can use them as-is, edit them, or add your own.",
@@ -86,13 +91,11 @@ export default [
       },
       {
         question: "What's included in Pro?",
-        answer:
-          `Pro is $${prices.monthlyAmount}/month or $${prices.annualAmount}/year. You get unlimited daily runs, your full citation history, API access, email digests, network benchmarks, and up to 5 sites.`,
+        answer: `Pro is $${prices.monthlyAmount}/month or $${prices.annualAmount}/year. You get unlimited daily runs, your full citation history, API access, email digests, network benchmarks, and up to 5 sites.`,
       },
       {
         question: "Why should I pay when it's open-source?",
-        answer:
-          `You're right — you can self-host for almost nothing. But running it yourself means keeping it updated, monitoring uptime, and managing LLM API keys. $${prices.monthlyAmount}/mo gets you all of that handled, plus access to aggregate benchmark data that self-hosting can't give you. And it keeps the project funded and independent.`,
+        answer: `You're right — you can self-host for almost nothing. But running it yourself means keeping it updated, monitoring uptime, and managing LLM API keys. $${prices.monthlyAmount}/mo gets you all of that handled, plus access to aggregate benchmark data that self-hosting can't give you. And it keeps the project funded and independent.`,
       },
       {
         question: "Can I cancel anytime?",

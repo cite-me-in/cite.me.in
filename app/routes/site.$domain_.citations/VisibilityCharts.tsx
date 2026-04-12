@@ -1,4 +1,5 @@
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Link } from "react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import {
   ChartContainer,
@@ -9,7 +10,14 @@ import { formatDateMed } from "~/lib/formatDate";
 import calculateVisibilityScore from "~/lib/llm-visibility/calculateVisibilityScore";
 import type { Prisma } from "~/prisma";
 
-const charts = [
+const charts: {
+  config: Record<string, { label: string; color: string }>;
+  dataKey: string;
+  name: string;
+  color: string;
+  explainer: string;
+  explainerLink?: string;
+}[] = [
   {
     config: {
       citations: { label: "Citations", color: "var(--chart-3)" },
@@ -26,8 +34,8 @@ const charts = [
     dataKey: "score",
     name: "Visibility Score",
     color: "var(--chart-4)",
-    explainer:
-      "Composite visibility score (0-100) weighting query coverage (35%), position-decayed citation rank (30%), share of voice (20%), and soft text mentions (15%).",
+    explainer: "Composite score (0-100). See how it's calculated.",
+    explainerLink: "/visibility-score",
   },
   {
     config: {
@@ -81,6 +89,15 @@ export default function VisibilityCharts({
             </ChartContainer>
             <p className="text-center text-foreground/60 text-sm">
               {chart.explainer}
+              {chart.explainerLink && (
+                <>
+                  {" "}
+                  <Link to={chart.explainerLink} className="underline">
+                    Learn more
+                  </Link>
+                  .
+                </>
+              )}
             </p>
           </div>
         ))}

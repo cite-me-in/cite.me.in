@@ -17,6 +17,7 @@ const links = [
     links: [
       { to: "/about", label: "About" },
       { to: "https://blog.cite.me.in", label: "Blog" },
+      { to: "/visibility-score", label: "Visibility Score" },
     ],
   },
   {

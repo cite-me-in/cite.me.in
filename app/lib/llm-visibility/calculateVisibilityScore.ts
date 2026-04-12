@@ -75,11 +75,12 @@ export default function calculateVisibilityScore({
       if (host === domainNormalized) domainCitations++;
     }
 
-    const position =
-      query.citations.findIndex((c) => isSameDomain({ domain, url: c })) + 1;
+    const position = query.citations.findIndex((c) =>
+      isSameDomain({ domain, url: c }),
+    );
 
     // Query coverage + position weight
-    if (position !== null) {
+    if (position !== -1) {
       queriesWithCitation++;
       // Reciprocal rank: position 0 → 1.0, position 1 → 0.5, position 4 → 0.2
       positionWeightSum += 1 / (position + 1);

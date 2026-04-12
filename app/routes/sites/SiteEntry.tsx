@@ -55,6 +55,7 @@ export default function SiteEntry({
           label="Visibility Score"
           current={visibilityScore.current}
           previous={visibilityScore.previous}
+          suffix="%"
         />
         <Metric
           label="Query Coverage"
