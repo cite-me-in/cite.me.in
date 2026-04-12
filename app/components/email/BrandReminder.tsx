@@ -1,4 +1,4 @@
-import { Text } from "@react-email/components";
+import { Link, Text } from "@react-email/components";
 import Card from "~/components/email/Card";
 
 export function BrandReminderCard({
@@ -13,10 +13,10 @@ export function BrandReminderCard({
   return (
     <Card withBorder>
       <Text className="text-base text-text leading-relaxed">
-        cite.me.in is your window into how AI talks about your brand. Every day
-        it asks ChatGPT, Claude, Gemini, and Perplexity the questions your
-        customers ask — and records every time <strong>{domain}</strong> shows
-        up. So far:{" "}
+        <Link href="https://cite.me.in">cite.me.in</Link> is your window into
+        how AI talks about your brand. Every day it asks ChatGPT, Claude,
+        Gemini, and Perplexity the questions your customers ask — and records
+        every time <strong>{domain}</strong> shows up. So far:{" "}
         <strong>
           {n} {noun}
         </strong>{" "}
