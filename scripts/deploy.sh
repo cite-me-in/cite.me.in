@@ -31,6 +31,7 @@ echo -e "\033[32m  Updating database …\033[0m"
 infisical --env prod run -- pnpm prisma db push
 
 echo -e "\033[32m  Deploying to Vercel …\033[0m"
+vc pull --environment=production
 vc build --prod
 vc deploy --prod --prebuilt
 
