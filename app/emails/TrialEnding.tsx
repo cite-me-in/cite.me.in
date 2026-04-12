@@ -37,7 +37,7 @@ export default async function sendTrialEndingEmails() {
   }
 }
 
-async function sendTrialEndingEmail({
+export async function sendTrialEndingEmail({
   citationCount,
   domain,
   sendTo,
