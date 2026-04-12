@@ -1,9 +1,10 @@
-import type { Prisma, WebhookDelivery, WebhookEndpoint } from "~/prisma";
 import { ms } from "convert";
-import captureAndLogError from "~/lib/captureAndLogError.server";
-import crypto from "node:crypto";
-import prisma from "~/lib/prisma.server";
 import debug from "debug";
+import crypto from "node:crypto";
+import { parallel } from "radashi";
+import captureAndLogError from "~/lib/captureAndLogError.server";
+import prisma from "~/lib/prisma.server";
+import type { Prisma, WebhookDelivery } from "~/prisma";
 
 const WEBHOOK_EVENT_CONFIG = {
   "user.created": { scope: "admin" as const },
@@ -43,28 +44,29 @@ export async function emitWebhookEvent(
     });
     if (endpoints.length === 0) return;
 
-    await Promise.all(
-      endpoints.map(async (endpoint) => {
-        const delivery = await prisma.webhookDelivery.create({
-          data: {
-            endpointId: endpoint.id,
-            eventType,
-            payload: payload as Prisma.InputJsonValue,
-            status: "PENDING",
-          },
-        });
-        await attemptDelivery(delivery, endpoint);
-      }),
-    );
+    await parallel({ limit: 10 }, endpoints, async (endpoint) => {
+      const delivery = await prisma.webhookDelivery.create({
+        data: {
+          endpoint: { connect: { id: endpoint.id } },
+          eventType,
+          payload: payload as Prisma.InputJsonValue,
+          status: "PENDING",
+        },
+        include: { endpoint: true },
+      });
+      await attemptDelivery(delivery);
+    });
   } catch (error) {
     captureAndLogError(error, { extra: { eventType, payload } });
   }
 }
 
 export async function attemptDelivery(
-  delivery: WebhookDelivery,
-  endpoint: WebhookEndpoint,
+  delivery: Prisma.WebhookDeliveryGetPayload<{
+    include: { endpoint: true };
+  }>,
 ): Promise<void> {
+  const { endpoint } = delivery;
   const body = JSON.stringify({
     event: delivery.eventType,
     timestamp: new Date().toISOString(),

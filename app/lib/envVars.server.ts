@@ -24,7 +24,7 @@ const envVars = {
     .get("POSTGRES_URL_NON_POOLING")
     .required()
     .asUrlString(),
-  REDIS_URL: env.get("REDIS_URL").required().asString(),
+  REDIS_URL: env.get("REDIS_URL").required().asUrlString(),
   RESEND_API_KEY: env.get("RESEND_API_KEY").required().asString(),
   STRIPE_SECRET_KEY: env.get("STRIPE_SECRET_KEY").required(false).asString(),
   STRIPE_WEBHOOK_SECRET: env
@@ -65,7 +65,11 @@ const envVars = {
   HEARTBEAT_CRON_PROCESS_SITES: env
     .get("HEARTBEAT_CRON_PROCESS_SITES")
     .required(false)
-    .asString(),
+    .asUrlString(),
+  HEARTBEAT_CRON_WEBHOOK_RETRIES: env
+    .get("HEARTBEAT_CRON_WEBHOOK_RETRIES")
+    .required(false)
+    .asUrlString(),
 };
 
 export default envVars;

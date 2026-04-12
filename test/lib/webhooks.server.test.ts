@@ -143,13 +143,11 @@ describe("emitWebhookEvent", () => {
         data: { attempts: 2, status: "RETRY", nextRetryAt: new Date() },
       });
       const { attemptDelivery } = await import("~/lib/webhooks.server");
-      const endpoint = await prisma.webhookEndpoint.findUniqueOrThrow({
-        where: { id: "ep-wh-admin-1" },
-      });
       const updated = await prisma.webhookDelivery.findUniqueOrThrow({
         where: { id: delivery.id },
+        include: { endpoint: true },
       });
-      await attemptDelivery(updated, endpoint);
+      await attemptDelivery(updated);
       const final = await prisma.webhookDelivery.findUniqueOrThrow({
         where: { id: delivery.id },
       });
