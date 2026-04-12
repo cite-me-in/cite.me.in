@@ -50,10 +50,11 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     })
     .filter((q) => q !== null);
 
-  const { competitors: rawCompetitors } = topCompetitors(
-    queriesForCompetitors,
-    site.domain,
-  );
+  const {
+    competitors: rawCompetitors,
+    ownCitations,
+    total,
+  } = topCompetitors(queriesForCompetitors, site.domain);
   const competitors = await Promise.all(
     rawCompetitors.map(async (c) => ({
       ...c,
@@ -61,13 +62,22 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     })),
   );
 
-  return { site, runs, siteQueries, competitors };
+  return {
+    site,
+    runs,
+    siteQueries,
+    competitors,
+    shareOfVoice: {
+      count: ownCitations,
+      pct: total > 0 ? Math.round((ownCitations / total) * 100) : 0,
+    },
+  };
 }
 
 export default function SiteCitationsPage({
   loaderData,
 }: Route.ComponentProps) {
-  const { site, runs, siteQueries, competitors } = loaderData;
+  const { site, runs, siteQueries, competitors, shareOfVoice } = loaderData;
   const [searchParams, setSearchParams] = useSearchParams();
   const platform =
     PLATFORMS.find((p) => p.name === searchParams.get("platform")) ??
@@ -125,7 +135,10 @@ export default function SiteCitationsPage({
             sentiment={sentiment}
             platformLabel={platform.label}
           />
-          <TopCompetitors competitors={competitors} />
+          <TopCompetitors
+            competitors={competitors}
+            shareOfVoice={shareOfVoice}
+          />
           <VisibilityCharts recentRuns={recentRuns} site={site} />
         </>
       ) : (

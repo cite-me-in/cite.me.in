@@ -13,6 +13,7 @@ import nonCompetitors from "./nonCompetitors";
 
 export default function TopCompetitors({
   competitors,
+  shareOfVoice,
 }: {
   competitors: {
     domain: string;
@@ -21,6 +22,7 @@ export default function TopCompetitors({
     count: number;
     pct: number;
   }[];
+  shareOfVoice: { count: number; pct: number };
 }) {
   return (
     <Card>
@@ -31,6 +33,19 @@ export default function TopCompetitors({
         </CardDescription>
       </CardHeader>
       <CardContent>
+        <div className="mb-4 border-border/20 border-t-2 border-b-2 py-3">
+          <div className="flex items-center justify-between gap-4">
+            <span className="font-medium">Your share of voice</span>
+            <div className="flex shrink-0 items-center gap-2">
+              <span className="text-foreground/60">
+                {shareOfVoice.count.toLocaleString()}{" "}
+                {shareOfVoice.count === 1 ? "citation" : "citations"}
+              </span>
+              <Badge variant="green">{shareOfVoice.pct}%</Badge>
+            </div>
+          </div>
+        </div>
+
         {competitors.length === 0 ? (
           <p className="text-foreground/60 text-sm">
             No other domains found in this run.
@@ -70,22 +85,25 @@ export function topCompetitors(
   ownDomain: string,
 ): {
   total: number;
+  ownCitations: number;
   competitors: { domain: string; count: number; pct: number }[];
 } {
   const counts = new Map<string, number>();
   let total = 0;
+  let ownCitations = 0;
   for (const query of queries) {
     for (const url of query.citations) {
       try {
         const domain = normalizeDomain(url);
         total++;
-        if (
-          domain !== ownDomain &&
+        if (domain === ownDomain) {
+          ownCitations++;
+        } else if (
           !nonCompetitors.has(domain) &&
-          // Also check if nonCompetitors contains the hostname with first subdomain stripped (e.g. "en.wikipedia.org" -> "wikipedia.org")
           !nonCompetitors.has(domain.split(".").slice(1).join("."))
-        )
+        ) {
           counts.set(domain, (counts.get(domain) ?? 0) + 1);
+        }
       } catch {
         /* skip invalid URLs */
       }
@@ -93,6 +111,7 @@ export function topCompetitors(
   }
   return {
     total,
+    ownCitations,
     competitors: [...counts.entries()]
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5)
