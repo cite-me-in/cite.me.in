@@ -172,7 +172,12 @@ function TopMetrics({
       current: `${queryCoverageRate.current}%`,
       previous: queryCoverageRate.previous,
     },
-    { label: "Score", ...score },
+    {
+      label: "Visibility Score",
+      current: `${score.current}%`,
+      previous: score.previous,
+      highlightScore: true,
+    },
   ];
 
   return (

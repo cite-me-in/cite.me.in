@@ -5,16 +5,19 @@ type KeyMetric =
   | {
       label: string;
       current: number | string;
+      highlightScore?: boolean;
     }
   | {
       label: string;
       current: number;
       previous: number;
+      highlightScore?: boolean;
     }
   | {
       label: string;
       current: string;
       previous: never;
+      highlightScore?: boolean;
     };
 
 /**
@@ -42,7 +45,14 @@ export default function KeyMetrics({ metrics }: { metrics: KeyMetric[] }) {
                 <Text className="mb-1.5 whitespace-nowrap text-light text-xs uppercase tracking-wide">
                   {metric.label}
                 </Text>
-                <Text className="font-bold text-2xl text-dark tabular-nums">
+                <Text
+                  className={twMerge(
+                    "font-bold text-2xl tabular-nums",
+                    metric.highlightScore
+                      ? getScoreColor(Number(metric.current))
+                      : "text-dark",
+                  )}
+                >
                   {metric.current.toLocaleString()}
                 </Text>
 
@@ -89,4 +99,10 @@ function pctDeltaColor(current: number, previous: number): string {
   if (current > previous) return "text-green-500";
   if (current < previous) return "text-red-500";
   return "text-gray-500";
+}
+
+function getScoreColor(score: number): string {
+  if (score >= 70) return "text-green-600";
+  if (score >= 30) return "text-gray-600";
+  return "text-red-600";
 }
