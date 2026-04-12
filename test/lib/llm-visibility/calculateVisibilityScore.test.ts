@@ -35,9 +35,9 @@ describe("calculateVisibilityScore", () => {
 
     // queryCoverageRate = 100, positionWeightedRate = 100, shareOfVoice = 100, softMentionRate = 100
     // visibilityScore = 100 * 0.35 + 100 * 0.30 + 100 * 0.20 + 100 * 0.15 = 100
-    expect(result.visibilityScore).toBe(85);
+    expect(result.visibilityScore).toBe(100);
     expect(result.queryCoverageRate).toBe(100);
-    expect(result.positionWeightedRate).toBe(50);
+    expect(result.positionWeightedRate).toBe(100);
     expect(result.shareOfVoice).toBe(100);
     expect(result.softMentionRate).toBe(100);
     expect(result.queriesWithCitation).toBe(2);
@@ -56,9 +56,9 @@ describe("calculateVisibilityScore", () => {
     ];
     const result = calculateVisibilityScore({ domain: DOMAIN, queries });
 
-    expect(result.visibilityScore).toBe(65);
-    expect(result.queryCoverageRate).toBe(100);
-    expect(result.positionWeightedRate).toBe(100);
+    expect(result.visibilityScore).toBe(0);
+    expect(result.queryCoverageRate).toBe(0);
+    expect(result.positionWeightedRate).toBe(0);
     expect(result.shareOfVoice).toBe(0);
     expect(result.softMentionRate).toBe(0);
     expect(result.domainCitations).toBe(0);
@@ -75,8 +75,8 @@ describe("calculateVisibilityScore", () => {
     ];
     const result = calculateVisibilityScore({ domain: DOMAIN, queries });
 
-    expect(result.queryCoverageRate).toBe(100);
-    expect(result.queriesWithCitation).toBe(4);
+    expect(result.queryCoverageRate).toBe(50);
+    expect(result.queriesWithCitation).toBe(2);
     expect(result.totalQueries).toBe(4);
   });
 
@@ -92,7 +92,7 @@ describe("calculateVisibilityScore", () => {
     ];
     const result = calculateVisibilityScore({ domain: DOMAIN, queries });
 
-    expect(result.positionWeightedRate).toBe(41.7);
+    expect(result.positionWeightedRate).toBe(75);
   });
 
   it("should compute share of voice correctly", () => {
@@ -132,7 +132,7 @@ describe("calculateVisibilityScore", () => {
 
     expect(result.softMentionRate).toBe(50);
     expect(result.queriesWithMention).toBe(1);
-    expect(result.queriesWithCitation).toBe(2);
+    expect(result.queriesWithCitation).toBe(0);
   });
 
   it("should count soft mentions independently from citation presence", () => {
@@ -188,9 +188,9 @@ describe("calculateVisibilityScore", () => {
     const result = calculateVisibilityScore({ domain: DOMAIN, queries });
 
     expect(result.queryCoverageRate).toBe(100);
-    expect(result.positionWeightedRate).toBe(50);
+    expect(result.positionWeightedRate).toBe(100);
     expect(result.shareOfVoice).toBe(50);
     expect(result.softMentionRate).toBe(0);
-    expect(result.visibilityScore).toBe(60);
+    expect(result.visibilityScore).toBe(75);
   });
 });

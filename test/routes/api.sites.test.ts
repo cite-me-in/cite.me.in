@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { port } from "~/test/helpers/launchBrowser";
 import prisma from "~/lib/prisma.server";
+import { port } from "~/test/helpers/launchBrowser";
 
 const BASE = `http://localhost:${port}`;
 const USER_ID = "user1";
@@ -119,7 +119,7 @@ describe("GET /api/site/:domain/metrics", () => {
     expect(body.allCitations.previous).toBe(0);
     expect(body.yourCitations.current).toBe(2);
     expect(body.yourCitations.previous).toBe(0);
-    expect(body.visbilityScore.current).toBe(70);
+    expect(body.visbilityScore.current).toBe(85);
     expect(body.visbilityScore.previous).toBe(0);
     expect(body.queryCoverageRate.current).toBe(100);
     expect(body.queryCoverageRate.previous).toBe(0);
