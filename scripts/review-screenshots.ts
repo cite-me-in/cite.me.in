@@ -137,7 +137,7 @@ const html = `<!DOCTYPE html>
 writeFileSync(htmlPath, html);
 
 const server = createServer((req, res) => {
-  const url = new URL(req.url!, "http://localhost");
+  const url = new URL(req.url ?? "/", "http://localhost");
 
   if (url.pathname === "/accept") {
     const relPath = url.searchParams.get("path");
