@@ -36,12 +36,14 @@ const logger = debug("email");
  * the ID will be `null`.
  */
 export async function sendEmail({
+  domain,
   email,
   headers,
   isTransactional,
   sendTo,
   subject,
 }: {
+  domain?: string;
   email: React.ReactNode;
   headers?: Record<string, string>;
   isTransactional: boolean;
@@ -65,6 +67,7 @@ export async function sendEmail({
     await render(
       <EmailLinkContext.Provider value={{ email: sendTo.email, token }}>
         <EmailLayout
+          domain={domain}
           subject={subject}
           unsubscribeURL={!isTransactional && unsubscribeURL}
         >

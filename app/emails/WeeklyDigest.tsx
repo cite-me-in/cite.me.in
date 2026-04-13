@@ -62,6 +62,7 @@ export async function sendSiteDigestEmails(
 
   const emailIds = await map(data.sendTo, async (sendTo) => {
     const emailId = await sendEmail({
+      domain: data.domain,
       isTransactional: false,
       email: <WeeklyDigestEmail {...data} />,
       subject: data.subject,

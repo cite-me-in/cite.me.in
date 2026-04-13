@@ -39,9 +39,9 @@ export default function KeyMetrics({ metrics }: { metrics: KeyMetric[] }) {
           key={i.toString()}
           className={twMerge(i === metrics.length - 1 ? "" : "pr-2", width)}
         >
-          <Section className="w-full overflow-hidden rounded-lg border border-border bg-white">
+          <Section className="w-full overflow-hidden rounded-xl border border-indigo-100 bg-indigo-50">
             <Row>
-              <Column className="bg-gray-50/50 px-4 text-center">
+              <Column className="px-4 text-center">
                 <Text className="mb-1.5 whitespace-nowrap text-light text-xs uppercase tracking-wide">
                   {metric.label}
                 </Text>

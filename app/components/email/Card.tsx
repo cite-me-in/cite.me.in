@@ -18,7 +18,7 @@ export default function Card({
     <Section
       className={twMerge(
         "my-4 w-full overflow-hidden bg-white",
-        withBorder && "rounded-lg border border-border",
+        withBorder && "rounded-xl border border-border",
         className,
       )}
     >

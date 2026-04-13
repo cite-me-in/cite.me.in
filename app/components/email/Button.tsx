@@ -20,7 +20,7 @@ export default function Button({ href, className, ...props }: ButtonProps) {
     <EmailButton
       href={wrapped.href}
       className={twMerge(
-        "rounded-md bg-primary px-4 py-2 text-white hover:bg-primary-hover",
+        "rounded-xl bg-primary px-6 py-3 font-semibold text-white hover:bg-primary-hover",
         className,
       )}
       {...props}

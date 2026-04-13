@@ -20,7 +20,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const token = generateUnsubscribeToken(user.email);
   const html = await render(
     <EmailLinkContext.Provider value={{ email: user.email, token }}>
-      <EmailLayout subject={data.subject}>
+      <EmailLayout domain={data.domain} subject={data.subject}>
         <WeeklyDigestEmail {...data} />
       </EmailLayout>
     </EmailLinkContext.Provider>,
