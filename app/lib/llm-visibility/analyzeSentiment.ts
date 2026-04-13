@@ -64,7 +64,7 @@ export default async function analyzeSentiment({
   const siteContext = siteSummary ? `\n\nSite context: ${siteSummary}` : "";
 
   const completion = await client.chat.completions.create({
-    model: "glm-5",
+    model: "glm-4.7",
     messages: [
       {
         role: "system" as const,

@@ -23,7 +23,7 @@ export default async function generateBotInsight(
     .join("\n");
 
   const completion = await client.chat.completions.create({
-    model: "glm-5",
+    model: "glm-4.5",
     messages: [
       {
         role: "system" as const,

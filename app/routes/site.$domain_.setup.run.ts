@@ -173,7 +173,7 @@ async function runPlatformWithProgress({
     if (citations.length > 0) {
       await prisma.citationClassification.createMany({
         data: citations.map((classification) => ({
-          url: c.url,
+          url: classification.url,
           siteId: site.id,
           runId: run.id,
           relationship: classification.relationship,

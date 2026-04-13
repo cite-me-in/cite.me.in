@@ -21,7 +21,7 @@ export async function summarize({
   content: string;
 }): Promise<string> {
   const response = await client.chat.completions.create({
-    model: "glm-5",
+    model: "glm-4.5",
     messages: [
       {
         role: "system",
