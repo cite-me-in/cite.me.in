@@ -1,4 +1,4 @@
-import { alphabetical, sum } from "radashi";
+import { sum } from "radashi";
 import type { SentimentLabel } from "~/prisma";
 import Card from "./Card";
 import KeyMetrics from "./KeyMetric";
@@ -14,10 +14,7 @@ export default function PlatformBreakdown({
     };
   };
 }) {
-  const first4 = alphabetical(
-    Object.entries(byPlatform),
-    ([name]) => name,
-  ).slice(0, 4);
+  const first4 = Object.entries(byPlatform).slice(0, 4);
   const total = sum(first4, ([, { count }]) => count);
   if (total === 0) return null;
 

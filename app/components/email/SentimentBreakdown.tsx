@@ -1,5 +1,4 @@
 import { Column, Row, Section, Text } from "@react-email/components";
-import { sort } from "radashi";
 import { twMerge } from "tailwind-merge";
 import PLATFORMS from "~/lib/llm-visibility/platforms";
 import type { SentimentLabel } from "~/prisma";
@@ -13,15 +12,9 @@ export default function SentimentBreakdown({
     { sentimentLabel: SentimentLabel | null; sentimentSummary: string | null }
   >;
 }) {
-  const platforms = sort(
-    Object.entries(byPlatform).filter(
-      ([, { sentimentLabel, sentimentSummary }]) =>
-        sentimentLabel && sentimentSummary,
-    ),
-    ([, { sentimentLabel }]) =>
-      ["positive", "mixed", "negative", "neutral"].indexOf(
-        sentimentLabel ?? "neutral",
-      ),
+  const platforms = Object.entries(byPlatform).filter(
+    ([, { sentimentLabel, sentimentSummary }]) =>
+      sentimentLabel && sentimentSummary,
   );
   if (platforms.length === 0) return null;
 
