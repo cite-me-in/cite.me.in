@@ -1,5 +1,5 @@
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Link } from "react-router";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import {
   ChartContainer,
@@ -34,18 +34,8 @@ const charts: {
     dataKey: "score",
     name: "Visibility Score",
     color: "var(--chart-4)",
-    explainer: "Composite score (0-100). See how it's calculated.",
+    explainer: "Visibility score (0-100). See how it's calculated.",
     explainerLink: "/visibility-score",
-  },
-  {
-    config: {
-      coverage: { label: "Query Coverage", color: "var(--chart-2)" },
-    },
-    dataKey: "coverage",
-    name: "Query Coverage",
-    color: "var(--chart-2)",
-    explainer:
-      "Percentage of queries (0-100) where this site appears in citations.",
   },
 ] as const;
 
@@ -58,7 +48,7 @@ export default function VisibilityCharts({
   }>[];
   site: { id: string; domain: string };
 }) {
-  const data = runs.map((run) => runToPoint(run, site));
+  const data = runs.map((run) => runToPoint(run, site)).reverse();
 
   return (
     <Card>
