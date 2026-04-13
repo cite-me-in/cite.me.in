@@ -43,7 +43,7 @@ export default async function sendSiteSetupEmail({
     envVars.VITE_APP_URL,
   ).toString();
   await sendEmail({
-    isTransactional: true,
+    domain,
     email: (
       <SiteSetupComplete
         domain={domain}
@@ -51,8 +51,9 @@ export default async function sendSiteSetupEmail({
         metrics={metrics}
       />
     ),
+    isTransactional: true,
     sendTo: sendTo,
-    subject: `${domain} is set up on cite.me.in`,
+    subject: "Setup complete",
   });
   await prisma.sentEmail.create({
     data: { userId: sendTo.id, type: "SiteSetupComplete" },

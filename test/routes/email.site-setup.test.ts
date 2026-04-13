@@ -84,7 +84,7 @@ describe("SiteSetupComplete email", () => {
   });
 
   it("should send with correct subject", () => {
-    expect(email.subject).toBe("example.com is set up on cite.me.in");
+    expect(email.subject).toBe("Setup complete");
   });
 
   it("should send to correct recipient", () => {

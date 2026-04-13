@@ -33,11 +33,11 @@ function findNewScreenshots(): string[] {
 const newScreenshots = findNewScreenshots();
 
 if (newScreenshots.length === 0) {
-  console.log("No new screenshots to review.");
+  console.info("No new screenshots to review.");
   process.exit(0);
 }
 
-console.log(`Found ${newScreenshots.length} new screenshot(s) to review.`);
+console.info(`Found ${newScreenshots.length} new screenshot(s) to review.`);
 
 const htmlPath = join(screenshotsDir, "review.html");
 
@@ -159,7 +159,7 @@ const server = createServer((req, res) => {
         }
         if (existsSync(diffHtmlPath)) unlinkSync(diffHtmlPath);
 
-        console.log(`Accepted: ${relPath.replace(".new.png", "")}`);
+        console.info(`Accepted: ${relPath.replace(".new.png", "")}`);
       }
     }
     res.writeHead(200);
@@ -190,13 +190,13 @@ const server = createServer((req, res) => {
 
 const port = 3456;
 server.listen(port, () => {
-  console.log(`Opening http://localhost:${port}/review.html`);
+  console.info(`Opening http://localhost:${port}/review.html`);
   execSync(`open http://localhost:${port}/review.html`);
 });
 
 process.on("SIGINT", () => {
   server.close();
   if (existsSync(htmlPath)) unlinkSync(htmlPath);
-  console.log("\nDone.");
+  console.info("\nDone.");
   process.exit(0);
 });
