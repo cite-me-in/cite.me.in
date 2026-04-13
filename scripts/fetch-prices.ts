@@ -2,8 +2,8 @@
 
 import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import envVars from "../app/lib/envVars.server";
 import Stripe from "stripe";
+import envVars from "../app/lib/envVars.server";
 
 const stripe = new Stripe(envVars.STRIPE_SECRET_KEY);
 
