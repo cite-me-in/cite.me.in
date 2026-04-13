@@ -15,7 +15,7 @@ const envVars = {
     .get("GOOGLE_GENERATIVE_AI_API_KEY")
     .required(false)
     .asString(),
-  LOGTAIL_ENDPOINT: env.get("LOGTAIL_ENDPOINT").required(false).asUrlString(),
+  LOGTAIL_ENDPOINT: env.get("LOGTAIL_ENDPOINT").required(false).asString(),
   LOGTAIL_TOKEN: env.get("LOGTAIL_TOKEN").required(false).asString(),
   OPENAI_API_KEY: env.get("OPENAI_API_KEY").required(false).asString(),
   PERPLEXITY_API_KEY: env.get("PERPLEXITY_API_KEY").required(false).asString(),
@@ -65,11 +65,11 @@ const envVars = {
   HEARTBEAT_CRON_PROCESS_SITES: env
     .get("HEARTBEAT_CRON_PROCESS_SITES")
     .required(false)
-    .asUrlString(),
+    .asString(),
   HEARTBEAT_CRON_WEBHOOK_RETRIES: env
     .get("HEARTBEAT_CRON_WEBHOOK_RETRIES")
     .required(false)
-    .asUrlString(),
+    .asString(),
 };
 
 export default envVars;
