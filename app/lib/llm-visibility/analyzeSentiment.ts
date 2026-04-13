@@ -1,9 +1,11 @@
 import OpenAI from "openai";
+import debug from "debug";
 import { z } from "zod";
 import type { SentimentLabel } from "~/prisma";
 import envVars from "../envVars.server";
 import { isSameDomain } from "../isSameDomain";
 
+const logger = debug("server");
 const schema = z.object({
   label: z.enum(["positive", "negative", "neutral", "mixed"]),
   summary: z.string(),
@@ -61,13 +63,29 @@ Respond with a JSON object only, no markdown fences:
   });
 
   try {
-    const json = completion.choices[0].message.content
-      ?.replace(/^```(?:json)?\s*/i, "")
+    const raw = completion.choices[0].message.content ?? "{}";
+    const json = raw
+      .replace(/^```(?:json)?\s*/i, "")
       .replace(/\s*```$/, "")
       .trim();
-    const parsed = schema.parse(JSON.parse(json ?? "{}"));
-    return { label: parsed.label as SentimentLabel, summary: parsed.summary };
-  } catch {
+    let parsed = JSON.parse(json);
+
+    if (parsed.answer) {
+      if (typeof parsed.answer === "string") {
+        try {
+          parsed = JSON.parse(parsed.answer);
+        } catch {
+          parsed = { label: parsed.answer, summary: parsed.summary ?? "" };
+        }
+      } else {
+        parsed = parsed.answer;
+      }
+    }
+
+    const result = schema.parse(parsed);
+    return { label: result.label as SentimentLabel, summary: result.summary };
+  } catch (error) {
+    logger("Sentiment analysis parse error: %O", error);
     return { label: "neutral", summary: "Sentiment analysis unavailable." };
   }
 }
