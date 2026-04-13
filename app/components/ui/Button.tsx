@@ -53,6 +53,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     useRender({
       defaultTagName: "button",
       render,
+      state: {},
       props: {
         ...props,
         className: twMerge(buttonVariants({ variant, size, className })),

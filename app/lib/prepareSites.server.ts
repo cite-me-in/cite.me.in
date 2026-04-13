@@ -1,12 +1,11 @@
 import { Temporal } from "@js-temporal/polyfill";
 import debug from "debug";
-import { map } from "radashi";
+import { parallel } from "radashi";
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import generateBotInsight from "~/lib/llm-visibility/generateBotInsight";
 import PLATFORMS from "~/lib/llm-visibility/platformQueries.server";
 import { queryPlatform as runPlatform } from "~/lib/llm-visibility/queryPlatform";
 import prisma from "~/lib/prisma.server";
-import { UsageLimitExceededError } from "~/lib/usage/UsageLimitExceededError";
 import { queryNextToProcess } from "~/lib/userPlan.server";
 
 const logger = debug("server");
@@ -57,8 +56,8 @@ export default async function prepareSites({
     due.map((s) => s.domain).join(", "),
   );
 
-  await map(due, nextCitationRun);
-  await map(due, updateBotInsight);
+  await parallel({ limit: 10 }, due, nextCitationRun);
+  await parallel({ limit: 10 }, due, updateBotInsight);
   return due;
 }
 
@@ -72,32 +71,32 @@ async function nextCitationRun(site: {
   id: string;
   domain: string;
 }): Promise<boolean> {
-  try {
-    const queries = await prisma.siteQuery.findMany({
-      orderBy: [{ group: "asc" }, { query: "asc" }],
-      select: { query: true, group: true },
-      where: { siteId: site.id },
-    });
-    await map(PLATFORMS, ({ name: platform, model, queryFn }) =>
-      runPlatform({ model, platform, queries, queryFn, site }),
-    );
+  const queries = await prisma.siteQuery.findMany({
+    orderBy: [{ group: "asc" }, { query: "asc" }],
+    select: { query: true, group: true },
+    where: { siteId: site.id },
+  });
+  await parallel(
+    { limit: 10 },
+    PLATFORMS,
+    async ({ name: platform, model, queryFn }) => {
+      try {
+        await runPlatform({ model, platform, queries, queryFn, site });
+      } catch (error) {
+        captureAndLogError(error, {
+          extra: { siteId: site.id, platform, step: "citation-run" },
+        });
+      }
+    },
+  );
 
-    logger("[processSites] Citation run done — %s", site.domain);
-    await prisma.site.update({
-      where: { id: site.id },
-      data: { lastProcessedAt: new Date() },
-    });
+  logger("[processSites] Citation run done — %s", site.domain);
+  await prisma.site.update({
+    where: { id: site.id },
+    data: { lastProcessedAt: new Date() },
+  });
 
-    return true;
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    logger("[processSites] Citation run failed — %s: %s", site.domain, message);
-    if (!(error instanceof UsageLimitExceededError))
-      captureAndLogError(error, {
-        extra: { siteId: site.id, step: "citation-run" },
-      });
-    return false;
-  }
+  return true;
 }
 
 /**

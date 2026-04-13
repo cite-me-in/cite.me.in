@@ -33,6 +33,7 @@ function Badge({
   return useRender({
     defaultTagName: "span",
     render,
+    state: {},
     props: {
       ...props,
       "data-slot": "badge",

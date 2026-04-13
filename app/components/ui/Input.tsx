@@ -25,6 +25,7 @@ const Input = React.forwardRef<
 >(({ className, type, variant, ...props }, ref) =>
   useRender({
     defaultTagName: "input",
+    state: {},
     props: {
       ...props,
       type,

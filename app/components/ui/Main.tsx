@@ -22,6 +22,7 @@ const Main = forwardRef<
 >(({ className, variant, children, ...props }, ref) =>
   useRender({
     defaultTagName: "main",
+    state: {},
     props: {
       children,
       ...props,
