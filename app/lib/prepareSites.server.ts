@@ -37,6 +37,7 @@ export default async function prepareSites({
       digestSentAt: true,
       lastProcessedAt: true,
       owner: { select: { plan: true, createdAt: true } },
+      summary: true,
     },
     where: queryNextToProcess(),
   });
@@ -70,6 +71,7 @@ export default async function prepareSites({
 async function nextCitationRun(site: {
   id: string;
   domain: string;
+  summary: string;
 }): Promise<boolean> {
   const queries = await prisma.siteQuery.findMany({
     orderBy: [{ group: "asc" }, { query: "asc" }],

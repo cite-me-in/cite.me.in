@@ -55,7 +55,7 @@ const PLATFORM_ARGS = {
 } as const;
 
 describe("queryPlatform", () => {
-  let site: { id: string; domain: string; createdAt: Date };
+  let site: { id: string; domain: string; summary: string; createdAt: Date };
 
   beforeAll(async () => {
     const user = await prisma.user.create({

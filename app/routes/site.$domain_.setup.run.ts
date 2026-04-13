@@ -79,7 +79,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     await Promise.all(
       PLATFORMS.map(({ name: platform, model, queryFn, label }) =>
         runPlatformWithProgress({
-          site,
+          site: { ...site, summary },
           platform,
           model,
           queryFn,
@@ -119,7 +119,7 @@ async function runPlatformWithProgress({
   queries,
   log,
 }: {
-  site: { id: string; domain: string };
+  site: { id: string; domain: string; summary: string };
   platform: string;
   model: string;
   queryFn: QueryFn;
@@ -156,14 +156,32 @@ async function runPlatformWithProgress({
     const completedQueries = await prisma.citationQuery.findMany({
       where: { runId: run.id },
     });
-    const { label: sentLabel, summary } = await analyzeSentiment({
+    const {
+      label: sentLabel,
+      summary,
+      citations,
+    } = await analyzeSentiment({
       domain: site.domain,
       queries: completedQueries,
+      siteSummary: site.summary,
     });
     await prisma.citationQueryRun.update({
       where: { id: run.id },
       data: { sentimentLabel: sentLabel, sentimentSummary: summary },
     });
+
+    if (citations.length > 0) {
+      await prisma.citationClassification.createMany({
+        data: citations.map((classification) => ({
+          url: c.url,
+          siteId: site.id,
+          runId: run.id,
+          relationship: classification.relationship,
+          reason: classification.reason,
+        })),
+        skipDuplicates: true,
+      });
+    }
   } catch (error) {
     captureAndLogError(error, { extra: { siteId: site.id, platform } });
   }

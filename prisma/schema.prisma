@@ -75,16 +75,34 @@ model CitationQuery {
   @@map("citation_queries")
 }
 
+model CitationClassification {
+  createdAt    DateTime         @map("created_at")   @default(now())
+  id           String                                @id @default(cuid())
+  reason       String?          @map("reason")
+  relationship String           @map("relationship")
+  run          CitationQueryRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  runId        String           @map("run_id")
+  site         Site             @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId       String           @map("site_id")
+  url          String           @map("url")
+
+  @@unique([siteId, url, runId])
+  @@index([siteId])
+  @@index([runId])
+  @@map("citation_classifications")
+}
+
 model CitationQueryRun {
-  onDate           String          @map("on_date")
-  id               String                                    @id @default(cuid())
-  model            String          @map("model")
-  platform         String          @map("platform")
+  onDate           String                   @map("on_date")
+  id               String                                             @id @default(cuid())
+  model            String                   @map("model")
+  platform         String                   @map("platform")
   queries          CitationQuery[]
-  sentimentLabel   SentimentLabel? @map("sentiment_label")
-  sentimentSummary String?         @map("sentiment_summary")
-  site             Site            @relation(fields: [siteId], references: [id], onDelete: Cascade)
-  siteId           String          @map("site_id")
+  sentimentLabel   SentimentLabel?          @map("sentiment_label")
+  sentimentSummary String?                  @map("sentiment_summary")
+  site             Site                     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId           String                   @map("site_id")
+  classifications  CitationClassification[]
 
   @@map("citation_query_runs")
   @@unique([siteId, platform, onDate])
@@ -235,29 +253,30 @@ model Session {
 }
 
 model Site {
-  apiKey               String                @map("api_key")           @unique @default("")
-  botInsight           BotInsight?
-  botVisits            BotVisit[]
-  citationRuns         CitationQueryRun[]
-  content              String                @map("content")
-  createdAt            DateTime              @map("created_at")        @default(now())
-  digestSentAt         DateTime?             @map("digest_sent_at")
-  domain               String                @map("domain")
-  humanVisits          HumanVisit[]
-  id                   String                                          @id @default(cuid())
-  lastProcessedAt      DateTime?             @map("last_processed_at")
-  owner                User                  @relation("OwnedSites", fields: [ownerId], references: [id], onDelete: Cascade)
-  ownerId              String                @map("owner_id")
-  siteInvitations      SiteInvitation[]
-  siteQueries          SiteQuery[]
-  siteQuerySuggestions SiteQuerySuggestion[]
-  siteUsers            SiteUser[]
-  summary              String                @map("summary")
-  updatedAt            DateTime              @map("updated_at")        @updatedAt
-  usageEvents          UsageEvent[]
+  apiKey                  String                   @map("api_key")           @unique @default("")
+  botInsight              BotInsight?
+  botVisits               BotVisit[]
+  citationClassifications CitationClassification[]
+  citationRuns            CitationQueryRun[]
+  content                 String                   @map("content")
+  createdAt               DateTime                 @map("created_at")        @default(now())
+  digestSentAt            DateTime?                @map("digest_sent_at")
+  domain                  String                   @map("domain")
+  humanVisits             HumanVisit[]
+  id                      String                                             @id @default(cuid())
+  lastProcessedAt         DateTime?                @map("last_processed_at")
+  owner                   User                     @relation("OwnedSites", fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId                 String                   @map("owner_id")
+  siteInvitations         SiteInvitation[]
+  siteQueries             SiteQuery[]
+  siteQuerySuggestions    SiteQuerySuggestion[]
+  siteUsers               SiteUser[]
+  summary                 String                   @map("summary")
+  updatedAt               DateTime                 @map("updated_at")        @updatedAt
+  usageEvents             UsageEvent[]
 
   @@index([domain])
-  @@unique([ownerId,   domain])
+  @@unique([ownerId,      domain])
   @@map("sites")
 }
 

@@ -33,7 +33,7 @@ export async function queryPlatform({
   platform: string;
   queries: { query: string; group: string }[];
   queryFn: QueryFn;
-  site: { id: string; domain: string };
+  site: { id: string; domain: string; summary: string };
 }) {
   invariant(platform, "Platform is required");
   invariant(model, "Model is required");
@@ -83,7 +83,7 @@ async function updateRunSentiment({
   platform,
   runId,
 }: {
-  site: { id: string; domain: string };
+  site: { id: string; domain: string; summary: string };
   platform: string;
   runId: string;
 }) {
@@ -91,14 +91,29 @@ async function updateRunSentiment({
     const completedQueries = await prisma.citationQuery.findMany({
       where: { runId },
     });
-    const { label, summary } = await analyzeSentiment({
+    const { label, summary, citations } = await analyzeSentiment({
       domain: site.domain,
       queries: completedQueries,
+      siteSummary: site.summary,
     });
     await prisma.citationQueryRun.update({
       where: { id: runId },
       data: { sentimentLabel: label, sentimentSummary: summary },
     });
+
+    if (citations.length > 0) {
+      await prisma.citationClassification.createMany({
+        data: citations.map((classification) => ({
+          url: classification.url,
+          siteId: site.id,
+          runId,
+          relationship: classification.relationship,
+          reason: classification.reason,
+        })),
+        skipDuplicates: true,
+      });
+    }
+
     logger("[%s:%s] Sentiment analysis complete: %s", site.id, platform, label);
   } catch (sentimentError) {
     captureAndLogError(sentimentError, {
@@ -122,7 +137,7 @@ export async function singleQueryRepetition({
   query: string;
   queryFn: QueryFn;
   runId: string;
-  site: { id: string; domain: string };
+  site: { id: string; domain: string; summary: string };
 }): Promise<void> {
   const existing = await prisma.citationQuery.findFirst({
     where: { query, runId },

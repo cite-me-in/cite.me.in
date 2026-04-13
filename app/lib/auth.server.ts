@@ -97,8 +97,8 @@ export async function requireUserAccess(request: Request): Promise<{
     plan: string;
   };
   account: { interval: string } | null;
-  ownedSites: { id: string; domain: string }[];
-  siteUsers: { site: { id: string; domain: string } }[];
+  ownedSites: { id: string; domain: string; summary: string }[];
+  siteUsers: { site: { id: string; domain: string; summary: string } }[];
 }> {
   const cookieHeader = request.headers.get("Cookie");
   const token = await sessionCookie.parse(cookieHeader);
@@ -114,11 +114,13 @@ export async function requireUserAccess(request: Request): Promise<{
             email: true,
             id: true,
             isAdmin: true,
-            ownedSites: { select: { domain: true, id: true } },
+            ownedSites: { select: { domain: true, id: true, summary: true } },
             passwordHash: true,
             plan: true,
             siteUsers: {
-              select: { site: { select: { domain: true, id: true } } },
+              select: {
+                site: { select: { domain: true, id: true, summary: true } },
+              },
             },
           },
         },
@@ -164,14 +166,14 @@ export async function requireSiteAccess({
   domain: string;
   request: Request;
 }): Promise<{
-  site: { id: string; domain: string };
+  site: { id: string; domain: string; summary: string };
   user: { id: string; email: string };
 }> {
   const { user, ownedSites, siteUsers } = await requireUserAccess(request);
   if (user.isAdmin) {
     const site = await prisma.site.findFirst({
       where: { domain },
-      select: { id: true, domain: true },
+      select: { id: true, domain: true, summary: true },
     });
     if (site) return { site, user };
     else throw new Response("Not found", { status: 404 });

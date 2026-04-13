@@ -83,6 +83,7 @@ export default function TopCompetitors({
 export function topCompetitors(
   queries: { citations: string[] }[],
   ownDomain: string,
+  classifiedUrls?: Set<string>,
 ): {
   total: number;
   ownCitations: number;
@@ -102,7 +103,10 @@ export function topCompetitors(
           !nonCompetitors.has(domain) &&
           !nonCompetitors.has(domain.split(".").slice(1).join("."))
         ) {
-          counts.set(domain, (counts.get(domain) ?? 0) + 1);
+          const isClassified = classifiedUrls?.has(url) ?? false;
+          if (!isClassified) {
+            counts.set(domain, (counts.get(domain) ?? 0) + 1);
+          }
         }
       } catch {
         /* skip invalid URLs */

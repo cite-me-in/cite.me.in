@@ -32,6 +32,7 @@ describe("analyzeSentiment", () => {
     expect(result).toEqual({
       label: "neutral",
       summary: "No queries were run for this platform.",
+      citations: [],
     });
     expect(mockCreate).not.toHaveBeenCalled();
   });
@@ -41,7 +42,8 @@ describe("analyzeSentiment", () => {
       choices: [
         {
           message: {
-            content: '{"label":"positive","summary":"Great visibility."}',
+            content:
+              '{"label":"positive","summary":"Great visibility.","citations":[]}',
           },
         },
       ],
@@ -56,7 +58,11 @@ describe("analyzeSentiment", () => {
       queries: [{ query: "test", citations: [], text: "response" }],
     });
 
-    expect(result).toEqual({ label: "positive", summary: "Great visibility." });
+    expect(result).toEqual({
+      label: "positive",
+      summary: "Great visibility.",
+      citations: [],
+    });
   });
 
   it("should handle all sentiment labels", async () => {
@@ -65,7 +71,11 @@ describe("analyzeSentiment", () => {
     for (const label of labels) {
       mockCreate.mockResolvedValueOnce({
         choices: [
-          { message: { content: `{"label":"${label}","summary":"Test"}` } },
+          {
+            message: {
+              content: `{"label":"${label}","summary":"Test","citations":[]}`,
+            },
+          },
         ],
       });
 
@@ -83,9 +93,9 @@ describe("analyzeSentiment", () => {
   });
 
   it("should include domain and query data in the user message", async () => {
-    let capturedMessages: { role: string; content: string; }[] | undefined;
+    let capturedMessages: { role: string; content: string }[] | undefined;
     mockCreate.mockImplementationOnce(
-      async (args: { messages: typeof capturedMessages; }) => {
+      async (args: { messages: typeof capturedMessages }) => {
         capturedMessages = args.messages;
         return {
           choices: [
@@ -117,9 +127,9 @@ describe("analyzeSentiment", () => {
   });
 
   it("should calculate citation position when found", async () => {
-    let capturedMessages: { role: string; content: string; }[] | undefined;
+    let capturedMessages: { role: string; content: string }[] | undefined;
     mockCreate.mockImplementationOnce(
-      async (args: { messages: typeof capturedMessages; }) => {
+      async (args: { messages: typeof capturedMessages }) => {
         capturedMessages = args.messages;
         return {
           choices: [
@@ -149,9 +159,9 @@ describe("analyzeSentiment", () => {
   });
 
   it("should report not cited when not found", async () => {
-    let capturedMessages: { role: string; content: string; }[] | undefined;
+    let capturedMessages: { role: string; content: string }[] | undefined;
     mockCreate.mockImplementationOnce(
-      async (args: { messages: typeof capturedMessages; }) => {
+      async (args: { messages: typeof capturedMessages }) => {
         capturedMessages = args.messages;
         return {
           choices: [
@@ -185,7 +195,8 @@ describe("analyzeSentiment", () => {
       choices: [
         {
           message: {
-            content: '```json\n{"label":"positive","summary":"Good"}\n```',
+            content:
+              '```json\n{"label":"positive","summary":"Good","citations":[]}\n```',
           },
         },
       ],
@@ -200,7 +211,11 @@ describe("analyzeSentiment", () => {
       queries: [{ query: "test", citations: [], text: "response" }],
     });
 
-    expect(result).toEqual({ label: "positive", summary: "Good" });
+    expect(result).toEqual({
+      label: "positive",
+      summary: "Good",
+      citations: [],
+    });
   });
 
   it("should return neutral on JSON parse error", async () => {
@@ -220,6 +235,7 @@ describe("analyzeSentiment", () => {
     expect(result).toEqual({
       label: "neutral",
       summary: "Sentiment analysis unavailable.",
+      citations: [],
     });
   });
 
@@ -242,6 +258,7 @@ describe("analyzeSentiment", () => {
     expect(result).toEqual({
       label: "neutral",
       summary: "Sentiment analysis unavailable.",
+      citations: [],
     });
   });
 
@@ -262,6 +279,7 @@ describe("analyzeSentiment", () => {
     expect(result).toEqual({
       label: "neutral",
       summary: "Sentiment analysis unavailable.",
+      citations: [],
     });
   });
 
@@ -278,5 +296,108 @@ describe("analyzeSentiment", () => {
         queries: [{ query: "test", citations: [], text: "response" }],
       }),
     ).rejects.toThrow("API error");
+  });
+
+  it("should return classified citations", async () => {
+    mockCreate.mockResolvedValueOnce({
+      choices: [
+        {
+          message: {
+            content: JSON.stringify({
+              label: "positive",
+              summary: "Good visibility.",
+              citations: [
+                {
+                  url: "https://shop.example.com/",
+                  relationship: "direct",
+                  reason: "subdomain",
+                },
+                {
+                  url: "https://blog.other.com/article-about-example",
+                  relationship: "indirect",
+                  reason: "article about brand",
+                },
+                { url: "https://unrelated.com/", relationship: "unrelated" },
+              ],
+            }),
+          },
+        },
+      ],
+    });
+
+    const { default: analyzeSentiment } = await import(
+      "~/lib/llm-visibility/analyzeSentiment"
+    );
+
+    const result = await analyzeSentiment({
+      domain: "example.com",
+      queries: [
+        {
+          query: "test",
+          citations: [
+            "https://shop.example.com/",
+            "https://blog.other.com/article-about-example",
+            "https://unrelated.com/",
+          ],
+          text: "response",
+        },
+      ],
+    });
+
+    expect(result.label).toBe("positive");
+    expect(result.citations).toHaveLength(3);
+    expect(result.citations[0]).toEqual({
+      url: "https://shop.example.com/",
+      relationship: "direct",
+      reason: "subdomain",
+    });
+    expect(result.citations[1]).toEqual({
+      url: "https://blog.other.com/article-about-example",
+      relationship: "indirect",
+      reason: "article about brand",
+    });
+  });
+
+  it("should include unique citations list in user message", async () => {
+    let capturedMessages: { role: string; content: string }[] | undefined;
+    mockCreate.mockImplementationOnce(
+      async (args: { messages: typeof capturedMessages }) => {
+        capturedMessages = args.messages;
+        return {
+          choices: [
+            {
+              message: {
+                content: '{"label":"neutral","summary":"test","citations":[]}',
+              },
+            },
+          ],
+        };
+      },
+    );
+
+    const { default: analyzeSentiment } = await import(
+      "~/lib/llm-visibility/analyzeSentiment"
+    );
+
+    await analyzeSentiment({
+      domain: "example.com",
+      queries: [
+        {
+          query: "test1",
+          citations: ["https://a.com/", "https://b.com/"],
+          text: "response1",
+        },
+        {
+          query: "test2",
+          citations: ["https://b.com/", "https://c.com/"],
+          text: "response2",
+        },
+      ],
+    });
+
+    const userMsg = capturedMessages?.find((m) => m.role === "user");
+    expect(userMsg?.content).toContain("https://a.com/");
+    expect(userMsg?.content).toContain("https://b.com/");
+    expect(userMsg?.content).toContain("https://c.com/");
   });
 });

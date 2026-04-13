@@ -1,14 +1,22 @@
-import OpenAI from "openai";
 import debug from "debug";
+import OpenAI from "openai";
 import { z } from "zod";
 import type { SentimentLabel } from "~/prisma";
 import envVars from "../envVars.server";
 import { isSameDomain } from "../isSameDomain";
 
 const logger = debug("server");
+
+const citationRelationshipSchema = z.object({
+  url: z.string(),
+  relationship: z.enum(["direct", "indirect", "unrelated"]),
+  reason: z.string().optional(),
+});
+
 const schema = z.object({
   label: z.enum(["positive", "negative", "neutral", "mixed"]),
   summary: z.string(),
+  citations: z.array(citationRelationshipSchema).optional(),
 });
 
 const client = new OpenAI({
@@ -20,6 +28,7 @@ const client = new OpenAI({
 export default async function analyzeSentiment({
   domain,
   queries,
+  siteSummary,
 }: {
   domain: string;
   queries: {
@@ -27,12 +36,20 @@ export default async function analyzeSentiment({
     query: string;
     text: string;
   }[];
-}): Promise<{ label: SentimentLabel; summary: string }> {
+  siteSummary?: string;
+}): Promise<{
+  label: SentimentLabel;
+  summary: string;
+  citations: z.infer<typeof citationRelationshipSchema>[];
+}> {
   if (queries.length === 0)
     return {
       label: "neutral",
       summary: "No queries were run for this platform.",
+      citations: [],
     };
+
+  const allCitations = [...new Set(queries.flatMap((q) => q.citations))];
 
   const queryLines = queries
     .map((q) => {
@@ -44,19 +61,32 @@ export default async function analyzeSentiment({
     })
     .join("\n\n---\n\n");
 
+  const siteContext = siteSummary ? `\n\nSite context: ${siteSummary}` : "";
+
   const completion = await client.chat.completions.create({
     model: "glm-5",
     messages: [
       {
         role: "system" as const,
-        content: `You are a brand visibility analyst. Read these AI platform responses and assess whether ${domain} is mentioned positively, negatively, neutrally, or with mixed sentiment. Also note whether it appears prominently in citations. Be concise and factual — no preamble.
+        content: `You are a brand visibility analyst. Analyze AI platform responses for ${domain}.${siteContext}
 
-Respond with a JSON object only, no markdown fences:
-{"label":"positive"|"negative"|"neutral"|"mixed","summary":"2-3 sentence plain-English assessment"}`,
+Tasks:
+1. Assess sentiment (positive/negative/neutral/mixed) and provide a 2-3 sentence summary
+2. Classify each unique citation URL by its relationship to ${domain}:
+   - "direct": Same domain, subdomain, or official presence (e.g., YouTube channel, social media account)
+   - "indirect": Content about the brand/person on another site (e.g., articles, reviews, forum discussions)
+   - "unrelated": No clear connection to the brand
+
+Respond with JSON only, no markdown fences:
+{
+  "label": "positive"|"negative"|"neutral"|"mixed",
+  "summary": "2-3 sentence assessment",
+  "citations": [{"url": "...", "relationship": "direct"|"indirect"|"unrelated", "reason": "brief explanation"}]
+}`,
       },
       {
         role: "user" as const,
-        content: `Domain: ${domain}\n\nResponses:\n\n${queryLines}`,
+        content: `Domain: ${domain}\nUnique citations to classify:\n${allCitations.map((c) => `- ${c}`).join("\n")}\n\nResponses:\n\n${queryLines}`,
       },
     ],
     response_format: { type: "json_object" },
@@ -83,9 +113,17 @@ Respond with a JSON object only, no markdown fences:
     }
 
     const result = schema.parse(parsed);
-    return { label: result.label as SentimentLabel, summary: result.summary };
+    return {
+      label: result.label as SentimentLabel,
+      summary: result.summary,
+      citations: result.citations ?? [],
+    };
   } catch (error) {
     logger("Sentiment analysis parse error: %O", error);
-    return { label: "neutral", summary: "Sentiment analysis unavailable." };
+    return {
+      label: "neutral",
+      summary: "Sentiment analysis unavailable.",
+      citations: [],
+    };
   }
 }

@@ -89,7 +89,7 @@ export async function runQueryOnAllPlatforms({
   query,
   group,
 }: {
-  site: { id: string; domain: string };
+  site: { id: string; domain: string; summary: string };
   query: string;
   group: string;
 }) {
