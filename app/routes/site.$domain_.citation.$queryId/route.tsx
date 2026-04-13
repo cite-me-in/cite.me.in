@@ -10,7 +10,7 @@ import {
 } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
-import { requireUserAccess } from "~/lib/auth.server";
+import { requireSiteAccess } from "~/lib/auth.server";
 import externalLink from "~/lib/externalLink";
 import { isSameDomain } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
@@ -21,37 +21,43 @@ export const handle = { siteNav: true };
 export function meta({ loaderData }: Route.MetaArgs) {
   return [
     {
-      title: `Citations — ${loaderData?.citation.run.site.domain} | Cite.me.in`,
+      title: `Citations — ${loaderData?.site.domain} | Cite.me.in`,
     },
   ];
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const { user } = await requireUserAccess(request);
+  const { site } = await requireSiteAccess({ domain: params.domain, request });
+
   const citation = await prisma.citationQuery.findFirst({
     where: {
       id: params.queryId,
+      run: { siteId: site.id },
+    },
+    select: {
+      citations: true,
+      group: true,
+      id: true,
+      query: true,
+      text: true,
       run: {
-        site: {
-          domain: params.domain,
-          OR: [
-            { ownerId: user.id },
-            { siteUsers: { some: { userId: user.id } } },
-          ],
+        select: {
+          model: true,
+          platform: true,
         },
       },
     },
-    include: { run: { include: { site: true } } },
   });
+
   if (!citation) throw new Response("Not found", { status: 404 });
-  return { citation };
+  return { citation, site };
 }
 
 export default function SiteCitationsPage({
   loaderData,
 }: Route.ComponentProps) {
-  const { citation } = loaderData;
-  const { site, platform, model } = citation.run;
+  const { citation, site } = loaderData;
+  const { platform, model } = citation.run;
 
   return (
     <Main variant="wide">
