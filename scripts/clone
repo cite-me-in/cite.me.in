@@ -2,7 +2,8 @@
 
 # Clone production database to local development database
 #
-# Usage: ./scripts/clone.sh
+# Usage:
+#   scripts/clone.ts
 
 set -eo pipefail
 

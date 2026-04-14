@@ -1,5 +1,12 @@
 #!/usr/bin/env npx tsx
 
+/**
+ * Run this when you want to review new screenshots.
+ *
+ * Usage:
+ *   npx tsx scripts/screenshots.ts
+ */
+
 import { execSync } from "node:child_process";
 import {
   existsSync,

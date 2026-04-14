@@ -4,7 +4,8 @@
 # generate the types, update the database, and deploy to Vercel. This always
 # deploys to production and does not require promotion, so use with care.
 #
-# Usage: ./scripts/deploy.sh
+# Usage:
+#   scripts/deploy.ts
 
 set -eo pipefail
 

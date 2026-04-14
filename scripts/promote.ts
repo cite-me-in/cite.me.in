@@ -3,13 +3,14 @@
 /**
  * Use this to promote the latest deployment to production:
  *
- * pnpm promote
+ * Usage:
+ *   npx tsx scripts/promote.ts
  */
 
 import { confirm } from "@inquirer/prompts";
 import { Vercel } from "@vercel/sdk";
-import type { GetDeploymentResponseBody } from "@vercel/sdk/models/getdeploymentop.js";
 import type { GetDeploymentsResponseBody } from "@vercel/sdk/models/getdeploymentsop.js";
+import type { Deployment } from "@vercel/sdk/models/userevent.js";
 import dotenv from "dotenv";
 import envVars from "env-var";
 import { execFile } from "node:child_process";
@@ -193,7 +194,7 @@ async function getRecentDeployment(): Promise<
  */
 async function promoteToProduction(
   deployment: GetDeploymentsResponseBody["deployments"][0],
-): Promise<GetDeploymentResponseBody> {
+): Promise<Deployment> {
   console.info(
     colorize("blue", "\n⏳ Promoting deployment %s to production...\n"),
     deployment.uid,
@@ -217,9 +218,7 @@ async function promoteToProduction(
  * Wait for a deployment to be ready.
  * Returns the deployment.
  */
-async function waitForDeploy(
-  idOrUrl: string,
-): Promise<GetDeploymentResponseBody> {
+async function waitForDeploy(idOrUrl: string): Promise<Deployment> {
   console.info(colorize("blue", "Waiting for deployment to be ready..."));
   const spinner = ora().start();
 

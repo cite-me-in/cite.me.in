@@ -56,20 +56,51 @@ references, with a link to each source URL.`,
   const metadata = providerMetadata?.google.groundingMetadata as {
     webSearchQueries?: string[];
     groundingChunks?: { web: { uri: string; title: string } }[];
+    groundingSupports?: {
+      segment: { startIndex: number; endIndex: number; text: string };
+      groundingChunkIndices: number[];
+    }[];
   };
 
   const extraQueries = metadata?.webSearchQueries ?? [];
-  const urls = metadata?.groundingChunks?.map((chunk) => chunk.web.uri);
+  const chunks = metadata?.groundingChunks ?? [];
+
   const signal = AbortSignal.timeout(ms("10s"));
-  const urlSources = await map(urls ?? [], async (url) => {
+  const resolvedUrls = await map(chunks, async (chunk) => {
     try {
-      const response = await fetch(url, { redirect: "follow", signal });
-      return response.url;
+      const response = await fetch(chunk.web.uri, {
+        redirect: "follow",
+        signal,
+      });
+      return { url: response.url, title: chunk.web.title };
     } catch {
       return null;
     }
   });
-  const citations = [...new Set(urlSources.filter((url) => url !== null))];
 
-  return { citations, extraQueries, text, usage };
+  const citations = [
+    ...new Set(resolvedUrls.filter(Boolean).map((r) => r!.url)),
+  ];
+
+  const markdownText = addMarkdownCitations(
+    text,
+    resolvedUrls.filter(Boolean) as { url: string; title: string }[],
+  );
+
+  return { citations, extraQueries, text: markdownText, usage };
+}
+
+function addMarkdownCitations(
+  text: string,
+  sources: { url: string; title: string }[],
+): string {
+  const sourcesIndex = text.indexOf("\nSources:\n");
+  if (sourcesIndex === -1 || sources.length === 0) return text;
+
+  const mainText = text.slice(0, sourcesIndex);
+  const markdownSources = sources
+    .map((s, i) => `${i + 1}. [${s.title || s.url}](${s.url})`)
+    .join("\n");
+
+  return `${mainText}\n\n## Sources\n\n${markdownSources}\n`;
 }

@@ -2,7 +2,7 @@
 
 # Upgrade dependencies and run tests
 #
-# Usage: ./scripts/upgrade.sh
+# Usage: scripts/upgrade.ts
 
 set -eo pipefail
 

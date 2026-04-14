@@ -1,9 +1,10 @@
 #!/usr/bin/env tsx
 
 /**
- * Use this to crawl a website and return the content:
+ * This is used to crawl a website and return the content.
  *
- * ./scripts/crawl.ts <domain> [maxPages] [maxWords] [maxSeconds]
+ * Usage:
+ *   npx tsx scripts/crawl.ts <domain> [maxPages] [maxWords] [maxSeconds]
  */
 
 import { execSync } from "node:child_process";

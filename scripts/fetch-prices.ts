@@ -1,5 +1,12 @@
 #!/usr/bin/env infisical --env prod run -- tsx
 
+/**
+ * This is used to fetch the prices from Stripe and save them to a JSON file.
+ *
+ * Usage:
+ *   infisical --env prod run -- tsx scripts/fetch-prices.ts
+ */
+
 import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import Stripe from "stripe";

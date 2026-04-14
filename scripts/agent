@@ -1,2 +1,2 @@
 #!/bin/bash
-claude
+claude $1
