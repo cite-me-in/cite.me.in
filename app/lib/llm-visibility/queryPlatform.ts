@@ -127,7 +127,7 @@ async function updateRunSentiment({
   }
 }
 
-async function upsertCitedPages({ siteId, runId, domain }: { siteId: string; runId: string; domain: string }) {
+export async function upsertCitedPages({ siteId, runId, domain }: { siteId: string; runId: string; domain: string }) {
   const ownCitations = await prisma.citation.findMany({
     where: { runId, siteId, domain },
     select: { url: true },

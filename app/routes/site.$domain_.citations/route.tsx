@@ -80,13 +80,16 @@ export async function loader({ request, params }: Route.LoaderArgs) {
       .map((c) => c.url),
   );
 
+  const citationQueryMap = new Map(
+    runs.flatMap((r) => r.queries.map((q) => [q.id, { id: q.id, query: q.query }])),
+  );
   const gaps = getCitationGaps({
     citations: recentCitations.map(({ url, domain, queryId }) => ({
       url,
       domain,
       queryId,
     })),
-    queries: siteQueries.map(({ id, query }) => ({ id, query })),
+    queries: [...citationQueryMap.values()],
     ownDomain: site.domain,
   });
 

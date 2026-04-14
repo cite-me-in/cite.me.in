@@ -1,4 +1,5 @@
 import { Text } from "@react-email/components";
+import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
 import { sendEmail } from "./sendEmails";
 
@@ -40,7 +41,7 @@ export async function sendCitedPageAlertEmail({
       <Text>
         A page on <strong>{site.domain}</strong> that has been cited{" "}
         {page.citationCount} times is no longer responding:{" "}
-        <a href={page.url}>{page.url}</a>. AI platforms may stop citing this
+        <a href={`${envVars.VITE_APP_URL}/r?url=${encodeURIComponent(page.url)}`}>{page.url}</a>. AI platforms may stop citing this
         page until it is restored.
       </Text>
     ),
