@@ -279,7 +279,7 @@ model Site {
   botInsight              BotInsight?
   botVisits               BotVisit[]
   citationClassifications CitationClassification[]
-  citationRows            Citation[]
+  citations               Citation[]
   citationRuns            CitationQueryRun[]
   content                 String                   @map("content")
   createdAt               DateTime                 @map("created_at")        @default(now())
