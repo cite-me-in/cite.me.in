@@ -115,6 +115,13 @@ async function updateRunSentiment({
       });
     }
 
+    for (const c of citations) {
+      await prisma.citation.updateMany({
+        where: { siteId: site.id, runId, url: c.url },
+        data: { relationship: c.relationship, reason: c.reason ?? null },
+      });
+    }
+
     logger("[%s:%s] Sentiment analysis complete: %s", site.id, platform, label);
   } catch (sentimentError) {
     captureAndLogError(sentimentError, {
