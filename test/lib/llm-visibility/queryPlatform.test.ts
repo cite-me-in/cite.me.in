@@ -149,6 +149,16 @@ describe("queryPlatform", () => {
     }
   });
 
+  it("should upsert CitedPage for own-domain URLs after run", {
+    timeout: 30_000,
+  }, async () => {
+    const pages = await prisma.citedPage.findMany({ where: { siteId: site.id } });
+    // rentail.space URLs: /listings and /faq
+    expect(pages).toHaveLength(2);
+    expect(pages.map((p) => p.url)).toContain("https://rentail.space/listings");
+    expect(pages.every((p) => p.citationCount > 0)).toBe(true);
+  });
+
   it("should persist CitationQuery shape correctly", {
     timeout: 30_000,
   }, async () => {

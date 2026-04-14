@@ -71,6 +71,7 @@ export async function queryPlatform({
       }
 
       await updateRunSentiment({ site, platform, runId: run.id });
+      await upsertCitedPages({ siteId: site.id, runId: run.id, domain: site.domain });
     }
   } catch (error) {
     captureAndLogError(error, {
@@ -122,6 +123,25 @@ async function updateRunSentiment({
   } catch (sentimentError) {
     captureAndLogError(sentimentError, {
       extra: { siteId: site.id, platform, runId },
+    });
+  }
+}
+
+async function upsertCitedPages({ siteId, runId, domain }: { siteId: string; runId: string; domain: string }) {
+  const ownCitations = await prisma.citation.findMany({
+    where: { runId, siteId, domain },
+    select: { url: true },
+  });
+
+  const urlCounts = new Map<string, number>();
+  for (const { url } of ownCitations)
+    urlCounts.set(url, (urlCounts.get(url) ?? 0) + 1);
+
+  for (const [url, count] of urlCounts) {
+    await prisma.citedPage.upsert({
+      where: { siteId_url: { siteId, url } },
+      create: { url, siteId, citationCount: count },
+      update: { citationCount: { increment: count } },
     });
   }
 }
