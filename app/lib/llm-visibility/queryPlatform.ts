@@ -3,6 +3,7 @@ import debug from "debug";
 import { sleep } from "radashi";
 import invariant from "tiny-invariant";
 import captureAndLogError from "~/lib/captureAndLogError.server";
+import { normalizeDomain } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
 import {
   checkUsageLimits,
@@ -167,7 +168,7 @@ export async function singleQueryRepetition({
       outputTokens: usage.outputTokens ?? 0,
     });
     logger("[%s:%s] %s (group: %s)", site.id, platform, query, group);
-    await prisma.citationQuery.create({
+    const citationRecord = await prisma.citationQuery.create({
       data: {
         group,
         citations,
@@ -177,6 +178,19 @@ export async function singleQueryRepetition({
         text,
       },
     });
+
+    if (citations.length > 0) {
+      await prisma.citation.createMany({
+        data: citations.map((url) => ({
+          url,
+          domain: normalizeDomain(url),
+          queryId: citationRecord.id,
+          runId,
+          siteId: site.id,
+        })),
+        skipDuplicates: true,
+      });
+    }
   } catch (error) {
     captureAndLogError(error, {
       extra: {

@@ -121,6 +121,29 @@ describe("queryPlatform", () => {
     ).toBe(3);
   });
 
+  it("should create Citation records for each cited URL", {
+    timeout: 30_000,
+  }, async () => {
+    const citations = await prisma.citation.findMany({
+      where: { siteId: site.id },
+      orderBy: { createdAt: "asc" },
+    });
+
+    // 2 queries: query[0] has 2 URLs, query[1] has 3 URLs = 5 total
+    expect(citations.length).toBe(5);
+
+    const domains = citations.map((c) => c.domain);
+    expect(domains).toContain("rentail.space");
+    expect(domains).toContain("other.com");
+    expect(domains).toContain("example.com");
+
+    for (const c of citations) {
+      expect(c.queryId).toBeTruthy();
+      expect(c.runId).toBeTruthy();
+      expect(c.siteId).toBe(site.id);
+    }
+  });
+
   it("should create a run and store citation queries for each query", {
     timeout: 30_000,
   }, async () => {
