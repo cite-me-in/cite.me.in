@@ -4,12 +4,14 @@ import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/Tabs";
 import { requireSiteAccess } from "~/lib/auth.server";
+import { getCitationGaps } from "~/lib/citationGapAnalysis.server";
 import { getDomainMeta } from "~/lib/domainMeta.server";
 import { isSameDomain } from "~/lib/isSameDomain";
 import PLATFORMS from "~/lib/llm-visibility/platforms";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 import BrandSentiment from "./BrandSentiment";
+import CitationGapAnalysis from "./CitationGapAnalysis";
 import CitationsRecentRun from "./CitationsRecentRun";
 import RelatedCitations from "./RelatedCitations";
 import TopCompetitors, { topCompetitors } from "./TopCompetitors";
@@ -78,6 +80,16 @@ export async function loader({ request, params }: Route.LoaderArgs) {
       .map((c) => c.url),
   );
 
+  const gaps = getCitationGaps({
+    citations: recentCitations.map(({ url, domain, queryId }) => ({
+      url,
+      domain,
+      queryId,
+    })),
+    queries: siteQueries.map(({ id, query }) => ({ id, query })),
+    ownDomain: site.domain,
+  });
+
   const citationsForCompetitors = recentCitations.map(({ url, domain }) => ({
     url,
     domain,
@@ -129,6 +141,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     runs,
     siteQueries,
     competitors,
+    gaps,
     classifications: recentCitations,
     shareOfVoice: {
       count: weightedCitations,
@@ -181,6 +194,7 @@ export default function SiteCitationsPage({
     runs,
     siteQueries,
     competitors,
+    gaps,
     classifications,
     shareOfVoice,
     relatedCitations,
@@ -252,6 +266,7 @@ export default function SiteCitationsPage({
             competitors={competitors}
             shareOfVoice={shareOfVoice}
           />
+          <CitationGapAnalysis gaps={gaps} />
           <VisibilityCharts
             recentRuns={recentRuns}
             site={site}
