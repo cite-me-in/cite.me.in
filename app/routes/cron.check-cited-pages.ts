@@ -18,7 +18,10 @@ export async function loader({ request }: Route.LoaderArgs) {
     const staleThreshold = new Date(Date.now() - STALE_HOURS * 60 * 60 * 1000);
     const pages = await prisma.citedPage.findMany({
       where: {
-        OR: [{ lastCheckedAt: null }, { lastCheckedAt: { lt: staleThreshold } }],
+        OR: [
+          { lastCheckedAt: null },
+          { lastCheckedAt: { lt: staleThreshold } },
+        ],
       },
       include: { site: { select: { ownerId: true } } },
       take: 100,
@@ -27,7 +30,9 @@ export async function loader({ request }: Route.LoaderArgs) {
 
     const results = [];
     for (const page of pages) {
-      const { statusCode, contentHash, isHealthy } = await checkCitedPageHealth(page.url);
+      const { statusCode, contentHash, isHealthy } = await checkCitedPageHealth(
+        page.url,
+      );
       const wasHealthy = page.isHealthy;
 
       await prisma.citedPage.update({
@@ -44,6 +49,9 @@ export async function loader({ request }: Route.LoaderArgs) {
     return data({ ok: true, checked: results.length, results });
   } catch (error) {
     captureAndLogError(error);
-    return data({ ok: false, error: error instanceof Error ? error.message : String(error) });
+    return data({
+      ok: false,
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
 }

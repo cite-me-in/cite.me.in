@@ -55,7 +55,7 @@ describe("fetchSiteContent", () => {
       maxSeconds: 10,
     });
     const summary = await summarize({ domain, content });
-    expect(summary).toContain('Mocked AI insight');
+    expect(summary).toContain("Mocked AI insight");
   });
 
   it("should return null when response is not ok", async () => {

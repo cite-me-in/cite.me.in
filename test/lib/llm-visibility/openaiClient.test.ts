@@ -2,7 +2,6 @@ import { generateText } from "ai";
 import { describe, expect, it, vi } from "vitest";
 import openaiClient from "~/lib/llm-visibility/openaiClient";
 
-
 vi.mock("@ai-sdk/openai", () => {
   const openai = Object.assign(
     vi.fn(() => "mock-model"),

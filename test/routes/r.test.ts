@@ -7,7 +7,9 @@ import { port } from "../helpers/launchBrowser";
 const BASE = `http://localhost:${port}`;
 const DEST = "/sites";
 
-afterEach(() => prisma.user.deleteMany({ where: { email: { contains: "r-route-test" } } }));
+afterEach(() =>
+  prisma.user.deleteMany({ where: { email: { contains: "r-route-test" } } }),
+);
 
 describe("/r proxy route", () => {
   it("should redirect to url and mark emailVerifiedAt when token is valid", async () => {
@@ -33,7 +35,12 @@ describe("/r proxy route", () => {
     const email = "r-route-test-2@example.com";
     const verifiedAt = new Date("2025-01-01");
     await prisma.user.create({
-      data: { id: "r-route-2", email, passwordHash: await hashPassword("x"), emailVerifiedAt: verifiedAt },
+      data: {
+        id: "r-route-2",
+        email,
+        passwordHash: await hashPassword("x"),
+        emailVerifiedAt: verifiedAt,
+      },
     });
     const token = generateUnsubscribeToken(email);
     const url = new URL("/r", BASE);

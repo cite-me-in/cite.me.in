@@ -174,12 +174,18 @@ function addSchemaProperty({
   ) {
     const properties = prop.items.properties ?? {};
     const thisParent = `${parent ?? ""}${name}[].`;
-    for (const [name, prop] of alphabetical(Object.entries(properties), ([n]) => n))
+    for (const [name, prop] of alphabetical(
+      Object.entries(properties),
+      ([n]) => n,
+    ))
       addSchemaProperty({ name, prop, lines, parent: thisParent });
   } else if (type === "object" && "properties" in prop && prop.properties) {
     const properties = prop.properties;
     const thisParent = `${parent ?? ""}${name}.`;
-    for (const [name, prop] of alphabetical(Object.entries(properties), ([n]) => n))
+    for (const [name, prop] of alphabetical(
+      Object.entries(properties),
+      ([n]) => n,
+    ))
       addSchemaProperty({ name, prop, lines, parent: thisParent });
   } else {
     lines.push(

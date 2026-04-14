@@ -1,6 +1,5 @@
 import prisma from "~/lib/prisma.server";
 
-
 export async function requireAdmin(request: Request): Promise<{
   id: string;
   email: string;

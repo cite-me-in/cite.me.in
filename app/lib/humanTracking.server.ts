@@ -146,7 +146,10 @@ export default async function recordHumanVisit({
   } catch (error) {
     // Race condition: two concurrent requests for the same visitor both attempted
     // insert. Retry as a plain update — the row now exists.
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
       await prisma.humanVisit.update({
         where: { date_siteId_visitorId: { date, siteId: site.id, visitorId } },
         data: { count: { increment: 1 }, lastSeen: new Date() },

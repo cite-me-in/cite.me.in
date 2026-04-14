@@ -29,7 +29,12 @@ export default function VisitorTrafficChart({
   chartData,
 }: {
   platforms: string[];
-  chartData: { date: string; total: number; nonAi: number; [key: string]: number | string }[];
+  chartData: {
+    date: string;
+    total: number;
+    nonAi: number;
+    [key: string]: number | string;
+  }[];
 }) {
   const config = {
     nonAi: { label: "Non-AI", color: NON_AI_COLOR },

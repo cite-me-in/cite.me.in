@@ -20,17 +20,24 @@ export function getCitationGaps({
     if (c.domain === ownDomain) continue;
     if (nonCompetitors.has(c.domain)) continue;
     if (nonCompetitors.has(c.domain.split(".").slice(1).join("."))) continue;
-    if (!competitorQueries.has(c.domain)) competitorQueries.set(c.domain, new Set());
-    competitorQueries.get(c.domain)!.add(c.queryId);
+    if (!competitorQueries.has(c.domain))
+      competitorQueries.set(c.domain, new Set());
+    competitorQueries.get(c.domain)?.add(c.queryId);
   }
 
-  const gaps: { competitorDomain: string; queries: { id: string; query: string }[] }[] = [];
+  const gaps: {
+    competitorDomain: string;
+    queries: { id: string; query: string }[];
+  }[] = [];
   for (const [domain, queryIds] of competitorQueries) {
     const gapQueryIds = [...queryIds].filter((id) => !ownQueryIds.has(id));
     if (gapQueryIds.length === 0) continue;
     gaps.push({
       competitorDomain: domain,
-      queries: gapQueryIds.map((id) => queryMap.get(id)!).filter(Boolean),
+      queries: gapQueryIds.flatMap((id) => {
+        const q = queryMap.get(id);
+        return q ? [q] : [];
+      }),
     });
   }
 

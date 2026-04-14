@@ -41,11 +41,17 @@ export async function sendCitedPageAlertEmail({
       <Text>
         A page on <strong>{site.domain}</strong> that has been cited{" "}
         {page.citationCount} times is no longer responding:{" "}
-        <a href={`${envVars.VITE_APP_URL}/r?url=${encodeURIComponent(page.url)}`}>{page.url}</a>. AI platforms may stop citing this
-        page until it is restored.
+        <a
+          href={`${envVars.VITE_APP_URL}/r?url=${encodeURIComponent(page.url)}`}
+        >
+          {page.url}
+        </a>
+        . AI platforms may stop citing this page until it is restored.
       </Text>
     ),
   });
 
-  await prisma.sentEmail.create({ data: { userId: siteOwnerId, type: dedupKey } });
+  await prisma.sentEmail.create({
+    data: { userId: siteOwnerId, type: dedupKey },
+  });
 }

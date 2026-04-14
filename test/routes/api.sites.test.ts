@@ -18,7 +18,7 @@ function get(path: string, token?: string) {
 }
 
 beforeAll(async () => {
-  const user = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { id: USER_ID },
     create: {
       id: USER_ID,
@@ -58,12 +58,27 @@ beforeAll(async () => {
     select: { id: true },
   });
 
-  const site = await prisma.site.findFirst({ where: { domain: DOMAIN }, select: { id: true } });
+  const site = await prisma.site.findFirst({
+    where: { domain: DOMAIN },
+    select: { id: true },
+  });
   if (site) {
     await prisma.citation.createMany({
       data: [
-        { url: `https://${DOMAIN}/page1`, domain: DOMAIN, queryId: QUERY_ID, runId: RUN_ID, siteId: site.id },
-        { url: `https://${DOMAIN}/page2`, domain: DOMAIN, queryId: QUERY_ID, runId: RUN_ID, siteId: site.id },
+        {
+          url: `https://${DOMAIN}/page1`,
+          domain: DOMAIN,
+          queryId: QUERY_ID,
+          runId: RUN_ID,
+          siteId: site.id,
+        },
+        {
+          url: `https://${DOMAIN}/page2`,
+          domain: DOMAIN,
+          queryId: QUERY_ID,
+          runId: RUN_ID,
+          siteId: site.id,
+        },
       ],
       skipDuplicates: true,
     });

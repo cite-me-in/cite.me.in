@@ -29,7 +29,12 @@ describe("cron.check-cited-pages", () => {
       },
     });
     await prisma.citedPage.create({
-      data: { id: "page-ccp-1", url: "https://example.com/guide", siteId: "site-ccp-1", citationCount: 5 },
+      data: {
+        id: "page-ccp-1",
+        url: "https://example.com/guide",
+        siteId: "site-ccp-1",
+        citationCount: 5,
+      },
     });
   });
 
@@ -38,11 +43,17 @@ describe("cron.check-cited-pages", () => {
     const request = new Request("http://localhost/cron/check-cited-pages", {
       headers: { authorization: "Bearer test-secret" },
     });
-    const response = await loader({ request, params: {}, context: {} } as never);
+    const response = await loader({
+      request,
+      params: {},
+      context: {},
+    } as never);
     const body = await (response as unknown as Response).json();
     expect(body.ok).toBe(true);
 
-    const page = await prisma.citedPage.findUnique({ where: { id: "page-ccp-1" } });
+    const page = await prisma.citedPage.findUnique({
+      where: { id: "page-ccp-1" },
+    });
     expect(page?.statusCode).toBe(200);
     expect(page?.isHealthy).toBe(true);
     expect(page?.lastCheckedAt).toBeTruthy();
@@ -51,6 +62,8 @@ describe("cron.check-cited-pages", () => {
   it("should reject requests without auth", async () => {
     const { loader } = await import("~/routes/cron.check-cited-pages");
     const request = new Request("http://localhost/cron/check-cited-pages");
-    await expect(loader({ request, params: {}, context: {} } as never)).rejects.toThrow();
+    await expect(
+      loader({ request, params: {}, context: {} } as never),
+    ).rejects.toThrow();
   });
 });

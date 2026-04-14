@@ -10,7 +10,10 @@ import analyzeSentiment from "~/lib/llm-visibility/analyzeSentiment";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import PLATFORMS from "~/lib/llm-visibility/platformQueries.server";
 import type { QueryFn } from "~/lib/llm-visibility/queryFn";
-import { singleQueryRepetition, upsertCitedPages } from "~/lib/llm-visibility/queryPlatform";
+import {
+  singleQueryRepetition,
+  upsertCitedPages,
+} from "~/lib/llm-visibility/queryPlatform";
 import prisma from "~/lib/prisma.server";
 import { crawl } from "~/lib/scrape/crawl";
 import { summarize } from "~/lib/scrape/summarize";
@@ -189,5 +192,9 @@ async function runPlatformWithProgress({
     captureAndLogError(error, { extra: { siteId: site.id, platform } });
   }
 
-  await upsertCitedPages({ siteId: site.id, runId: run.id, domain: site.domain });
+  await upsertCitedPages({
+    siteId: site.id,
+    runId: run.id,
+    domain: site.domain,
+  });
 }

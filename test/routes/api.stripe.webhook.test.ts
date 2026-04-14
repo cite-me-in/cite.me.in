@@ -19,7 +19,9 @@ function signedRequest(payload: string) {
       computeHMACSignature: (payload: string, secret: string) =>
         createHmac("sha256", secret).update(payload).digest("hex"),
       computeHMACSignatureAsync: (payload: string, secret: string) =>
-        Promise.resolve(createHmac("sha256", secret).update(payload).digest("hex")),
+        Promise.resolve(
+          createHmac("sha256", secret).update(payload).digest("hex"),
+        ),
       computeSHA256Async: (data: Uint8Array) =>
         Promise.resolve(createHash("sha256").update(data).digest()),
     },
@@ -92,7 +94,9 @@ describe("api.stripe.webhook", () => {
       const response = await signedRequest(payload);
       expect(response.status).toBe(200);
 
-      const user = await prisma.user.findUnique({ where: { id: "user-webhook-1" } });
+      const user = await prisma.user.findUnique({
+        where: { id: "user-webhook-1" },
+      });
       expect(user?.plan).toBe("paid");
       const account = await prisma.account.findUnique({
         where: { userId: "user-webhook-1" },
@@ -156,7 +160,9 @@ describe("api.stripe.webhook", () => {
       const response = await signedRequest(payload);
       expect(response.status).toBe(200);
 
-      const user = await prisma.user.findUnique({ where: { id: "user-webhook-1" } });
+      const user = await prisma.user.findUnique({
+        where: { id: "user-webhook-1" },
+      });
       expect(user?.plan).toBe("cancelled");
     });
 

@@ -19,7 +19,9 @@ export default async function queryClaude({
   query: string;
 }): ReturnType<QueryFn> {
   const { sources, text, usage } = await generateText({
-    model: createAnthropic({ apiKey: envVars.ANTHROPIC_API_KEY, })("claude-haiku-4-5"),
+    model: createAnthropic({ apiKey: envVars.ANTHROPIC_API_KEY })(
+      "claude-haiku-4-5",
+    ),
     prompt: [
       {
         role: "system",
@@ -49,7 +51,7 @@ references, with a link to each source URL.`,
       source.sourceType === "url" &&
       source.providerMetadata?.anthropic?.citedText &&
       source.url,
-  ) as { url: string; }[];
+  ) as { url: string }[];
   const citations = [...new Set(urlSources.map(({ url }) => url))];
 
   return { citations, extraQueries: [], text, usage };

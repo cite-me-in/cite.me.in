@@ -1,20 +1,89 @@
 {
   "planPath": "docs/plans/2026-04-13-cited-page-health-and-gap-analysis.md",
   "tasks": [
-    {"id": 1, "subject": "Task 1: Add Citation model to schema", "status": "pending"},
-    {"id": 2, "subject": "Task 2: Dual-write Citation records in singleQueryRepetition", "status": "pending", "blockedBy": [1]},
-    {"id": 3, "subject": "Task 3: Write relationship to Citation after sentiment analysis", "status": "pending", "blockedBy": [2]},
-    {"id": 4, "subject": "Task 4: Write and run backfill script", "status": "pending", "blockedBy": [3]},
-    {"id": 5, "subject": "Task 5: Switch citation reads to use Citation table", "status": "pending", "blockedBy": [4]},
-    {"id": 6, "subject": "Task 6: Remove old citation structures (contract phase)", "status": "pending", "blockedBy": [5]},
-    {"id": 7, "subject": "Task 7: Add CitedPage model to schema", "status": "pending", "blockedBy": [6]},
-    {"id": 8, "subject": "Task 8: Upsert CitedPage after each citation run", "status": "pending", "blockedBy": [7]},
-    {"id": 9, "subject": "Task 9: Create page health checker utility", "status": "pending", "blockedBy": [7]},
-    {"id": 10, "subject": "Task 10: Create cron job for page health checks", "status": "pending", "blockedBy": [8, 9]},
-    {"id": 11, "subject": "Task 11: Alert email for broken cited page", "status": "pending", "blockedBy": [10]},
-    {"id": 12, "subject": "Task 12: Cited Pages UI route", "status": "pending", "blockedBy": [8]},
-    {"id": 13, "subject": "Task 13: Implement citation gap analysis logic", "status": "pending", "blockedBy": [6]},
-    {"id": 14, "subject": "Task 14: Add Gap Analysis UI to Citations page", "status": "pending", "blockedBy": [13]}
+    {
+      "id": 1,
+      "subject": "Task 1: Add Citation model to schema",
+      "status": "pending"
+    },
+    {
+      "id": 2,
+      "subject": "Task 2: Dual-write Citation records in singleQueryRepetition",
+      "status": "pending",
+      "blockedBy": [1]
+    },
+    {
+      "id": 3,
+      "subject": "Task 3: Write relationship to Citation after sentiment analysis",
+      "status": "pending",
+      "blockedBy": [2]
+    },
+    {
+      "id": 4,
+      "subject": "Task 4: Write and run backfill script",
+      "status": "pending",
+      "blockedBy": [3]
+    },
+    {
+      "id": 5,
+      "subject": "Task 5: Switch citation reads to use Citation table",
+      "status": "pending",
+      "blockedBy": [4]
+    },
+    {
+      "id": 6,
+      "subject": "Task 6: Remove old citation structures (contract phase)",
+      "status": "pending",
+      "blockedBy": [5]
+    },
+    {
+      "id": 7,
+      "subject": "Task 7: Add CitedPage model to schema",
+      "status": "pending",
+      "blockedBy": [6]
+    },
+    {
+      "id": 8,
+      "subject": "Task 8: Upsert CitedPage after each citation run",
+      "status": "pending",
+      "blockedBy": [7]
+    },
+    {
+      "id": 9,
+      "subject": "Task 9: Create page health checker utility",
+      "status": "pending",
+      "blockedBy": [7]
+    },
+    {
+      "id": 10,
+      "subject": "Task 10: Create cron job for page health checks",
+      "status": "pending",
+      "blockedBy": [8, 9]
+    },
+    {
+      "id": 11,
+      "subject": "Task 11: Alert email for broken cited page",
+      "status": "pending",
+      "blockedBy": [10]
+    },
+    {
+      "id": 12,
+      "subject": "Task 12: Cited Pages UI route",
+      "status": "pending",
+      "blockedBy": [8]
+    },
+    {
+      "id": 13,
+      "subject": "Task 13: Implement citation gap analysis logic",
+      "status": "pending",
+      "blockedBy": [6]
+    },
+    {
+      "id": 14,
+      "subject": "Task 14: Add Gap Analysis UI to Citations page",
+      "status": "pending",
+      "blockedBy": [13]
+    }
   ],
   "lastUpdated": "2026-04-13T00:00:00Z"
 }

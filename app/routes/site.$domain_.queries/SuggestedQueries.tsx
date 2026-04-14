@@ -27,17 +27,20 @@ export default function SuggestedQueries() {
   // Group suggestions by group and sort by group/group's queries
   const groupedSuggestions = suggestions
     ? [...suggestions]
-        .sort((a, b) => a.group.localeCompare(b.group) || a.query.localeCompare(b.query))
+        .sort(
+          (a, b) =>
+            a.group.localeCompare(b.group) || a.query.localeCompare(b.query),
+        )
         .reduce(
-        (acc, suggestion) => {
-          if (!acc[suggestion.group]) {
-            acc[suggestion.group] = [];
-          }
-          acc[suggestion.group].push(suggestion);
-          return acc;
-        },
-        {} as Record<string, typeof suggestions>,
-      )
+          (acc, suggestion) => {
+            if (!acc[suggestion.group]) {
+              acc[suggestion.group] = [];
+            }
+            acc[suggestion.group].push(suggestion);
+            return acc;
+          },
+          {} as Record<string, typeof suggestions>,
+        )
     : {};
 
   return (

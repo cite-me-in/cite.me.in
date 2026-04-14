@@ -2,7 +2,6 @@ import { generateText } from "ai";
 import { describe, expect, it, vi } from "vitest";
 import queryPerplexity from "~/lib/llm-visibility/perplexityClient";
 
-
 vi.mock("@ai-sdk/perplexity", () => ({
   createPerplexity: vi.fn(() => vi.fn(() => "mock-model")),
 }));

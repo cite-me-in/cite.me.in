@@ -2,11 +2,36 @@
   "planPath": "docs/plans/2026-04-03-webhooks.md",
   "tasks": [
     { "id": 1, "subject": "Task 1: Schema Changes", "status": "pending" },
-    { "id": 2, "subject": "Task 2: Core Webhook Library", "status": "pending", "blockedBy": [1] },
-    { "id": 3, "subject": "Task 3: Retry Cron Route", "status": "pending", "blockedBy": [2] },
-    { "id": 4, "subject": "Task 4: Wire Up sign-up.tsx", "status": "pending", "blockedBy": [2] },
-    { "id": 5, "subject": "Task 5: Wire Up sites.server.ts", "status": "pending", "blockedBy": [2] },
-    { "id": 6, "subject": "Task 6: Admin Endpoint Seed Script", "status": "pending", "blockedBy": [3, 4, 5] }
+    {
+      "id": 2,
+      "subject": "Task 2: Core Webhook Library",
+      "status": "pending",
+      "blockedBy": [1]
+    },
+    {
+      "id": 3,
+      "subject": "Task 3: Retry Cron Route",
+      "status": "pending",
+      "blockedBy": [2]
+    },
+    {
+      "id": 4,
+      "subject": "Task 4: Wire Up sign-up.tsx",
+      "status": "pending",
+      "blockedBy": [2]
+    },
+    {
+      "id": 5,
+      "subject": "Task 5: Wire Up sites.server.ts",
+      "status": "pending",
+      "blockedBy": [2]
+    },
+    {
+      "id": 6,
+      "subject": "Task 6: Admin Endpoint Seed Script",
+      "status": "pending",
+      "blockedBy": [3, 4, 5]
+    }
   ],
   "lastUpdated": "2026-04-03T00:00:00Z"
 }

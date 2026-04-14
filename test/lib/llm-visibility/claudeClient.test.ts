@@ -2,7 +2,6 @@ import { generateText } from "ai";
 import { describe, expect, it, vi } from "vitest";
 import queryClaude from "~/lib/llm-visibility/claudeClient.server";
 
-
 vi.mock("@ai-sdk/anthropic", () => {
   const anthropic = Object.assign(
     vi.fn(() => "mock-model"),

@@ -1,14 +1,47 @@
 {
   "planPath": "docs/plans/2026-03-28-api-token-simplification.md",
   "tasks": [
-    {"id": 3, "subject": "Task 1: Update apiAuth.test.ts for new token format", "status": "pending"},
-    {"id": 4, "subject": "Task 2: Implement new verifyUserAccess and verifySiteAccess", "status": "pending", "blockedBy": [3]},
-    {"id": 5, "subject": "Task 3: Update regenerateApiKey token format", "status": "pending", "blockedBy": [4]},
-    {"id": 6, "subject": "Task 4: Replace api.me.$email.ts with api.me.ts", "status": "pending", "blockedBy": [4, 5]},
-    {"id": 7, "subject": "Task 5: Update OpenAPI spec", "status": "pending"},
-    {"id": 8, "subject": "Task 6: Update api.me.test.ts", "status": "pending", "blockedBy": [6, 7]},
-    {"id": 9, "subject": "Task 7: Clear existing API keys", "status": "pending"},
-    {"id": 10, "subject": "Task 8: Run full typecheck and tests", "status": "pending", "blockedBy": [8, 9]}
+    {
+      "id": 3,
+      "subject": "Task 1: Update apiAuth.test.ts for new token format",
+      "status": "pending"
+    },
+    {
+      "id": 4,
+      "subject": "Task 2: Implement new verifyUserAccess and verifySiteAccess",
+      "status": "pending",
+      "blockedBy": [3]
+    },
+    {
+      "id": 5,
+      "subject": "Task 3: Update regenerateApiKey token format",
+      "status": "pending",
+      "blockedBy": [4]
+    },
+    {
+      "id": 6,
+      "subject": "Task 4: Replace api.me.$email.ts with api.me.ts",
+      "status": "pending",
+      "blockedBy": [4, 5]
+    },
+    { "id": 7, "subject": "Task 5: Update OpenAPI spec", "status": "pending" },
+    {
+      "id": 8,
+      "subject": "Task 6: Update api.me.test.ts",
+      "status": "pending",
+      "blockedBy": [6, 7]
+    },
+    {
+      "id": 9,
+      "subject": "Task 7: Clear existing API keys",
+      "status": "pending"
+    },
+    {
+      "id": 10,
+      "subject": "Task 8: Run full typecheck and tests",
+      "status": "pending",
+      "blockedBy": [8, 9]
+    }
   ],
   "lastUpdated": "2026-03-28T00:00:00Z"
 }

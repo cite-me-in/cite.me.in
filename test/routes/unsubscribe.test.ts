@@ -28,7 +28,10 @@ describe("unsubscribe", () => {
       },
     });
 
-    const res = await unsubscribe({ token: "bad-token", email: "unsub1@test.com" });
+    const res = await unsubscribe({
+      token: "bad-token",
+      email: "unsub1@test.com",
+    });
     expect(res.status).toBe(400);
   });
 
@@ -51,7 +54,9 @@ describe("unsubscribe", () => {
     const res = await unsubscribe({ token, email: "unsub2@test.com" });
     expect(res.status).toBe(200);
 
-    const user = await prisma.user.findUnique({ where: { id: "user-unsub-2" } });
+    const user = await prisma.user.findUnique({
+      where: { id: "user-unsub-2" },
+    });
     expect(user?.unsubscribed).toBe(true);
   });
 });

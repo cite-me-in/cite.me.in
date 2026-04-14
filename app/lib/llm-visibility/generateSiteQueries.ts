@@ -21,7 +21,7 @@ const model = anthropic("claude-haiku-4-5");
 export default async function generateSiteQueries(site: {
   id: string;
   domain: string;
-}): Promise<{ group: string; query: string; }[]> {
+}): Promise<{ group: string; query: string }[]> {
   const { content } = await prisma.site.findUniqueOrThrow({
     where: { id: site.id },
     select: { content: true },

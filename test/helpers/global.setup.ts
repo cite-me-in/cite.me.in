@@ -17,7 +17,7 @@ export default async function setup() {
     const { stdout } = await promisify(execFile)("lsof", [`-ti:${port}`]);
     const pid = stdout.trim().match(/^\s*(\d+)/m)?.[1];
     if (pid) await promisify(execFile)("kill", ["-9", pid]);
-  } catch { }
+  } catch {}
 
   // Remove Vite dependency cache
   await rm("node_modules/.vite/deps", { recursive: true, force: true });
@@ -32,7 +32,7 @@ export default async function setup() {
   // Vite finishes crawling and bundling deps. By making an HTTP request here
   // (in global setup, outside the 30s test timeout), we ensure Vite completes
   // that work before any browser test calls goto().
-  await fetch(`http://localhost:${port}/`).catch(() => { });
+  await fetch(`http://localhost:${port}/`).catch(() => {});
 
   // Cleanup database: we do this here for Playwright tests, and we do it in the
   // suite.setup.ts for the unit tests

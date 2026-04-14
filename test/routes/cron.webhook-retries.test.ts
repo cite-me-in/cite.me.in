@@ -11,12 +11,18 @@ async function makeRequest() {
 const ENDPOINT_ID = "ep-cron-retry-1";
 
 afterEach(async () => {
-  await prisma.user.deleteMany({ where: { email: "admin-cron-retry@test.com" } });
+  await prisma.user.deleteMany({
+    where: { email: "admin-cron-retry@test.com" },
+  });
 });
 
 beforeEach(async () => {
-  await prisma.webhookDelivery.deleteMany({ where: { endpointId: ENDPOINT_ID } });
-  await prisma.user.deleteMany({ where: { email: "admin-cron-retry@test.com" } });
+  await prisma.webhookDelivery.deleteMany({
+    where: { endpointId: ENDPOINT_ID },
+  });
+  await prisma.user.deleteMany({
+    where: { email: "admin-cron-retry@test.com" },
+  });
 
   await prisma.user.create({
     data: {
@@ -95,8 +101,22 @@ describe("cron.webhook-retries", () => {
     it("should skip DELIVERED and FAILED deliveries", async () => {
       await prisma.webhookDelivery.createMany({
         data: [
-          { id: "delivery-cron-3", endpointId: ENDPOINT_ID, eventType: "user.created", payload: {}, status: "DELIVERED", attempts: 1 },
-          { id: "delivery-cron-4", endpointId: ENDPOINT_ID, eventType: "user.created", payload: {}, status: "FAILED", attempts: 3 },
+          {
+            id: "delivery-cron-3",
+            endpointId: ENDPOINT_ID,
+            eventType: "user.created",
+            payload: {},
+            status: "DELIVERED",
+            attempts: 1,
+          },
+          {
+            id: "delivery-cron-4",
+            endpointId: ENDPOINT_ID,
+            eventType: "user.created",
+            payload: {},
+            status: "FAILED",
+            attempts: 3,
+          },
         ],
       });
 

@@ -18,7 +18,9 @@ export default async function loadSetupMetrics(
     where: { siteId },
     select: {
       platform: true,
-      queries: { select: { query: true, citations: { select: { url: true } } } },
+      queries: {
+        select: { query: true, citations: { select: { url: true } } },
+      },
       sentimentLabel: true,
       sentimentSummary: true,
     },

@@ -43,9 +43,7 @@ export default function SitePagesPage({ loaderData }: Route.ComponentProps) {
       {pages.length > 0 && (
         <div className="flex gap-3">
           <Badge variant="green">{healthyCount} healthy</Badge>
-          {brokenCount > 0 && (
-            <Badge variant="red">{brokenCount} broken</Badge>
-          )}
+          {brokenCount > 0 && <Badge variant="red">{brokenCount} broken</Badge>}
         </div>
       )}
 
@@ -114,7 +112,11 @@ function PageUrl({ url }: { url: string }) {
 function StatusBadge({
   page,
 }: {
-  page: { isHealthy: boolean; statusCode: number | null; lastCheckedAt: Date | null };
+  page: {
+    isHealthy: boolean;
+    statusCode: number | null;
+    lastCheckedAt: Date | null;
+  };
 }) {
   if (!page.lastCheckedAt) return <Badge variant="neutral">pending</Badge>;
   if (page.isHealthy) return <Badge variant="green">healthy</Badge>;

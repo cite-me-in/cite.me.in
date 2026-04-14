@@ -71,7 +71,11 @@ export async function queryPlatform({
       }
 
       await updateRunSentiment({ site, platform, runId: run.id });
-      await upsertCitedPages({ siteId: site.id, runId: run.id, domain: site.domain });
+      await upsertCitedPages({
+        siteId: site.id,
+        runId: run.id,
+        domain: site.domain,
+      });
     }
   } catch (error) {
     captureAndLogError(error, {
@@ -127,7 +131,15 @@ async function updateRunSentiment({
   }
 }
 
-export async function upsertCitedPages({ siteId, runId, domain }: { siteId: string; runId: string; domain: string }) {
+export async function upsertCitedPages({
+  siteId,
+  runId,
+  domain,
+}: {
+  siteId: string;
+  runId: string;
+  domain: string;
+}) {
   const ownCitations = await prisma.citation.findMany({
     where: { runId, siteId, domain },
     select: { url: true },

@@ -73,9 +73,6 @@ describe("queryPlatform", () => {
         summary: "Test summary",
       },
     });
-  });
-
-  beforeAll(async () => {
     let callIndex = 0;
     queryFn = vi.fn<QueryFn>(async () => CITATION_SETS[callIndex++ % 3]);
     await queryPlatform({ ...PLATFORM_ARGS, site, queryFn });
@@ -84,7 +81,6 @@ describe("queryPlatform", () => {
   it("should create a run and store citation queries for each query", {
     timeout: 30_000,
   }, async () => {
-
     const run = await prisma.citationQueryRun.findFirst({
       where: { siteId: site.id, platform: "claude" },
       include: {
@@ -152,7 +148,9 @@ describe("queryPlatform", () => {
   it("should upsert CitedPage for own-domain URLs after run", {
     timeout: 30_000,
   }, async () => {
-    const pages = await prisma.citedPage.findMany({ where: { siteId: site.id } });
+    const pages = await prisma.citedPage.findMany({
+      where: { siteId: site.id },
+    });
     // rentail.space URLs: /listings and /faq
     expect(pages).toHaveLength(2);
     expect(pages.map((p) => p.url)).toContain("https://rentail.space/listings");

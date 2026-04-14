@@ -53,7 +53,10 @@ export async function action({ request }: Route.ActionArgs) {
     data: { email, passwordHash },
   });
 
-  await emitWebhookEvent("user.created", { userId: user.id, email: user.email });
+  await emitWebhookEvent("user.created", {
+    userId: user.id,
+    email: user.email,
+  });
 
   const setCookie = await createSession(user.id, request);
 

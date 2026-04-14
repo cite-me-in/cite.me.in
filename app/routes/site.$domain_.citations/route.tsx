@@ -58,7 +58,14 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     }),
     prisma.citation.findMany({
       where: { siteId: site.id },
-      select: { url: true, domain: true, relationship: true, reason: true, runId: true, queryId: true },
+      select: {
+        url: true,
+        domain: true,
+        relationship: true,
+        reason: true,
+        runId: true,
+        queryId: true,
+      },
       orderBy: { createdAt: "desc" },
     }),
   ]);
@@ -81,7 +88,9 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   );
 
   const citationQueryMap = new Map(
-    runs.flatMap((r) => r.queries.map((q) => [q.id, { id: q.id, query: q.query }])),
+    runs.flatMap((r) =>
+      r.queries.map((q) => [q.id, { id: q.id, query: q.query }]),
+    ),
   );
   const gaps = getCitationGaps({
     citations: recentCitations.map(({ url, domain, queryId }) => ({

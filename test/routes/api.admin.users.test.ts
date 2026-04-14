@@ -89,7 +89,7 @@ describe("api.admin.users", () => {
         email: string;
         id: string;
         plan: string;
-        sites: { domain: string; createdAt: string; }[];
+        sites: { domain: string; createdAt: string }[];
         status: string;
         updatedAt: string;
       }[];

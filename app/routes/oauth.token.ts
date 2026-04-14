@@ -1,8 +1,5 @@
 import { data } from "react-router";
-import {
-  createAccessToken,
-  generateCodeChallenge
-} from "~/lib/oauth/server";
+import { createAccessToken, generateCodeChallenge } from "~/lib/oauth/server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/oauth.token";
 

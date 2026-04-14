@@ -1,19 +1,19 @@
 import envVars from "~/lib/envVars.server";
 import {
-    MODEL_ID as CLAUDE_MODEL_ID,
-    MODEL_PRICING as CLAUDE_PRICING,
+  MODEL_ID as CLAUDE_MODEL_ID,
+  MODEL_PRICING as CLAUDE_PRICING,
 } from "~/lib/llm-visibility/claudeClient.server";
 import {
-    MODEL_ID as GEMINI_MODEL_ID,
-    MODEL_PRICING as GEMINI_PRICING,
+  MODEL_ID as GEMINI_MODEL_ID,
+  MODEL_PRICING as GEMINI_PRICING,
 } from "~/lib/llm-visibility/geminiClient";
 import {
-    MODEL_ID as OPENAI_MODEL_ID,
-    MODEL_PRICING as OPENAI_PRICING,
+  MODEL_ID as OPENAI_MODEL_ID,
+  MODEL_PRICING as OPENAI_PRICING,
 } from "~/lib/llm-visibility/openaiClient";
 import {
-    MODEL_ID as PERPLEXITY_MODEL_ID,
-    MODEL_PRICING as PERPLEXITY_PRICING,
+  MODEL_ID as PERPLEXITY_MODEL_ID,
+  MODEL_PRICING as PERPLEXITY_PRICING,
 } from "~/lib/llm-visibility/perplexityClient";
 import { SERPAPI_PRICING } from "~/lib/llm-visibility/serpApi.server";
 import prisma from "~/lib/prisma.server";

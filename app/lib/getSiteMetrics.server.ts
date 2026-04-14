@@ -70,18 +70,23 @@ export default async function getSiteMetrics(
       (q) => q.run.onDate >= weekStart.toJSON(),
     );
 
-    const currentRunIds = new Set(currentQueries.map((q) => q.run.id));
-    const previousRunIds = new Set(previousQueries.map((q) => q.run.id));
-
     const currentClassifications = currentQueries.flatMap((q) =>
       q.citations
         .filter((c) => c.relationship)
-        .map((c) => ({ url: c.url, relationship: c.relationship as string, runId: q.run.id })),
+        .map((c) => ({
+          url: c.url,
+          relationship: c.relationship as string,
+          runId: q.run.id,
+        })),
     );
     const previousClassifications = previousQueries.flatMap((q) =>
       q.citations
         .filter((c) => c.relationship)
-        .map((c) => ({ url: c.url, relationship: c.relationship as string, runId: q.run.id })),
+        .map((c) => ({
+          url: c.url,
+          relationship: c.relationship as string,
+          runId: q.run.id,
+        })),
     );
 
     const currentDirectUrls = new Set(
@@ -106,7 +111,10 @@ export default async function getSiteMetrics(
     );
 
     const toStringArrayQueries = (qs: typeof currentQueries) =>
-      qs.map((q) => ({ citations: q.citations.map((c) => c.url), text: q.text }));
+      qs.map((q) => ({
+        citations: q.citations.map((c) => c.url),
+        text: q.text,
+      }));
 
     const currentScore = calculateVisibilityScore({
       domain: site.domain,

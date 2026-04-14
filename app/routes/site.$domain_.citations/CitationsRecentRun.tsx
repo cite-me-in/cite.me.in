@@ -96,7 +96,11 @@ export default function RecentVisibility({
                     {query.query}
                   </TableCell>
                   <TableCell className="text-right">
-                    {citationCounts(query.citations.map((c) => c.url), directUrls, indirectUrls)}
+                    {citationCounts(
+                      query.citations.map((c) => c.url),
+                      directUrls,
+                      indirectUrls,
+                    )}
                   </TableCell>
                   <TableCell className="text-right text-foreground/60 text-xs">
                     {formatDateShort(new Date(query.onDate))}

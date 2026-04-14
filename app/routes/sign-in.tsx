@@ -36,14 +36,21 @@ export async function action({ request }: Route.ActionArgs) {
   return redirect(redirectTo, { headers: { "Set-Cookie": setCookie } });
 }
 
-export default function SignIn({ actionData, loaderData }: Route.ComponentProps) {
+export default function SignIn({
+  actionData,
+  loaderData,
+}: Route.ComponentProps) {
   return (
     <AuthForm
       title="Sign in"
       form={
         <Form method="post">
           {loaderData.inviteToken && (
-            <input type="hidden" name="inviteToken" value={loaderData.inviteToken} />
+            <input
+              type="hidden"
+              name="inviteToken"
+              value={loaderData.inviteToken}
+            />
           )}
           <FieldSet>
             <FieldGroup>
