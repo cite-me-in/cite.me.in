@@ -8,7 +8,7 @@ import {
 } from "~/components/ui/Chart";
 import { formatDateMed } from "~/lib/formatDate";
 import calculateVisibilityScore from "~/lib/llm-visibility/calculateVisibilityScore";
-import type { Prisma } from "~/prisma";
+import type { CitationClassification, Prisma } from "~/prisma";
 
 const charts: {
   config: Record<string, { label: string; color: string }>;
@@ -48,7 +48,7 @@ export default function VisibilityCharts({
     include: { queries: true };
   }>[];
   site: { id: string; domain: string };
-  classifications: Prisma.CitationClassificationGetPayload<{}>[];
+  classifications: CitationClassification[];
 }) {
   const data = runs
     .map((run) => runToPoint(run, site, classifications))
@@ -105,7 +105,7 @@ function runToPoint(
     include: { queries: true };
   }>,
   site: { id: string; domain: string },
-  classifications: Prisma.CitationClassificationGetPayload<{}>[],
+  classifications: CitationClassification[],
 ): {
   date: string;
   citations: number;

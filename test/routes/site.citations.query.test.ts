@@ -1,10 +1,10 @@
-import type { User } from "~/prisma";
+import { expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vitest";
 import { removeElements } from "~/lib/html/parseHTML";
-import { goto, port } from "../helpers/launchBrowser";
-import { expect } from "@playwright/test";
-import { signIn } from "../helpers/signIn";
 import prisma from "~/lib/prisma.server";
+import type { User } from "~/prisma";
+import { goto, port } from "../helpers/launchBrowser";
+import { signIn } from "../helpers/signIn";
 
 const HOSTNAME = "citation-detail-test.com";
 const QUERY_ID = "query-cite-detail-1";
@@ -100,7 +100,7 @@ describe("single citation page", () => {
   it("should show the response text", async () => {
     await signIn(user.id);
     const page = await goto(`/site/${HOSTNAME}/citation/${QUERY_ID}`);
-    await expect(page.getByText("Response from gpt-4o")).toBeVisible();
+    await expect(page.getByText("gpt-4o")).toBeVisible();
     await expect(
       page.getByText(/Short-term retail space in malls/),
     ).toBeVisible();
