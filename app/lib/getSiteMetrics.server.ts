@@ -87,6 +87,27 @@ export default async function getSiteMetrics(
       previousRunIds.has(c.runId),
     );
 
+    const currentDirectUrls = new Set(
+      currentClassifications
+        .filter((c) => c.relationship === "direct")
+        .map((c) => normalizeUrl(c.url)),
+    );
+    const currentIndirectUrls = new Set(
+      currentClassifications
+        .filter((c) => c.relationship === "indirect")
+        .map((c) => normalizeUrl(c.url)),
+    );
+    const previousDirectUrls = new Set(
+      previousClassifications
+        .filter((c) => c.relationship === "direct")
+        .map((c) => normalizeUrl(c.url)),
+    );
+    const previousIndirectUrls = new Set(
+      previousClassifications
+        .filter((c) => c.relationship === "indirect")
+        .map((c) => normalizeUrl(c.url)),
+    );
+
     const currentScore = calculateVisibilityScore({
       domain: site.domain,
       queries: currentQueries,
@@ -98,21 +119,46 @@ export default async function getSiteMetrics(
       classifications: previousClassifications,
     });
 
+    const countYourCitations = (
+      queries: typeof currentQueries,
+      domain: string,
+      directUrls: Set<string>,
+      indirectUrls: Set<string>,
+    ) => {
+      let count = 0;
+      for (const q of queries) {
+        for (const c of q.citations) {
+          const normalized = normalizeUrl(c);
+          const host = normalizeDomain(c);
+          if (
+            host === domain ||
+            directUrls.has(normalized) ||
+            indirectUrls.has(normalized)
+          ) {
+            count++;
+          }
+        }
+      }
+      return count;
+    };
+
     return {
       allCitations: {
         current: sum(currentQueries, (q) => q.citations.length),
         previous: sum(previousQueries, (q) => q.citations.length),
       },
       yourCitations: {
-        current: sum(
+        current: countYourCitations(
           currentQueries,
-          (q) =>
-            q.citations.filter((c) => normalizeDomain(c) === domain).length,
+          domain,
+          currentDirectUrls,
+          currentIndirectUrls,
         ),
-        previous: sum(
+        previous: countYourCitations(
           previousQueries,
-          (q) =>
-            q.citations.filter((c) => normalizeDomain(c) === domain).length,
+          domain,
+          previousDirectUrls,
+          previousIndirectUrls,
         ),
       },
       visbilityScore: {
@@ -126,4 +172,18 @@ export default async function getSiteMetrics(
       site,
     };
   });
+}
+
+function normalizeUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    parsed.searchParams.delete("utm_source");
+    parsed.searchParams.delete("utm_medium");
+    parsed.searchParams.delete("utm_campaign");
+    parsed.searchParams.delete("utm_term");
+    parsed.searchParams.delete("utm_content");
+    return parsed.origin + parsed.pathname + parsed.search;
+  } catch {
+    return url;
+  }
 }
