@@ -99,10 +99,13 @@ export default function calculateVisibilityScore({
       isSameDomain({ domain, url: c }),
     );
 
-    if (position !== -1) {
-      queriesWithCitation++;
-      positionWeightSum += 1 / (position + 1);
-    }
+    const hasDirectCitation =
+      position !== -1 ||
+      query.citations.some((c) => directUrls.has(normalizeUrl(c)));
+
+    if (hasDirectCitation) queriesWithCitation++;
+
+    if (position !== -1) positionWeightSum += 1 / (position + 1);
 
     if (query.text.toLowerCase().includes(domainLower)) queriesWithMention++;
   }
