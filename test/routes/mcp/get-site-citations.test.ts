@@ -85,6 +85,25 @@ describe("get_site_citations", () => {
       ],
     });
 
+    await prisma.citationClassification.createMany({
+      data: [
+        {
+          siteId: site.id,
+          runId: openaiRun.id,
+          url: CITATIONS_DOMAIN,
+          relationship: "direct",
+          reason: "Direct mention of site",
+        },
+        {
+          siteId: site.id,
+          runId: anthropicRun.id,
+          url: CITATIONS_DOMAIN,
+          relationship: "direct",
+          reason: "Direct mention of site",
+        },
+      ],
+    });
+
     sessionId = await initSession();
   });
 
@@ -93,6 +112,9 @@ describe("get_site_citations", () => {
       where: { domain: CITATIONS_DOMAIN },
     });
     if (site) {
+      await prisma.citationClassification.deleteMany({
+        where: { siteId: site.id },
+      });
       await prisma.citationQuery.deleteMany({
         where: { run: { siteId: site.id } },
       });
@@ -176,7 +198,12 @@ describe("get_site_citations", () => {
       const content = JSON.parse(body.result.content[0].text) as {
         queries: {
           query: string;
-          platforms: { platform: string; mentionsYourSite: number }[];
+          platforms: {
+            platform: string;
+            mentionsYourSite: number;
+            directCitations: number;
+            indirectCitations: number;
+          }[];
         }[];
       };
 
@@ -194,14 +221,25 @@ describe("get_site_citations", () => {
       invariant(anthropicPlatform, "Anthropic platform not found");
 
       expect(openaiPlatform.mentionsYourSite).toBe(1);
+      expect(openaiPlatform.directCitations).toBe(1);
+      expect(openaiPlatform.indirectCitations).toBe(0);
       expect(anthropicPlatform.mentionsYourSite).toBe(1);
+      expect(anthropicPlatform.directCitations).toBe(1);
+      expect(anthropicPlatform.indirectCitations).toBe(0);
     });
 
     it("should return citations list", async () => {
       const content = JSON.parse(body.result.content[0].text) as {
         queries: {
           query: string;
-          platforms: { platform: string; citations: string[] }[];
+          platforms: {
+            platform: string;
+            citations: {
+              url: string;
+              relationship?: string;
+              reason?: string;
+            }[];
+          }[];
         }[];
       };
 
@@ -214,8 +252,9 @@ describe("get_site_citations", () => {
       );
       invariant(openaiPlatform, "OpenAI platform not found");
 
-      expect(openaiPlatform.citations).toContain("nodejs.org");
-      expect(openaiPlatform.citations).not.toContain(CITATIONS_DOMAIN);
+      const citationUrls = openaiPlatform.citations.map((c) => c.url);
+      expect(citationUrls).toContain("nodejs.org");
+      expect(citationUrls).not.toContain(CITATIONS_DOMAIN);
     });
   });
 

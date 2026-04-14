@@ -90,9 +90,23 @@ export const SiteQueriesSchema = z.object({
       queries: z.array(
         z.object({
           citations: z
-            .array(z.url())
+            .array(
+              z.object({
+                url: z.url().describe("The citation URL"),
+                relationship: z
+                  .enum(["direct", "indirect", "unrelated"])
+                  .optional()
+                  .describe(
+                    "Classification: direct=your domain, indirect=related content, unrelated=not relevant",
+                  ),
+                reason: z
+                  .string()
+                  .optional()
+                  .describe("Explanation of the classification"),
+              }),
+            )
             .describe(
-              "The citations in the query response e.g. `https://example.com/page1`",
+              "The citations in the query response with classification",
             ),
           group: z
             .string()

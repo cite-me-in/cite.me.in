@@ -168,8 +168,8 @@ describe("GET /api/site/:domain/queries", () => {
       expect(Array.isArray(body.platforms[0].queries)).toBe(true);
       expect(body.platforms[0].queries[0].query).toBe("best retail platforms");
       expect(body.platforms[0].queries[0].citations).toEqual([
-        `https://${DOMAIN}/page1`,
-        `https://${DOMAIN}/page2`,
+        { url: `https://${DOMAIN}/page1` },
+        { url: `https://${DOMAIN}/page2` },
       ]);
     });
 

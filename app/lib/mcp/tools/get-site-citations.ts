@@ -21,8 +21,18 @@ export default {
             platform: z.string(),
             model: z.string(),
             response: z.string(),
-            citations: z.array(z.string()),
+            citations: z.array(
+              z.object({
+                url: z.string(),
+                relationship: z
+                  .enum(["direct", "indirect", "unrelated"])
+                  .optional(),
+                reason: z.string().optional(),
+              }),
+            ),
             mentionsYourSite: z.number(),
+            directCitations: z.number(),
+            indirectCitations: z.number(),
           }),
         ),
       }),
@@ -64,17 +74,31 @@ export default {
         };
       }
 
-      const runs = await prisma.citationQueryRun.findMany({
-        where: { siteId: site.id, onDate: latestRun.onDate },
-        select: {
-          platform: true,
-          model: true,
-          onDate: true,
-          queries: {
-            select: { query: true, group: true, citations: true, text: true },
+      const [runs, classifications] = await Promise.all([
+        prisma.citationQueryRun.findMany({
+          where: { siteId: site.id, onDate: latestRun.onDate },
+          select: {
+            id: true,
+            platform: true,
+            model: true,
+            onDate: true,
+            queries: {
+              select: { query: true, group: true, citations: true, text: true },
+            },
           },
-        },
-      });
+        }),
+        prisma.citationClassification.findMany({
+          where: { siteId: site.id },
+          select: { url: true, relationship: true, reason: true, runId: true },
+        }),
+      ]);
+
+      const classificationMap = new Map(
+        classifications.map((c) => [
+          `${c.runId}:${c.url}`,
+          { relationship: c.relationship, reason: c.reason },
+        ]),
+      );
 
       const queryMap = new Map<
         string,
@@ -85,8 +109,14 @@ export default {
             platform: string;
             model: string;
             response: string;
-            citations: string[];
+            citations: {
+              url: string;
+              relationship?: "direct" | "indirect" | "unrelated";
+              reason?: string;
+            }[];
             mentionsYourSite: number;
+            directCitations: number;
+            indirectCitations: number;
           }[];
         }
       >();
@@ -94,16 +124,36 @@ export default {
       for (const run of runs) {
         for (const q of run.queries) {
           const existing = queryMap.get(q.query);
-          const mentionsYourSite = q.citations.filter((c) =>
-            c.toLowerCase().includes(domain.toLowerCase()),
+          const citations = q.citations.map((url) => {
+            const classified = classificationMap.get(`${run.id}:${url}`);
+            return {
+              url,
+              ...(classified?.relationship && {
+                relationship: classified.relationship as
+                  | "direct"
+                  | "indirect"
+                  | "unrelated",
+              }),
+              ...(classified?.reason && { reason: classified.reason }),
+            };
+          });
+
+          const directCitations = citations.filter(
+            (c) => c.relationship === "direct",
           ).length;
+          const indirectCitations = citations.filter(
+            (c) => c.relationship === "indirect",
+          ).length;
+          const mentionsYourSite = directCitations + indirectCitations;
 
           const platformResult = {
             platform: run.platform,
             model: run.model,
             response: q.text,
-            citations: q.citations,
+            citations,
             mentionsYourSite,
+            directCitations,
+            indirectCitations,
           };
 
           if (existing) {
