@@ -42,13 +42,17 @@ const charts: {
 export default function VisibilityCharts({
   recentRuns: runs,
   site,
+  classifications,
 }: {
   recentRuns: Prisma.CitationQueryRunGetPayload<{
     include: { queries: true };
   }>[];
   site: { id: string; domain: string };
+  classifications: Prisma.CitationClassificationGetPayload<{}>[];
 }) {
-  const data = runs.map((run) => runToPoint(run, site)).reverse();
+  const data = runs
+    .map((run) => runToPoint(run, site, classifications))
+    .reverse();
 
   return (
     <Card>
@@ -101,16 +105,19 @@ function runToPoint(
     include: { queries: true };
   }>,
   site: { id: string; domain: string },
+  classifications: Prisma.CitationClassificationGetPayload<{}>[],
 ): {
   date: string;
   citations: number;
   score: number;
   coverage: number;
 } {
+  const runClassifications = classifications.filter((c) => c.runId === run.id);
   const { visibilityScore, domainCitations, queryCoverageRate } =
     calculateVisibilityScore({
       domain: site.domain,
       queries: run.queries,
+      classifications: runClassifications,
     });
 
   return {

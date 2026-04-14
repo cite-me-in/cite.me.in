@@ -7,12 +7,6 @@ import prisma from "./prisma.server";
 
 type WeekMetrics = { current: number; previous: number };
 
-/**
- * Get site metrics for the current and previous week for all sites the user has access to.
- *
- * @param userId
- * @returns Site metrics for the current and previous week
- */
 export default async function getSiteMetrics(
   filter: { userId: string } | { siteIds: string[] },
 ): Promise<
@@ -27,7 +21,6 @@ export default async function getSiteMetrics(
   const weekStart = Temporal.Now.plainDateISO("UTC").subtract({ days: 7 });
   const prevWeekStart = weekStart.subtract({ days: 7 });
 
-  // Get all sites the user has access to as owner or member, sorted alphabetically.
   const sites = await prisma.site.findMany({
     select: {
       domain: true,
@@ -47,8 +40,6 @@ export default async function getSiteMetrics(
         : { id: { in: filter.siteIds } },
   });
 
-  // Get all citation queries for the current and previous week for all sites
-  // the user has access to.
   const queries = await prisma.citationQuery.findMany({
     select: {
       citations: true,
@@ -56,6 +47,7 @@ export default async function getSiteMetrics(
       createdAt: true,
       run: {
         select: {
+          id: true,
           onDate: true,
           siteId: true,
         },
@@ -69,21 +61,41 @@ export default async function getSiteMetrics(
     },
   });
 
+  const runIds = [...new Set(queries.map((q) => q.run.id))];
+  const classifications = await prisma.citationClassification.findMany({
+    where: {
+      runId: { in: runIds },
+    },
+  });
+
   return sites.map((site) => {
     const domain = normalizeDomain(site.domain);
+    const siteQueries = queries.filter((q) => q.run.siteId === site.id);
 
     const [currentQueries, previousQueries] = fork(
-      queries.filter((q) => q.run.siteId === site.id),
+      siteQueries,
       (q) => q.run.onDate >= weekStart.toJSON(),
+    );
+
+    const currentRunIds = new Set(currentQueries.map((q) => q.run.id));
+    const previousRunIds = new Set(previousQueries.map((q) => q.run.id));
+
+    const currentClassifications = classifications.filter((c) =>
+      currentRunIds.has(c.runId),
+    );
+    const previousClassifications = classifications.filter((c) =>
+      previousRunIds.has(c.runId),
     );
 
     const currentScore = calculateVisibilityScore({
       domain: site.domain,
       queries: currentQueries,
+      classifications: currentClassifications,
     });
     const previousScore = calculateVisibilityScore({
       domain: site.domain,
       queries: previousQueries,
+      classifications: previousClassifications,
     });
 
     return {

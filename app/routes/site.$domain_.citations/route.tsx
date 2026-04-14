@@ -117,6 +117,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     runs,
     siteQueries,
     competitors,
+    classifications: recentClassifications,
     shareOfVoice: {
       count: weightedCitations,
       pct: total > 0 ? Math.round((weightedCitations / total) * 100) : 0,
@@ -168,6 +169,7 @@ export default function SiteCitationsPage({
     runs,
     siteQueries,
     competitors,
+    classifications,
     shareOfVoice,
     relatedCitations,
   } = loaderData;
@@ -238,7 +240,11 @@ export default function SiteCitationsPage({
             competitors={competitors}
             shareOfVoice={shareOfVoice}
           />
-          <VisibilityCharts recentRuns={recentRuns} site={site} />
+          <VisibilityCharts
+            recentRuns={recentRuns}
+            site={site}
+            classifications={classifications}
+          />
         </>
       ) : (
         <p className="flex items-center justify-center py-8 text-center text-foreground/60 text-lg">
