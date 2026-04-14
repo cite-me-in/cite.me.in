@@ -78,14 +78,13 @@ references, with a link to each source URL.`,
     }
   });
 
-  const citations = [
-    ...new Set(resolvedUrls.filter(Boolean).map((r) => r!.url)),
-  ];
-
-  const markdownText = addMarkdownCitations(
-    text,
-    resolvedUrls.filter(Boolean) as { url: string; title: string }[],
+  const validUrls = resolvedUrls.filter(
+    (r): r is { url: string; title: string } => r !== null,
   );
+
+  const citations = [...new Set(validUrls.map((r) => r.url))];
+
+  const markdownText = addMarkdownCitations(text, validUrls);
 
   return { citations, extraQueries, text: markdownText, usage };
 }
