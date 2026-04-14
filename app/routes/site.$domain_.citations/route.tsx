@@ -223,7 +223,12 @@ export default function SiteCitationsPage({
 
       {run ? (
         <>
-          <CitationsRecentRun queries={mergedQueries} meta={run} site={site} />
+          <CitationsRecentRun
+            queries={mergedQueries}
+            meta={run}
+            site={site}
+            classifications={relatedCitations}
+          />
           <BrandSentiment
             sentiment={sentiment}
             platformLabel={platform.label}

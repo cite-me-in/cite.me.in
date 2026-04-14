@@ -1,6 +1,7 @@
 import { Streamdown } from "streamdown";
 import { twMerge } from "tailwind-merge";
 import { ActiveLink } from "~/components/ui/ActiveLink";
+import { Badge } from "~/components/ui/Badge";
 import {
   Card,
   CardContent,
@@ -42,6 +43,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
       text: true,
       run: {
         select: {
+          id: true,
           model: true,
           platform: true,
         },
@@ -50,13 +52,37 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   });
 
   if (!citation) throw new Response("Not found", { status: 404 });
-  return { citation, site };
+
+  const classifications = await prisma.citationClassification.findMany({
+    where: {
+      runId: citation.run.id,
+      siteId: site.id,
+    },
+  });
+
+  const directUrls = new Set([
+    ...citation.citations
+      .filter((url) => isSameDomain({ domain: site.domain, url }))
+      .map(normalizeUrl),
+    ...classifications
+      .filter((c) => c.relationship === "direct")
+      .map((c) => normalizeUrl(c.url)),
+  ]);
+
+  const indirectUrls = new Set(
+    classifications
+      .filter((c) => c.relationship === "indirect")
+      .map((c) => normalizeUrl(c.url))
+      .filter((u) => !directUrls.has(u)),
+  );
+
+  return { citation, site, directUrls, indirectUrls };
 }
 
 export default function SiteCitationsPage({
   loaderData,
 }: Route.ComponentProps) {
-  const { citation, site } = loaderData;
+  const { citation, site, directUrls, indirectUrls } = loaderData;
   const { platform, model } = citation.run;
 
   return (
@@ -80,31 +106,36 @@ export default function SiteCitationsPage({
         <CardContent>
           <table className="block overflow-hidden text-base text-foreground/60">
             <tbody>
-              {citation.citations.map((citation, index) => (
-                <tr
-                  key={index.toString()}
-                  className={twMerge(
-                    isSameDomain({ domain: site.domain, url: citation }) &&
-                      "bg-green-100 hover:bg-green-100/80",
-                  )}
-                >
-                  <td className="pr-2 text-right">{index + 1}.</td>
-                  <td className="inline-block w-7/10 truncate font-mono">
-                    <ActiveLink to={externalLink(citation)} target="_blank">
-                      {citation}
-                    </ActiveLink>
-                  </td>
-                </tr>
-              ))}
+              {citation.citations.map((citation, index) => {
+                const normalized = normalizeUrl(citation);
+                const isDirect = directUrls.has(normalized);
+                const isIndirect = indirectUrls.has(normalized);
+
+                return (
+                  <tr
+                    key={index.toString()}
+                    className={twMerge(
+                      isDirect && "bg-green-100 hover:bg-green-100/80",
+                      isIndirect && "bg-blue-50 hover:bg-blue-50/80",
+                    )}
+                  >
+                    <td className="pr-2 text-right">{index + 1}.</td>
+                    <td className="inline-block w-7/10 truncate font-mono">
+                      <ActiveLink to={externalLink(normalized)} target="_blank">
+                        {normalized}
+                      </ActiveLink>
+                    </td>
+                    <td className="pl-2">
+                      {isDirect && <Badge variant="green">direct</Badge>}
+                      {isIndirect && <Badge variant="neutral">indirect</Badge>}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Response from {citation.run.model}</CardTitle>{" "}
-        </CardHeader>
         <CardContent>
           <Streamdown
             mode="static"
@@ -122,4 +153,18 @@ export default function SiteCitationsPage({
       </Card>
     </Main>
   );
+}
+
+function normalizeUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    parsed.searchParams.delete("utm_source");
+    parsed.searchParams.delete("utm_medium");
+    parsed.searchParams.delete("utm_campaign");
+    parsed.searchParams.delete("utm_term");
+    parsed.searchParams.delete("utm_content");
+    return parsed.origin + parsed.pathname + parsed.search;
+  } catch {
+    return url;
+  }
 }
