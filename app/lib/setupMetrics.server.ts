@@ -1,6 +1,7 @@
 import { sum } from "radashi";
 import type { SetupMetrics } from "~/emails/SiteSetupComplete";
 import { getDomainMeta } from "~/lib/domainMeta.server";
+import { normalizeDomain } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
 import { topCompetitors } from "~/routes/site.$domain_.citations/TopCompetitors";
 
@@ -48,9 +49,13 @@ export default async function loadSetupMetrics(
     .slice(0, 5)
     .map(([query, count]) => ({ query, count }));
 
-  const allQueries = runs.flatMap((r) => r.queries);
+  const allCitations = runs
+    .flatMap((r) => r.queries)
+    .flatMap((q) => q.citations)
+    .map((url) => ({ url, domain: normalizeDomain(url) }))
+    .filter((c) => c.domain !== "");
   const { competitors: rawCompetitors } = topCompetitors(
-    allQueries,
+    allCitations,
     site.domain,
   );
   const competitors = await Promise.all(

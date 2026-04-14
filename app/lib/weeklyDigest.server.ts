@@ -4,6 +4,7 @@ import type { WeeklyDigestEmailProps } from "~/emails/WeeklyDigest";
 import { getDomainMeta } from "~/lib/domainMeta.server";
 import envVars from "~/lib/envVars.server";
 import getSiteMetrics from "~/lib/getSiteMetrics.server";
+import { normalizeDomain } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
 import type { SentimentLabel } from "~/prisma";
 import { topCompetitors } from "~/routes/site.$domain_.citations/TopCompetitors";
@@ -111,8 +112,12 @@ export async function loadWeeklyDigestMetrics(
       delta: current - prev,
     }));
 
-  const allQueries = currentRuns.flatMap((r) => r.queries);
-  const { competitors: rawCompetitors } = topCompetitors(allQueries, domain);
+  const allCitations = currentRuns
+    .flatMap((r) => r.queries)
+    .flatMap((q) => q.citations)
+    .map((url) => ({ url, domain: normalizeDomain(url) }))
+    .filter((c) => c.domain !== "");
+  const { competitors: rawCompetitors } = topCompetitors(allCitations, domain);
   const competitors = await Promise.all(
     rawCompetitors.map(async (competitor) => ({
       ...competitor,

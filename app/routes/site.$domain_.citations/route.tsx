@@ -24,7 +24,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { site } = await requireSiteAccess({ domain: params.domain, request });
 
-  const [runs, siteQueries, classifications] = await Promise.all([
+  const [runs, siteQueries, citationRows] = await Promise.all([
     prisma.citationQueryRun.findMany({
       include: { queries: true },
       orderBy: [{ platform: "asc" }, { onDate: "desc" }],
@@ -34,8 +34,9 @@ export async function loader({ request, params }: Route.LoaderArgs) {
       where: { siteId: site.id },
       orderBy: [{ group: "asc" }, { query: "asc" }],
     }),
-    prisma.citationClassification.findMany({
+    prisma.citation.findMany({
       where: { siteId: site.id },
+      select: { url: true, domain: true, relationship: true, reason: true, runId: true, queryId: true },
       orderBy: { createdAt: "desc" },
     }),
   ]);
@@ -46,31 +47,24 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     PLATFORMS[0];
 
   const recentRuns = runs.filter((r) => r.platform === platform.name);
-  const recentClassifications = classifications.filter((c) =>
-    recentRuns.some((r) => r.id === c.runId),
-  );
+  const recentRunIds = new Set(recentRuns.map((r) => r.id));
+  const recentCitations = citationRows.filter((c) => recentRunIds.has(c.runId));
+
   const classifiedUrls = new Set(
-    recentClassifications
+    recentCitations
       .filter(
-        (classification) =>
-          classification.relationship === "direct" ||
-          classification.relationship === "indirect",
+        (c) => c.relationship === "direct" || c.relationship === "indirect",
       )
-      .map(({ url }) => url),
+      .map((c) => c.url),
   );
 
-  const queriesForCompetitors = siteQueries
-    .map((sq) => {
-      for (const r of recentRuns) {
-        const found = r.queries.find((q) => q.query === sq.query);
-        if (found) return found;
-      }
-      return null;
-    })
-    .filter((q) => q !== null);
+  const citationsForCompetitors = recentCitations.map(({ url, domain }) => ({
+    url,
+    domain,
+  }));
 
   const { competitors: rawCompetitors, total } = topCompetitors(
-    queriesForCompetitors,
+    citationsForCompetitors,
     site.domain,
     classifiedUrls,
   );
@@ -81,19 +75,17 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     })),
   );
 
-  const directCitations = recentClassifications.filter(
+  const directCitations = recentCitations.filter(
     ({ relationship }) => relationship === "direct",
   );
-  const indirectCitations = recentClassifications.filter(
+  const indirectCitations = recentCitations.filter(
     ({ relationship }) => relationship === "indirect",
   );
 
   const exactUrls = new Set(
-    queriesForCompetitors.flatMap((q) =>
-      q.citations
-        .filter((url) => isSameDomain({ domain: site.domain, url }))
-        .map(normalizeUrl),
-    ),
+    recentCitations
+      .filter((c) => isSameDomain({ domain: site.domain, url: c.url }))
+      .map((c) => normalizeUrl(c.url)),
   );
 
   const directUrls = new Set(
@@ -117,7 +109,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     runs,
     siteQueries,
     competitors,
-    classifications: recentClassifications,
+    classifications: recentCitations,
     shareOfVoice: {
       count: weightedCitations,
       pct: total > 0 ? Math.round((weightedCitations / total) * 100) : 0,

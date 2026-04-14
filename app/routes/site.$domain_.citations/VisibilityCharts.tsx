@@ -8,7 +8,7 @@ import {
 } from "~/components/ui/Chart";
 import { formatDateMed } from "~/lib/formatDate";
 import calculateVisibilityScore from "~/lib/llm-visibility/calculateVisibilityScore";
-import type { CitationClassification, Prisma } from "~/prisma";
+import type { Citation, Prisma } from "~/prisma";
 
 const charts: {
   config: Record<string, { label: string; color: string }>;
@@ -48,7 +48,7 @@ export default function VisibilityCharts({
     include: { queries: true };
   }>[];
   site: { id: string; domain: string };
-  classifications: CitationClassification[];
+  classifications: Pick<Citation, "url" | "relationship" | "runId">[];
 }) {
   const data = runs
     .map((run) => runToPoint(run, site, classifications))
@@ -105,14 +105,16 @@ function runToPoint(
     include: { queries: true };
   }>,
   site: { id: string; domain: string },
-  classifications: CitationClassification[],
+  classifications: Pick<Citation, "url" | "relationship" | "runId">[],
 ): {
   date: string;
   citations: number;
   score: number;
   coverage: number;
 } {
-  const runClassifications = classifications.filter((c) => c.runId === run.id);
+  const runClassifications = classifications
+    .filter((c) => c.runId === run.id && c.relationship !== null)
+    .map((c) => ({ url: c.url, relationship: c.relationship as string }));
   const { visibilityScore, domainCitations, queryCoverageRate } =
     calculateVisibilityScore({
       domain: site.domain,

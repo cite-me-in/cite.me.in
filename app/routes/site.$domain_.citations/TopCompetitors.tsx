@@ -8,7 +8,6 @@ import {
   CardTitle,
 } from "~/components/ui/Card";
 import externalLink from "~/lib/externalLink";
-import { normalizeDomain } from "~/lib/isSameDomain";
 import nonCompetitors from "./nonCompetitors";
 
 export default function TopCompetitors({
@@ -95,7 +94,7 @@ export default function TopCompetitors({
 }
 
 export function topCompetitors(
-  queries: { citations: string[] }[],
+  citations: { url: string; domain: string }[],
   ownDomain: string,
   classifiedUrls?: Set<string>,
 ): {
@@ -106,24 +105,18 @@ export function topCompetitors(
   const counts = new Map<string, number>();
   let total = 0;
   let ownCitations = 0;
-  for (const query of queries) {
-    for (const url of query.citations) {
-      try {
-        const domain = normalizeDomain(url);
-        total++;
-        if (domain === ownDomain) {
-          ownCitations++;
-        } else if (
-          !nonCompetitors.has(domain) &&
-          !nonCompetitors.has(domain.split(".").slice(1).join("."))
-        ) {
-          const isClassified = classifiedUrls?.has(url) ?? false;
-          if (!isClassified) {
-            counts.set(domain, (counts.get(domain) ?? 0) + 1);
-          }
-        }
-      } catch {
-        /* skip invalid URLs */
+  for (const { url, domain } of citations) {
+    if (!domain) continue;
+    total++;
+    if (domain === ownDomain) {
+      ownCitations++;
+    } else if (
+      !nonCompetitors.has(domain) &&
+      !nonCompetitors.has(domain.split(".").slice(1).join("."))
+    ) {
+      const isClassified = classifiedUrls?.has(url) ?? false;
+      if (!isClassified) {
+        counts.set(domain, (counts.get(domain) ?? 0) + 1);
       }
     }
   }
