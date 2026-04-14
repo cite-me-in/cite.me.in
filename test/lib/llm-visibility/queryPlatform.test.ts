@@ -1,6 +1,7 @@
 import invariant from "tiny-invariant";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { isSameDomain } from "~/lib/isSameDomain";
+import type { QueryFn } from "~/lib/llm-visibility/queryFn";
 import { queryPlatform } from "~/lib/llm-visibility/queryPlatform";
 import prisma from "~/lib/prisma.server";
 
@@ -56,6 +57,7 @@ const PLATFORM_ARGS = {
 
 describe("queryPlatform", () => {
   let site: { id: string; domain: string; summary: string; createdAt: Date };
+  let queryFn: ReturnType<typeof vi.fn<QueryFn>>;
 
   beforeAll(async () => {
     const user = await prisma.user.create({
@@ -73,13 +75,15 @@ describe("queryPlatform", () => {
     });
   });
 
+  beforeAll(async () => {
+    let callIndex = 0;
+    queryFn = vi.fn<QueryFn>(async () => CITATION_SETS[callIndex++ % 3]);
+    await queryPlatform({ ...PLATFORM_ARGS, site, queryFn });
+  });
+
   it("should create a run and store citation queries for each query", {
     timeout: 30_000,
   }, async () => {
-    let callIndex = 0;
-    const queryFn = vi.fn(async () => CITATION_SETS[callIndex++ % 3]);
-
-    await queryPlatform({ ...PLATFORM_ARGS, site, queryFn });
 
     const run = await prisma.citationQueryRun.findFirst({
       where: { siteId: site.id, platform: "claude" },
@@ -144,7 +148,7 @@ describe("queryPlatform", () => {
     }
   });
 
-  it("should create a run and store citation queries for each query", {
+  it("should persist CitationQuery shape correctly", {
     timeout: 30_000,
   }, async () => {
     const runs = await prisma.citationQueryRun.findMany({
