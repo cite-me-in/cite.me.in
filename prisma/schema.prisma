@@ -276,11 +276,31 @@ model Site {
   siteUsers               SiteUser[]
   summary                 String                   @map("summary")
   updatedAt               DateTime                 @map("updated_at")        @updatedAt
+  citedPages              CitedPage[]
   usageEvents             UsageEvent[]
 
   @@index([domain])
   @@unique([ownerId,      domain])
   @@map("sites")
+}
+
+model CitedPage {
+  id            String    @id @default(cuid())
+  url           String    @map("url")
+  site          Site      @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId        String    @map("site_id")
+  citationCount Int       @map("citation_count") @default(0)
+  statusCode    Int?      @map("status_code")
+  contentHash   String?   @map("content_hash")
+  isHealthy     Boolean   @map("is_healthy")      @default(true)
+  lastCheckedAt DateTime? @map("last_checked_at")
+  alertSentAt   DateTime? @map("alert_sent_at")
+  createdAt     DateTime  @map("created_at")      @default(now())
+  updatedAt     DateTime  @map("updated_at")      @updatedAt
+
+  @@unique([siteId, url])
+  @@index([siteId])
+  @@map("cited_pages")
 }
 
 model SiteInvitation {
