@@ -77,12 +77,12 @@ export default async function getSiteMetrics(
       q.citations
         .filter((c) => c.relationship)
         .map((c) => ({ url: c.url, relationship: c.relationship as string, runId: q.run.id })),
-    ).filter((c) => currentRunIds.has(c.runId));
+    );
     const previousClassifications = previousQueries.flatMap((q) =>
       q.citations
         .filter((c) => c.relationship)
         .map((c) => ({ url: c.url, relationship: c.relationship as string, runId: q.run.id })),
-    ).filter((c) => previousRunIds.has(c.runId));
+    );
 
     const currentDirectUrls = new Set(
       currentClassifications
