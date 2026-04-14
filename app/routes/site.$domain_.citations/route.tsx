@@ -5,6 +5,7 @@ import SitePageHeader from "~/components/ui/SiteHeading";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/Tabs";
 import { requireSiteAccess } from "~/lib/auth.server";
 import { getDomainMeta } from "~/lib/domainMeta.server";
+import { isSameDomain } from "~/lib/isSameDomain";
 import PLATFORMS from "~/lib/llm-visibility/platforms";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
@@ -68,11 +69,11 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     })
     .filter((q) => q !== null);
 
-  const {
-    competitors: rawCompetitors,
-    ownCitations,
-    total,
-  } = topCompetitors(queriesForCompetitors, site.domain, classifiedUrls);
+  const { competitors: rawCompetitors, total } = topCompetitors(
+    queriesForCompetitors,
+    site.domain,
+    classifiedUrls,
+  );
   const competitors = await Promise.all(
     rawCompetitors.map(async (c) => ({
       ...c,
@@ -87,20 +88,76 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     ({ relationship }) => relationship === "indirect",
   );
 
+  const exactUrls = new Set(
+    queriesForCompetitors.flatMap((q) =>
+      q.citations
+        .filter((url) => isSameDomain({ domain: site.domain, url }))
+        .map(normalizeUrl),
+    ),
+  );
+
+  const directUrls = new Set(
+    directCitations
+      .map((c) => normalizeUrl(c.url))
+      .filter((u) => !exactUrls.has(u)),
+  );
+
+  const indirectUrls = new Set(
+    indirectCitations
+      .map((c) => normalizeUrl(c.url))
+      .filter((u) => !exactUrls.has(u) && !directUrls.has(u)),
+  );
+
+  const directCount = exactUrls.size + directUrls.size;
+  const indirectCount = indirectUrls.size;
+  const weightedCitations = directCount + indirectCount * 0.5;
+
   return {
     site,
     runs,
     siteQueries,
     competitors,
     shareOfVoice: {
-      count: ownCitations,
-      pct: total > 0 ? Math.round((ownCitations / total) * 100) : 0,
+      count: weightedCitations,
+      pct: total > 0 ? Math.round((weightedCitations / total) * 100) : 0,
+      breakdown: {
+        direct: directCount,
+        indirect: indirectCount,
+      },
     },
     relatedCitations: {
-      direct: directCitations,
-      indirect: indirectCitations,
+      exact: [...exactUrls],
+      direct: [...directUrls].map((url) => ({
+        url,
+        reason:
+          directCitations.find((c) => normalizeUrl(c.url) === url)?.reason ??
+          null,
+      })),
+      indirect: [...indirectUrls].map((url) => ({
+        url,
+        reason:
+          indirectCitations.find((c) => normalizeUrl(c.url) === url)?.reason ??
+          null,
+      })),
     },
   };
+}
+
+function normalizeUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    parsed.searchParams.delete("utm_source");
+    parsed.searchParams.delete("utm_medium");
+    parsed.searchParams.delete("utm_campaign");
+    parsed.searchParams.delete("utm_term");
+    parsed.searchParams.delete("utm_content");
+    if (parsed.pathname === "/" && parsed.search === "") {
+      return parsed.origin;
+    }
+    return parsed.origin + parsed.pathname + parsed.search;
+  } catch {
+    return url;
+  }
 }
 
 export default function SiteCitationsPage({

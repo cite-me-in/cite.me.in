@@ -22,8 +22,14 @@ export default function TopCompetitors({
     count: number;
     pct: number;
   }[];
-  shareOfVoice: { count: number; pct: number };
+  shareOfVoice: {
+    count: number;
+    pct: number;
+    breakdown?: { direct: number; indirect: number };
+  };
 }) {
+  const { breakdown } = shareOfVoice;
+
   return (
     <Card>
       <CardHeader>
@@ -35,7 +41,15 @@ export default function TopCompetitors({
       <CardContent>
         <div className="mb-4 border-border/20 border-t-2 border-b-2 py-3">
           <div className="flex items-center justify-between gap-4">
-            <span className="font-medium">Your share of voice</span>
+            <div className="flex flex-col gap-1">
+              <span className="font-medium">Your share of voice</span>
+              {breakdown && (
+                <span className="text-foreground/50 text-xs">
+                  {breakdown.direct} direct + {breakdown.indirect} indirect
+                  (×0.5)
+                </span>
+              )}
+            </div>
             <div className="flex shrink-0 items-center gap-2">
               <span className="text-foreground/60">
                 {shareOfVoice.count.toLocaleString()}{" "}

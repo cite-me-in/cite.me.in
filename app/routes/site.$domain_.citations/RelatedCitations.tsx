@@ -1,4 +1,4 @@
-import { unique } from "radashi";
+import { Badge } from "~/components/ui/Badge";
 import {
   Card,
   CardContent,
@@ -12,17 +12,15 @@ export default function RelatedCitations({
   relatedCitations,
 }: {
   relatedCitations: {
-    direct: { url: string; relationship: string; reason: string | null }[];
-    indirect: { url: string; relationship: string; reason: string | null }[];
+    exact: string[];
+    direct: { url: string; reason: string | null }[];
+    indirect: { url: string; reason: string | null }[];
   };
 }) {
-  const { direct, indirect } = relatedCitations;
+  const { exact, direct, indirect } = relatedCitations;
 
-  const uniqueDirect = unique(direct, (c) => c.url);
-  const uniqueIndirect = unique(indirect, (c) => c.url);
-
-  const directCount = uniqueDirect.length;
-  const indirectCount = uniqueIndirect.length;
+  const directCount = exact.length + direct.length;
+  const indirectCount = indirect.length;
 
   if (directCount === 0 && indirectCount === 0) return null;
 
@@ -33,34 +31,47 @@ export default function RelatedCitations({
       <CardHeader>
         <CardTitle>Related Citations</CardTitle>
         <CardDescription className="text-foreground/60">
-          {directCount} direct ({directCount} pts) + {indirectCount} indirect (
-          {indirectCount * 0.5} pts) = {totalScore} total
+          {directCount} direct + {indirectCount} indirect (×0.5) = {totalScore}{" "}
+          total
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {uniqueDirect.length > 0 && (
+          {directCount > 0 && (
             <div>
-              <h4 className="mb-2 font-medium text-foreground text-sm">
-                Direct Citations (1 pt each)
+              <h4 className="mb-2 flex items-center gap-2 font-medium text-foreground text-sm">
+                Direct Citations
+                <Badge variant="green">1 pt each</Badge>
               </h4>
               <ul className="space-y-1">
-                {uniqueDirect.map((citation) => (
+                {exact.map((url) => (
+                  <li key={url} className="flex items-start gap-2 text-sm">
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold text-emerald-700 hover:underline dark:text-emerald-400"
+                    >
+                      {truncateUrl(url)}
+                    </a>
+                  </li>
+                ))}
+                {direct.map((citation) => (
                   <li
                     key={citation.url}
-                    className="flex items-start gap-2 text-foreground/80 text-sm"
+                    className="flex items-start gap-2 text-sm"
                   >
                     <a
                       href={citation.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
+                      className="font-medium text-teal-700 hover:underline dark:text-teal-400"
                     >
                       {truncateUrl(citation.url)}
                     </a>
                     {citation.reason && (
                       <span className="text-foreground/50 text-xs">
-                        ({citation.reason})
+                        {citation.reason}
                       </span>
                     )}
                   </li>
@@ -68,28 +79,29 @@ export default function RelatedCitations({
               </ul>
             </div>
           )}
-          {uniqueIndirect.length > 0 && (
+          {indirect.length > 0 && (
             <div>
-              <h4 className="mb-2 font-medium text-foreground text-sm">
-                Indirect Citations (0.5 pts each)
+              <h4 className="mb-2 flex items-center gap-2 font-medium text-foreground text-sm">
+                Indirect Citations
+                <Badge variant="neutral">0.5 pts each</Badge>
               </h4>
               <ul className="space-y-1">
-                {uniqueIndirect.map((citation) => (
+                {indirect.map((citation) => (
                   <li
                     key={citation.url}
-                    className="flex items-start gap-2 text-foreground/80 text-sm"
+                    className="flex items-start gap-2 text-sm"
                   >
                     <a
                       href={citation.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
+                      className="text-blue-600 hover:underline dark:text-blue-400"
                     >
                       {truncateUrl(citation.url)}
                     </a>
                     {citation.reason && (
                       <span className="text-foreground/50 text-xs">
-                        ({citation.reason})
+                        {citation.reason}
                       </span>
                     )}
                   </li>
