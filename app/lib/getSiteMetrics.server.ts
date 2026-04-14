@@ -42,7 +42,7 @@ export default async function getSiteMetrics(
 
   const queries = await prisma.citationQuery.findMany({
     select: {
-      citations: true,
+      citations: { select: { url: true, relationship: true } },
       text: true,
       createdAt: true,
       run: {
@@ -61,13 +61,6 @@ export default async function getSiteMetrics(
     },
   });
 
-  const runIds = [...new Set(queries.map((q) => q.run.id))];
-  const classifications = await prisma.citationClassification.findMany({
-    where: {
-      runId: { in: runIds },
-    },
-  });
-
   return sites.map((site) => {
     const domain = normalizeDomain(site.domain);
     const siteQueries = queries.filter((q) => q.run.siteId === site.id);
@@ -80,12 +73,16 @@ export default async function getSiteMetrics(
     const currentRunIds = new Set(currentQueries.map((q) => q.run.id));
     const previousRunIds = new Set(previousQueries.map((q) => q.run.id));
 
-    const currentClassifications = classifications.filter((c) =>
-      currentRunIds.has(c.runId),
-    );
-    const previousClassifications = classifications.filter((c) =>
-      previousRunIds.has(c.runId),
-    );
+    const currentClassifications = currentQueries.flatMap((q) =>
+      q.citations
+        .filter((c) => c.relationship)
+        .map((c) => ({ url: c.url, relationship: c.relationship as string, runId: q.run.id })),
+    ).filter((c) => currentRunIds.has(c.runId));
+    const previousClassifications = previousQueries.flatMap((q) =>
+      q.citations
+        .filter((c) => c.relationship)
+        .map((c) => ({ url: c.url, relationship: c.relationship as string, runId: q.run.id })),
+    ).filter((c) => previousRunIds.has(c.runId));
 
     const currentDirectUrls = new Set(
       currentClassifications
@@ -108,28 +105,31 @@ export default async function getSiteMetrics(
         .map((c) => normalizeUrl(c.url)),
     );
 
+    const toStringArrayQueries = (qs: typeof currentQueries) =>
+      qs.map((q) => ({ citations: q.citations.map((c) => c.url), text: q.text }));
+
     const currentScore = calculateVisibilityScore({
       domain: site.domain,
-      queries: currentQueries,
+      queries: toStringArrayQueries(currentQueries),
       classifications: currentClassifications,
     });
     const previousScore = calculateVisibilityScore({
       domain: site.domain,
-      queries: previousQueries,
+      queries: toStringArrayQueries(previousQueries),
       classifications: previousClassifications,
     });
 
     const countYourCitations = (
-      queries: typeof currentQueries,
+      qs: typeof currentQueries,
       domain: string,
       directUrls: Set<string>,
       indirectUrls: Set<string>,
     ) => {
       let count = 0;
-      for (const q of queries) {
+      for (const q of qs) {
         for (const c of q.citations) {
-          const normalized = normalizeUrl(c);
-          const host = normalizeDomain(c);
+          const normalized = normalizeUrl(c.url);
+          const host = normalizeDomain(c.url);
           if (
             host === domain ||
             directUrls.has(normalized) ||

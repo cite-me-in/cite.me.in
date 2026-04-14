@@ -28,7 +28,7 @@ export default function RecentVisibility({
     id: string;
     group: string;
     query: string;
-    citations: string[];
+    citations: { url: string }[];
     onDate: string;
   }[];
   meta: { model: string } | undefined;
@@ -73,10 +73,10 @@ export default function RecentVisibility({
           <TableBody>
             {queries.map((query) => {
               const hasDirect = query.citations.some((c) =>
-                directUrls.has(normalizeUrl(c)),
+                directUrls.has(normalizeUrl(c.url)),
               );
               const hasIndirect = query.citations.some((c) =>
-                indirectUrls.has(normalizeUrl(c)),
+                indirectUrls.has(normalizeUrl(c.url)),
               );
 
               return (
@@ -96,7 +96,7 @@ export default function RecentVisibility({
                     {query.query}
                   </TableCell>
                   <TableCell className="text-right">
-                    {citationCounts(query.citations, directUrls, indirectUrls)}
+                    {citationCounts(query.citations.map((c) => c.url), directUrls, indirectUrls)}
                   </TableCell>
                   <TableCell className="text-right text-foreground/60 text-xs">
                     {formatDateShort(new Date(query.onDate))}

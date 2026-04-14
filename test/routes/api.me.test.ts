@@ -40,10 +40,6 @@ beforeAll(async () => {
                   group: "retail",
                   extraQueries: [],
                   text: "Some answer",
-                  citations: [
-                    `https://${DOMAIN}/page1`,
-                    `https://${DOMAIN}/page2`,
-                  ],
                 },
               },
             },

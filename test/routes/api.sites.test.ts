@@ -8,6 +8,8 @@ const API_KEY = `cite.me.in_${USER_ID}_secret123456`;
 const DOMAIN = "api-sites-route-test.example";
 const EMAIL = "api-sites-route@test.example";
 const RUN_ID = "api-sites-route-run-1";
+const QUERY_ID = "api-sites-route-query-1";
+const SITE_ID = "api-sites-route-site-1";
 
 function get(path: string, token?: string) {
   return fetch(`${BASE}${path}`, {
@@ -16,7 +18,7 @@ function get(path: string, token?: string) {
 }
 
 beforeAll(async () => {
-  await prisma.user.upsert({
+  const user = await prisma.user.upsert({
     where: { id: USER_ID },
     create: {
       id: USER_ID,
@@ -25,6 +27,7 @@ beforeAll(async () => {
       apiKey: API_KEY,
       ownedSites: {
         create: {
+          id: SITE_ID,
           content: "Test content",
           domain: DOMAIN,
           summary: "Test summary",
@@ -36,14 +39,11 @@ beforeAll(async () => {
               model: "gpt-4o",
               queries: {
                 create: {
+                  id: QUERY_ID,
                   query: "best retail platforms",
                   group: "retail",
                   extraQueries: [],
                   text: "Some answer",
-                  citations: [
-                    `https://${DOMAIN}/page1`,
-                    `https://${DOMAIN}/page2`,
-                  ],
                 },
               },
               sentimentLabel: "positive",
@@ -55,7 +55,19 @@ beforeAll(async () => {
       },
     },
     update: { apiKey: API_KEY },
+    select: { id: true },
   });
+
+  const site = await prisma.site.findFirst({ where: { domain: DOMAIN }, select: { id: true } });
+  if (site) {
+    await prisma.citation.createMany({
+      data: [
+        { url: `https://${DOMAIN}/page1`, domain: DOMAIN, queryId: QUERY_ID, runId: RUN_ID, siteId: site.id },
+        { url: `https://${DOMAIN}/page2`, domain: DOMAIN, queryId: QUERY_ID, runId: RUN_ID, siteId: site.id },
+      ],
+      skipDuplicates: true,
+    });
+  }
 });
 
 describe("GET /api/site/:domain", () => {

@@ -155,6 +155,11 @@ async function runPlatformWithProgress({
   try {
     const completedQueries = await prisma.citationQuery.findMany({
       where: { runId: run.id },
+      select: {
+        query: true,
+        text: true,
+        citations: { select: { url: true } },
+      },
     });
     const {
       label: sentLabel,
@@ -162,7 +167,11 @@ async function runPlatformWithProgress({
       citations,
     } = await analyzeSentiment({
       domain: site.domain,
-      queries: completedQueries,
+      queries: completedQueries.map((q) => ({
+        query: q.query,
+        text: q.text,
+        citations: q.citations.map((c) => c.url),
+      })),
       siteSummary: site.summary,
     });
     await prisma.citationQueryRun.update({
@@ -170,16 +179,10 @@ async function runPlatformWithProgress({
       data: { sentimentLabel: sentLabel, sentimentSummary: summary },
     });
 
-    if (citations.length > 0) {
-      await prisma.citationClassification.createMany({
-        data: citations.map((classification) => ({
-          url: classification.url,
-          siteId: site.id,
-          runId: run.id,
-          relationship: classification.relationship,
-          reason: classification.reason,
-        })),
-        skipDuplicates: true,
+    for (const c of citations) {
+      await prisma.citation.updateMany({
+        where: { siteId: site.id, runId: run.id, url: c.url },
+        data: { relationship: c.relationship, reason: c.reason ?? null },
       });
     }
   } catch (error) {

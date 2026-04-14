@@ -27,7 +27,7 @@ export async function loader({ request }: Route.LoaderArgs) {
           queries: {
             select: {
               query: true,
-              citations: true,
+              citations: { select: { url: true } },
               text: true,
             },
             orderBy: { query: "asc" },
@@ -79,7 +79,10 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
                       <div className="text-center font-bold text-2xl">
                         {calculateVisibilityScore({
                           domain: site.domain,
-                          queries: run.queries,
+                          queries: run.queries.map((q) => ({
+                            citations: q.citations.map((c) => c.url),
+                            text: q.text,
+                          })),
                         }).visibilityScore.toLocaleString()}
                       </div>
                       <div className="text-center text-foreground/40">

@@ -36,7 +36,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
       run: { siteId: site.id },
     },
     select: {
-      citations: true,
+      citations: { select: { url: true, relationship: true } },
       group: true,
       id: true,
       query: true,
@@ -53,24 +53,17 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   if (!citation) throw new Response("Not found", { status: 404 });
 
-  const classifications = await prisma.citationClassification.findMany({
-    where: {
-      runId: citation.run.id,
-      siteId: site.id,
-    },
-  });
-
   const directUrls = new Set([
     ...citation.citations
-      .filter((url) => isSameDomain({ domain: site.domain, url }))
-      .map(normalizeUrl),
-    ...classifications
+      .filter((c) => isSameDomain({ domain: site.domain, url: c.url }))
+      .map((c) => normalizeUrl(c.url)),
+    ...citation.citations
       .filter((c) => c.relationship === "direct")
       .map((c) => normalizeUrl(c.url)),
   ]);
 
   const indirectUrls = new Set(
-    classifications
+    citation.citations
       .filter((c) => c.relationship === "indirect")
       .map((c) => normalizeUrl(c.url))
       .filter((u) => !directUrls.has(u)),
@@ -106,8 +99,8 @@ export default function SiteCitationsPage({
         <CardContent>
           <table className="block overflow-hidden text-base text-foreground/60">
             <tbody>
-              {citation.citations.map((citation, index) => {
-                const normalized = normalizeUrl(citation);
+              {citation.citations.map((c, index) => {
+                const normalized = normalizeUrl(c.url);
                 const isDirect = directUrls.has(normalized);
                 const isIndirect = indirectUrls.has(normalized);
 

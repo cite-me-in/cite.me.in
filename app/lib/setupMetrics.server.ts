@@ -18,7 +18,7 @@ export default async function loadSetupMetrics(
     where: { siteId },
     select: {
       platform: true,
-      queries: { select: { query: true, citations: true } },
+      queries: { select: { query: true, citations: { select: { url: true } } } },
       sentimentLabel: true,
       sentimentSummary: true,
     },
@@ -52,7 +52,7 @@ export default async function loadSetupMetrics(
   const allCitations = runs
     .flatMap((r) => r.queries)
     .flatMap((q) => q.citations)
-    .map((url) => ({ url, domain: normalizeDomain(url) }))
+    .map((c) => ({ url: c.url, domain: normalizeDomain(c.url) }))
     .filter((c) => c.domain !== "");
   const { competitors: rawCompetitors } = topCompetitors(
     allCitations,

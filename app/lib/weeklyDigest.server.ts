@@ -34,7 +34,7 @@ export async function loadWeeklyDigestMetrics(
     select: {
       onDate: true,
       platform: true,
-      queries: { select: { query: true, citations: true } },
+      queries: { select: { query: true, citations: { select: { url: true } } } },
       sentimentLabel: true,
       sentimentSummary: true,
     },
@@ -115,7 +115,7 @@ export async function loadWeeklyDigestMetrics(
   const allCitations = currentRuns
     .flatMap((r) => r.queries)
     .flatMap((q) => q.citations)
-    .map((url) => ({ url, domain: normalizeDomain(url) }))
+    .map((c) => ({ url: c.url, domain: normalizeDomain(c.url) }))
     .filter((c) => c.domain !== "");
   const { competitors: rawCompetitors } = topCompetitors(allCitations, domain);
   const competitors = await Promise.all(

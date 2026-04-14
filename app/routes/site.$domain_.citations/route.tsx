@@ -26,7 +26,27 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   const [runs, siteQueries, citationRows] = await Promise.all([
     prisma.citationQueryRun.findMany({
-      include: { queries: true },
+      select: {
+        id: true,
+        onDate: true,
+        platform: true,
+        model: true,
+        siteId: true,
+        sentimentLabel: true,
+        sentimentSummary: true,
+        queries: {
+          select: {
+            id: true,
+            group: true,
+            query: true,
+            text: true,
+            extraQueries: true,
+            runId: true,
+            createdAt: true,
+            citations: { select: { url: true } },
+          },
+        },
+      },
       orderBy: [{ platform: "asc" }, { onDate: "desc" }],
       where: { siteId: site.id },
     }),

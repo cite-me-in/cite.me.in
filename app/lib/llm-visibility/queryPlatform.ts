@@ -91,29 +91,25 @@ async function updateRunSentiment({
   try {
     const completedQueries = await prisma.citationQuery.findMany({
       where: { runId },
+      select: {
+        query: true,
+        text: true,
+        citations: { select: { url: true } },
+      },
     });
     const { label, summary, citations } = await analyzeSentiment({
       domain: site.domain,
-      queries: completedQueries,
+      queries: completedQueries.map((q) => ({
+        query: q.query,
+        text: q.text,
+        citations: q.citations.map((c) => c.url),
+      })),
       siteSummary: site.summary,
     });
     await prisma.citationQueryRun.update({
       where: { id: runId },
       data: { sentimentLabel: label, sentimentSummary: summary },
     });
-
-    if (citations.length > 0) {
-      await prisma.citationClassification.createMany({
-        data: citations.map((classification) => ({
-          url: classification.url,
-          siteId: site.id,
-          runId,
-          relationship: classification.relationship,
-          reason: classification.reason,
-        })),
-        skipDuplicates: true,
-      });
-    }
 
     for (const c of citations) {
       await prisma.citation.updateMany({
@@ -178,7 +174,6 @@ export async function singleQueryRepetition({
     const citationRecord = await prisma.citationQuery.create({
       data: {
         group,
-        citations,
         extraQueries,
         query,
         runId,

@@ -90,6 +90,7 @@ describe("queryPlatform", () => {
       include: {
         queries: {
           orderBy: [{ group: "asc" }, { query: "asc" }],
+          include: { citations: true },
         },
       },
     });
@@ -110,7 +111,7 @@ describe("queryPlatform", () => {
     );
     expect(
       run.queries[0].citations.findIndex((c) =>
-        isSameDomain({ domain: site.domain, url: c }),
+        isSameDomain({ domain: site.domain, url: c.url }),
       ) + 1,
     );
 
@@ -120,7 +121,7 @@ describe("queryPlatform", () => {
     );
     expect(
       run.queries[1].citations.findIndex((c) =>
-        isSameDomain({ domain: site.domain, url: c }),
+        isSameDomain({ domain: site.domain, url: c.url }),
       ) + 1,
     ).toBe(3);
   });
@@ -154,7 +155,10 @@ describe("queryPlatform", () => {
     const runs = await prisma.citationQueryRun.findMany({
       where: { siteId: site.id },
       include: {
-        queries: { orderBy: [{ group: "asc" }, { query: "asc" }] },
+        queries: {
+          orderBy: [{ group: "asc" }, { query: "asc" }],
+          include: { citations: true },
+        },
       },
     });
 
@@ -169,21 +173,24 @@ describe("queryPlatform", () => {
     expect(run.queries[1].citations).toHaveLength(3);
 
     expect(run.queries[0]).toMatchObject({
-      citations: ["https://rentail.space/listings", "https://other.com"],
       text: "You can find short-term retail space on rentail.space.",
       extraQueries: [],
     });
+    expect(run.queries[0].citations.map((c) => c.url)).toEqual([
+      "https://rentail.space/listings",
+      "https://other.com",
+    ]);
 
     expect(run.queries[1]).toMatchObject({
       query: "Find available temporary retail space in shopping centers",
       group: "2. active_search",
-      citations: [
-        "https://other.com",
-        "https://example.com",
-        "https://rentail.space/faq",
-      ],
       text: "Platforms like rentail.space offer temporary retail options.",
       extraQueries: [],
     });
+    expect(run.queries[1].citations.map((c) => c.url)).toEqual([
+      "https://other.com",
+      "https://example.com",
+      "https://rentail.space/faq",
+    ]);
   });
 });

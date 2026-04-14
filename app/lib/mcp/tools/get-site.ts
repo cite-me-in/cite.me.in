@@ -72,7 +72,7 @@ export default {
               onDate: { gte: weekAgo.toISOString().split("T")[0] },
             },
           },
-          select: { citations: true },
+          select: { citations: { select: { url: true } } },
         }),
         prisma.citationQuery.findMany({
           where: {
@@ -84,7 +84,7 @@ export default {
               },
             },
           },
-          select: { citations: true },
+          select: { citations: { select: { url: true } } },
         }),
       ]);
 
@@ -95,7 +95,7 @@ export default {
           (sum, q) =>
             sum +
             q.citations.filter((c) =>
-              c
+              c.url
                 .toLowerCase()
                 .replace(/^www\./, "")
                 .includes(domainLower),

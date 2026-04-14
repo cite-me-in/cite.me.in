@@ -66,11 +66,21 @@ describe("single citation page", () => {
             query: QUERY_TEXT,
             group: "1. discovery",
             text: RESPONSE_TEXT,
-            citations: CITATIONS,
             extraQueries: [],
           },
         },
       },
+    });
+
+    await prisma.citation.createMany({
+      data: CITATIONS.map((url) => ({
+        url,
+        domain: new URL(url).hostname,
+        queryId: QUERY_ID,
+        runId: RUN_ID,
+        siteId: site.id,
+      })),
+      skipDuplicates: true,
     });
   });
 

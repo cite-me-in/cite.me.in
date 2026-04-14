@@ -61,8 +61,7 @@ model BotVisit {
 }
 
 model CitationQuery {
-  citations    String[]         @map("citations")
-  citationRows Citation[]
+  citations    Citation[]
   createdAt    DateTime         @map("created_at")    @default(now())
   extraQueries String[]         @map("extra_queries")
   group        String           @map("group")
@@ -74,23 +73,6 @@ model CitationQuery {
 
   @@index([runId])
   @@map("citation_queries")
-}
-
-model CitationClassification {
-  createdAt    DateTime         @map("created_at")   @default(now())
-  id           String                                @id @default(cuid())
-  reason       String?          @map("reason")
-  relationship String           @map("relationship")
-  run          CitationQueryRun @relation(fields: [runId], references: [id], onDelete: Cascade)
-  runId        String           @map("run_id")
-  site         Site             @relation(fields: [siteId], references: [id], onDelete: Cascade)
-  siteId       String           @map("site_id")
-  url          String           @map("url")
-
-  @@unique([siteId, url, runId])
-  @@index([siteId])
-  @@index([runId])
-  @@map("citation_classifications")
 }
 
 model Citation {
@@ -123,7 +105,6 @@ model CitationQueryRun {
   sentimentSummary String?                  @map("sentiment_summary")
   site             Site                     @relation(fields: [siteId], references: [id], onDelete: Cascade)
   siteId           String                   @map("site_id")
-  classifications  CitationClassification[]
   citations        Citation[]
 
   @@map("citation_query_runs")
@@ -278,7 +259,6 @@ model Site {
   apiKey                  String                   @map("api_key")           @unique @default("")
   botInsight              BotInsight?
   botVisits               BotVisit[]
-  citationClassifications CitationClassification[]
   citations               Citation[]
   citationRuns            CitationQueryRun[]
   content                 String                   @map("content")
