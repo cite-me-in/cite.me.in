@@ -207,6 +207,7 @@ describe("site page", () => {
               queryId: queryIds[qi],
               runId: run.id,
               siteId: site.id,
+              relationship: new URL(c).hostname === HOSTNAME ? "exact" : null,
             })),
           });
         }

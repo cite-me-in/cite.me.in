@@ -129,7 +129,7 @@ export function topCompetitors(
       .map(([domain, count]) => ({
         domain,
         count,
-        pct: Math.round((count / total) * 100),
+        pct: total > 0 ? Math.round((count / total) * 100) : 0,
       })),
   };
 }

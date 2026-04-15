@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "~/components/ui/Table";
 import { formatDateShort } from "~/lib/formatDate";
+import { normalizeUrl } from "~/lib/isSameDomain";
 
 export default function RecentVisibility({
   queries,
@@ -143,18 +144,4 @@ function citationCounts(
   if (direct > 0) parts.push(`${direct} direct`);
   if (indirect > 0) parts.push(`${indirect} indirect`);
   return parts.join(", ");
-}
-
-function normalizeUrl(url: string): string {
-  try {
-    const parsed = new URL(url);
-    parsed.searchParams.delete("utm_source");
-    parsed.searchParams.delete("utm_medium");
-    parsed.searchParams.delete("utm_campaign");
-    parsed.searchParams.delete("utm_term");
-    parsed.searchParams.delete("utm_content");
-    return parsed.origin + parsed.pathname + parsed.search;
-  } catch {
-    return url;
-  }
 }

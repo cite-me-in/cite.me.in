@@ -6,13 +6,14 @@ import { Tabs, TabsList, TabsTrigger } from "~/components/ui/Tabs";
 import { requireSiteAccess } from "~/lib/auth.server";
 import { getCitationGaps } from "~/lib/citationGapAnalysis.server";
 import { getDomainMeta } from "~/lib/domainMeta.server";
+import { normalizeUrl } from "~/lib/isSameDomain";
 import PLATFORMS from "~/lib/llm-visibility/platforms";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 import BrandSentiment from "./BrandSentiment";
 import CitationGapAnalysis from "./CitationGapAnalysis";
 import CitationsRecentRun from "./CitationsRecentRun";
-import RelatedCitations from "./RelatedCitations";
+import RelatedCitations, { INDIRECT_CITATION_WEIGHT } from "./RelatedCitations";
 import TopCompetitors, { topCompetitors } from "./TopCompetitors";
 import VisibilityCharts from "./VisibilityCharts";
 
@@ -20,6 +21,99 @@ export const handle = { siteNav: true };
 
 export function meta({ loaderData }: Route.MetaArgs) {
   return [{ title: `Citations — ${loaderData?.site.domain} | Cite.me.in` }];
+}
+
+type Citation = {
+  url: string;
+  domain: string;
+  relationship: string | null;
+  reason: string | null;
+  runId: string;
+  queryId: string;
+};
+
+function classifyCitations(citations: Citation[]) {
+  const exact = citations.filter((c) => c.relationship === "exact");
+  const direct = citations.filter((c) => c.relationship === "direct");
+  const indirect = citations.filter((c) => c.relationship === "indirect");
+  return { exact, direct, indirect };
+}
+
+function buildClassifiedUrls(citations: Citation[]): Set<string> {
+  return new Set(
+    citations
+      .filter(
+        (c) =>
+          c.relationship === "exact" ||
+          c.relationship === "direct" ||
+          c.relationship === "indirect",
+      )
+      .map((c) => c.url),
+  );
+}
+
+function computeShareOfVoice(
+  exactCitations: Citation[],
+  directCitations: Citation[],
+  indirectCitations: Citation[],
+  total: number,
+) {
+  const exactUrls = new Set(exactCitations.map((c) => normalizeUrl(c.url)));
+  const directUrls = new Set(
+    directCitations
+      .map((c) => normalizeUrl(c.url))
+      .filter((u) => !exactUrls.has(u)),
+  );
+  const indirectUrls = new Set(
+    indirectCitations
+      .map((c) => normalizeUrl(c.url))
+      .filter((u) => !exactUrls.has(u) && !directUrls.has(u)),
+  );
+
+  const directCount = exactUrls.size + directUrls.size;
+  const indirectCount = indirectUrls.size;
+  const weightedCitations =
+    directCount + indirectCount * INDIRECT_CITATION_WEIGHT;
+
+  return {
+    exactUrls,
+    directUrls,
+    indirectUrls,
+    directCount,
+    indirectCount,
+    shareOfVoice: {
+      count: weightedCitations,
+      pct: total > 0 ? Math.round((weightedCitations / total) * 100) : 0,
+      breakdown: {
+        direct: directCount,
+        indirect: indirectCount,
+      },
+    },
+  };
+}
+
+function buildRelatedCitations(
+  exactUrls: Set<string>,
+  directUrls: Set<string>,
+  indirectUrls: Set<string>,
+  directCitations: Citation[],
+  indirectCitations: Citation[],
+) {
+  return {
+    exact: [...exactUrls],
+    direct: [...directUrls].map((url) => ({
+      url,
+      reason:
+        directCitations.find((c) => normalizeUrl(c.url) === url)?.reason ??
+        null,
+    })),
+    indirect: [...indirectUrls].map((url) => ({
+      url,
+      reason:
+        indirectCitations.find((c) => normalizeUrl(c.url) === url)?.reason ??
+        null,
+    })),
+  };
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
@@ -78,26 +172,13 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const recentRunIds = new Set(recentRuns.map((r) => r.id));
   const recentCitations = citationRows.filter((c) => recentRunIds.has(c.runId));
 
-  const exactCitations = recentCitations.filter(
-    ({ relationship }) => relationship === "exact",
-  );
-  const directCitations = recentCitations.filter(
-    ({ relationship }) => relationship === "direct",
-  );
-  const indirectCitations = recentCitations.filter(
-    ({ relationship }) => relationship === "indirect",
-  );
+  const {
+    exact: exactCitations,
+    direct: directCitations,
+    indirect: indirectCitations,
+  } = classifyCitations(recentCitations);
 
-  const classifiedUrls = new Set(
-    recentCitations
-      .filter(
-        (c) =>
-          c.relationship === "exact" ||
-          c.relationship === "direct" ||
-          c.relationship === "indirect",
-      )
-      .map((c) => c.url),
-  );
+  const classifiedUrls = buildClassifiedUrls(recentCitations);
 
   const citationQueryMap = new Map(
     runs.flatMap((r) =>
@@ -114,13 +195,8 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     ownDomain: site.domain,
   });
 
-  const citationsForCompetitors = recentCitations.map(({ url, domain }) => ({
-    url,
-    domain,
-  }));
-
   const { competitors: rawCompetitors, total } = topCompetitors(
-    citationsForCompetitors,
+    recentCitations.map(({ url, domain }) => ({ url, domain })),
     site.domain,
     classifiedUrls,
   );
@@ -131,21 +207,21 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     })),
   );
 
-  const exactUrls = new Set(exactCitations.map((c) => normalizeUrl(c.url)));
-  const directUrls = new Set(
-    directCitations
-      .map((c) => normalizeUrl(c.url))
-      .filter((u) => !exactUrls.has(u)),
-  );
-  const indirectUrls = new Set(
-    indirectCitations
-      .map((c) => normalizeUrl(c.url))
-      .filter((u) => !exactUrls.has(u) && !directUrls.has(u)),
-  );
+  const { exactUrls, directUrls, indirectUrls, shareOfVoice } =
+    computeShareOfVoice(
+      exactCitations,
+      directCitations,
+      indirectCitations,
+      total,
+    );
 
-  const directCount = exactUrls.size + directUrls.size;
-  const indirectCount = indirectUrls.size;
-  const weightedCitations = directCount + indirectCount * 0.5;
+  const relatedCitations = buildRelatedCitations(
+    exactUrls,
+    directUrls,
+    indirectUrls,
+    directCitations,
+    indirectCitations,
+  );
 
   return {
     site,
@@ -154,47 +230,9 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     competitors,
     gaps,
     classifications: recentCitations,
-    shareOfVoice: {
-      count: weightedCitations,
-      pct: total > 0 ? Math.round((weightedCitations / total) * 100) : 0,
-      breakdown: {
-        direct: directCount,
-        indirect: indirectCount,
-      },
-    },
-    relatedCitations: {
-      exact: [...exactUrls],
-      direct: [...directUrls].map((url) => ({
-        url,
-        reason:
-          directCitations.find((c) => normalizeUrl(c.url) === url)?.reason ??
-          null,
-      })),
-      indirect: [...indirectUrls].map((url) => ({
-        url,
-        reason:
-          indirectCitations.find((c) => normalizeUrl(c.url) === url)?.reason ??
-          null,
-      })),
-    },
+    shareOfVoice,
+    relatedCitations,
   };
-}
-
-function normalizeUrl(url: string): string {
-  try {
-    const parsed = new URL(url);
-    parsed.searchParams.delete("utm_source");
-    parsed.searchParams.delete("utm_medium");
-    parsed.searchParams.delete("utm_campaign");
-    parsed.searchParams.delete("utm_term");
-    parsed.searchParams.delete("utm_content");
-    if (parsed.pathname === "/" && parsed.search === "") {
-      return parsed.origin;
-    }
-    return parsed.origin + parsed.pathname + parsed.search;
-  } catch {
-    return url;
-  }
 }
 
 export default function SiteCitationsPage({

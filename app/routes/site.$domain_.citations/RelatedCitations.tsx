@@ -8,6 +8,8 @@ import {
 } from "~/components/ui/Card";
 import { normalizeDomain } from "~/lib/isSameDomain";
 
+export const INDIRECT_CITATION_WEIGHT = 0.5;
+
 export default function RelatedCitations({
   relatedCitations,
 }: {
@@ -24,7 +26,7 @@ export default function RelatedCitations({
 
   if (directCount === 0 && indirectCount === 0) return null;
 
-  const totalScore = directCount + indirectCount * 0.5;
+  const totalScore = directCount + indirectCount * INDIRECT_CITATION_WEIGHT;
 
   return (
     <Card>
