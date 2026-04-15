@@ -1,5 +1,4 @@
 import { ms } from "convert";
-import debug from "debug";
 import { parallel } from "radashi";
 import invariant from "tiny-invariant";
 import captureAndLogError from "~/lib/captureAndLogError.server";
@@ -15,8 +14,7 @@ import {
 } from "~/lib/usage/usageLimit.server";
 import type { QueryFn } from "./queryFn";
 import updateRunSentiment from "./updateRunSentiment";
-
-export const logger = debug("server");
+import upsertCitedPages from "./upsertCitedPages";
 
 /**
  * Query a given platform for a given account and queries.
@@ -26,6 +24,7 @@ export const logger = debug("server");
  * @param queries - The queries to query.
  * @param queryFn - The function to use to query the LLM.
  * @param site - The site to query.
+ * @param log - The log function to use.
  */
 export async function queryPlatform({
   model,
@@ -33,12 +32,14 @@ export async function queryPlatform({
   queries,
   queryFn,
   site,
+  log,
 }: {
   model: string;
   platform: string;
   queries: { query: string; group: string }[];
   queryFn: QueryFn;
   site: { id: string; domain: string; summary: string };
+  log: (line: string) => Promise<unknown>;
 }) {
   invariant(platform, "Platform is required");
   invariant(model, "Model is required");
@@ -56,7 +57,6 @@ export async function queryPlatform({
         platform: true,
       },
     });
-    logger("[%s:%s] Created citation query run %s", site.id, platform, run.id);
 
     const notEmptyQueries = queries.filter((q) => q.query.trim());
     const existingQueries = run.queries.map(({ query }) => query);
@@ -66,6 +66,7 @@ export async function queryPlatform({
     if (newQueries.length === 0) return;
 
     await parallel({ limit: 5 }, newQueries, async (query) => {
+      await log(`${platform}: Querying ${query.query} (${query.group})`);
       await singleQueryRepetition({
         group: query.group,
         model,
@@ -74,11 +75,13 @@ export async function queryPlatform({
         queryFn,
         runId: run.id,
         site,
+        log,
       });
     });
 
-    await updateRunSentiment(run);
+    await updateRunSentiment({ log, run });
     await upsertCitedPages({
+      log,
       siteId: site.id,
       runId: run.id,
       domain: site.domain,
@@ -86,33 +89,6 @@ export async function queryPlatform({
   } catch (error) {
     captureAndLogError(error, {
       extra: { siteId: site.id, platform },
-    });
-  }
-}
-
-export async function upsertCitedPages({
-  siteId,
-  runId,
-  domain,
-}: {
-  siteId: string;
-  runId: string;
-  domain: string;
-}) {
-  const ownCitations = await prisma.citation.findMany({
-    where: { runId, siteId, domain },
-    select: { url: true },
-  });
-
-  const urlCounts = new Map<string, number>();
-  for (const { url } of ownCitations)
-    urlCounts.set(url, (urlCounts.get(url) ?? 0) + 1);
-
-  for (const [url, count] of urlCounts) {
-    await prisma.citedPage.upsert({
-      where: { siteId_url: { siteId, url } },
-      create: { url, siteId, citationCount: count },
-      update: { citationCount: { increment: count } },
     });
   }
 }
@@ -125,7 +101,9 @@ export async function singleQueryRepetition({
   queryFn,
   runId,
   site,
+  log,
 }: {
+  log: (line: string) => Promise<unknown>;
   group: string;
   model: string;
   platform: string;
@@ -137,16 +115,7 @@ export async function singleQueryRepetition({
   const existing = await prisma.citationQuery.findFirst({
     where: { query, runId },
   });
-  if (existing) {
-    logger(
-      "[%s:%s] %s (group: %s) — already exists",
-      site.id,
-      platform,
-      query,
-      group,
-    );
-    return;
-  }
+  if (existing) return;
 
   try {
     await checkUsageLimits(site.id);
@@ -161,7 +130,7 @@ export async function singleQueryRepetition({
       inputTokens: usage.inputTokens ?? 0,
       outputTokens: usage.outputTokens ?? 0,
     });
-    logger("[%s:%s] %s (group: %s)", site.id, platform, query, group);
+    await log(`${platform}: Query complete for ${query} (${group})`);
     const citationRecord = await prisma.citationQuery.create({
       data: {
         group,

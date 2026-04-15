@@ -1,5 +1,4 @@
 import { Temporal } from "@js-temporal/polyfill";
-import debug from "debug";
 import { parallel } from "radashi";
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import generateBotInsight from "~/lib/llm-visibility/generateBotInsight";
@@ -7,8 +6,6 @@ import PLATFORMS from "~/lib/llm-visibility/platformQueries.server";
 import { queryPlatform as runPlatform } from "~/lib/llm-visibility/queryPlatform";
 import prisma from "~/lib/prisma.server";
 import { queryNextToProcess } from "~/lib/userPlan.server";
-
-const logger = debug("server");
 
 /**
  * Prepare sites for the digest email.
@@ -24,12 +21,21 @@ const logger = debug("server");
  *
  * Returns the processed sites so the caller can decide which also need a
  * digest email (digestSentAt is a separate concern).
+ *
+ * @param domain If provided, only process the site with the given domain.
+ * @param maxSites The maximum number of sites to process.
+ * @param log - The log function to use.
+ * @returns The processed sites.
  */
 export default async function prepareSites({
+  domain,
   maxSites = 3,
+  log,
 }: {
+  domain?: string;
   maxSites?: number;
-} = {}): Promise<{ id: string; domain: string; digestSentAt: Date | null }[]> {
+  log: (line: string) => Promise<unknown>;
+}): Promise<{ id: string; domain: string; digestSentAt: Date | null }[]> {
   const candidates = await prisma.site.findMany({
     select: {
       id: true,
@@ -39,39 +45,40 @@ export default async function prepareSites({
       owner: { select: { plan: true, createdAt: true } },
       summary: true,
     },
-    where: queryNextToProcess(),
+    where: domain ? { domain } : queryNextToProcess(),
+    take: maxSites,
   });
 
-  // Prioritize sites that haven't been processed yet.
-  const due = candidates
-    .sort((a, b) => {
-      if (a.lastProcessedAt === null && b.lastProcessedAt !== null) return -1;
-      if (a.lastProcessedAt !== null && b.lastProcessedAt === null) return 1;
-      return 0;
-    })
-    .slice(0, maxSites);
-
-  logger(
-    "[prepareSites] Processing %d sites: %s",
-    due.length,
-    due.map((s) => s.domain).join(", "),
+  await log(
+    `Processing ${candidates.length} sites: ${candidates.map((s) => s.domain).join(", ")}`,
   );
 
-  await parallel({ limit: 10 }, due, nextCitationRun);
-  await parallel({ limit: 10 }, due, updateBotInsight);
-  return due;
+  await parallel({ limit: 10 }, candidates, (site) =>
+    nextCitationRun({ log, site }),
+  );
+  await parallel({ limit: 10 }, candidates, (site) =>
+    updateBotInsight({ log, site }),
+  );
+  return candidates;
 }
 
 /**
  * Run a citation run for a site.
  *
- * @param site The site to run a citation run for.
+ * @param log - The log function to use.
+ * @param site - The site to run a citation run for.
  * @returns True if the citation run was successful, false otherwise.
  */
-async function nextCitationRun(site: {
-  id: string;
-  domain: string;
-  summary: string;
+async function nextCitationRun({
+  log,
+  site,
+}: {
+  log: (line: string) => Promise<unknown>;
+  site: {
+    id: string;
+    domain: string;
+    summary: string;
+  };
 }): Promise<boolean> {
   const queries = await prisma.siteQuery.findMany({
     orderBy: [{ group: "asc" }, { query: "asc" }],
@@ -83,7 +90,7 @@ async function nextCitationRun(site: {
     PLATFORMS,
     async ({ name: platform, model, queryFn }) => {
       try {
-        await runPlatform({ model, platform, queries, queryFn, site });
+        await runPlatform({ log, model, platform, queries, queryFn, site });
       } catch (error) {
         captureAndLogError(error, {
           extra: { siteId: site.id, platform, step: "citation-run" },
@@ -92,7 +99,7 @@ async function nextCitationRun(site: {
     },
   );
 
-  logger("[processSites] Citation run done — %s", site.domain);
+  await log(`Citation run done for ${site.domain}`);
   await prisma.site.update({
     where: { id: site.id },
     data: { lastProcessedAt: new Date() },
@@ -107,12 +114,19 @@ async function nextCitationRun(site: {
  * It loads the bot visits for the last 7 days and generates a bot insight
  * report.
  *
- * @param site The site to update the bot insight for.
+ * @param log - The log function to use.
+ * @param site - The site to update the bot insight for.
  * @returns True if the bot insight was updated successfully, false otherwise.
  */
-async function updateBotInsight(site: {
-  id: string;
-  domain: string;
+async function updateBotInsight({
+  log,
+  site,
+}: {
+  log: (line: string) => Promise<unknown>;
+  site: {
+    id: string;
+    domain: string;
+  };
 }): Promise<boolean> {
   try {
     const sevenDaysAgo = new Date(
@@ -150,14 +164,10 @@ async function updateBotInsight(site: {
       create: { siteId: site.id, content, generatedAt: now },
       update: { content, generatedAt: now },
     });
-    logger("[processSites] Bot insight done — %s", site.domain);
+    await log(`Bot insight done for ${site.domain}`);
     return true;
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    logger("[processSites] Bot insight failed — %s: %s", site.domain, message);
-    captureAndLogError(error, {
-      extra: { siteId: site.id, step: "bot-insight" },
-    });
+    captureAndLogError(error, { extra: { site } });
     return false;
   }
 }

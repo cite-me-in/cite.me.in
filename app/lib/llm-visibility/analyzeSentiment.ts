@@ -52,12 +52,12 @@ export default async function analyzeSentiment({
   const allCitations = [...new Set(queries.flatMap((q) => q.citations))];
 
   const queryLines = queries
-    .map((q) => {
+    .map((query) => {
       const position =
-        q.citations.findIndex((c) => isSameDomain({ domain, url: c })) + 1;
+        query.citations.findIndex((url) => isSameDomain({ domain, url })) + 1;
       const cited =
         position > 0 ? `cited at position #${position}` : "not cited";
-      return `Query: ${q.query}\nCitation status: ${cited}\nResponse:\n$<response>${q.text}</response>`;
+      return `Query: ${query.query}\nCitation status: ${cited}\nResponse:\n$<response>${query.text}</response>`;
     })
     .join("\n\n---\n\n");
 

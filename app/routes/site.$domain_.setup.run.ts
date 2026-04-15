@@ -1,6 +1,4 @@
-import { ms } from "convert";
 import debug from "debug";
-import { sleep } from "radashi";
 import invariant from "tiny-invariant";
 import sendSiteSetupEmail from "~/emails/SiteSetupComplete";
 import addSiteQueries from "~/lib/addSiteQueries";
@@ -10,10 +8,8 @@ import analyzeSentiment from "~/lib/llm-visibility/analyzeSentiment";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import PLATFORMS from "~/lib/llm-visibility/platformQueries.server";
 import type { QueryFn } from "~/lib/llm-visibility/queryFn";
-import {
-  singleQueryRepetition,
-  upsertCitedPages,
-} from "~/lib/llm-visibility/queryPlatform";
+import { singleQueryRepetition } from "~/lib/llm-visibility/queryPlatform";
+import upsertCitedPages from "~/lib/llm-visibility/upsertCitedPages";
 import prisma from "~/lib/prisma.server";
 import { crawl } from "~/lib/scrape/crawl";
 import { summarize } from "~/lib/scrape/summarize";
@@ -141,7 +137,6 @@ async function runPlatformWithProgress({
 
   for (const [index, { query, group }] of queries.entries()) {
     // Shorter stagger than the daily cron (1s) — setup is a one-time event.
-    if (process.env.NODE_ENV !== "test") await sleep(ms("200ms") * index);
     await log(`${label}: ${query} (${index + 1}/${queries.length})`);
     await singleQueryRepetition({
       group,
@@ -151,6 +146,7 @@ async function runPlatformWithProgress({
       queryFn,
       runId: run.id,
       site,
+      log,
     });
   }
 
@@ -193,6 +189,7 @@ async function runPlatformWithProgress({
   }
 
   await upsertCitedPages({
+    log,
     siteId: site.id,
     runId: run.id,
     domain: site.domain,

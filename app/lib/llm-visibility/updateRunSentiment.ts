@@ -2,14 +2,18 @@ import type { Prisma } from "~/prisma";
 import captureAndLogError from "../captureAndLogError.server";
 import prisma from "../prisma.server";
 import analyzeSentiment from "./analyzeSentiment";
-import { logger } from "./queryPlatform";
 
 /**
  * Update the sentiment analysis for a given run.
  *
  * @param run - The run to update the sentiment analysis for.
+ * @param log - The log function to use.
  */
-export default async function updateRunSentiment(
+export default async function updateRunSentiment({
+  log,
+  run,
+}: {
+  log: (line: string) => Promise<unknown>;
   run: Prisma.CitationQueryRunGetPayload<{
     select: {
       id: true;
@@ -17,10 +21,10 @@ export default async function updateRunSentiment(
       site: true;
       platform: true;
     };
-  }>,
-): Promise<void> {
+  }>;
+}): Promise<void> {
   try {
-    logger("[%s:%s] Updating run sentiment", run.site.id, run.platform);
+    await log(`Updating sentiment for ${run.site.domain} on ${run.platform}`);
     const completedQueries = await prisma.citationQuery.findMany({
       where: { runId: run.id },
       select: {
@@ -62,11 +66,8 @@ export default async function updateRunSentiment(
       });
     }
 
-    logger(
-      "[%s:%s] Sentiment analysis complete: %s",
-      run.site.id,
-      run.platform,
-      label,
+    await log(
+      `Sentiment analysis complete: ${label} for ${run.site.domain} on ${run.platform}`,
     );
   } catch (sentimentError) {
     captureAndLogError(sentimentError, {
