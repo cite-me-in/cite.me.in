@@ -5,11 +5,18 @@
  *
  * Usage:
  *   infisical --env prod run -- tsx scripts/prepare-sites.ts
+ *   infisical --env prod run -- tsx scripts/prepare-sites.ts <domain>
  */
 
 import debug from "debug";
 import prepareSites from "../app/lib/prepareSites.server";
 
 debug.enable("server");
-const sites = await prepareSites({ maxSites: 25 });
-debug("server")("Prepared sites:", sites);
+
+const domain = process.argv[2];
+const sites = await prepareSites({
+  domain,
+  maxSites: 25,
+  log: async (line) => console.info(line),
+});
+console.info("Prepared sites:", sites);

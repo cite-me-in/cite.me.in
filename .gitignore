@@ -23,3 +23,6 @@ test-results/
 
 # Ignore worktrees
 .worktrees/
+
+# Ignore scratch files
+scratch.ts
