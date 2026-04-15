@@ -61,14 +61,14 @@ export default async function analyzeSentiment({
     })
     .join("\n\n---\n\n");
 
-  const siteContext = siteSummary ? `\n\nSite context: ${siteSummary}` : "";
-
   const completion = await client.chat.completions.create({
     model: "glm-4.7",
     messages: [
       {
         role: "system" as const,
-        content: `You are a brand visibility analyst. Analyze AI platform responses for ${domain}.${siteContext}
+        content: `You are a brand visibility analyst. Analyze AI platform responses for ${domain}.
+
+${siteSummary ? `Site context: ${siteSummary}` : ""}
 
 Tasks:
 1. Assess sentiment (positive/negative/neutral/mixed) and provide a 2-3 sentence summary
@@ -76,6 +76,10 @@ Tasks:
    - "direct": Same domain, subdomain, or official presence (e.g., YouTube channel, social media account)
    - "indirect": Content about the brand/person on another site (e.g., articles, reviews, forum discussions)
    - "unrelated": No clear connection to the brand
+
+"Potentially referencing" and "likely referencing" should be treated as "unrelated".
+If you see the brand name on that site, then it's "indirect".
+If you don't see the brand name on that site, then it's "unrelated".
 
 Respond with JSON only, no markdown fences:
 {
