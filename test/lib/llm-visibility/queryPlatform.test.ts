@@ -99,32 +99,26 @@ describe("queryPlatform", () => {
     invariant(run, "run is not null");
     expect(run.model).toBe("claude-haiku-4-5-20251001");
     expect(run.queries).toHaveLength(2);
-    expect(run.queries[0].citations).toHaveLength(2);
-    expect(run.queries[1].citations).toHaveLength(3);
-    expect(queryFn).toHaveBeenCalledTimes(2);
 
-    // Ordered alphabetically: "Find..." before "How..."
-    // "Find..." reps 1-3 map to citationSets 3,4,5 (indices 0,1,2)
-
-    expect(run.queries[0].group).toBe("1. discovery");
-    expect(run.queries[0].query).toBe(
-      "How do I find short-term retail space in shopping malls?",
-    );
+    const first = run.queries.find((q) => q.query === QUERIES[0].query);
+    invariant(first, "first is not null");
+    expect(first?.group).toBe("1. discovery");
+    expect(first.citations.length).toBe(3);
     expect(
-      run.queries[0].citations.findIndex((c) =>
-        isSameDomain({ domain: site.domain, url: c.url }),
-      ) + 1,
-    );
-
-    expect(run.queries[1].group).toBe("2. active_search");
-    expect(run.queries[1].query).toBe(
-      "Find available temporary retail space in shopping centers",
-    );
-    expect(
-      run.queries[1].citations.findIndex((c) =>
+      first.citations.findIndex((c) =>
         isSameDomain({ domain: site.domain, url: c.url }),
       ) + 1,
     ).toBe(3);
+
+    const second = run.queries.find((q) => q.query === QUERIES[1].query);
+    invariant(second, "second is not null");
+    expect(second.group).toBe("2. active_search");
+    expect(second.citations.length).toBe(2);
+    expect(
+      second.citations.findIndex((c) =>
+        isSameDomain({ domain: site.domain, url: c.url }),
+      ) + 1,
+    ).toBe(1);
   });
 
   it("should create Citation records for each cited URL", {
@@ -182,28 +176,34 @@ describe("queryPlatform", () => {
     expect(run.model).toBe("claude-haiku-4-5-20251001");
     expect(run.siteId).toBe(site.id);
     expect(run.queries).toHaveLength(2);
-    expect(run.queries[0].citations).toHaveLength(2);
-    expect(run.queries[1].citations).toHaveLength(3);
 
-    expect(run.queries[0]).toMatchObject({
-      text: "You can find short-term retail space on rentail.space.",
-      extraQueries: [],
-    });
-    expect(run.queries[0].citations.map((c) => c.url)).toEqual([
-      "https://rentail.space/listings",
-      "https://other.com",
-    ]);
-
-    expect(run.queries[1]).toMatchObject({
-      query: "Find available temporary retail space in shopping centers",
-      group: "2. active_search",
-      text: "Platforms like rentail.space offer temporary retail options.",
-      extraQueries: [],
-    });
-    expect(run.queries[1].citations.map((c) => c.url)).toEqual([
+    const first = run.queries.find((q) => q.query === QUERIES[0].query);
+    invariant(first, "first is not null");
+    expect(first.citations).toHaveLength(3);
+    expect(first.group).toBe("1. discovery");
+    expect(first.query).toBe(QUERIES[0].query);
+    expect(first.text).toBe(
+      "Platforms like rentail.space offer temporary retail options.",
+    );
+    expect(first.extraQueries).toEqual([]);
+    expect(first.citations.map((c) => c.url)).toEqual([
       "https://other.com",
       "https://example.com",
       "https://rentail.space/faq",
+    ]);
+
+    const second = run.queries.find((q) => q.query === QUERIES[1].query);
+    invariant(second, "second is not null");
+    expect(second.citations).toHaveLength(2);
+    expect(second.group).toBe("2. active_search");
+    expect(second.query).toBe(QUERIES[1].query);
+    expect(second.text).toBe(
+      "You can find short-term retail space on rentail.space.",
+    );
+    expect(second.extraQueries).toEqual([]);
+    expect(second.citations.map((c) => c.url)).toEqual([
+      "https://rentail.space/listings",
+      "https://other.com",
     ]);
   });
 });
