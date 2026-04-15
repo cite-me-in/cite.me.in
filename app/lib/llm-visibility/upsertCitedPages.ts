@@ -14,7 +14,7 @@ export default async function upsertCitedPages({
   runId,
   domain,
 }: {
-  log: (line: string) => Promise<unknown>;
+  log: (line: string) => Promise<unknown> | unknown;
   siteId: string;
   runId: string;
   domain: string;

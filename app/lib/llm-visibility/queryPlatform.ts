@@ -39,7 +39,7 @@ export async function queryPlatform({
   queries: { query: string; group: string }[];
   queryFn: QueryFn;
   site: { id: string; domain: string; summary: string };
-  log: (line: string) => Promise<unknown>;
+  log: (line: string) => Promise<unknown> | unknown;
 }) {
   invariant(platform, "Platform is required");
   invariant(model, "Model is required");
@@ -103,7 +103,7 @@ export async function singleQueryRepetition({
   site,
   log,
 }: {
-  log: (line: string) => Promise<unknown>;
+  log: (line: string) => Promise<unknown> | unknown;
   group: string;
   model: string;
   platform: string;

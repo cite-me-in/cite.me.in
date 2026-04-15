@@ -1,3 +1,4 @@
+import debug from "debug";
 import { map } from "radashi";
 import { data } from "react-router";
 import sendTrialEndedEmails from "~/emails/TrialEnded";
@@ -10,6 +11,8 @@ import prepareSites from "~/lib/prepareSites.server";
 import { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
 import type { Route } from "./+types/cron.process-sites";
 
+const logger = debug("server");
+
 // This function can run for a maximum of 300 seconds (5 minutes)
 export const config = {
   maxDuration: 300,
@@ -20,7 +23,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw new Response("Unauthorized", { status: 401 });
 
   try {
-    const sites = await prepareSites({ maxSites: 5 });
+    const sites = await prepareSites({ maxSites: 5, log: logger });
 
     const oneWeekAgo = daysAgo(7);
     const results = await map(sites, async (site) => {

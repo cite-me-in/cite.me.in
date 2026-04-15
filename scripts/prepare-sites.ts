@@ -17,6 +17,6 @@ const domain = process.argv[2];
 const sites = await prepareSites({
   domain,
   maxSites: 25,
-  log: async (line) => console.info(line),
+  log: debug("server"),
 });
 console.info("Prepared sites:", sites);

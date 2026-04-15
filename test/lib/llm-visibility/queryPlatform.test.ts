@@ -75,7 +75,12 @@ describe("queryPlatform", () => {
     });
     let callIndex = 0;
     queryFn = vi.fn<QueryFn>(async () => CITATION_SETS[callIndex++ % 3]);
-    await queryPlatform({ ...PLATFORM_ARGS, site, queryFn });
+    await queryPlatform({
+      ...PLATFORM_ARGS,
+      site,
+      queryFn,
+      log: vi.fn(),
+    });
   });
 
   it("should create a run and store citation queries for each query", {

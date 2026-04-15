@@ -1,3 +1,4 @@
+import debug from "debug";
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
 import addSiteQueries, {
@@ -18,6 +19,8 @@ import type { Route } from "./+types/route";
 import AddQueriesGroup from "./AddQueriesGroup";
 import GroupOfQueries from "./GroupOfQueries";
 import SuggestedQueries from "./SuggestedQueries";
+
+const logger = debug("server");
 
 export const handle = { siteNav: true };
 
@@ -75,7 +78,7 @@ export async function action({ request, params }: Route.ActionArgs) {
       await addSiteQueries(site, [{ group, query }]);
       if (isMeaningfulSentence(query))
         try {
-          await runQueryOnAllPlatforms({ site, query, group });
+          await runQueryOnAllPlatforms({ site, query, group, log: logger });
         } catch (error) {
           captureAndLogError(error, { extra: { siteId: site.id } });
         }
@@ -91,7 +94,12 @@ export async function action({ request, params }: Route.ActionArgs) {
       await updateSiteQuery(id, query.trim().replace(/\s+/g, " "));
       if (isMeaningfulSentence(query) && hasWordChanges(existing.query, query))
         try {
-          await runQueryOnAllPlatforms({ site, query, group: existing.group });
+          await runQueryOnAllPlatforms({
+            site,
+            query,
+            group: existing.group,
+            log: logger,
+          });
         } catch (error) {
           captureAndLogError(error, { extra: { siteId: site.id } });
         }
