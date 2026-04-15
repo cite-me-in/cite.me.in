@@ -4,7 +4,7 @@ import { sleep } from "radashi";
 import invariant from "tiny-invariant";
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import {
-  isExactDomain,
+  isSameDomain,
   normalizeDomain,
   normalizeUrl,
 } from "~/lib/isSameDomain";
@@ -229,7 +229,7 @@ export async function singleQueryRepetition({
             queryId: citationRecord.id,
             runId,
             siteId: site.id,
-            relationship: isExactDomain({ domain: site.domain, url })
+            relationship: isSameDomain({ domain: site.domain, url })
               ? "exact"
               : null,
           };

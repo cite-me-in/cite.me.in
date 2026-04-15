@@ -1,6 +1,6 @@
 #! /usr/bin/env tsx
 
-import { isExactDomain } from "../app/lib/isSameDomain";
+import { isSameDomain } from "../app/lib/isSameDomain";
 import prisma from "../app/lib/prisma.server";
 
 async function main() {
@@ -13,7 +13,7 @@ async function main() {
 
   let updated = 0;
   for (const citation of citations) {
-    if (isExactDomain({ domain: citation.site.domain, url: citation.url })) {
+    if (isSameDomain({ domain: citation.site.domain, url: citation.url })) {
       await prisma.citation.update({
         where: { id: citation.id },
         data: { relationship: "exact" },

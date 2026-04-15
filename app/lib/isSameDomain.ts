@@ -1,34 +1,5 @@
 /**
- * Check if a URL is on the same domain as a given domain. The domain can be
- * provided with or without the "www." prefix. For example:
- * - "cite.me.in" is the same as "https://www.cite.me.in"
- * - "cite.me.in" is the same as "https://cite.me.in"
- * - "cite.me.in" is the same as "https://www.cite.me.in/about"
- *
- * @param domain - The domain to check against.
- * @param url - The URL to check, or a string URL.
- * @returns True if the URL is on the same domain as the given domain, false otherwise.
- */
-export function isSameDomain({
-  domain,
-  url,
-}: {
-  domain: string;
-  url: string | URL;
-}): boolean {
-  try {
-    const { hostname } = url instanceof URL ? url : new URL(url);
-    return (
-      hostname.toLowerCase() === domain.toLowerCase() ||
-      hostname.toLowerCase().replace(/^www\./, "") === domain.toLowerCase()
-    );
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Check if a URL is an exact match for a domain, including subdomains.
+ * Check if a URL is on the same domain or a subdomain of a given domain.
  * For example, for domain "zoehong.com":
  * - "zoehong.com" → true (exact match)
  * - "www.zoehong.com" → true (www prefix)
@@ -36,10 +7,10 @@ export function isSameDomain({
  * - "zoehong.substack.com" → false (different root domain)
  *
  * @param domain - The domain to check against.
- * @param url - The URL to check.
- * @returns True if the URL is an exact match (same domain or subdomain).
+ * @param url - The URL to check, or a string URL.
+ * @returns True if the URL is on the same domain or a subdomain.
  */
-export function isExactDomain({
+export function isSameDomain({
   domain,
   url,
 }: {
