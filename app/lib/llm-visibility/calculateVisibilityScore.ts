@@ -15,7 +15,7 @@
  *   softMentionRate      × 0.15
  */
 
-import { isSameDomain, normalizeDomain } from "../isSameDomain";
+import { isSameDomain, normalizeDomain, normalizeUrl } from "../isSameDomain";
 
 const weights = {
   queryCoverageRate: 0.35,
@@ -139,18 +139,4 @@ export default function calculateVisibilityScore({
     totalCitations,
     totalQueries,
   };
-}
-
-function normalizeUrl(url: string): string {
-  try {
-    const parsed = new URL(url);
-    parsed.searchParams.delete("utm_source");
-    parsed.searchParams.delete("utm_medium");
-    parsed.searchParams.delete("utm_campaign");
-    parsed.searchParams.delete("utm_term");
-    parsed.searchParams.delete("utm_content");
-    return parsed.origin + parsed.pathname + parsed.search;
-  } catch {
-    return url;
-  }
 }

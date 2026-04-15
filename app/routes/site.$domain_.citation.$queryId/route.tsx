@@ -13,7 +13,7 @@ import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
 import { requireSiteAccess } from "~/lib/auth.server";
 import externalLink from "~/lib/externalLink";
-import { isSameDomain } from "~/lib/isSameDomain";
+import { isSameDomain, normalizeUrl } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 
@@ -146,18 +146,4 @@ export default function SiteCitationsPage({
       </Card>
     </Main>
   );
-}
-
-function normalizeUrl(url: string): string {
-  try {
-    const parsed = new URL(url);
-    parsed.searchParams.delete("utm_source");
-    parsed.searchParams.delete("utm_medium");
-    parsed.searchParams.delete("utm_campaign");
-    parsed.searchParams.delete("utm_term");
-    parsed.searchParams.delete("utm_content");
-    return parsed.origin + parsed.pathname + parsed.search;
-  } catch {
-    return url;
-  }
 }

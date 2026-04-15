@@ -1,7 +1,7 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { fork, sum } from "radashi";
 import type { Site } from "~/prisma";
-import { normalizeDomain } from "./isSameDomain";
+import { normalizeDomain, normalizeUrl } from "./isSameDomain";
 import calculateVisibilityScore from "./llm-visibility/calculateVisibilityScore";
 import prisma from "./prisma.server";
 
@@ -180,18 +180,4 @@ export default async function getSiteMetrics(
       site,
     };
   });
-}
-
-function normalizeUrl(url: string): string {
-  try {
-    const parsed = new URL(url);
-    parsed.searchParams.delete("utm_source");
-    parsed.searchParams.delete("utm_medium");
-    parsed.searchParams.delete("utm_campaign");
-    parsed.searchParams.delete("utm_term");
-    parsed.searchParams.delete("utm_content");
-    return parsed.origin + parsed.pathname + parsed.search;
-  } catch {
-    return url;
-  }
 }
