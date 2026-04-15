@@ -48,7 +48,7 @@ describe("cron.check-cited-pages", () => {
       params: {},
       context: {},
     } as never);
-    const body = await (response as unknown as Response).json();
+    const body = response.data;
     expect(body.ok).toBe(true);
 
     const page = await prisma.citedPage.findUnique({

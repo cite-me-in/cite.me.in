@@ -3,7 +3,11 @@ import debug from "debug";
 import { sleep } from "radashi";
 import invariant from "tiny-invariant";
 import captureAndLogError from "~/lib/captureAndLogError.server";
-import { normalizeDomain } from "~/lib/isSameDomain";
+import {
+  isExactDomain,
+  normalizeDomain,
+  normalizeUrl,
+} from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
 import {
   checkUsageLimits,
@@ -99,7 +103,7 @@ async function updateRunSentiment({
       select: {
         query: true,
         text: true,
-        citations: { select: { url: true } },
+        citations: { select: { url: true, relationship: true } },
       },
     });
     const { label, summary, citations } = await analyzeSentiment({
@@ -107,7 +111,9 @@ async function updateRunSentiment({
       queries: completedQueries.map((q) => ({
         query: q.query,
         text: q.text,
-        citations: q.citations.map((c) => c.url),
+        citations: q.citations
+          .filter((c) => c.relationship === null)
+          .map((c) => c.url),
       })),
       siteSummary: site.summary,
     });
@@ -118,7 +124,7 @@ async function updateRunSentiment({
 
     for (const c of citations) {
       await prisma.citation.updateMany({
-        where: { siteId: site.id, runId, url: c.url },
+        where: { siteId: site.id, runId, url: c.url, relationship: null },
         data: { relationship: c.relationship, reason: c.reason ?? null },
       });
     }
@@ -215,13 +221,19 @@ export async function singleQueryRepetition({
 
     if (citations.length > 0) {
       await prisma.citation.createMany({
-        data: citations.map((url) => ({
-          url,
-          domain: normalizeDomain(url),
-          queryId: citationRecord.id,
-          runId,
-          siteId: site.id,
-        })),
+        data: citations.map((rawUrl) => {
+          const url = normalizeUrl(rawUrl);
+          return {
+            url,
+            domain: normalizeDomain(url),
+            queryId: citationRecord.id,
+            runId,
+            siteId: site.id,
+            relationship: isExactDomain({ domain: site.domain, url })
+              ? "exact"
+              : null,
+          };
+        }),
         skipDuplicates: true,
       });
     }

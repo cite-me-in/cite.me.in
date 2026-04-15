@@ -1,10 +1,10 @@
-import type { User } from "~/prisma";
+import { expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vitest";
 import { removeElements } from "~/lib/html/parseHTML";
-import { goto, port } from "../helpers/launchBrowser";
-import { expect } from "@playwright/test";
-import { signIn } from "../helpers/signIn";
 import prisma from "~/lib/prisma.server";
+import type { User } from "~/prisma";
+import { goto, port } from "../helpers/launchBrowser";
+import { signIn } from "../helpers/signIn";
 
 // ---------------------------------------------------------------------------
 // Fixed seed data — deterministic so HTML/screenshot baselines never drift
@@ -157,28 +157,22 @@ describe("site page", () => {
 
     for (const { platform, model } of PLATFORMS) {
       for (let runIdx = 0; runIdx < runDays.length; runIdx++) {
-        // Shift citation sets per run so visibility varies across history.
-        const queryData = QUERIES.flatMap(({ query, group }, qi) => {
-          const { citations } =
-            CITATION_SETS[(qi * 3 + runIdx) % CITATION_SETS.length];
-          return {
-            query,
-            group,
-            text: `Response for "${query}".`,
-            citations,
-            extraQueries: [] as string[],
-          };
-        });
-
-        await prisma.citationQueryRun.create({
+        const run = await prisma.citationQueryRun.create({
           data: {
             siteId: site.id,
             platform,
             model,
             onDate: daysAgo(runDays[runIdx]).toISOString().split("T")[0],
-            queries: { createMany: { data: queryData } },
-            // Most recent runs have sentiment; each platform gets a different label
-            // so we can test all sentiment states without extra sites.
+            queries: {
+              createMany: {
+                data: QUERIES.map(({ query, group }) => ({
+                  query,
+                  group,
+                  text: `Response for "${query}".`,
+                  extraQueries: [],
+                })),
+              },
+            },
             ...(runIdx === 2 && {
               sentimentLabel:
                 platform === "chatgpt"
@@ -198,7 +192,24 @@ describe("site page", () => {
                       : "Rentail.space receives a mix of positive and critical mentions across queries. It ranks well for some use cases but is overlooked in others where competitors dominate.",
             }),
           },
+          include: { queries: true },
         });
+
+        // Create citations for each query
+        const queryIds = run.queries.map((q) => q.id);
+        for (let qi = 0; qi < queryIds.length; qi++) {
+          const { citations } =
+            CITATION_SETS[(qi * 3 + runIdx) % CITATION_SETS.length];
+          await prisma.citation.createMany({
+            data: citations.map((c) => ({
+              url: c,
+              domain: new URL(c).hostname,
+              queryId: queryIds[qi],
+              runId: run.id,
+              siteId: site.id,
+            })),
+          });
+        }
       }
     }
   });

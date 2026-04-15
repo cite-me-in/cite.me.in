@@ -52,52 +52,135 @@ describe("get_site_citations", () => {
     invariant(openaiRun, "OpenAI run not found");
     invariant(anthropicRun, "Anthropic run not found");
 
-    await prisma.citationQuery.createMany({
+    const openaiQueries = await prisma.citationQuery.createManyAndReturn({
       data: [
         {
           runId: openaiRun.id,
           query: "What is the best framework?",
           group: "frameworks",
           text: "The best frameworks are React, Vue, and Angular.",
-          citations: ["react.dev", "vuejs.org", CITATIONS_DOMAIN, "angular.io"],
         },
         {
           runId: openaiRun.id,
           query: "What is Node.js?",
           group: "runtimes",
           text: "Node.js is a JavaScript runtime.",
-          citations: ["nodejs.org"],
         },
+      ],
+    });
+
+    const anthropicQueries = await prisma.citationQuery.createManyAndReturn({
+      data: [
         {
           runId: anthropicRun.id,
           query: "What is the best framework?",
           group: "frameworks",
           text: "React and Vue are popular choices.",
-          citations: ["react.dev", CITATIONS_DOMAIN],
         },
         {
           runId: anthropicRun.id,
           query: "What is Node.js?",
           group: "runtimes",
           text: "Node.js runs JavaScript server-side.",
-          citations: ["nodejs.org", CITATIONS_DOMAIN],
         },
       ],
     });
 
-    await prisma.citationClassification.createMany({
+    const openaiFrameworkQuery = openaiQueries.find(
+      (q) => q.query === "What is the best framework?",
+    );
+    const openaiNodeQuery = openaiQueries.find(
+      (q) => q.query === "What is Node.js?",
+    );
+    const anthropicFrameworkQuery = anthropicQueries.find(
+      (q) => q.query === "What is the best framework?",
+    );
+    const anthropicNodeQuery = anthropicQueries.find(
+      (q) => q.query === "What is Node.js?",
+    );
+
+    invariant(openaiFrameworkQuery, "OpenAI framework query not found");
+    invariant(openaiNodeQuery, "OpenAI node query not found");
+    invariant(anthropicFrameworkQuery, "Anthropic framework query not found");
+    invariant(anthropicNodeQuery, "Anthropic node query not found");
+
+    await prisma.citation.createMany({
       data: [
         {
           siteId: site.id,
           runId: openaiRun.id,
-          url: CITATIONS_DOMAIN,
+          queryId: openaiFrameworkQuery.id,
+          url: "https://react.dev",
+          domain: "react.dev",
+        },
+        {
+          siteId: site.id,
+          runId: openaiRun.id,
+          queryId: openaiFrameworkQuery.id,
+          url: "https://vuejs.org",
+          domain: "vuejs.org",
+        },
+        {
+          siteId: site.id,
+          runId: openaiRun.id,
+          queryId: openaiFrameworkQuery.id,
+          url: `https://${CITATIONS_DOMAIN}`,
+          domain: CITATIONS_DOMAIN,
+          relationship: "direct",
+          reason: "Direct mention of site",
+        },
+        {
+          siteId: site.id,
+          runId: openaiRun.id,
+          queryId: openaiFrameworkQuery.id,
+          url: "https://angular.io",
+          domain: "angular.io",
+        },
+        {
+          siteId: site.id,
+          runId: openaiRun.id,
+          queryId: openaiNodeQuery.id,
+          url: "https://nodejs.org",
+          domain: "nodejs.org",
+        },
+        {
+          siteId: site.id,
+          runId: openaiRun.id,
+          queryId: openaiNodeQuery.id,
+          url: `https://${CITATIONS_DOMAIN}`,
+          domain: CITATIONS_DOMAIN,
           relationship: "direct",
           reason: "Direct mention of site",
         },
         {
           siteId: site.id,
           runId: anthropicRun.id,
-          url: CITATIONS_DOMAIN,
+          queryId: anthropicFrameworkQuery.id,
+          url: "https://react.dev",
+          domain: "react.dev",
+        },
+        {
+          siteId: site.id,
+          runId: anthropicRun.id,
+          queryId: anthropicFrameworkQuery.id,
+          url: `https://${CITATIONS_DOMAIN}`,
+          domain: CITATIONS_DOMAIN,
+          relationship: "direct",
+          reason: "Direct mention of site",
+        },
+        {
+          siteId: site.id,
+          runId: anthropicRun.id,
+          queryId: anthropicNodeQuery.id,
+          url: "https://nodejs.org",
+          domain: "nodejs.org",
+        },
+        {
+          siteId: site.id,
+          runId: anthropicRun.id,
+          queryId: anthropicNodeQuery.id,
+          url: `https://${CITATIONS_DOMAIN}`,
+          domain: CITATIONS_DOMAIN,
           relationship: "direct",
           reason: "Direct mention of site",
         },
@@ -112,7 +195,7 @@ describe("get_site_citations", () => {
       where: { domain: CITATIONS_DOMAIN },
     });
     if (site) {
-      await prisma.citationClassification.deleteMany({
+      await prisma.citation.deleteMany({
         where: { siteId: site.id },
       });
       await prisma.citationQuery.deleteMany({
@@ -253,8 +336,8 @@ describe("get_site_citations", () => {
       invariant(openaiPlatform, "OpenAI platform not found");
 
       const citationUrls = openaiPlatform.citations.map((c) => c.url);
-      expect(citationUrls).toContain("nodejs.org");
-      expect(citationUrls).not.toContain(CITATIONS_DOMAIN);
+      expect(citationUrls).toContain("https://nodejs.org");
+      expect(citationUrls).toContain(`https://${CITATIONS_DOMAIN}`);
     });
   });
 

@@ -284,38 +284,107 @@ describe("sites route", () => {
 
     describe("with two runs", () => {
       beforeAll(async () => {
-        // Current run (newer): 10 citations → current=10, previous=20, delta=-50%
-        await prisma.citationQueryRun.create({
+        const run = await prisma.citationQueryRun.create({
           data: {
             siteId,
             platform: "chatgpt",
             model: "gpt-4o",
             onDate: new Date().toISOString().split("T")[0],
             queries: {
-              createMany: {
-                data: [
-                  {
-                    query: "test query",
-                    citations: [
-                      "https://delta-test.com/a",
-                      "https://delta-test.com/b",
-                      "https://delta-test.com/c",
-                      "https://delta-test.com/d",
-                      "https://delta-test.com/e",
-                      "https://delta-test.com/f",
-                      "https://delta-test.com/g",
-                      "https://delta-test.com/h",
-                      "https://delta-test.com/i",
-                      "https://delta-test.com/j",
-                    ],
-                    text: "response",
-                    group: "group",
-                    extraQueries: [],
-                  },
-                ],
+              create: {
+                query: "test query",
+                text: "response",
+                group: "group",
+                extraQueries: [],
               },
             },
           },
+          include: { queries: true },
+        });
+        const queryId = run.queries[0].id;
+        await prisma.citation.createMany({
+          data: [
+            {
+              url: "https://delta-test.com/a",
+              domain: "delta-test.com",
+              relationship: "exact",
+              queryId,
+              runId: run.id,
+              siteId,
+            },
+            {
+              url: "https://delta-test.com/b",
+              domain: "delta-test.com",
+              relationship: "exact",
+              queryId,
+              runId: run.id,
+              siteId,
+            },
+            {
+              url: "https://delta-test.com/c",
+              domain: "delta-test.com",
+              relationship: "exact",
+              queryId,
+              runId: run.id,
+              siteId,
+            },
+            {
+              url: "https://delta-test.com/d",
+              domain: "delta-test.com",
+              relationship: "exact",
+              queryId,
+              runId: run.id,
+              siteId,
+            },
+            {
+              url: "https://delta-test.com/e",
+              domain: "delta-test.com",
+              relationship: "exact",
+              queryId,
+              runId: run.id,
+              siteId,
+            },
+            {
+              url: "https://delta-test.com/f",
+              domain: "delta-test.com",
+              relationship: "exact",
+              queryId,
+              runId: run.id,
+              siteId,
+            },
+            {
+              url: "https://delta-test.com/g",
+              domain: "delta-test.com",
+              relationship: "exact",
+              queryId,
+              runId: run.id,
+              siteId,
+            },
+            {
+              url: "https://delta-test.com/h",
+              domain: "delta-test.com",
+              relationship: "exact",
+              queryId,
+              runId: run.id,
+              siteId,
+            },
+            {
+              url: "https://delta-test.com/i",
+              domain: "delta-test.com",
+              relationship: "exact",
+              queryId,
+              runId: run.id,
+              siteId,
+            },
+            {
+              url: "https://delta-test.com/j",
+              domain: "delta-test.com",
+              relationship: "exact",
+              queryId,
+              runId: run.id,
+              siteId,
+            },
+          ],
         });
         page = await goto("/sites");
       });

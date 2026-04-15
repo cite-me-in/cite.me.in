@@ -28,7 +28,7 @@ export default function RecentVisibility({
     id: string;
     group: string;
     query: string;
-    citations: { url: string }[];
+    citations: { url: string; relationship: string | null }[];
     onDate: string;
   }[];
   meta: { model: string } | undefined;

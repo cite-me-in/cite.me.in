@@ -6,7 +6,6 @@ import { Tabs, TabsList, TabsTrigger } from "~/components/ui/Tabs";
 import { requireSiteAccess } from "~/lib/auth.server";
 import { getCitationGaps } from "~/lib/citationGapAnalysis.server";
 import { getDomainMeta } from "~/lib/domainMeta.server";
-import { isSameDomain } from "~/lib/isSameDomain";
 import PLATFORMS from "~/lib/llm-visibility/platforms";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
@@ -45,7 +44,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
             extraQueries: true,
             runId: true,
             createdAt: true,
-            citations: { select: { url: true } },
+            citations: { select: { url: true, relationship: true } },
           },
         },
       },
@@ -79,10 +78,23 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const recentRunIds = new Set(recentRuns.map((r) => r.id));
   const recentCitations = citationRows.filter((c) => recentRunIds.has(c.runId));
 
+  const exactCitations = recentCitations.filter(
+    ({ relationship }) => relationship === "exact",
+  );
+  const directCitations = recentCitations.filter(
+    ({ relationship }) => relationship === "direct",
+  );
+  const indirectCitations = recentCitations.filter(
+    ({ relationship }) => relationship === "indirect",
+  );
+
   const classifiedUrls = new Set(
     recentCitations
       .filter(
-        (c) => c.relationship === "direct" || c.relationship === "indirect",
+        (c) =>
+          c.relationship === "exact" ||
+          c.relationship === "direct" ||
+          c.relationship === "indirect",
       )
       .map((c) => c.url),
   );
@@ -119,25 +131,12 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     })),
   );
 
-  const directCitations = recentCitations.filter(
-    ({ relationship }) => relationship === "direct",
-  );
-  const indirectCitations = recentCitations.filter(
-    ({ relationship }) => relationship === "indirect",
-  );
-
-  const exactUrls = new Set(
-    recentCitations
-      .filter((c) => isSameDomain({ domain: site.domain, url: c.url }))
-      .map((c) => normalizeUrl(c.url)),
-  );
-
+  const exactUrls = new Set(exactCitations.map((c) => normalizeUrl(c.url)));
   const directUrls = new Set(
     directCitations
       .map((c) => normalizeUrl(c.url))
       .filter((u) => !exactUrls.has(u)),
   );
-
   const indirectUrls = new Set(
     indirectCitations
       .map((c) => normalizeUrl(c.url))

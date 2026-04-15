@@ -7,47 +7,35 @@ import type { Route } from "./+types/api.site.$domain_.queries";
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { id } = await verifySiteAccess({ domain: params.domain, request });
 
-  const [platforms, classifications] = await Promise.all([
-    prisma.citationQueryRun.findMany({
-      distinct: ["platform", "onDate"],
-      where: { siteId: id },
-      select: {
-        id: true,
-        platform: true,
-        model: true,
-        onDate: true,
-        queries: {
-          select: {
-            id: true,
-            query: true,
-            group: true,
-            citations: true,
-            text: true,
+  const platforms = await prisma.citationQueryRun.findMany({
+    distinct: ["platform", "onDate"],
+    where: { siteId: id },
+    select: {
+      id: true,
+      platform: true,
+      model: true,
+      onDate: true,
+      queries: {
+        select: {
+          id: true,
+          query: true,
+          group: true,
+          text: true,
+          citations: {
+            select: { url: true, relationship: true, reason: true },
           },
-          orderBy: { query: "asc" },
         },
-        sentimentLabel: true,
-        sentimentSummary: true,
+        orderBy: { query: "asc" },
       },
-    }),
-    prisma.citationClassification.findMany({
-      where: { siteId: id },
-      select: { url: true, relationship: true, reason: true, runId: true },
-    }),
-  ]);
-
-  const classificationMap = new Map(
-    classifications.map((c) => [
-      `${c.runId}:${c.url}`,
-      { relationship: c.relationship, reason: c.reason },
-    ]),
-  );
+      sentimentLabel: true,
+      sentimentSummary: true,
+    },
+  });
 
   return data(
     SiteQueriesSchema.parse({
       platforms: platforms.map(
         ({
-          id: runId,
           model,
           onDate,
           platform,
@@ -59,16 +47,11 @@ export async function loader({ request, params }: Route.LoaderArgs) {
           onDate,
           platform,
           queries: queries.map((query) => ({
-            citations: query.citations.map((url) => {
-              const classified = classificationMap.get(`${runId}:${url}`);
-              return {
-                url,
-                ...(classified?.relationship && {
-                  relationship: classified.relationship,
-                }),
-                ...(classified?.reason && { reason: classified.reason }),
-              };
-            }),
+            citations: query.citations.map((c) => ({
+              url: c.url,
+              ...(c.relationship && { relationship: c.relationship }),
+              ...(c.reason && { reason: c.reason }),
+            })),
             group: query.group,
             query: query.query,
             response: query.text,

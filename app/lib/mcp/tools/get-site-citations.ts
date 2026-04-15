@@ -74,31 +74,25 @@ export default {
         };
       }
 
-      const [runs, classifications] = await Promise.all([
-        prisma.citationQueryRun.findMany({
-          where: { siteId: site.id, onDate: latestRun.onDate },
-          select: {
-            id: true,
-            platform: true,
-            model: true,
-            onDate: true,
-            queries: {
-              select: { query: true, group: true, citations: true, text: true },
+      const runs = await prisma.citationQueryRun.findMany({
+        where: { siteId: site.id, onDate: latestRun.onDate },
+        select: {
+          id: true,
+          platform: true,
+          model: true,
+          onDate: true,
+          queries: {
+            select: {
+              query: true,
+              group: true,
+              text: true,
+              citations: {
+                select: { url: true, relationship: true, reason: true },
+              },
             },
           },
-        }),
-        prisma.citationClassification.findMany({
-          where: { siteId: site.id },
-          select: { url: true, relationship: true, reason: true, runId: true },
-        }),
-      ]);
-
-      const classificationMap = new Map(
-        classifications.map((c) => [
-          `${c.runId}:${c.url}`,
-          { relationship: c.relationship, reason: c.reason },
-        ]),
-      );
+        },
+      });
 
       const queryMap = new Map<
         string,
@@ -112,7 +106,7 @@ export default {
             citations: {
               url: string;
               relationship?: "direct" | "indirect" | "unrelated";
-              reason?: string;
+              reason?: string | null;
             }[];
             mentionsYourSite: number;
             directCitations: number;
@@ -124,19 +118,16 @@ export default {
       for (const run of runs) {
         for (const q of run.queries) {
           const existing = queryMap.get(q.query);
-          const citations = q.citations.map((url) => {
-            const classified = classificationMap.get(`${run.id}:${url}`);
-            return {
-              url,
-              ...(classified?.relationship && {
-                relationship: classified.relationship as
-                  | "direct"
-                  | "indirect"
-                  | "unrelated",
-              }),
-              ...(classified?.reason && { reason: classified.reason }),
-            };
-          });
+          const citations = q.citations.map((c) => ({
+            url: c.url,
+            ...(c.relationship && {
+              relationship: c.relationship as
+                | "direct"
+                | "indirect"
+                | "unrelated",
+            }),
+            ...(c.reason && { reason: c.reason }),
+          }));
 
           const directCitations = citations.filter(
             (c) => c.relationship === "direct",
