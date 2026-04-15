@@ -65,7 +65,7 @@ export function normalizeDomain(input: string | URL): string {
  * @param url - The URL to normalize.
  * @returns The normalized URL or the original string if invalid.
  */
-export function normalizeUrl(url: string): string {
+export function normalizeURL(url: string): string {
   try {
     const parsed = new URL(url);
     parsed.searchParams.delete("utm_source");

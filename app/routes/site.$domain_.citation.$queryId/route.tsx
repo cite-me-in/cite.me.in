@@ -13,7 +13,7 @@ import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
 import { requireSiteAccess } from "~/lib/auth.server";
 import externalLink from "~/lib/externalLink";
-import { isSameDomain, normalizeUrl } from "~/lib/isSameDomain";
+import { isSameDomain, normalizeURL } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 
@@ -56,16 +56,16 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const directUrls = new Set([
     ...citation.citations
       .filter((c) => isSameDomain({ domain: site.domain, url: c.url }))
-      .map((c) => normalizeUrl(c.url)),
+      .map((c) => normalizeURL(c.url)),
     ...citation.citations
       .filter((c) => c.relationship === "direct")
-      .map((c) => normalizeUrl(c.url)),
+      .map((c) => normalizeURL(c.url)),
   ]);
 
   const indirectUrls = new Set(
     citation.citations
       .filter((c) => c.relationship === "indirect")
-      .map((c) => normalizeUrl(c.url))
+      .map((c) => normalizeURL(c.url))
       .filter((u) => !directUrls.has(u)),
   );
 
@@ -100,7 +100,7 @@ export default function SiteCitationsPage({
           <table className="block overflow-hidden text-base text-foreground/60">
             <tbody>
               {citation.citations.map((c, index) => {
-                const normalized = normalizeUrl(c.url);
+                const normalized = normalizeURL(c.url);
                 const isDirect = directUrls.has(normalized);
                 const isIndirect = indirectUrls.has(normalized);
 

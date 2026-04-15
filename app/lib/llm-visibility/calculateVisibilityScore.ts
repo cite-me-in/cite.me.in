@@ -15,7 +15,7 @@
  *   softMentionRate      × 0.15
  */
 
-import { isSameDomain, normalizeDomain, normalizeUrl } from "../isSameDomain";
+import { isSameDomain, normalizeDomain, normalizeURL } from "../isSameDomain";
 
 const weights = {
   queryCoverageRate: 0.35,
@@ -78,7 +78,7 @@ export default function calculateVisibilityScore({
 
   if (classifications) {
     for (const c of classifications) {
-      const normalized = normalizeUrl(c.url);
+      const normalized = normalizeURL(c.url);
       if (c.relationship === "direct") {
         directUrls.add(normalized);
       } else if (c.relationship === "indirect") {
@@ -101,7 +101,7 @@ export default function calculateVisibilityScore({
 
     const hasDirectCitation =
       position !== -1 ||
-      query.citations.some((c) => directUrls.has(normalizeUrl(c)));
+      query.citations.some((c) => directUrls.has(normalizeURL(c)));
 
     if (hasDirectCitation) queriesWithCitation++;
 

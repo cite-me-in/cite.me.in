@@ -1,7 +1,7 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { fork, sum } from "radashi";
 import type { Site } from "~/prisma";
-import { normalizeDomain, normalizeUrl } from "./isSameDomain";
+import { normalizeDomain, normalizeURL } from "./isSameDomain";
 import calculateVisibilityScore from "./llm-visibility/calculateVisibilityScore";
 import prisma from "./prisma.server";
 
@@ -92,22 +92,22 @@ export default async function getSiteMetrics(
     const currentDirectUrls = new Set(
       currentClassifications
         .filter((c) => c.relationship === "direct")
-        .map((c) => normalizeUrl(c.url)),
+        .map((c) => normalizeURL(c.url)),
     );
     const currentIndirectUrls = new Set(
       currentClassifications
         .filter((c) => c.relationship === "indirect")
-        .map((c) => normalizeUrl(c.url)),
+        .map((c) => normalizeURL(c.url)),
     );
     const previousDirectUrls = new Set(
       previousClassifications
         .filter((c) => c.relationship === "direct")
-        .map((c) => normalizeUrl(c.url)),
+        .map((c) => normalizeURL(c.url)),
     );
     const previousIndirectUrls = new Set(
       previousClassifications
         .filter((c) => c.relationship === "indirect")
-        .map((c) => normalizeUrl(c.url)),
+        .map((c) => normalizeURL(c.url)),
     );
 
     const toStringArrayQueries = (qs: typeof currentQueries) =>
@@ -136,7 +136,7 @@ export default async function getSiteMetrics(
       let count = 0;
       for (const q of qs) {
         for (const c of q.citations) {
-          const normalized = normalizeUrl(c.url);
+          const normalized = normalizeURL(c.url);
           const host = normalizeDomain(c.url);
           if (
             host === domain ||

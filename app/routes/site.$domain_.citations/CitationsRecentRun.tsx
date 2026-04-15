@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "~/components/ui/Table";
 import { formatDateShort } from "~/lib/formatDate";
-import { normalizeUrl } from "~/lib/isSameDomain";
+import { normalizeURL } from "~/lib/isSameDomain";
 
 export default function RecentVisibility({
   queries,
@@ -42,10 +42,10 @@ export default function RecentVisibility({
 }) {
   const directUrls = new Set([
     ...classifications.exact,
-    ...classifications.direct.map((c) => normalizeUrl(c.url)),
+    ...classifications.direct.map((c) => normalizeURL(c.url)),
   ]);
   const indirectUrls = new Set(
-    classifications.indirect.map((c) => normalizeUrl(c.url)),
+    classifications.indirect.map((c) => normalizeURL(c.url)),
   );
 
   return (
@@ -74,10 +74,10 @@ export default function RecentVisibility({
           <TableBody>
             {queries.map((query) => {
               const hasDirect = query.citations.some((c) =>
-                directUrls.has(normalizeUrl(c.url)),
+                directUrls.has(normalizeURL(c.url)),
               );
               const hasIndirect = query.citations.some((c) =>
-                indirectUrls.has(normalizeUrl(c.url)),
+                indirectUrls.has(normalizeURL(c.url)),
               );
 
               return (
@@ -130,7 +130,7 @@ function citationCounts(
   let indirect = 0;
 
   for (const citation of citations) {
-    const normalized = normalizeUrl(citation);
+    const normalized = normalizeURL(citation);
     if (directUrls.has(normalized)) {
       direct++;
     } else if (indirectUrls.has(normalized)) {

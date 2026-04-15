@@ -1,22 +1,22 @@
 import { ms } from "convert";
 import debug from "debug";
-import { sleep } from "radashi";
+import { parallel } from "radashi";
 import invariant from "tiny-invariant";
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import {
   isSameDomain,
   normalizeDomain,
-  normalizeUrl,
+  normalizeURL,
 } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
 import {
   checkUsageLimits,
   recordUsageEvent,
 } from "~/lib/usage/usageLimit.server";
-import analyzeSentiment from "./analyzeSentiment";
 import type { QueryFn } from "./queryFn";
+import updateRunSentiment from "./updateRunSentiment";
 
-const logger = debug("server");
+export const logger = debug("server");
 
 /**
  * Query a given platform for a given account and queries.
@@ -49,7 +49,12 @@ export async function queryPlatform({
       where: { siteId_platform_onDate: { onDate, platform, siteId: site.id } },
       update: { model: model },
       create: { onDate, model: model, platform, siteId: site.id },
-      select: { id: true, queries: { select: { query: true } } },
+      select: {
+        id: true,
+        queries: { select: { query: true } },
+        site: true,
+        platform: true,
+      },
     });
     logger("[%s:%s] Created citation query run %s", site.id, platform, run.id);
 
@@ -58,81 +63,29 @@ export async function queryPlatform({
     const newQueries = notEmptyQueries.filter(
       ({ query }) => !existingQueries.includes(query),
     );
+    if (newQueries.length === 0) return;
 
-    if (newQueries.length > 0) {
-      for (const [index, query] of newQueries.entries()) {
-        if (process.env.NODE_ENV !== "test") await sleep(ms("1s") * index);
-
-        await singleQueryRepetition({
-          group: query.group,
-          model,
-          platform,
-          query: query.query,
-          queryFn,
-          runId: run.id,
-          site,
-        });
-      }
-
-      await updateRunSentiment({ site, platform, runId: run.id });
-      await upsertCitedPages({
-        siteId: site.id,
+    await parallel({ limit: 5 }, newQueries, async (query) => {
+      await singleQueryRepetition({
+        group: query.group,
+        model,
+        platform,
+        query: query.query,
+        queryFn,
         runId: run.id,
-        domain: site.domain,
+        site,
       });
-    }
+    });
+
+    await updateRunSentiment(run);
+    await upsertCitedPages({
+      siteId: site.id,
+      runId: run.id,
+      domain: site.domain,
+    });
   } catch (error) {
     captureAndLogError(error, {
       extra: { siteId: site.id, platform },
-    });
-  }
-}
-
-async function updateRunSentiment({
-  site,
-  platform,
-  runId,
-}: {
-  site: { id: string; domain: string; summary: string };
-  platform: string;
-  runId: string;
-}) {
-  try {
-    const completedQueries = await prisma.citationQuery.findMany({
-      where: { runId },
-      select: {
-        query: true,
-        text: true,
-        citations: { select: { url: true, relationship: true } },
-      },
-    });
-    const { label, summary, citations } = await analyzeSentiment({
-      domain: site.domain,
-      queries: completedQueries.map((q) => ({
-        query: q.query,
-        text: q.text,
-        citations: q.citations
-          .filter((c) => c.relationship === null)
-          .map((c) => c.url),
-      })),
-      siteSummary: site.summary,
-    });
-    await prisma.citationQueryRun.update({
-      where: { id: runId },
-      data: { sentimentLabel: label, sentimentSummary: summary },
-    });
-
-    for (const c of citations) {
-      await prisma.citation.updateMany({
-        where: { siteId: site.id, runId, url: c.url, relationship: null },
-        data: { relationship: c.relationship, reason: c.reason ?? null },
-      });
-    }
-
-    logger("[%s:%s] Sentiment analysis complete: %s", site.id, platform, label);
-  } catch (sentimentError) {
-    captureAndLogError(sentimentError, {
-      extra: { siteId: site.id, platform, runId },
     });
   }
 }
@@ -222,7 +175,7 @@ export async function singleQueryRepetition({
     if (citations.length > 0) {
       await prisma.citation.createMany({
         data: citations.map((rawUrl) => {
-          const url = normalizeUrl(rawUrl);
+          const url = normalizeURL(rawUrl);
           return {
             url,
             domain: normalizeDomain(url),

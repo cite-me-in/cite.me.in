@@ -6,7 +6,7 @@ import { Tabs, TabsList, TabsTrigger } from "~/components/ui/Tabs";
 import { requireSiteAccess } from "~/lib/auth.server";
 import { getCitationGaps } from "~/lib/citationGapAnalysis.server";
 import { getDomainMeta } from "~/lib/domainMeta.server";
-import { normalizeUrl } from "~/lib/isSameDomain";
+import { normalizeURL } from "~/lib/isSameDomain";
 import PLATFORMS from "~/lib/llm-visibility/platforms";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
@@ -58,15 +58,15 @@ function computeShareOfVoice(
   indirectCitations: Citation[],
   total: number,
 ) {
-  const exactUrls = new Set(exactCitations.map((c) => normalizeUrl(c.url)));
+  const exactUrls = new Set(exactCitations.map((c) => normalizeURL(c.url)));
   const directUrls = new Set(
     directCitations
-      .map((c) => normalizeUrl(c.url))
+      .map((c) => normalizeURL(c.url))
       .filter((u) => !exactUrls.has(u)),
   );
   const indirectUrls = new Set(
     indirectCitations
-      .map((c) => normalizeUrl(c.url))
+      .map((c) => normalizeURL(c.url))
       .filter((u) => !exactUrls.has(u) && !directUrls.has(u)),
   );
 
@@ -104,13 +104,13 @@ function buildRelatedCitations(
     direct: [...directUrls].map((url) => ({
       url,
       reason:
-        directCitations.find((c) => normalizeUrl(c.url) === url)?.reason ??
+        directCitations.find((c) => normalizeURL(c.url) === url)?.reason ??
         null,
     })),
     indirect: [...indirectUrls].map((url) => ({
       url,
       reason:
-        indirectCitations.find((c) => normalizeUrl(c.url) === url)?.reason ??
+        indirectCitations.find((c) => normalizeURL(c.url) === url)?.reason ??
         null,
     })),
   };
