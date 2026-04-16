@@ -1,4 +1,3 @@
-import { map } from "radashi";
 import { data } from "react-router";
 import { z } from "zod";
 import recordBotVisit, { classifyBot } from "~/lib/botTracking.server";
@@ -6,6 +5,7 @@ import recordHumanVisit from "~/lib/humanTracking.server";
 import prisma from "~/lib/prisma.server";
 
 const TrackSchema = z.object({
+  apiKey: z.string().min(1),
   url: z.url(),
   userAgent: z.string().nullable().optional().default(null),
   accept: z.string().nullable().optional().default(null),
@@ -37,35 +37,35 @@ export async function action({ request }: { request: Request }) {
     return new Response("Invalid JSON", { status: 400 });
   }
 
-  const { hostname, searchParams } = new URL(inputs.url);
-  const sites = await prisma.site.findMany({ where: { domain: hostname } });
+  const { searchParams, hostname } = new URL(inputs.url);
+  const site = await prisma.site.findFirst({
+    where: { domain: hostname.toLowerCase(), apiKey: inputs.apiKey },
+  });
+  if (!site)
+    return new Response("Forbidden", { status: 403, headers: CORS_HEADERS });
 
   const userAgent =
     inputs.userAgent ?? request.headers.get("user-agent") ?? "Unknown";
   const ip = inputs.ip ?? request.headers.get("x-forwarded-for");
 
   if (classifyBot(userAgent)) {
-    await map(sites, (site) =>
-      recordBotVisit({
-        accept: inputs.accept,
-        ip,
-        referer: inputs.referer,
-        site,
-        url: inputs.url,
-        userAgent,
-      }),
-    );
+    await recordBotVisit({
+      accept: inputs.accept,
+      ip,
+      referer: inputs.referer,
+      site,
+      url: inputs.url,
+      userAgent,
+    });
     return data({ ok: true }, { headers: CORS_HEADERS });
   } else {
-    await map(sites, (site) =>
-      recordHumanVisit({
-        ip,
-        referer: inputs.referer,
-        site,
-        userAgent,
-        utmSource: searchParams.get("utm_source"),
-      }),
-    );
+    await recordHumanVisit({
+      ip,
+      referer: inputs.referer,
+      site,
+      userAgent,
+      utmSource: searchParams.get("utm_source"),
+    });
     return data({ ok: true }, { headers: CORS_HEADERS });
   }
 }

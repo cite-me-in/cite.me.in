@@ -2,6 +2,7 @@ import { redirect } from "react-router";
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
 import { requireSiteOwner, requireUserAccess } from "~/lib/auth.server";
+import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
 import { deleteSite } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
@@ -22,8 +23,13 @@ export async function loader({ request, params }: Route.LoaderArgs) {
       domain: params.domain,
       OR: [{ ownerId: user.id }, { siteUsers: { some: { userId: user.id } } }],
     },
-    include: {
+    select: {
+      apiKey: true,
+      content: true,
+      domain: true,
+      id: true,
       owner: { select: { id: true, email: true } },
+      ownerId: true,
       siteUsers: { include: { user: { select: { id: true, email: true } } } },
       siteInvitations: {
         where: { status: "PENDING" },
@@ -63,6 +69,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 
 export default function SiteSettingsPage({ loaderData }: Route.ComponentProps) {
   const { site, isOwner } = loaderData;
+  const trackingScript = `<script async src="${envVars.VITE_APP_URL}/pixel.js?key=${site.apiKey}" crossorigin="anonymous" />`;
 
   return (
     <Main variant="wide">
@@ -74,9 +81,7 @@ export default function SiteSettingsPage({ loaderData }: Route.ComponentProps) {
           isOwner={isOwner}
           domain={site.domain}
         />
-        <TrackingScript
-          script={`<script async src="${import.meta.env.VITE_APP_URL}/pixel.js" crossorigin="anonymous" />`}
-        />
+        <TrackingScript script={trackingScript} />
         <MembersSection site={site} isOwner={isOwner} />
       </section>
     </Main>

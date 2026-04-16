@@ -21,9 +21,9 @@ export async function trackVisits(request: Request): Promise<void> {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${envVars.TRACK_API_KEY}`,
         },
         body: JSON.stringify({
+          apiKey: envVars.TRACK_API_KEY,
           accept: request.headers.get("accept"),
           ip: request.headers.get("x-forwarded-for"),
           referer: request.headers.get("referer"),

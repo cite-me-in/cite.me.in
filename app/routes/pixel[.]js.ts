@@ -1,4 +1,9 @@
-export function loader() {
+export function loader({ request }: { request: Request }) {
+  const url = new URL(request.url);
+  const apiKey = url.searchParams.get("key");
+
+  if (!apiKey) return new Response("Missing API key", { status: 400 });
+
   return new Response(
     `
 const img = document.createElement("img");
@@ -18,6 +23,7 @@ xhr.open("POST", "${import.meta.env.VITE_APP_URL}/api/track", true);
 xhr.setRequestHeader("Content-Type", "application/json");
 xhr.send(
   JSON.stringify({
+    apiKey: "${apiKey}",
     referer: document.referrer,
     url: document.location.href,
     userAgent: navigator.userAgent,
