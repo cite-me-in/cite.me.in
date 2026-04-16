@@ -2,7 +2,14 @@ export function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
   const apiKey = url.searchParams.get("key");
 
-  if (!apiKey) return new Response("Missing API key", { status: 400 });
+  if (!apiKey) {
+    return new Response("Missing API key", {
+      status: 400,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+  }
 
   return new Response(
     `

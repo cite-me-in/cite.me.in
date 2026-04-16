@@ -6,6 +6,7 @@
 backup.sql
 prisma/generated
 server.log
+.vercel
 
 # React Router
 /.react-router/

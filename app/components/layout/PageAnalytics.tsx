@@ -15,7 +15,7 @@ function GoogleAnalytics() {
   return (
     <>
       <script
-        async
+        defer
         src="https://www.googletagmanager.com/gtag/js?id=G-MW5FD65Q2W"
       />
       <script>
