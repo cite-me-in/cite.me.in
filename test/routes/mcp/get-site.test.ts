@@ -1,16 +1,9 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import {
-  accessToken,
-  initSession,
-  mcpRequest,
-  parseSSEResponse,
-} from "./setup";
+import { accessToken, initSession, mcpRequest, parseResponse } from "./setup";
 
 describe("get_site", () => {
-  let sessionId: string;
-
   beforeAll(async () => {
-    sessionId = await initSession();
+    await initSession();
   });
 
   describe("with valid domain", () => {
@@ -35,9 +28,8 @@ describe("get_site", () => {
             arguments: { domain: "mcp-test-site-1.example" },
           },
         },
-        sessionId,
       });
-      body = parseSSEResponse(await response.text()) as typeof body;
+      body = parseResponse(await response.text()) as typeof body;
     });
 
     it("should return 200", async () => {
@@ -112,9 +104,8 @@ describe("get_site", () => {
             arguments: { domain: "nonexistent.example" },
           },
         },
-        sessionId,
       });
-      body = parseSSEResponse(await response.text()) as typeof body;
+      body = parseResponse(await response.text()) as typeof body;
     });
 
     it("should return 200", async () => {

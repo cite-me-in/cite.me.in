@@ -593,8 +593,10 @@ describe("MCP Authorization Flow", () => {
       });
 
       const location = approveRes.headers.get("location");
-      const callbackUrl = new URL(location!);
+      if (!location) throw new Error("No location header in response");
+      const callbackUrl = new URL(location);
       const code = callbackUrl.searchParams.get("code");
+      if (!code) throw new Error("No code in callback URL");
 
       const tokenRes = await fetch(`${baseUrl}/oauth/token`, {
         method: "POST",
@@ -602,7 +604,7 @@ describe("MCP Authorization Flow", () => {
         body: new URLSearchParams({
           grant_type: "authorization_code",
           client_id: clientId,
-          code: code!,
+          code,
           redirect_uri: "http://localhost:3000/callback",
           code_verifier: pkce.verifier,
         }),
@@ -667,9 +669,10 @@ describe("MCP Authorization Flow", () => {
       const rateLimited = statusCodes.filter((s) => s === 429);
       expect(rateLimited.length).toBeGreaterThan(0);
 
-      const rateLimitedRes = responses.find((r) => r.status === 429)!;
-      expect(rateLimitedRes.headers.has("Retry-After")).toBe(true);
-      expect(rateLimitedRes.headers.has("X-RateLimit-Reset")).toBe(true);
+      const rateLimitedRes = responses.find((r) => r.status === 429);
+      expect(rateLimitedRes).toBeDefined();
+      expect(rateLimitedRes?.headers.has("Retry-After")).toBe(true);
+      expect(rateLimitedRes?.headers.has("X-RateLimit-Reset")).toBe(true);
     });
   });
 });

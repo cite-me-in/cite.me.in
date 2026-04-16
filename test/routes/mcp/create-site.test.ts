@@ -1,17 +1,10 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import prisma from "~/lib/prisma.server";
-import {
-  accessToken,
-  initSession,
-  mcpRequest,
-  parseSSEResponse,
-} from "./setup";
+import { accessToken, initSession, mcpRequest, parseResponse } from "./setup";
 
 describe("create_site", () => {
-  let sessionId: string;
-
   beforeAll(async () => {
-    sessionId = await initSession();
+    await initSession();
   });
 
   describe("with valid domain", () => {
@@ -35,10 +28,9 @@ describe("create_site", () => {
           method: "tools/call",
           params: { name: "create_site", arguments: { domain: NEW_DOMAIN } },
         },
-        sessionId,
       });
       const rawText = await response.text();
-      body = parseSSEResponse(rawText) as typeof body;
+      body = parseResponse(rawText) as typeof body;
     });
 
     afterAll(async () => {
@@ -91,9 +83,8 @@ describe("create_site", () => {
             arguments: { domain: "mcp-test-site-1.example" },
           },
         },
-        sessionId,
       });
-      body = parseSSEResponse(await response.text()) as typeof body;
+      body = parseResponse(await response.text()) as typeof body;
     });
 
     it("should return 200", async () => {

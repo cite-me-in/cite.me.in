@@ -1,8 +1,11 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { accessToken, mcpRequest, parseSSEResponse } from "./setup";
+import { accessToken, mcpRequest, parseResponse } from "./setup";
 
 describe("initialization", () => {
   let response: Response;
+  let body: {
+    result: { protocolVersion: string; serverInfo: { name: string } };
+  };
 
   beforeAll(async () => {
     response = await mcpRequest({
@@ -18,20 +21,14 @@ describe("initialization", () => {
         },
       },
     });
+    body = parseResponse(await response.text()) as typeof body;
   });
 
   it("should return 200", async () => {
     expect(response.status).toBe(200);
   });
 
-  it("should return a session ID", async () => {
-    expect(response.headers.get("mcp-session-id")).toBeTruthy();
-  });
-
   it("should return the protocol version and server info", async () => {
-    const body = parseSSEResponse(await response.text()) as {
-      result: { protocolVersion: string; serverInfo: { name: string } };
-    };
     expect(body.result.protocolVersion).toBe("2024-11-05");
     expect(body.result.serverInfo.name).toBe("cite.me.in");
   });

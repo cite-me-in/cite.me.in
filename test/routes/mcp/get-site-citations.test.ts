@@ -1,18 +1,11 @@
 import invariant from "tiny-invariant";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import prisma from "~/lib/prisma.server";
-import {
-  accessToken,
-  initSession,
-  mcpRequest,
-  parseSSEResponse,
-} from "./setup";
+import { accessToken, initSession, mcpRequest, parseResponse } from "./setup";
 
 const CITATIONS_DOMAIN = "citations-test.example";
 
 describe("get_site_citations", () => {
-  let sessionId: string;
-
   beforeAll(async () => {
     const site = await prisma.site.create({
       data: {
@@ -187,7 +180,7 @@ describe("get_site_citations", () => {
       ],
     });
 
-    sessionId = await initSession();
+    await initSession();
   });
 
   afterAll(async () => {
@@ -230,9 +223,8 @@ describe("get_site_citations", () => {
             arguments: { domain: CITATIONS_DOMAIN },
           },
         },
-        sessionId,
       });
-      body = parseSSEResponse(await response.text()) as typeof body;
+      body = parseResponse(await response.text()) as typeof body;
     });
 
     it("should return 200", async () => {
@@ -363,9 +355,8 @@ describe("get_site_citations", () => {
             arguments: { domain: "mcp-test-site-1.example" },
           },
         },
-        sessionId,
       });
-      body = parseSSEResponse(await response.text()) as typeof body;
+      body = parseResponse(await response.text()) as typeof body;
     });
 
     it("should return 200", async () => {
@@ -410,9 +401,8 @@ describe("get_site_citations", () => {
             arguments: { domain: "nonexistent.example" },
           },
         },
-        sessionId,
       });
-      body = parseSSEResponse(await response.text()) as typeof body;
+      body = parseResponse(await response.text()) as typeof body;
     });
 
     it("should return 200", async () => {

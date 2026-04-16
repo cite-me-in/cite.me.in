@@ -1,16 +1,9 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import {
-  accessToken,
-  initSession,
-  mcpRequest,
-  parseSSEResponse,
-} from "./setup";
+import { accessToken, initSession, mcpRequest, parseResponse } from "./setup";
 
 describe("list_sites", () => {
-  let sessionId: string;
-
   beforeAll(async () => {
-    sessionId = await initSession();
+    await initSession();
   });
 
   describe("without authorization", () => {
@@ -75,9 +68,8 @@ describe("list_sites", () => {
           method: "tools/call",
           params: { name: "list_sites", arguments: {} },
         },
-        sessionId,
       });
-      body = parseSSEResponse(await response.text()) as typeof body;
+      body = parseResponse(await response.text()) as typeof body;
     });
 
     it("should return 200", async () => {
