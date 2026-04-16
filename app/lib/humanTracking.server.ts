@@ -124,7 +124,7 @@ export default async function recordHumanVisit({
   const visitorId = visitorFingerprint(ip ?? "unknown", userAgent);
   const browser = classifyBrowser(userAgent);
   const deviceType = classifyDevice(userAgent);
-  const utmSource = new URLSearchParams(url).get("utm_source");
+  const utmSource = new URL(url).searchParams.get("utm_source");
   const aiReferral = detectAiReferral({ referer, utmSource });
 
   try {

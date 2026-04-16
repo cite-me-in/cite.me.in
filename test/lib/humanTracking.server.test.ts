@@ -24,13 +24,14 @@ async function makeVisit(
   const site = await prisma.site.findFirstOrThrow({
     where: { domain: DOMAIN },
   });
+  const url = new URL(opts.url ?? BASE_URL);
+  if (opts.utmSource) url.searchParams.set("utm_source", opts.utmSource);
   return {
     site,
-    url: opts.url ?? BASE_URL,
+    url: url.toString(),
     userAgent,
     ip: opts.ip ?? "1.2.3.4",
     referer: opts.referer ?? null,
-    utmSource: opts.utmSource ?? null,
   };
 }
 
