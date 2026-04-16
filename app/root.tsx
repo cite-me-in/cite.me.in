@@ -111,7 +111,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     details = error.message;
     stack = error.stack;
   }
-  console.error(stack ?? details);
+  console.error("Error: %s", details, stack);
 
   return (
     <Main variant="prose">

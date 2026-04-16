@@ -1,14 +1,15 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { normalizeDomain } from "~/lib/isSameDomain";
+import envVars from "~/lib/envVars.server";
 import recordHumanVisit, {
   classifyBrowser,
   classifyDevice,
   detectAiReferral,
   isHumanBrowser,
 } from "~/lib/humanTracking.server";
+import { normalizeDomain } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
 
-const BASE_URL = import.meta.env.VITE_APP_URL;
+const BASE_URL = envVars.VITE_APP_URL;
 const DOMAIN = normalizeDomain(BASE_URL);
 
 async function makeVisit(

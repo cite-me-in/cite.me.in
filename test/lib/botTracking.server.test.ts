@@ -1,11 +1,12 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { normalizeDomain } from "~/lib/isSameDomain";
 import recordBotVisit from "~/lib/botTracking.server";
+import envVars from "~/lib/envVars.server";
+import { normalizeDomain } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
 
 async function makeRequest(
   userAgent: string,
-  url = new URL("/", import.meta.env.VITE_APP_URL).toString(),
+  url = new URL("/", envVars.VITE_APP_URL).toString(),
   accept?: string,
   referer?: string,
 ) {
@@ -34,7 +35,7 @@ describe("trackBotVisit", () => {
       data: {
         ownerId: user.id,
         apiKey: "test-api-key-bot-tracking-1",
-        domain: new URL(import.meta.env.VITE_APP_URL).hostname,
+        domain: new URL(envVars.VITE_APP_URL).hostname,
         content: "Test content",
         summary: "Test summary",
       },
@@ -71,7 +72,7 @@ describe("trackBotVisit", () => {
     await recordBotVisit(
       await makeRequest(
         "Googlebot/2.1",
-        new URL("/blog/post", import.meta.env.VITE_APP_URL).toString(),
+        new URL("/blog/post", envVars.VITE_APP_URL).toString(),
       ),
     );
     const last = await prisma.botVisit.findFirstOrThrow();
@@ -82,7 +83,7 @@ describe("trackBotVisit", () => {
     await recordBotVisit(
       await makeRequest(
         "Googlebot/2.1",
-        new URL("/", import.meta.env.VITE_APP_URL).toString(),
+        new URL("/", envVars.VITE_APP_URL).toString(),
         "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8",
       ),
     );
@@ -94,7 +95,7 @@ describe("trackBotVisit", () => {
     await recordBotVisit(
       await makeRequest(
         "Googlebot/2.1",
-        new URL("/", import.meta.env.VITE_APP_URL).toString(),
+        new URL("/", envVars.VITE_APP_URL).toString(),
         "text/html",
         "https://google.com",
       ),
@@ -107,9 +108,9 @@ describe("trackBotVisit", () => {
     await recordBotVisit(
       await makeRequest(
         "Googlebot/2.1",
-        new URL("/", import.meta.env.VITE_APP_URL).toString(),
+        new URL("/", envVars.VITE_APP_URL).toString(),
         "text/html",
-        new URL("/", import.meta.env.VITE_APP_URL).toString(),
+        new URL("/", envVars.VITE_APP_URL).toString(),
       ),
     );
     const last = await prisma.botVisit.findFirst();

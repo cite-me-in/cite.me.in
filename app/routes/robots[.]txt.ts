@@ -1,4 +1,5 @@
 import { generateRobotsTxt } from "@forge42/seo-tools/robots";
+import envVars from "~/lib/envVars.server";
 
 export async function loader() {
   const robotsTxt = generateRobotsTxt([
@@ -7,9 +8,7 @@ export async function loader() {
       userAgent: "*",
       allow: ["/"],
       disallow: ["/error"],
-      sitemap: [
-        new URL("/sitemap.xml", import.meta.env.VITE_APP_URL).toString(),
-      ],
+      sitemap: [new URL("/sitemap.xml", envVars.VITE_APP_URL).toString()],
     },
     { userAgent: "anthropic-ai", allow: ["/"] },
     { userAgent: "Bingbot", allow: ["/"] },

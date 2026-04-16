@@ -1,6 +1,5 @@
-import { createDocument } from "zod-openapi";
 import { z } from "zod";
-import envVars from "~/lib/envVars.server";
+import { createDocument } from "zod-openapi";
 
 export const UserSchema = z.object({
   id: z.string().describe("The ID of the user"),
@@ -149,7 +148,7 @@ export function generateOpenApiSpec(): ReturnType<typeof createDocument> {
         import.meta.env.VITE_APP_URL,
       )}) for more information.`,
     },
-    servers: [{ url: envVars.VITE_APP_URL }],
+    servers: [{ url: import.meta.env.VITE_APP_URL }],
     components: {
       securitySchemes: {
         BearerAuth: {

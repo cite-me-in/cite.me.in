@@ -16,7 +16,7 @@ import envVars from "./envVars.server";
 export async function trackVisits(request: Request): Promise<void> {
   try {
     const newRequest = new Request(
-      new URL("/api/track", import.meta.env.VITE_APP_URL),
+      new URL("/api/track", envVars.VITE_APP_URL),
       {
         method: "POST",
         headers: {
