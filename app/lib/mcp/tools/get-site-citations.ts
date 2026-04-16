@@ -24,9 +24,7 @@ export default {
             citations: z.array(
               z.object({
                 url: z.string(),
-                relationship: z
-                  .enum(["direct", "indirect", "unrelated"])
-                  .optional(),
+                relationship: z.string().optional(),
                 reason: z.string().optional(),
               }),
             ),
@@ -105,7 +103,7 @@ export default {
             response: string;
             citations: {
               url: string;
-              relationship?: "direct" | "indirect" | "unrelated";
+              relationship?: string;
               reason?: string | null;
             }[];
             mentionsYourSite: number;
@@ -121,10 +119,7 @@ export default {
           const citations = q.citations.map((c) => ({
             url: c.url,
             ...(c.relationship && {
-              relationship: c.relationship as
-                | "direct"
-                | "indirect"
-                | "unrelated",
+              relationship: c.relationship,
             }),
             ...(c.reason && { reason: c.reason }),
           }));

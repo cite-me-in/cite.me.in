@@ -145,7 +145,7 @@ export async function singleQueryRepetition({
             runId,
             siteId: site.id,
             relationship: isSameDomain({ domain: site.domain, url })
-              ? "exact"
+              ? "direct"
               : null,
           };
         }),
