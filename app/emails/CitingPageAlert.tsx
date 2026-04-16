@@ -9,7 +9,7 @@ export async function sendCitingPageAlertEmail({
   page,
   site,
 }: {
-  page: { id: string; url: string; citationCount: number; siteId: string };
+  page: string;
   site: {
     domain: string;
     owner: { id: string; email: string; unsubscribed: boolean };
@@ -25,19 +25,17 @@ export async function sendCitingPageAlertEmail({
 
   await sendEmail({
     isTransactional: false,
-    subject: `Citing page is down: ${page.url}`,
+    subject: `Citing page is down: ${page}`,
     sendTo: owner,
     email: (
       <Section>
         <Text>
-          A page that may have been citing <strong>{site.domain}</strong>
-          is no longer responding:{" "}
-          <a
-            href={`${envVars.VITE_APP_URL}/r?url=${encodeURIComponent(page.url)}`}
-          >
-            {page.url}
+          A page that may have been citing <strong>{site.domain}</strong> is no
+          longer responding:{" "}
+          <a href={`${envVars.VITE_APP_URL}/r?url=${encodeURIComponent(page)}`}>
+            {page}
           </a>
-          . AI platforms may stop citing this page until it is restored.
+          . AI platforms may stop citing from this page until it is restored.
         </Text>
 
         <Section className="my-8 text-center">

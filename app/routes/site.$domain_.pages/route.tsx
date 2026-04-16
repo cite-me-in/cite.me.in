@@ -138,20 +138,21 @@ function PageUrl({ url, direct }: { url: string; direct: boolean }) {
     const parsed = new URL(url);
     return (
       <ActiveLink
-        to={url}
-        target="_blank"
-        rel="noopener noreferrer"
         className={twMerge(
-          "hover:underline",
+          "flex justify-start gap-0 hover:underline",
           direct && "font-semibold text-emerald-700 dark:text-emerald-400",
         )}
+        rel="noopener noreferrer"
+        target="_blank"
         title={url}
+        to={url}
       >
         <span className="font-mono text-foreground/60 text-sm">
           {parsed.hostname}
         </span>
         <span className="font-mono text-sm">
           {parsed.pathname === "/" ? "" : parsed.pathname}
+          {parsed.search}
         </span>
       </ActiveLink>
     );

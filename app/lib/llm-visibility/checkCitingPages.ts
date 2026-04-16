@@ -33,7 +33,7 @@ export default async function ({
     });
 
     if (wasHealthy && !isHealthy)
-      await sendCitingPageAlertEmail({ page, site: page.site });
+      await sendCitingPageAlertEmail({ page: page.url, site: page.site });
 
     return { url: page.url, statusCode, isHealthy };
   });
