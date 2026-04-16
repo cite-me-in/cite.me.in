@@ -14,7 +14,6 @@ import {
 } from "~/lib/usage/usageLimit.server";
 import type { QueryFn } from "./queryFn";
 import updateRunSentiment from "./updateRunSentiment";
-import upsertCitingPages from "./upsertCitingPages";
 
 /**
  * Query a given platform for a given account and queries.
@@ -80,7 +79,6 @@ export async function queryPlatform({
     });
 
     await updateRunSentiment({ log, run });
-    await upsertCitingPages({ log, run });
   } catch (error) {
     captureAndLogError(error, {
       extra: { siteId: site.id, platform },

@@ -186,10 +186,7 @@ async function runPlatformWithProgress({
       });
     }
 
-    await upsertCitingPages({
-      log,
-      run,
-    });
+    await upsertCitingPages({ log, site });
   } catch (error) {
     captureAndLogError(error, { extra: { siteId: site.id, platform } });
   }

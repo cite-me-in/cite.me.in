@@ -18,7 +18,8 @@
       "!node_modules",
       "!prisma/generated",
       "!prisma/backup.sql",
-      "!.worktrees"
+      "!.worktrees",
+      "!scratch.ts"
     ],
     "ignoreUnknown": false
   },
@@ -60,12 +61,7 @@
         "noUnsafeDeclarationMerging": "error",
         "noConsole": {
           "options": {
-            "allow": [
-              "assert",
-              "error",
-              "info",
-              "warn"
-            ]
+            "allow": ["assert", "error", "info", "warn"]
           }
         },
         "noDuplicateDependencies": "error",

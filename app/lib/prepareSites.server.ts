@@ -6,6 +6,7 @@ import PLATFORMS from "~/lib/llm-visibility/platformQueries.server";
 import { queryPlatform as runPlatform } from "~/lib/llm-visibility/queryPlatform";
 import prisma from "~/lib/prisma.server";
 import { queryNextToProcess } from "~/lib/userPlan.server";
+import upsertCitingPages from "./llm-visibility/upsertCitingPages";
 
 /**
  * Prepare sites for the digest email.
@@ -98,6 +99,8 @@ async function nextCitationRun({
       }
     },
   );
+
+  await upsertCitingPages({ log, site });
 
   await log(`Citation run done for ${site.domain}`);
   await prisma.site.update({

@@ -144,17 +144,6 @@ describe("queryPlatform", () => {
     }
   });
 
-  it("should upsert CitingPage for own-domain URLs after run", {
-    timeout: 30_000,
-  }, async () => {
-    const pages = await prisma.citingPage.findMany({
-      where: { siteId: site.id },
-    });
-    expect(pages).toHaveLength(4);
-    expect(pages.map((p) => p.url)).toContain("https://rentail.space/listings");
-    expect(pages.every((p) => p.citationCount > 0)).toBe(true);
-  });
-
   it("should persist CitationQuery shape correctly", {
     timeout: 30_000,
   }, async () => {
