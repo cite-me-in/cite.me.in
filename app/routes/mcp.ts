@@ -8,6 +8,7 @@ import {
 } from "~/lib/mcpSessions.server";
 import { verifyAccessToken } from "~/lib/oauth/server";
 import prisma from "~/lib/prisma.server";
+import { checkRateLimit } from "~/lib/rateLimit.server";
 import type { Route } from "./+types/mcp";
 
 const transports = new Map<
@@ -40,6 +41,19 @@ export async function action({ request }: Route.ActionArgs) {
     throw new Response("Forbidden", { headers: authResource, status: 403 });
 
   const { userId, scopes } = tokenData;
+
+  const rateLimit = await checkRateLimit(userId);
+  if (!rateLimit.allowed)
+    throw new Response("Too Many Requests", {
+      status: 429,
+      headers: {
+        "Retry-After": String(
+          Math.ceil((rateLimit.resetAt - Date.now()) / 1000),
+        ),
+        "X-RateLimit-Remaining": "0",
+        "X-RateLimit-Reset": String(rateLimit.resetAt),
+      },
+    });
 
   const tokenRecord = await prisma.oAuthAccessToken.findUnique({
     where: { token },

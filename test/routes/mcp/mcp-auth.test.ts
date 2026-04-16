@@ -3,6 +3,7 @@ import { createHash, randomBytes } from "node:crypto";
 import invariant from "tiny-invariant";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import prisma from "~/lib/prisma.server";
+import { resetRateLimit } from "~/lib/rateLimit.server";
 import { port } from "~/test/helpers/launchBrowser";
 
 const baseUrl = `http://localhost:${port}`;
@@ -548,6 +549,125 @@ describe("MCP Authorization Flow", () => {
       });
 
       expect(listRes.ok).toBe(true);
+    });
+  });
+
+  describe("Rate Limiting", () => {
+    let accessToken: string;
+
+    beforeAll(async () => {
+      await resetRateLimit(user.id);
+
+      const res = await fetch(`${baseUrl}/oauth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          client_name: "Rate Limit Test Client",
+          redirect_uris: ["http://localhost:3000/callback"],
+          token_endpoint_auth_method: "none",
+          scope: "mcp:tools",
+        }),
+      });
+      const data = await res.json();
+      const clientId = data.client_id;
+
+      const pkce = generatePKCE();
+      const formData = new URLSearchParams();
+      formData.set("client_id", clientId);
+      formData.set("user_id", user.id);
+      formData.set("redirect_uri", "http://localhost:3000/callback");
+      formData.set("scope", "mcp:tools");
+      formData.set("code_challenge", pkce.challenge);
+      formData.set("allow", "1");
+
+      const approveRes = await fetch(`${baseUrl}/oauth/authorize`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Cookie: `session=${sessionToken}`,
+        },
+        body: formData,
+        redirect: "manual",
+      });
+
+      const location = approveRes.headers.get("location");
+      const callbackUrl = new URL(location!);
+      const code = callbackUrl.searchParams.get("code");
+
+      const tokenRes = await fetch(`${baseUrl}/oauth/token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          grant_type: "authorization_code",
+          client_id: clientId,
+          code: code!,
+          redirect_uri: "http://localhost:3000/callback",
+          code_verifier: pkce.verifier,
+        }),
+      });
+
+      const tokens = await tokenRes.json();
+      accessToken = tokens.access_token;
+    });
+
+    it("should allow requests under the rate limit", async () => {
+      await resetRateLimit(user.id);
+
+      const res = await fetch(`${baseUrl}/mcp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json, text/event-stream",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          jsonrpc: "2.0",
+          id: 1,
+          method: "initialize",
+          params: {
+            protocolVersion: "2024-11-05",
+            capabilities: {},
+            clientInfo: { name: "test", version: "1.0.0" },
+          },
+        }),
+      });
+
+      expect(res.ok).toBe(true);
+    });
+
+    it("should return 429 when rate limit exceeded", async () => {
+      await resetRateLimit(user.id);
+
+      const requests = Array.from({ length: 65 }, () =>
+        fetch(`${baseUrl}/mcp`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json, text/event-stream",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            jsonrpc: "2.0",
+            id: 1,
+            method: "initialize",
+            params: {
+              protocolVersion: "2024-11-05",
+              capabilities: {},
+              clientInfo: { name: "test", version: "1.0.0" },
+            },
+          }),
+        }),
+      );
+
+      const responses = await Promise.all(requests);
+      const statusCodes = responses.map((r) => r.status);
+
+      const rateLimited = statusCodes.filter((s) => s === 429);
+      expect(rateLimited.length).toBeGreaterThan(0);
+
+      const rateLimitedRes = responses.find((r) => r.status === 429)!;
+      expect(rateLimitedRes.headers.has("Retry-After")).toBe(true);
+      expect(rateLimitedRes.headers.has("X-RateLimit-Reset")).toBe(true);
     });
   });
 });
