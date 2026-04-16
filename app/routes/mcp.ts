@@ -13,6 +13,10 @@ const authResource = {
   ).toString()}"`,
 };
 
+export async function loader() {
+  throw new Response("Method Not Allowed", { status: 405 });
+}
+
 export async function action({ request }: Route.ActionArgs) {
   const authHeader = request.headers.get("authorization");
   if (!authHeader)
