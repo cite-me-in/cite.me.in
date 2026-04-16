@@ -56,7 +56,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
-  const clientId = formData.get("client_id") as string;
+  const clientIdParam = formData.get("client_id") as string;
   const userId = formData.get("user_id") as string;
   const redirectUri = formData.get("redirect_uri") as string;
   const scope = formData.get("scope") as string;
@@ -70,6 +70,17 @@ export async function action({ request }: Route.ActionArgs) {
     return redirect(denyUrl.toString());
   }
 
+  const client = await prisma.oAuthClient.findFirst({
+    where: { OR: [{ id: clientIdParam }, { clientId: clientIdParam }] },
+    select: { id: true },
+  });
+
+  if (!client)
+    throw data(
+      { error: "invalid_client", error_description: "Unknown client" },
+      { status: 400 },
+    );
+
   const code = generateToken();
   const now = new Date();
 
@@ -77,7 +88,7 @@ export async function action({ request }: Route.ActionArgs) {
     data: {
       code,
       userId,
-      clientId,
+      clientId: client.id,
       redirectUri,
       scopes: scope.split(" ").filter(Boolean),
       codeChallenge: codeChallenge || null,

@@ -18,14 +18,14 @@ export async function action({ request }: Route.ActionArgs) {
     select: { id: true, clientSecret: true },
   });
 
-  if (!client || client.clientSecret !== clientSecret) {
+  if (!client) throw data({ error: "invalid_client" }, { status: 401 });
+
+  if (client.clientSecret && client.clientSecret !== clientSecret)
     throw data({ error: "invalid_client" }, { status: 401 });
-  }
 
   if (grantType === "authorization_code") {
-    if (!code || !redirectUri) {
+    if (!code || !redirectUri)
       throw data({ error: "invalid_request" }, { status: 400 });
-    }
 
     const authCode = await prisma.oAuthAuthorizationCode.findUnique({
       where: { code },
@@ -39,9 +39,8 @@ export async function action({ request }: Route.ActionArgs) {
       },
     });
 
-    if (!authCode || authCode.clientId !== client.id) {
+    if (!authCode || authCode.clientId !== client.id)
       throw data({ error: "invalid_grant" }, { status: 400 });
-    }
 
     if (authCode.expiresAt < new Date()) {
       await prisma.oAuthAuthorizationCode.delete({ where: { code } });
@@ -51,12 +50,11 @@ export async function action({ request }: Route.ActionArgs) {
       );
     }
 
-    if (authCode.redirectUri !== redirectUri) {
+    if (authCode.redirectUri !== redirectUri)
       throw data(
         { error: "invalid_grant", error_description: "Redirect URI mismatch" },
         { status: 400 },
       );
-    }
 
     if (authCode.codeChallenge && codeVerifier) {
       const expectedChallenge = generateCodeChallenge(codeVerifier);
@@ -89,18 +87,16 @@ export async function action({ request }: Route.ActionArgs) {
   }
 
   if (grantType === "refresh_token") {
-    if (!refreshToken) {
+    if (!refreshToken)
       throw data({ error: "invalid_request" }, { status: 400 });
-    }
 
     const storedRefreshToken = await prisma.oAuthRefreshToken.findUnique({
       where: { token: refreshToken },
       select: { userId: true, clientId: true, scopes: true, expiresAt: true },
     });
 
-    if (!storedRefreshToken || storedRefreshToken.clientId !== client.id) {
+    if (!storedRefreshToken || storedRefreshToken.clientId !== client.id)
       throw data({ error: "invalid_grant" }, { status: 400 });
-    }
 
     if (storedRefreshToken.expiresAt < new Date()) {
       await prisma.oAuthRefreshToken.delete({ where: { token: refreshToken } });
