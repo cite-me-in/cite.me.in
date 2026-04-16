@@ -96,6 +96,7 @@ export default function SiteCitationsPage({
           </CardDescription>
           <CardTitle className="block">Q: {citation.query}</CardTitle>
         </CardHeader>
+
         <CardContent>
           <table className="block overflow-hidden text-base text-foreground/60">
             <tbody>
@@ -130,6 +131,7 @@ export default function SiteCitationsPage({
         </CardContent>
 
         <CardContent>
+          <hr className="my-8 border border-border/40"/>
           <Streamdown
             mode="static"
             components={{
