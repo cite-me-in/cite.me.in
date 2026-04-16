@@ -1,22 +1,14 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-const mockCreate = vi.fn();
+const mockComplete = vi.fn();
 
 class MockOpenAI {
-  chat = {
-    completions: {
-      create: mockCreate,
-    },
-  };
+  chat = { completions: { create: mockComplete, }, };
 }
 
-vi.mock("openai", () => ({
-  default: MockOpenAI,
-}));
+vi.mock("openai", () => ({ default: MockOpenAI, }));
 
-afterEach(() => {
-  mockCreate.mockReset();
-});
+afterEach(() => { mockComplete.mockReset(); });
 
 describe("analyzeSentiment", () => {
   it("should return neutral when no queries provided", async () => {
@@ -34,11 +26,11 @@ describe("analyzeSentiment", () => {
       summary: "No queries were run for this platform.",
       citations: [],
     });
-    expect(mockCreate).not.toHaveBeenCalled();
+    expect(mockComplete).not.toHaveBeenCalled();
   });
 
   it("should return parsed sentiment from completion", async () => {
-    mockCreate.mockResolvedValueOnce({
+    mockComplete.mockResolvedValueOnce({
       choices: [
         {
           message: {
@@ -69,7 +61,7 @@ describe("analyzeSentiment", () => {
     const labels = ["positive", "negative", "neutral", "mixed"] as const;
 
     for (const label of labels) {
-      mockCreate.mockResolvedValueOnce({
+      mockComplete.mockResolvedValueOnce({
         choices: [
           {
             message: {
@@ -94,7 +86,7 @@ describe("analyzeSentiment", () => {
 
   it("should include domain and query data in the user message", async () => {
     let capturedMessages: { role: string; content: string }[] | undefined;
-    mockCreate.mockImplementationOnce(
+    mockComplete.mockImplementationOnce(
       async (args: { messages: typeof capturedMessages }) => {
         capturedMessages = args.messages;
         return {
@@ -128,7 +120,7 @@ describe("analyzeSentiment", () => {
 
   it("should calculate citation position when found", async () => {
     let capturedMessages: { role: string; content: string }[] | undefined;
-    mockCreate.mockImplementationOnce(
+    mockComplete.mockImplementationOnce(
       async (args: { messages: typeof capturedMessages }) => {
         capturedMessages = args.messages;
         return {
@@ -160,7 +152,7 @@ describe("analyzeSentiment", () => {
 
   it("should report not cited when not found", async () => {
     let capturedMessages: { role: string; content: string }[] | undefined;
-    mockCreate.mockImplementationOnce(
+    mockComplete.mockImplementationOnce(
       async (args: { messages: typeof capturedMessages }) => {
         capturedMessages = args.messages;
         return {
@@ -191,7 +183,7 @@ describe("analyzeSentiment", () => {
   });
 
   it("should strip markdown fences from response", async () => {
-    mockCreate.mockResolvedValueOnce({
+    mockComplete.mockResolvedValueOnce({
       choices: [
         {
           message: {
@@ -219,7 +211,7 @@ describe("analyzeSentiment", () => {
   });
 
   it("should return neutral on JSON parse error", async () => {
-    mockCreate.mockResolvedValueOnce({
+    mockComplete.mockResolvedValueOnce({
       choices: [{ message: { content: "not valid json" } }],
     });
 
@@ -240,7 +232,7 @@ describe("analyzeSentiment", () => {
   });
 
   it("should return neutral on invalid schema", async () => {
-    mockCreate.mockResolvedValueOnce({
+    mockComplete.mockResolvedValueOnce({
       choices: [
         { message: { content: '{"label":"invalid","summary":"test"}' } },
       ],
@@ -263,7 +255,7 @@ describe("analyzeSentiment", () => {
   });
 
   it("should return neutral on missing fields", async () => {
-    mockCreate.mockResolvedValueOnce({
+    mockComplete.mockResolvedValueOnce({
       choices: [{ message: { content: '{"label":"positive"}' } }],
     });
 
@@ -284,7 +276,7 @@ describe("analyzeSentiment", () => {
   });
 
   it("should propagate API errors", async () => {
-    mockCreate.mockRejectedValueOnce(new Error("API error"));
+    mockComplete.mockRejectedValueOnce(new Error("API error"));
 
     const { default: analyzeSentiment } = await import(
       "~/lib/llm-visibility/analyzeSentiment"
@@ -299,7 +291,7 @@ describe("analyzeSentiment", () => {
   });
 
   it("should return classified citations", async () => {
-    mockCreate.mockResolvedValueOnce({
+    mockComplete.mockResolvedValueOnce({
       choices: [
         {
           message: {
@@ -360,7 +352,7 @@ describe("analyzeSentiment", () => {
 
   it("should include unique citations list in user message", async () => {
     let capturedMessages: { role: string; content: string }[] | undefined;
-    mockCreate.mockImplementationOnce(
+    mockComplete.mockImplementationOnce(
       async (args: { messages: typeof capturedMessages }) => {
         capturedMessages = args.messages;
         return {

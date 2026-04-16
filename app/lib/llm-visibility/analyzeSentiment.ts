@@ -1,9 +1,9 @@
 import debug from "debug";
 import OpenAI from "openai";
 import { z } from "zod";
+import envVars from "~/lib/envVars.server";
+import { isSameDomain } from "~/lib/isSameDomain";
 import type { SentimentLabel } from "~/prisma";
-import envVars from "../envVars.server";
-import { isSameDomain } from "../isSameDomain";
 
 const logger = debug("server");
 
