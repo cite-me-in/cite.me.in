@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { checkCitedPageHealth } from "~/lib/citedPageHealth.server";
+import { checkCitingPageHealth } from "~/lib/citingPageHealth.server";
 
-describe("checkCitedPageHealth", () => {
+describe("checkCitingPageHealth", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
   });
@@ -15,7 +15,7 @@ describe("checkCitedPageHealth", () => {
       }),
     );
 
-    const result = await checkCitedPageHealth("https://example.com/page");
+    const result = await checkCitingPageHealth("https://example.com/page");
     expect(result.statusCode).toBe(200);
     expect(result.isHealthy).toBe(true);
     expect(result.contentHash).toBeTruthy();
@@ -30,7 +30,7 @@ describe("checkCitedPageHealth", () => {
       }),
     );
 
-    const result = await checkCitedPageHealth("https://example.com/gone");
+    const result = await checkCitingPageHealth("https://example.com/gone");
     expect(result.statusCode).toBe(404);
     expect(result.isHealthy).toBe(false);
   });
@@ -41,7 +41,7 @@ describe("checkCitedPageHealth", () => {
       vi.fn().mockRejectedValue(new Error("ECONNREFUSED")),
     );
 
-    const result = await checkCitedPageHealth("https://down.example.com");
+    const result = await checkCitingPageHealth("https://down.example.com");
     expect(result.statusCode).toBeNull();
     expect(result.isHealthy).toBe(false);
   });

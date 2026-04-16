@@ -3,7 +3,14 @@ import { createHash } from "node:crypto";
 
 const logger = debug("server");
 
-export async function checkCitedPageHealth(url: string): Promise<{
+/**
+ * Checks the health of a page that may have been citing the domain. Runs a
+ * simple HTTP GET request and checks the status code.
+ *
+ * @param url - The URL of the page to check.
+ * @returns The status code, content hash, and whether the page is healthy.
+ */
+export async function checkCitingPageHealth(url: string): Promise<{
   statusCode: number | null;
   contentHash: string | null;
   isHealthy: boolean;
@@ -21,7 +28,7 @@ export async function checkCitedPageHealth(url: string): Promise<{
       .digest("hex");
     const isHealthy = response.status >= 200 && response.status < 400;
     logger(
-      `[citedPageHealth] ${url} => ${response.status} ${isHealthy ? "healthy" : "unhealthy"}`,
+      `[citingPageHealth] ${url} => ${response.status} ${isHealthy ? "healthy" : "unhealthy"}`,
     );
     return { statusCode: response.status, contentHash, isHealthy };
   } catch {

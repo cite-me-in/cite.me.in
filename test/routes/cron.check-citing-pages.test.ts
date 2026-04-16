@@ -1,8 +1,8 @@
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import prisma from "~/lib/prisma.server";
 
-vi.mock("~/lib/citedPageHealth.server", () => ({
-  checkCitedPageHealth: vi.fn().mockResolvedValue({
+vi.mock("~/lib/citingPageHealth.server", () => ({
+  checkCitingPageHealth: vi.fn().mockResolvedValue({
     statusCode: 200,
     contentHash: "abc123",
     isHealthy: true,
@@ -13,34 +13,34 @@ vi.mock("~/lib/envVars.server", () => ({
   default: { CRON_SECRET: "test-secret" },
 }));
 
-describe("cron.check-cited-pages", () => {
+describe("cron.check-citing-pages", () => {
   beforeAll(async () => {
     const user = await prisma.user.create({
-      data: { id: "user-ccp-1", email: "ccp@test.com", passwordHash: "x" },
+      data: { id: "user-cip-1", email: "cip@test.com", passwordHash: "x" },
     });
     await prisma.site.create({
       data: {
-        id: "site-ccp-1",
+        id: "site-cip-1",
         domain: "example.com",
         ownerId: user.id,
         content: "",
         summary: "",
-        apiKey: "key-ccp-1",
+        apiKey: "key-cip-1",
       },
     });
-    await prisma.citedPage.create({
+    await prisma.citingPage.create({
       data: {
-        id: "page-ccp-1",
+        id: "page-cip-1",
         url: "https://example.com/guide",
-        siteId: "site-ccp-1",
+        siteId: "site-cip-1",
         citationCount: 5,
       },
     });
   });
 
-  it("should check health and update CitedPage record", async () => {
-    const { loader } = await import("~/routes/cron.check-cited-pages");
-    const request = new Request("http://localhost/cron/check-cited-pages", {
+  it("should check health and update CitingPage record", async () => {
+    const { loader } = await import("~/routes/cron.check-citing-pages");
+    const request = new Request("http://localhost/cron/check-citing-pages", {
       headers: { authorization: "Bearer test-secret" },
     });
     const response = await loader({
@@ -51,8 +51,8 @@ describe("cron.check-cited-pages", () => {
     const body = response.data;
     expect(body.ok).toBe(true);
 
-    const page = await prisma.citedPage.findUnique({
-      where: { id: "page-ccp-1" },
+    const page = await prisma.citingPage.findUnique({
+      where: { id: "page-cip-1" },
     });
     expect(page?.statusCode).toBe(200);
     expect(page?.isHealthy).toBe(true);
@@ -60,8 +60,8 @@ describe("cron.check-cited-pages", () => {
   });
 
   it("should reject requests without auth", async () => {
-    const { loader } = await import("~/routes/cron.check-cited-pages");
-    const request = new Request("http://localhost/cron/check-cited-pages");
+    const { loader } = await import("~/routes/cron.check-citing-pages");
+    const request = new Request("http://localhost/cron/check-citing-pages");
     await expect(
       loader({ request, params: {}, context: {} } as never),
     ).rejects.toThrow();

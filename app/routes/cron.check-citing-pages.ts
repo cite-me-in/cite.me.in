@@ -2,9 +2,9 @@ import { data } from "react-router";
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import envVars from "~/lib/envVars.server";
 import checkCitingPages from "~/lib/llm-visibility/checkCitingPages";
-import type { Route } from "./+types/cron.check-cited-pages";
+import type { Route } from "./+types/cron.check-citing-pages";
 
-export async function checkCitingPagesCron({ request }: Route.LoaderArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
   if (request.headers.get("authorization") !== `Bearer ${envVars.CRON_SECRET}`)
     throw new Response("Unauthorized", { status: 401 });
 

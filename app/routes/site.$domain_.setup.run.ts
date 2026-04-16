@@ -9,7 +9,7 @@ import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import PLATFORMS from "~/lib/llm-visibility/platformQueries.server";
 import type { QueryFn } from "~/lib/llm-visibility/queryFn";
 import { singleQueryRepetition } from "~/lib/llm-visibility/queryPlatform";
-import upsertCitedPages from "~/lib/llm-visibility/upsertCitedPages";
+import upsertCitingPages from "~/lib/llm-visibility/upsertCitingPages";
 import prisma from "~/lib/prisma.server";
 import { crawl } from "~/lib/scrape/crawl";
 import { summarize } from "~/lib/scrape/summarize";
@@ -133,6 +133,7 @@ async function runPlatformWithProgress({
     where: { siteId_platform_onDate: { onDate, platform, siteId: site.id } },
     update: { model },
     create: { onDate, model, platform, siteId: site.id },
+    select: { id: true, site: { select: { id: true, domain: true } } },
   });
 
   for (const [index, { query, group }] of queries.entries()) {
@@ -184,14 +185,12 @@ async function runPlatformWithProgress({
         data: { relationship: c.relationship, reason: c.reason ?? null },
       });
     }
+
+    await upsertCitingPages({
+      log,
+      run,
+    });
   } catch (error) {
     captureAndLogError(error, { extra: { siteId: site.id, platform } });
   }
-
-  await upsertCitedPages({
-    log,
-    siteId: site.id,
-    runId: run.id,
-    domain: site.domain,
-  });
 }

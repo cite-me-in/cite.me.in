@@ -5,7 +5,7 @@ import { daysAgo } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
 import { sendEmail } from "./sendEmails";
 
-export async function sendCitedPageAlertEmail({
+export async function sendCitingPageAlertEmail({
   page,
   site,
 }: {
@@ -15,7 +15,7 @@ export async function sendCitedPageAlertEmail({
     owner: { id: string; email: string; unsubscribed: boolean };
   };
 }) {
-  const dedupKey = "CitedPageAlert";
+  const dedupKey = "CitingPageAlert";
   const { owner } = site;
 
   const already = await prisma.sentEmail.findFirst({
@@ -25,13 +25,13 @@ export async function sendCitedPageAlertEmail({
 
   await sendEmail({
     isTransactional: false,
-    subject: `Cited page is down: ${page.url}`,
+    subject: `Citing page is down: ${page.url}`,
     sendTo: owner,
     email: (
       <Section>
         <Text>
-          A page on <strong>{site.domain}</strong> that has been cited{" "}
-          {page.citationCount} times is no longer responding:{" "}
+          A page that may have been citing <strong>{site.domain}</strong>
+          is no longer responding:{" "}
           <a
             href={`${envVars.VITE_APP_URL}/r?url=${encodeURIComponent(page.url)}`}
           >

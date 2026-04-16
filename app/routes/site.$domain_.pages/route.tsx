@@ -26,13 +26,13 @@ import type { Route } from "./+types/route";
 export const handle = { siteNav: true };
 
 export function meta({ loaderData }: Route.MetaArgs) {
-  return [{ title: `Cited Pages — ${loaderData?.site.domain} | Cite.me.in` }];
+  return [{ title: `Citing Pages — ${loaderData?.site.domain} | Cite.me.in` }];
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { site } = await requireSiteAccess({ domain: params.domain, request });
 
-  const pages = await prisma.citedPage.findMany({
+  const pages = await prisma.citingPage.findMany({
     where: { siteId: site.id },
     orderBy: { citationCount: "desc" },
   });
@@ -48,7 +48,7 @@ export default function SitePagesPage({ loaderData }: Route.ComponentProps) {
 
   return (
     <Main variant="wide">
-      <SiteHeading site={site} title="Cited Pages" />
+      <SiteHeading site={site} title="Citing Pages" />
 
       <div className="flex items-start gap-2" />
 
@@ -78,7 +78,7 @@ export default function SitePagesPage({ loaderData }: Route.ComponentProps) {
         <CardContent>
           {pages.length === 0 ? (
             <p className="flex items-center justify-center py-8 text-center text-foreground/60 text-lg">
-              No cited pages yet — run a citation check to populate this list.
+              No citing pages yet — run a citation check to populate this list.
             </p>
           ) : (
             <Table>
