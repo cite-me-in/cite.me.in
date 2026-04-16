@@ -483,8 +483,9 @@ describe("MCP Authorization Flow", () => {
       });
 
       expect(res.ok).toBe(true);
-      const sessionId = res.headers.get("MCP-Session-ID");
-      expect(sessionId).toBeDefined();
+      const data = await res.json();
+      expect(data.result).toBeDefined();
+      expect(data.result.protocolVersion).toBe("2024-11-05");
     });
 
     it("should reject invalid token", async () => {
@@ -510,8 +511,8 @@ describe("MCP Authorization Flow", () => {
       expect(res.status).toBe(403);
     });
 
-    it("should maintain session across requests", async () => {
-      const initRes = await fetch(`${baseUrl}/mcp`, {
+    it("should handle multiple independent requests (stateless)", async () => {
+      const res1 = await fetch(`${baseUrl}/mcp`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -530,16 +531,14 @@ describe("MCP Authorization Flow", () => {
         }),
       });
 
-      const sessionId = initRes.headers.get("MCP-Session-ID");
-      invariant(sessionId, "No session ID found");
+      expect(res1.ok).toBe(true);
 
-      const listRes = await fetch(`${baseUrl}/mcp`, {
+      const res2 = await fetch(`${baseUrl}/mcp`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json, text/event-stream",
           Authorization: `Bearer ${accessToken}`,
-          "MCP-Session-ID": sessionId,
         },
         body: JSON.stringify({
           jsonrpc: "2.0",
@@ -548,7 +547,10 @@ describe("MCP Authorization Flow", () => {
         }),
       });
 
-      expect(listRes.ok).toBe(true);
+      expect(res2.ok).toBe(true);
+      const data = await res2.json();
+      expect(data.result).toBeDefined();
+      expect(data.result.tools).toBeDefined();
     });
   });
 
