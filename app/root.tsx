@@ -10,6 +10,7 @@ import type { Route } from "./+types/root";
 import PageLayout from "./components/layout/PageLayout";
 import Main from "./components/ui/Main";
 import "./global.css";
+import captureAndLogError from "./lib/captureAndLogError.server";
 import socialLinks from "./lib/socialLinks";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -100,6 +101,8 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = "Oops!";
   let details = "An unexpected error occurred.";
   let stack: string | undefined;
+
+  captureAndLogError(error);
 
   if (isRouteErrorResponse(error)) {
     message = error.status === 404 ? "404" : "Error";

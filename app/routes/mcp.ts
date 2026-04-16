@@ -58,6 +58,7 @@ export async function action({ request }: Route.ActionArgs) {
   const server = createMcpServer();
   const transport = new WebStandardStreamableHTTPServerTransport({
     sessionIdGenerator: undefined,
+    enableJsonResponse: true,
   });
 
   await server.connect(transport);
