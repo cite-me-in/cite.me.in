@@ -1,27 +1,35 @@
+import type { Prisma } from "~/prisma";
 import prisma from "../prisma.server";
 
 /**
- * Upsert CitedPage records for a given site and run.
- *
- * @param siteId - The ID of the site.
- * @param runId - The ID of the run.
- * @param domain - The domain of the site.
- * @param log - The log function to use.
- */
+ /**
+  * Upsert CitedPage records for a given site and run.
+  *
+  * Cited pages are web pages (by URL) on a site that have been referenced (cited)
+  * during an LLM (Large Language Model) run. Each cited page tracks how many times
+  * it was referenced in that run. This provides visibility into which pages on your
+  * domain have been used or quoted most, helping you understand what parts of your
+  * content are being surfaced, summarized, or quoted by LLM-based features.
+  *
+  * @param run - The run to upsert cited pages for.
+  * @param log - The log function to use.
+  */
 export default async function upsertCitedPages({
   log,
-  siteId,
-  runId,
-  domain,
+  run,
 }: {
   log: (line: string) => Promise<unknown> | unknown;
-  siteId: string;
-  runId: string;
-  domain: string;
+  run: Prisma.CitationQueryRunGetPayload<{
+    select: {
+      id: true;
+      site: true;
+    };
+  }>;
 }) {
+  const { domain, id: siteId } = run.site;
   await log(`Upserting cited pages for ${domain}`);
   const ownCitations = await prisma.citation.findMany({
-    where: { runId, siteId, domain },
+    where: { runId: run.id, siteId },
     select: { url: true },
   });
 

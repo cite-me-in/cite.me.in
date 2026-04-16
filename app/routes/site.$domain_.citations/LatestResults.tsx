@@ -19,7 +19,7 @@ import {
 import { formatDateShort } from "~/lib/formatDate";
 import { normalizeURL } from "~/lib/isSameDomain";
 
-export default function RecentVisibility({
+export default function LatestResults({
   queries,
   meta,
   site,

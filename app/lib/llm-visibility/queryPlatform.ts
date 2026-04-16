@@ -80,12 +80,7 @@ export async function queryPlatform({
     });
 
     await updateRunSentiment({ log, run });
-    await upsertCitedPages({
-      log,
-      siteId: site.id,
-      runId: run.id,
-      domain: site.domain,
-    });
+    await upsertCitedPages({ log, run });
   } catch (error) {
     captureAndLogError(error, {
       extra: { siteId: site.id, platform },

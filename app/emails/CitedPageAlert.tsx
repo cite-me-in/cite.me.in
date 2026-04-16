@@ -1,57 +1,60 @@
-import { Text } from "@react-email/components";
+import { Section, Text } from "@react-email/components";
+import Button from "~/components/email/Button";
 import envVars from "~/lib/envVars.server";
+import { daysAgo } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
 import { sendEmail } from "./sendEmails";
 
-const DEDUP_KEY = (pageId: string) => `cited-page-alert:${pageId}`;
-const DEDUP_DAYS = 7;
-
 export async function sendCitedPageAlertEmail({
   page,
-  siteOwnerId,
+  site,
 }: {
   page: { id: string; url: string; citationCount: number; siteId: string };
-  siteOwnerId: string;
+  site: {
+    domain: string;
+    owner: { id: string; email: string; unsubscribed: boolean };
+  };
 }) {
-  const dedupKey = DEDUP_KEY(page.id);
-  const threshold = new Date(Date.now() - DEDUP_DAYS * 24 * 60 * 60 * 1000);
+  const dedupKey = "CitedPageAlert";
+  const { owner } = site;
 
   const already = await prisma.sentEmail.findFirst({
-    where: { userId: siteOwnerId, type: dedupKey, sentAt: { gt: threshold } },
+    where: { userId: owner.id, type: dedupKey, sentAt: { gt: daysAgo(7) } },
   });
   if (already) return;
 
-  const user = await prisma.user.findUnique({
-    where: { id: siteOwnerId },
-    select: { email: true, unsubscribed: true },
-  });
-  if (!user) return;
-
-  const site = await prisma.site.findUnique({
-    where: { id: page.siteId },
-    select: { domain: true },
-  });
-  if (!site) return;
-
   await sendEmail({
-    isTransactional: true,
+    isTransactional: false,
     subject: `Cited page is down: ${page.url}`,
-    sendTo: user,
+    sendTo: owner,
     email: (
-      <Text>
-        A page on <strong>{site.domain}</strong> that has been cited{" "}
-        {page.citationCount} times is no longer responding:{" "}
-        <a
-          href={`${envVars.VITE_APP_URL}/r?url=${encodeURIComponent(page.url)}`}
-        >
-          {page.url}
-        </a>
-        . AI platforms may stop citing this page until it is restored.
-      </Text>
+      <Section>
+        <Text>
+          A page on <strong>{site.domain}</strong> that has been cited{" "}
+          {page.citationCount} times is no longer responding:{" "}
+          <a
+            href={`${envVars.VITE_APP_URL}/r?url=${encodeURIComponent(page.url)}`}
+          >
+            {page.url}
+          </a>
+          . AI platforms may stop citing this page until it is restored.
+        </Text>
+
+        <Section className="my-8 text-center">
+          <Button
+            href={new URL(
+              `/site/${site.domain}/pages`,
+              envVars.VITE_APP_URL,
+            ).toString()}
+          >
+            View citing pages
+          </Button>
+        </Section>
+      </Section>
     ),
   });
 
   await prisma.sentEmail.create({
-    data: { userId: siteOwnerId, type: dedupKey },
+    data: { userId: owner.id, type: dedupKey },
   });
 }

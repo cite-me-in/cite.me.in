@@ -1,4 +1,7 @@
+import debug from "debug";
 import { createHash } from "node:crypto";
+
+const logger = debug("server");
 
 export async function checkCitedPageHealth(url: string): Promise<{
   statusCode: number | null;
@@ -17,6 +20,9 @@ export async function checkCitedPageHealth(url: string): Promise<{
       .update(text.slice(0, 50_000))
       .digest("hex");
     const isHealthy = response.status >= 200 && response.status < 400;
+    logger(
+      `[citedPageHealth] ${url} => ${response.status} ${isHealthy ? "healthy" : "unhealthy"}`,
+    );
     return { statusCode: response.status, contentHash, isHealthy };
   } catch {
     return { statusCode: null, contentHash: null, isHealthy: false };

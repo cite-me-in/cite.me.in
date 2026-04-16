@@ -10,7 +10,7 @@ import PLATFORMS from "~/lib/llm-visibility/platforms";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 import BrandSentiment from "./BrandSentiment";
-import CitationsRecentRun from "./CitationsRecentRun";
+import LatestResults from "./LatestResults";
 import RelatedCitations, { INDIRECT_CITATION_WEIGHT } from "./RelatedCitations";
 import TopCompetitors, { topCompetitors } from "./TopCompetitors";
 import VisibilityCharts from "./VisibilityCharts";
@@ -281,7 +281,7 @@ export default function SiteCitationsPage({
 
       {run ? (
         <>
-          <CitationsRecentRun
+          <LatestResults
             queries={mergedQueries}
             meta={run}
             site={site}

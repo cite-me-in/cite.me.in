@@ -1,8 +1,15 @@
-import { requireSiteAccess } from "~/lib/auth.server";
-import prisma from "~/lib/prisma.server";
+import { twMerge } from "tailwind-merge";
+import { ActiveLink } from "~/components/ui/ActiveLink";
+import { Badge } from "~/components/ui/Badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
 import SiteHeading from "~/components/ui/SiteHeading";
-import { Badge } from "~/components/ui/Badge";
 import {
   Table,
   TableBody,
@@ -11,6 +18,9 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/Table";
+import { requireSiteAccess } from "~/lib/auth.server";
+import { isSameDomain } from "~/lib/isSameDomain";
+import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 
 export const handle = { siteNav: true };
@@ -40,69 +50,110 @@ export default function SitePagesPage({ loaderData }: Route.ComponentProps) {
     <Main variant="wide">
       <SiteHeading site={site} title="Cited Pages" />
 
-      {pages.length > 0 && (
-        <div className="flex gap-3">
-          <Badge variant="green">{healthyCount} healthy</Badge>
-          {brokenCount > 0 && <Badge variant="red">{brokenCount} broken</Badge>}
-        </div>
-      )}
+      <div className="flex items-start gap-2" />
 
-      {pages.length === 0 ? (
-        <p className="flex items-center justify-center py-8 text-center text-foreground/60 text-lg">
-          No cited pages yet — run a citation check to populate this list.
-        </p>
-      ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Page</TableHead>
-              <TableHead>Citations</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Last checked</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {pages.map((page) => (
-              <TableRow key={page.id}>
-                <TableCell>
-                  <PageUrl url={page.url} />
-                </TableCell>
-                <TableCell>{page.citationCount}</TableCell>
-                <TableCell>
-                  <StatusBadge page={page} />
-                </TableCell>
-                <TableCell>
-                  {page.lastCheckedAt
-                    ? new Date(page.lastCheckedAt).toLocaleDateString()
-                    : "—"}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
+      <Card>
+        <CardHeader>
+          <CardTitle>
+            {pages.length > 0 && (
+              <div className="flex gap-3">
+                <Badge variant="green">{healthyCount} healthy</Badge>
+                {brokenCount > 0 && (
+                  <Badge variant="red">{brokenCount} broken</Badge>
+                )}
+              </div>
+            )}
+          </CardTitle>
+
+          <CardDescription className="text-base text-foreground/60">
+            <p>
+              Citing pages are pages that cite your content according to LLMs.
+              This list helps you understand what parts of your content is being
+              surfaced by LLMs and presented to users. To reach a wider
+              audience, these pages should be a priority for your SEO strategy.
+            </p>
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          {pages.length === 0 ? (
+            <p className="flex items-center justify-center py-8 text-center text-foreground/60 text-lg">
+              No cited pages yet — run a citation check to populate this list.
+            </p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Page</TableHead>
+                  <TableHead>Citations</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Last checked</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pages.map((page) => (
+                  <TableRow
+                    key={page.id}
+                    className={twMerge(
+                      isSameDomain({ domain: site.domain, url: page.url }) &&
+                        "bg-green-100 hover:bg-green-100/80",
+                    )}
+                  >
+                    <TableCell
+                      className="max-w-xs truncate font-mono"
+                      title={page.url}
+                    >
+                      <PageUrl
+                        direct={isSameDomain({
+                          domain: site.domain,
+                          url: page.url,
+                        })}
+                        url={page.url}
+                      />
+                    </TableCell>
+                    <TableCell className="w-10 text-center">
+                      {page.citationCount.toLocaleString()}
+                    </TableCell>
+                    <TableCell className="w-10 text-center">
+                      <StatusBadge page={page} />
+                    </TableCell>
+                    <TableCell className="w-10 text-center">
+                      {page.lastCheckedAt
+                        ? new Date(page.lastCheckedAt).toLocaleDateString()
+                        : "—"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
     </Main>
   );
 }
 
-function PageUrl({ url }: { url: string }) {
+function PageUrl({ url, direct }: { url: string; direct: boolean }) {
   try {
     const parsed = new URL(url);
     return (
-      <a
-        href={url}
+      <ActiveLink
+        to={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="hover:underline"
+        className={twMerge(
+          "hover:underline",
+          direct && "font-semibold text-emerald-700 dark:text-emerald-400",
+        )}
         title={url}
       >
         <span className="font-mono text-foreground/60 text-sm">
           {parsed.hostname}
         </span>
-        <span className="ml-1 font-mono text-sm">
+        <span className="font-mono text-sm">
           {parsed.pathname === "/" ? "" : parsed.pathname}
         </span>
-      </a>
+      </ActiveLink>
     );
   } catch {
     return <span className="font-mono text-sm">{url}</span>;

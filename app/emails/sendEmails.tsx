@@ -90,7 +90,7 @@ export async function sendEmail({
   } else {
     const { error, data } = await resend.emails.send({
       bcc: admins.map(({ email }) => email),
-      from: `cite.me.in <${import.meta.env.VITE_EMAIL_FROM}>`,
+      from: `cite.me.in <${envVars.VITE_EMAIL_FROM}>`,
       headers: isTransactional
         ? headers
         : {
