@@ -307,7 +307,7 @@ describe("sites route", () => {
             {
               url: "https://delta-test.com/a",
               domain: "delta-test.com",
-              relationship: "exact",
+              relationship: "direct",
               queryId,
               runId: run.id,
               siteId,
@@ -315,7 +315,7 @@ describe("sites route", () => {
             {
               url: "https://delta-test.com/b",
               domain: "delta-test.com",
-              relationship: "exact",
+              relationship: "direct",
               queryId,
               runId: run.id,
               siteId,
@@ -323,7 +323,7 @@ describe("sites route", () => {
             {
               url: "https://delta-test.com/c",
               domain: "delta-test.com",
-              relationship: "exact",
+              relationship: "direct",
               queryId,
               runId: run.id,
               siteId,
@@ -331,7 +331,7 @@ describe("sites route", () => {
             {
               url: "https://delta-test.com/d",
               domain: "delta-test.com",
-              relationship: "exact",
+              relationship: "direct",
               queryId,
               runId: run.id,
               siteId,
@@ -339,7 +339,7 @@ describe("sites route", () => {
             {
               url: "https://delta-test.com/e",
               domain: "delta-test.com",
-              relationship: "exact",
+              relationship: "direct",
               queryId,
               runId: run.id,
               siteId,
@@ -347,7 +347,7 @@ describe("sites route", () => {
             {
               url: "https://delta-test.com/f",
               domain: "delta-test.com",
-              relationship: "exact",
+              relationship: "direct",
               queryId,
               runId: run.id,
               siteId,
@@ -355,7 +355,7 @@ describe("sites route", () => {
             {
               url: "https://delta-test.com/g",
               domain: "delta-test.com",
-              relationship: "exact",
+              relationship: "direct",
               queryId,
               runId: run.id,
               siteId,
@@ -363,7 +363,7 @@ describe("sites route", () => {
             {
               url: "https://delta-test.com/h",
               domain: "delta-test.com",
-              relationship: "exact",
+              relationship: "direct",
               queryId,
               runId: run.id,
               siteId,
@@ -371,7 +371,7 @@ describe("sites route", () => {
             {
               url: "https://delta-test.com/i",
               domain: "delta-test.com",
-              relationship: "exact",
+              relationship: "direct",
               queryId,
               runId: run.id,
               siteId,
@@ -379,7 +379,7 @@ describe("sites route", () => {
             {
               url: "https://delta-test.com/j",
               domain: "delta-test.com",
-              relationship: "exact",
+              relationship: "direct",
               queryId,
               runId: run.id,
               siteId,

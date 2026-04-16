@@ -35,15 +35,13 @@ export default function LatestResults({
   meta: { model: string } | undefined;
   site: { id: string; domain: string };
   classifications: {
-    exact: string[];
     direct: { url: string; reason: string | null }[];
     indirect: { url: string; reason: string | null }[];
   };
 }) {
-  const directUrls = new Set([
-    ...classifications.exact,
-    ...classifications.direct.map((c) => normalizeURL(c.url)),
-  ]);
+  const directUrls = new Set(
+    classifications.direct.map((c) => normalizeURL(c.url)),
+  );
   const indirectUrls = new Set(
     classifications.indirect.map((c) => normalizeURL(c.url)),
   );

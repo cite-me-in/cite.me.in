@@ -31,50 +31,39 @@ type Citation = {
 };
 
 function classifyCitations(citations: Citation[]) {
-  const exact = citations.filter((c) => c.relationship === "exact");
   const direct = citations.filter((c) => c.relationship === "direct");
   const indirect = citations.filter((c) => c.relationship === "indirect");
-  return { exact, direct, indirect };
+  return { direct, indirect };
 }
 
 function buildClassifiedUrls(citations: Citation[]): Set<string> {
   return new Set(
     citations
       .filter(
-        (c) =>
-          c.relationship === "exact" ||
-          c.relationship === "direct" ||
-          c.relationship === "indirect",
+        (c) => c.relationship === "direct" || c.relationship === "indirect",
       )
       .map((c) => c.url),
   );
 }
 
 function computeShareOfVoice(
-  exactCitations: Citation[],
   directCitations: Citation[],
   indirectCitations: Citation[],
   total: number,
 ) {
-  const exactUrls = new Set(exactCitations.map((c) => normalizeURL(c.url)));
-  const directUrls = new Set(
-    directCitations
-      .map((c) => normalizeURL(c.url))
-      .filter((u) => !exactUrls.has(u)),
-  );
+  const directUrls = new Set(directCitations.map((c) => normalizeURL(c.url)));
   const indirectUrls = new Set(
     indirectCitations
       .map((c) => normalizeURL(c.url))
-      .filter((u) => !exactUrls.has(u) && !directUrls.has(u)),
+      .filter((u) => !directUrls.has(u)),
   );
 
-  const directCount = exactUrls.size + directUrls.size;
+  const directCount = directUrls.size;
   const indirectCount = indirectUrls.size;
   const weightedCitations =
     directCount + indirectCount * INDIRECT_CITATION_WEIGHT;
 
   return {
-    exactUrls,
     directUrls,
     indirectUrls,
     directCount,
@@ -91,14 +80,12 @@ function computeShareOfVoice(
 }
 
 function buildRelatedCitations(
-  exactUrls: Set<string>,
   directUrls: Set<string>,
   indirectUrls: Set<string>,
   directCitations: Citation[],
   indirectCitations: Citation[],
 ) {
   return {
-    exact: [...exactUrls],
     direct: [...directUrls].map((url) => ({
       url,
       reason:
@@ -170,11 +157,8 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const recentRunIds = new Set(recentRuns.map((r) => r.id));
   const recentCitations = citationRows.filter((c) => recentRunIds.has(c.runId));
 
-  const {
-    exact: exactCitations,
-    direct: directCitations,
-    indirect: indirectCitations,
-  } = classifyCitations(recentCitations);
+  const { direct: directCitations, indirect: indirectCitations } =
+    classifyCitations(recentCitations);
 
   const classifiedUrls = buildClassifiedUrls(recentCitations);
 
@@ -190,16 +174,13 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     })),
   );
 
-  const { exactUrls, directUrls, indirectUrls, shareOfVoice } =
-    computeShareOfVoice(
-      exactCitations,
-      directCitations,
-      indirectCitations,
-      total,
-    );
+  const { directUrls, indirectUrls, shareOfVoice } = computeShareOfVoice(
+    directCitations,
+    indirectCitations,
+    total,
+  );
 
   const relatedCitations = buildRelatedCitations(
-    exactUrls,
     directUrls,
     indirectUrls,
     directCitations,

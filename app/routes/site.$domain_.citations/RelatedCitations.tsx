@@ -14,14 +14,13 @@ export default function RelatedCitations({
   relatedCitations,
 }: {
   relatedCitations: {
-    exact: string[];
     direct: { url: string; reason: string | null }[];
     indirect: { url: string; reason: string | null }[];
   };
 }) {
-  const { exact, direct, indirect } = relatedCitations;
+  const { direct, indirect } = relatedCitations;
 
-  const directCount = exact.length + direct.length;
+  const directCount = direct.length;
   const indirectCount = indirect.length;
 
   if (directCount === 0 && indirectCount === 0) return null;
@@ -46,18 +45,6 @@ export default function RelatedCitations({
                 <Badge variant="green">1 pt each</Badge>
               </h4>
               <ul className="space-y-1">
-                {exact.map((url) => (
-                  <li key={url} className="flex items-start gap-2 text-sm">
-                    <a
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-semibold text-emerald-700 hover:underline dark:text-emerald-400"
-                    >
-                      {truncateUrl(url)}
-                    </a>
-                  </li>
-                ))}
                 {direct.map((citation) => (
                   <li
                     key={citation.url}

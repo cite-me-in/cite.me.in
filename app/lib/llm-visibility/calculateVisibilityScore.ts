@@ -69,7 +69,7 @@ export default function calculateVisibilityScore({
   const domainNormalized = normalizeDomain(domain);
   let queriesWithCitation = 0;
   let positionWeightSum = 0;
-  let exactCitations = 0;
+  let matchingDomainCitations = 0;
   let totalCitations = 0;
   let queriesWithMention = 0;
 
@@ -92,7 +92,7 @@ export default function calculateVisibilityScore({
       const host = normalizeDomain(c);
       if (!host) continue;
       totalCitations++;
-      if (host === domainNormalized) exactCitations++;
+      if (host === domainNormalized) matchingDomainCitations++;
     }
 
     const position = query.citations.findIndex((c) =>
@@ -115,7 +115,8 @@ export default function calculateVisibilityScore({
 
   const directCount = directUrls.size;
   const indirectCount = indirectUrls.size;
-  const weightedCitations = exactCitations + directCount + indirectCount * 0.5;
+  const weightedCitations =
+    matchingDomainCitations + directCount + indirectCount * 0.5;
 
   const shareOfVoice =
     totalCitations === 0 ? 0 : (weightedCitations / totalCitations) * 100;
