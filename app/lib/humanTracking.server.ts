@@ -1,7 +1,7 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { createHash } from "node:crypto";
-import { Prisma } from "~/prisma";
 import prisma from "~/lib/prisma.server";
+import { Prisma } from "~/prisma";
 import captureAndLogError from "./captureAndLogError.server";
 
 /**
@@ -109,13 +109,13 @@ export default async function recordHumanVisit({
   referer,
   site,
   userAgent,
-  utmSource,
+  url,
 }: {
   ip: string | null;
   referer: string | null;
   site: { id: string };
   userAgent: string;
-  utmSource: string | null;
+  url: string;
 }): Promise<{ tracked: boolean; reason?: string }> {
   const date = new Date(
     Temporal.Now.zonedDateTimeISO("UTC").startOfDay().epochMilliseconds,
@@ -124,6 +124,7 @@ export default async function recordHumanVisit({
   const visitorId = visitorFingerprint(ip ?? "unknown", userAgent);
   const browser = classifyBrowser(userAgent);
   const deviceType = classifyDevice(userAgent);
+  const utmSource = new URLSearchParams(url).get("utm_source");
   const aiReferral = detectAiReferral({ referer, utmSource });
 
   try {

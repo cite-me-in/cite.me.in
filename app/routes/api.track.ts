@@ -37,9 +37,11 @@ export async function action({ request }: { request: Request }) {
     return new Response("Invalid JSON", { status: 400 });
   }
 
-  const { searchParams, hostname } = new URL(inputs.url);
   const site = await prisma.site.findFirst({
-    where: { domain: hostname.toLowerCase(), apiKey: inputs.apiKey },
+    where: {
+      domain: new URL(inputs.url).hostname.toLowerCase(),
+      apiKey: inputs.apiKey,
+    },
   });
   if (!site)
     return new Response("Forbidden", { status: 403, headers: CORS_HEADERS });
@@ -64,7 +66,7 @@ export async function action({ request }: { request: Request }) {
       referer: inputs.referer,
       site,
       userAgent,
-      utmSource: searchParams.get("utm_source"),
+      url: inputs.url,
     });
     return data({ ok: true }, { headers: CORS_HEADERS });
   }

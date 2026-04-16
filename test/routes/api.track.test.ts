@@ -7,7 +7,10 @@ const BASE_URL = `http://localhost:${port}/api/track`;
 async function post(body: unknown, headers: Record<string, string> = {}) {
   return await fetch(BASE_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json", ...headers },
+    headers: {
+      "Content-Type": "application/json",
+      ...headers,
+    },
     body: JSON.stringify(body),
   });
 }
