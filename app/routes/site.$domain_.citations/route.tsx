@@ -4,14 +4,12 @@ import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/Tabs";
 import { requireSiteAccess } from "~/lib/auth.server";
-import { getCitationGaps } from "~/lib/citationGapAnalysis.server";
 import { getDomainMeta } from "~/lib/domainMeta.server";
 import { normalizeURL } from "~/lib/isSameDomain";
 import PLATFORMS from "~/lib/llm-visibility/platforms";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 import BrandSentiment from "./BrandSentiment";
-import CitationGapAnalysis from "./CitationGapAnalysis";
 import CitationsRecentRun from "./CitationsRecentRun";
 import RelatedCitations, { INDIRECT_CITATION_WEIGHT } from "./RelatedCitations";
 import TopCompetitors, { topCompetitors } from "./TopCompetitors";
@@ -180,21 +178,6 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   const classifiedUrls = buildClassifiedUrls(recentCitations);
 
-  const citationQueryMap = new Map(
-    runs.flatMap((r) =>
-      r.queries.map((q) => [q.id, { id: q.id, query: q.query }]),
-    ),
-  );
-  const gaps = getCitationGaps({
-    citations: recentCitations.map(({ url, domain, queryId }) => ({
-      url,
-      domain,
-      queryId,
-    })),
-    queries: [...citationQueryMap.values()],
-    ownDomain: site.domain,
-  });
-
   const { competitors: rawCompetitors, total } = topCompetitors(
     recentCitations.map(({ url, domain }) => ({ url, domain })),
     site.domain,
@@ -228,7 +211,6 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     runs,
     siteQueries,
     competitors,
-    gaps,
     classifications: recentCitations,
     shareOfVoice,
     relatedCitations,
@@ -243,7 +225,6 @@ export default function SiteCitationsPage({
     runs,
     siteQueries,
     competitors,
-    gaps,
     classifications,
     shareOfVoice,
     relatedCitations,
@@ -315,7 +296,6 @@ export default function SiteCitationsPage({
             competitors={competitors}
             shareOfVoice={shareOfVoice}
           />
-          <CitationGapAnalysis gaps={gaps} />
           <VisibilityCharts
             recentRuns={recentRuns}
             site={site}

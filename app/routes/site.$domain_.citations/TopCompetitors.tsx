@@ -34,9 +34,10 @@ export default function TopCompetitors({
       <CardHeader>
         <CardTitle>Top Competitors</CardTitle>
         <CardDescription className="text-foreground/60">
-          Domains most cited alongside your queries
+          Domains most cited alongside yours
         </CardDescription>
       </CardHeader>
+
       <CardContent>
         <div className="mb-4 border-border/20 border-t-2 border-b-2 py-3">
           <div className="flex items-center justify-between gap-4">
