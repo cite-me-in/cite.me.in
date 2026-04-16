@@ -1,22 +1,23 @@
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import envVars from "~/lib/envVars.server";
 import { createMcpServer } from "~/lib/mcp/server";
+import { verifyAccessToken } from "~/lib/oauth/server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/mcp";
 
-const transports = new Map<
-  string,
-  {
-    transport: WebStandardStreamableHTTPServerTransport;
-    server: ReturnType<typeof createMcpServer>;
-  }
->();
+interface TransportSession {
+  transport: WebStandardStreamableHTTPServerTransport;
+  server: ReturnType<typeof createMcpServer>;
+  userId: string;
+}
+
+const transports = new Map<string, TransportSession>();
 
 const authResource = {
   "WWW-Authenticate": `Bearer realm="mcp", resource_metadata="${new URL(
     ".well-known/oauth-protected-resource",
     envVars.VITE_APP_URL,
-  ).toString()}`,
+  ).toString()}"`,
 };
 
 export async function action({ request }: Route.ActionArgs) {
@@ -29,9 +30,15 @@ export async function action({ request }: Route.ActionArgs) {
     throw new Response("Unauthorized", { headers: authResource, status: 401 });
   const token = match[1];
 
+  const tokenData = await verifyAccessToken(token);
+  if (!tokenData)
+    throw new Response("Forbidden", { headers: authResource, status: 403 });
+
+  const { userId, scopes } = tokenData;
+
   const tokenRecord = await prisma.oAuthAccessToken.findUnique({
     where: { token },
-    select: { clientId: true, scopes: true },
+    select: { clientId: true },
   });
   if (!tokenRecord)
     throw new Response("Forbidden", { headers: authResource, status: 403 });
@@ -39,12 +46,13 @@ export async function action({ request }: Route.ActionArgs) {
   const authInfo = {
     token,
     clientId: tokenRecord.clientId,
-    scopes: tokenRecord.scopes,
+    scopes,
   };
+
   const sessionId = request.headers.get("mcp-session-id");
-  if (sessionId && transports.has(sessionId)) {
+  if (sessionId) {
     const session = transports.get(sessionId);
-    if (!session)
+    if (!session || session.userId !== userId)
       throw new Response("Forbidden", { headers: authResource, status: 403 });
     return session.transport.handleRequest(request, { authInfo });
   }
@@ -53,7 +61,7 @@ export async function action({ request }: Route.ActionArgs) {
   const transport = new WebStandardStreamableHTTPServerTransport({
     sessionIdGenerator: () => crypto.randomUUID(),
     onsessioninitialized: (id) => {
-      transports.set(id, { transport, server });
+      transports.set(id, { transport, server, userId });
     },
   });
 
