@@ -1,17 +1,22 @@
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import envVars from "~/lib/envVars.server";
 import { createMcpServer } from "~/lib/mcp/server";
+import {
+  createSession,
+  deleteSession,
+  getSession,
+} from "~/lib/mcpSessions.server";
 import { verifyAccessToken } from "~/lib/oauth/server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/mcp";
 
-interface TransportSession {
-  transport: WebStandardStreamableHTTPServerTransport;
-  server: ReturnType<typeof createMcpServer>;
-  userId: string;
-}
-
-const transports = new Map<string, TransportSession>();
+const transports = new Map<
+  string,
+  {
+    transport: WebStandardStreamableHTTPServerTransport;
+    server: ReturnType<typeof createMcpServer>;
+  }
+>();
 
 const authResource = {
   "WWW-Authenticate": `Bearer realm="mcp", resource_metadata="${new URL(
@@ -51,22 +56,29 @@ export async function action({ request }: Route.ActionArgs) {
 
   const sessionId = request.headers.get("mcp-session-id");
   if (sessionId) {
-    const session = transports.get(sessionId);
+    const session = await getSession(sessionId);
     if (!session || session.userId !== userId)
       throw new Response("Forbidden", { headers: authResource, status: 403 });
-    return session.transport.handleRequest(request, { authInfo });
+    const transport = transports.get(sessionId);
+    if (!transport)
+      throw new Response("Forbidden", { headers: authResource, status: 403 });
+    return transport.transport.handleRequest(request, { authInfo });
   }
 
   const server = createMcpServer();
   const transport = new WebStandardStreamableHTTPServerTransport({
     sessionIdGenerator: () => crypto.randomUUID(),
-    onsessioninitialized: (id) => {
-      transports.set(id, { transport, server, userId });
+    onsessioninitialized: async (id) => {
+      transports.set(id, { transport, server });
+      await createSession({ sessionId: id, userId });
     },
   });
 
-  transport.onclose = () => {
-    if (transport.sessionId) transports.delete(transport.sessionId);
+  transport.onclose = async () => {
+    if (transport.sessionId) {
+      transports.delete(transport.sessionId);
+      await deleteSession(transport.sessionId);
+    }
   };
 
   await server.connect(transport);
