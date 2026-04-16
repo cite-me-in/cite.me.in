@@ -174,5 +174,23 @@ describe("api.track", () => {
       });
       expect(record?.count).toBe(2);
     });
+
+    it("should allow tracking of subdomain", async () => {
+      await prisma.botVisit.deleteMany();
+      const res = await post({
+        apiKey: "test-api-key-apitrack-1",
+        url: "https://sub.apitrack.example.com/about",
+        userAgent: "GPTBot/1.0",
+        accept: "text/html, text/plain",
+        ip: "1.2.3.4",
+        referer: "https://chatgpt.com",
+      });
+      expect(res.status).toBe(200);
+
+      const record = await prisma.botVisit.findFirst({
+        where: { siteId: "site-apitrack-1", path: "/about" },
+      });
+      expect(record).not.toBeNull();
+    });
   });
 });

@@ -39,7 +39,10 @@ export async function action({ request }: { request: Request }) {
 
   const site = await prisma.site.findFirst({
     where: {
-      domain: new URL(inputs.url).hostname.toLowerCase(),
+      OR: [
+        { domain: new URL(inputs.url).hostname },
+        { domain: new URL(inputs.url).hostname.replace(/^[^.]+\./, "") },
+      ],
       apiKey: inputs.apiKey,
     },
   });
