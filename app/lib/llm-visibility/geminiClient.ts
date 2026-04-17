@@ -1,19 +1,26 @@
-import { google } from "@ai-sdk/google";
-import * as ai from "ai";
-import { wrapAISDK } from "braintrust";
+import { GoogleGenAI } from "@google/genai";
 import { ms } from "convert";
 import { map } from "radashi";
-import invariant from "tiny-invariant";
 import envVars from "~/lib/envVars.server";
 import type { QueryFn } from "./queryFn";
 
 export const MODEL_ID = "gemini-2.5-flash";
 export const MODEL_PRICING = { costPerInputM: 0.3, costPerOutputM: 2.5 };
 
-const { generateText } = wrapAISDK(ai);
+const client = new GoogleGenAI({
+  apiKey: envVars.GOOGLE_GENERATIVE_AI_API_KEY,
+});
+
+interface GroundingMetadata {
+  webSearchQueries?: string[];
+  groundingChunks?: { web: { uri: string; title: string } }[];
+  groundingSupports?: {
+    segment: { startIndex: number; endIndex: number; text: string };
+    groundingChunkIndices: number[];
+  }[];
+}
 
 export default async function queryGemini({
-  maxRetries,
   timeout,
   query,
 }: {
@@ -21,46 +28,29 @@ export default async function queryGemini({
   timeout: number;
   query: string;
 }): ReturnType<QueryFn> {
-  invariant(
-    envVars.GOOGLE_GENERATIVE_AI_API_KEY,
-    "GOOGLE_GENERATIVE_AI_API_KEY is not set",
-  );
-
-  const { providerMetadata, text, usage } = await generateText({
-    model: google(MODEL_ID),
-
-    prompt: [
+  const response = await client.models.generateContent({
+    model: MODEL_ID,
+    contents: [
       {
-        role: "system",
-        content: `
-You are Gemini with web search capabilities. When answering questions, search
+        role: "user",
+        parts: [{ text: query }],
+      },
+    ],
+    config: {
+      systemInstruction: `You are Gemini with web search capabilities. When answering questions, search
 the web for current information and cite your sources using numbered citations
 like [1], [2], etc. Always include a 'Sources:' section at the end with numbered
 references, with a link to each source URL.`,
-      },
-      {
-        role: "user",
-        content: [{ text: query, type: "text" }],
-      },
-    ],
-    tools: {
-      web_search: google.tools.googleSearch({}),
+      tools: [{ googleSearch: {} }],
+      maxOutputTokens: 5000,
+      httpOptions: { timeout },
     },
-    toolChoice: { type: "tool", toolName: "web_search" },
-
-    maxOutputTokens: 5000,
-    maxRetries,
-    timeout,
   });
 
-  const metadata = providerMetadata?.google.groundingMetadata as {
-    webSearchQueries?: string[];
-    groundingChunks?: { web: { uri: string; title: string } }[];
-    groundingSupports?: {
-      segment: { startIndex: number; endIndex: number; text: string };
-      groundingChunkIndices: number[];
-    }[];
-  };
+  const text = response.text ?? "";
+  const metadata = response.candidates?.[0]?.groundingMetadata as
+    | GroundingMetadata
+    | undefined;
 
   const extraQueries = metadata?.webSearchQueries ?? [];
   const chunks = metadata?.groundingChunks ?? [];
@@ -68,11 +58,11 @@ references, with a link to each source URL.`,
   const signal = AbortSignal.timeout(ms("10s"));
   const resolvedUrls = await map(chunks, async (chunk) => {
     try {
-      const response = await fetch(chunk.web.uri, {
+      const resp = await fetch(chunk.web.uri, {
         redirect: "follow",
         signal,
       });
-      return { url: response.url, title: chunk.web.title };
+      return { url: resp.url, title: chunk.web.title };
     } catch {
       return null;
     }
@@ -86,7 +76,15 @@ references, with a link to each source URL.`,
 
   const markdownText = addMarkdownCitations(text, validUrls);
 
-  return { citations, extraQueries, text: markdownText, usage };
+  return {
+    citations,
+    extraQueries,
+    text: markdownText,
+    usage: {
+      inputTokens: response.usageMetadata?.promptTokenCount ?? 0,
+      outputTokens: response.usageMetadata?.candidatesTokenCount ?? 0,
+    },
+  };
 }
 
 function addMarkdownCitations(

@@ -1,36 +1,43 @@
-import { generateText } from "ai";
-import { describe, expect, it, vi } from "vitest";
-import queryGemini from "~/lib/llm-visibility/geminiClient";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@ai-sdk/google", () => {
-  const google = Object.assign(
-    vi.fn(() => "mock-model"),
-    { tools: { googleSearch: vi.fn(() => "mock-google-search") } },
-  );
-  return { google };
-});
+const mockGenerateContent = vi.hoisted(() => vi.fn());
 
-vi.mock("ai", () => ({
-  generateText: vi.fn(),
-  gateway: vi.fn(),
+vi.mock("@google/genai", () => ({
+  GoogleGenAI: class {
+    models = {
+      generateContent: mockGenerateContent,
+    };
+  },
+}));
+
+vi.mock("~/lib/envVars.server", () => ({
+  default: { GOOGLE_GENERATIVE_AI_API_KEY: "test-key" },
 }));
 
 describe("queryGemini", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("should return citations resolved from redirect URLs and extraQueries", async () => {
-    vi.mocked(generateText).mockResolvedValue({
-      providerMetadata: {
-        google: {
+    mockGenerateContent.mockResolvedValue({
+      text: "Paris is the capital of France.",
+      candidates: [
+        {
           groundingMetadata: {
             webSearchQueries: ["capital of France"],
             groundingChunks: [
-              { web: { uri: "https://redirect.example.com/1" } },
-              { web: { uri: "https://redirect.example.com/2" } },
+              { web: { uri: "https://redirect.example.com/1", title: "Source 1" } },
+              { web: { uri: "https://redirect.example.com/2", title: "Source 2" } },
             ],
           },
         },
+      ],
+      usageMetadata: {
+        promptTokenCount: 100,
+        candidatesTokenCount: 50,
       },
-      text: "Paris is the capital of France.",
-    } as never);
+    });
 
     vi.stubGlobal(
       "fetch",
@@ -38,6 +45,10 @@ describe("queryGemini", () => {
         .fn()
         .mockResolvedValueOnce({ url: "https://example.com/final-1" })
         .mockResolvedValueOnce({ url: "https://example.com/final-2" }),
+    );
+
+    const { default: queryGemini } = await import(
+      "~/lib/llm-visibility/geminiClient"
     );
 
     const result = await queryGemini({
@@ -60,17 +71,24 @@ describe("queryGemini", () => {
       .mockResolvedValue({ url: "https://final.example.com" });
     vi.stubGlobal("fetch", fetchMock);
 
-    vi.mocked(generateText).mockResolvedValue({
-      providerMetadata: {
-        google: {
+    mockGenerateContent.mockResolvedValue({
+      text: "Response",
+      candidates: [
+        {
           groundingMetadata: {
             webSearchQueries: [],
-            groundingChunks: [{ web: { uri: "https://redirect.example.com" } }],
+            groundingChunks: [
+              { web: { uri: "https://redirect.example.com", title: "Source" } },
+            ],
           },
         },
-      },
-      text: "Response",
-    } as never);
+      ],
+      usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5 },
+    });
+
+    const { default: queryGemini } = await import(
+      "~/lib/llm-visibility/geminiClient"
+    );
 
     await queryGemini({
       maxRetries: 0,
@@ -84,12 +102,41 @@ describe("queryGemini", () => {
     });
   });
 
-  it("should return empty citations and extraQueries when providerMetadata is absent", async () => {
+  it("should return empty citations and extraQueries when groundingMetadata is absent", async () => {
     vi.stubGlobal("fetch", vi.fn());
-    vi.mocked(generateText).mockResolvedValue({
-      providerMetadata: undefined,
+
+    mockGenerateContent.mockResolvedValue({
       text: "I don't know.",
-    } as never);
+      candidates: [{}],
+      usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5 },
+    });
+
+    const { default: queryGemini } = await import(
+      "~/lib/llm-visibility/geminiClient"
+    );
+
+    const result = await queryGemini({
+      maxRetries: 0,
+      timeout: 0,
+      query: "query",
+    });
+
+    expect(result.citations).toEqual([]);
+    expect(result.extraQueries).toEqual([]);
+  });
+
+  it("should handle empty candidates array", async () => {
+    vi.stubGlobal("fetch", vi.fn());
+
+    mockGenerateContent.mockResolvedValue({
+      text: "Response without grounding",
+      candidates: [],
+      usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5 },
+    });
+
+    const { default: queryGemini } = await import(
+      "~/lib/llm-visibility/geminiClient"
+    );
 
     const result = await queryGemini({
       maxRetries: 0,
