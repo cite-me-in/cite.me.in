@@ -19,10 +19,10 @@
     "upgrade": "./scripts/upgrade.sh"
   },
   "dependencies": {
-    "@ai-sdk/anthropic": "^3.0.70",
     "@ai-sdk/google": "^3.0.64",
     "@ai-sdk/openai": "^3.0.53",
     "@ai-sdk/perplexity": "^3.0.29",
+    "@anthropic-ai/sdk": "^0.90.0",
     "@base-ui/react": "^1.4.0",
     "@forge42/seo-tools": "^1.4.5",
     "@js-temporal/polyfill": "^0.5.1",

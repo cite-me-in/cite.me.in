@@ -52,7 +52,7 @@ export async function action({ params, request }: Route.ActionArgs) {
           where: { id: site.id },
           data: { content },
         });
-        await generateSiteQueries(updatedSite);
+        await generateSiteQueries(updatedSite.id);
         return { ok: true };
       }
 

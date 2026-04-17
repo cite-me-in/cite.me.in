@@ -62,7 +62,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 
     // Phase 3: Generate queries
     await log("Generating queries...");
-    const suggestions = await generateSiteQueries(site);
+    const suggestions = await generateSiteQueries(site.id);
     for (const { group, query } of suggestions)
       await log(`  [${group}] ${query}`);
 

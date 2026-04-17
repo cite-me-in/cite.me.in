@@ -1,44 +1,44 @@
-import { generateText } from "ai";
-import { describe, expect, it, vi } from "vitest";
-import queryClaude from "~/lib/llm-visibility/claudeClient.server";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@ai-sdk/anthropic", () => {
-  const anthropic = Object.assign(
-    vi.fn(() => "mock-model"),
-    { tools: { webSearch_20250305: vi.fn(() => "mock-web-search") } },
-  );
-  const createAnthropic = vi.fn(() => vi.fn(() => "mock-model"));
-  return { anthropic, createAnthropic };
-});
+const mockCreate = vi.hoisted(() => vi.fn());
 
-vi.mock("~/lib/llm-visibility/anthropic", () => ({
-  haiku: "mock-haiku-model",
+vi.mock("@anthropic-ai/sdk", () => ({
+  default: class {
+    beta = {
+      messages: {
+        create: mockCreate,
+      },
+    };
+  },
 }));
 
-vi.mock("ai", () => ({
-  generateText: vi.fn(),
-  gateway: vi.fn(),
+vi.mock("~/lib/envVars.server", () => ({
+  default: { ANTHROPIC_API_KEY: "test-key" },
 }));
 
 describe("queryClaude", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("should return citations from URL sources and the response text", async () => {
-    vi.mocked(generateText).mockResolvedValue({
-      sources: [
+    mockCreate.mockResolvedValue({
+      content: [
+        { type: "text", text: "Paris is the capital of France." },
         {
-          type: "source",
-          sourceType: "url",
-          url: "https://example.com",
-          providerMetadata: { anthropic: { citedText: "Cited text" } },
-        },
-        {
-          type: "source",
-          sourceType: "url",
-          url: "https://other.com",
-          providerMetadata: { anthropic: { citedText: "Cited text" } },
+          type: "web_search_tool_result",
+          content: [
+            { type: "web_search_result", url: "https://example.com" },
+            { type: "web_search_result", url: "https://other.com" },
+          ],
         },
       ],
-      text: "Paris is the capital of France.",
-    } as never);
+      usage: { input_tokens: 100, output_tokens: 50 },
+    });
+
+    const { default: queryClaude } = await import(
+      "~/lib/llm-visibility/claudeClient.server"
+    );
 
     const result = await queryClaude({
       maxRetries: 0,
@@ -54,19 +54,24 @@ describe("queryClaude", () => {
     expect(result.extraQueries).toEqual([]);
   });
 
-  it("should filter out non-URL sources", async () => {
-    vi.mocked(generateText).mockResolvedValue({
-      sources: [
+  it("should filter out sources without URLs", async () => {
+    mockCreate.mockResolvedValue({
+      content: [
+        { type: "text", text: "Response" },
         {
-          type: "source",
-          sourceType: "url",
-          url: "https://example.com",
-          providerMetadata: { anthropic: { citedText: "Cited text" } },
+          type: "web_search_tool_result",
+          content: [
+            { type: "web_search_result", url: "https://example.com" },
+            { type: "web_search_result", url: undefined },
+          ],
         },
-        { type: "source", sourceType: "document", id: "doc-1" },
       ],
-      text: "Response",
-    } as never);
+      usage: { input_tokens: 100, output_tokens: 50 },
+    });
+
+    const { default: queryClaude } = await import(
+      "~/lib/llm-visibility/claudeClient.server"
+    );
 
     const result = await queryClaude({
       maxRetries: 0,
@@ -77,11 +82,24 @@ describe("queryClaude", () => {
     expect(result.citations).toEqual(["https://example.com"]);
   });
 
-  it("should return empty citations when there are no sources", async () => {
-    vi.mocked(generateText).mockResolvedValue({
-      sources: [],
-      text: "I don't know.",
-    } as never);
+  it("should deduplicate citations", async () => {
+    mockCreate.mockResolvedValue({
+      content: [
+        { type: "text", text: "Response" },
+        {
+          type: "web_search_tool_result",
+          content: [
+            { type: "web_search_result", url: "https://example.com" },
+            { type: "web_search_result", url: "https://example.com" },
+          ],
+        },
+      ],
+      usage: { input_tokens: 100, output_tokens: 50 },
+    });
+
+    const { default: queryClaude } = await import(
+      "~/lib/llm-visibility/claudeClient.server"
+    );
 
     const result = await queryClaude({
       maxRetries: 0,
@@ -89,6 +107,6 @@ describe("queryClaude", () => {
       query: "query",
     });
 
-    expect(result.citations).toEqual([]);
+    expect(result.citations).toEqual(["https://example.com"]);
   });
 });

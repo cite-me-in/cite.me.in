@@ -1,15 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import prisma from "~/lib/prisma.server";
 import type { Site } from "~/prisma";
 
-vi.mock("ai", () => ({
-  generateText: vi.fn(),
-  gateway: vi.fn(),
-  Output: { array: vi.fn() },
-}));
-vi.mock("~/lib/llm-visibility/anthropic", () => ({
-  haiku: "mock-haiku-model",
+const mockCreate = vi.hoisted(() => vi.fn());
+
+vi.mock("@anthropic-ai/sdk", () => ({
+  Anthropic: class {
+    beta = {
+      messages: {
+        create: mockCreate,
+      },
+    };
+  },
 }));
 
 const MOCK_QUERIES = [
@@ -49,21 +51,28 @@ describe("generateSiteQueries", () => {
   });
 
   it("should return 9 queries across 3 groups", async () => {
-    const { generateText } = await import("ai");
-    // biome-ignore lint/suspicious/noExplicitAny: test mock
-    vi.mocked(generateText).mockResolvedValue({ output: MOCK_QUERIES } as any);
+    mockCreate.mockResolvedValue({
+      content: [{ type: "text", text: JSON.stringify(MOCK_QUERIES) }],
+    });
 
-    const suggestions = await generateSiteQueries(site);
+    const { default: generateSiteQueries } = await import(
+      "~/lib/llm-visibility/generateSiteQueries"
+    );
+
+    const suggestions = await generateSiteQueries(site.id);
     expect(suggestions).toHaveLength(9);
     expect(
       suggestions.map((q) => ({ group: q.group, query: q.query })),
     ).toEqual(MOCK_QUERIES);
   });
 
-  it("should propagate errors from generateText", async () => {
-    const { generateText } = await import("ai");
-    vi.mocked(generateText).mockRejectedValue(new Error("API error"));
+  it("should propagate errors from API", async () => {
+    mockCreate.mockRejectedValue(new Error("API error"));
 
-    await expect(generateSiteQueries(site)).rejects.toThrow("API error");
+    const { default: generateSiteQueries } = await import(
+      "~/lib/llm-visibility/generateSiteQueries"
+    );
+
+    await expect(generateSiteQueries(site.id)).rejects.toThrow("API error");
   });
 });
