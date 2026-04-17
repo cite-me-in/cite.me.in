@@ -2,8 +2,10 @@
  * NOTE: Setup code to run only once before all tests.
  */
 
-import { execFile } from "node:child_process";
+import { execFile, spawn } from "node:child_process";
+import { existsSync, readdirSync } from "node:fs";
 import { rm } from "node:fs/promises";
+import { resolve } from "node:path";
 import { promisify } from "node:util";
 import prisma from "~/lib/prisma.server";
 import "~/test/mocks/msw";
@@ -39,8 +41,41 @@ export default async function setup() {
   await prisma.user.deleteMany();
 }
 
+const screenshotsDir = resolve(
+  import.meta.dirname,
+  "..",
+  "..",
+  "__screenshots__",
+);
+
+function hasNewScreenshots(): boolean {
+  if (!existsSync(screenshotsDir)) return false;
+  function scan(dir: string): boolean {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const path = resolve(dir, entry.name);
+      if (entry.isDirectory()) {
+        if (scan(path)) return true;
+      } else if (entry.name.endsWith(".new.png")) {
+        return true;
+      }
+    }
+    return false;
+  }
+  return scan(screenshotsDir);
+}
+
 export async function teardown() {
-  if (!process.env.CI)
+  if (!process.env.CI && hasNewScreenshots()) {
+    console.info(
+      "\nVisual differences detected. Launching screenshot review...\n",
+    );
+    spawn("tsx", ["scripts/screenshots.ts"], {
+      stdio: "inherit",
+      detached: true,
+    });
+  }
+
+  if (!process.env.CI) {
     await promisify(execFile)("terminal-notifier", [
       "-sound",
       "default",
@@ -49,5 +84,7 @@ export async function teardown() {
       "-message",
       "Done!",
     ]);
+  }
+
   await closeServer();
 }
