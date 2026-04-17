@@ -10,14 +10,7 @@
 set -eo pipefail
 
 echo -e "\033[32m  Checking code is clean …\033[0m"
-biome lint
-secretlint "**/*" --format stylish
-
-echo -e "\033[32m  Generating React Router types …\033[0m"
-pnpm react-router typegen
-
-echo -e "\033[32m  Checking types …\033[0m"
-pnpm tsc --noEmit --strict
+pnpm check
 
 echo -e "\033[32m  Installing Playwright …\033[0m"
 pnpm exec playwright install

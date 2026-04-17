@@ -167,6 +167,7 @@ describe("sites route", () => {
 
   describe("when site available", () => {
     beforeAll(async () => {
+      await prisma.site.deleteMany();
       await prisma.site.create({
         data: {
           apiKey: "test-api-key-sites-dashboard",
