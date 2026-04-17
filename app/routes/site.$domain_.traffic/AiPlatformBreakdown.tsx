@@ -22,9 +22,9 @@ export default function AiPlatformBreakdown({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Platform</TableHead>
-              <TableHead className="text-right">Visitors</TableHead>
-              <TableHead className="text-right">% of Total</TableHead>
+              <TableHead className="w-2/3 font-bold">Platform</TableHead>
+              <TableHead className="text-right font-bold">Visitors</TableHead>
+              <TableHead className="text-right font-bold">% of Total</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

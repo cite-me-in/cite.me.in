@@ -27,10 +27,9 @@ export default function BotActivity({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Bot</TableHead>
-              <TableHead className="text-right">Visits</TableHead>
-              <TableHead className="text-right">Paths</TableHead>
-              <TableHead>Accept Types</TableHead>
+              <TableHead className="w-2/3 font-bold">Bot</TableHead>
+              <TableHead className="text-right font-bold">Visits</TableHead>
+              <TableHead className="text-right font-bold">Paths</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -41,9 +40,6 @@ export default function BotActivity({
                   {row.total.toLocaleString()}
                 </TableCell>
                 <TableCell className="text-right">{row.uniquePaths}</TableCell>
-                <TableCell className="w-2/3 text-foreground/60">
-                  {row.accepts.length > 0 ? row.accepts.join(", ") : "—"}
-                </TableCell>
               </TableRow>
             ))}
           </TableBody>

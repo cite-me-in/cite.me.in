@@ -85,9 +85,9 @@ export default function CommandPalette() {
           icon: <FileTextIcon className="size-4" />,
         },
         {
-          id: `${site.id}-bots`,
-          label: `${site.domain} → Bot Traffic`,
-          to: `/site/${site.domain}/bots`,
+          id: `${site.id}-traffic`,
+          label: `${site.domain} → Traffic`,
+          to: `/site/${site.domain}/traffic`,
           icon: <BotIcon className="size-4" />,
         },
         {

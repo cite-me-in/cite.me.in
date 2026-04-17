@@ -29,8 +29,7 @@ function HeaderLinks() {
     navLinks.push(
       { to: `/site/${siteDomain}/citations`, label: "Citations" },
       { to: `/site/${siteDomain}/pages`, label: "Pages" },
-      { to: `/site/${siteDomain}/visitors`, label: "Human Visitors" },
-      { to: `/site/${siteDomain}/bots`, label: "Bot Traffic" },
+      { to: `/site/${siteDomain}/traffic`, label: "Traffic" },
       { to: `/site/${siteDomain}/settings`, label: <SettingsIcon size={20} /> },
     );
 

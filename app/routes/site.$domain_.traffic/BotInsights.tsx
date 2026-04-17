@@ -1,13 +1,6 @@
 import { BrainIcon } from "lucide-react";
 import { Streamdown } from "streamdown";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/Card";
-import { formatDateShort } from "~/lib/formatDate";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 
 export default function BotInsights({
   insight,
@@ -25,17 +18,15 @@ export default function BotInsights({
           Bot Insights
         </CardTitle>
       </CardHeader>
+
       <CardContent>
         <Streamdown
           mode="static"
-          className="prose prose-sm mt-4 mb-4 line-clamp-2 max-w-none text-foreground/60 italic"
+          className="prose prose-sm max-w-none text-foreground/60 italic"
         >
           {insight.content}
         </Streamdown>
       </CardContent>
-      <CardFooter className="text-foreground/50 text-xs">
-        Updated {formatDateShort(insight.generatedAt)}
-      </CardFooter>
     </Card>
   );
 }
