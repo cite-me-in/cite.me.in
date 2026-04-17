@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 import prisma from "~/lib/prisma.server";
 
 vi.mock("~/lib/citingPageHealth.server", () => ({
-  checkCitingPageHealth: vi.fn().mockResolvedValue({
+  default: vi.fn().mockResolvedValue({
     statusCode: 200,
     contentHash: "abc123",
     isHealthy: true,
