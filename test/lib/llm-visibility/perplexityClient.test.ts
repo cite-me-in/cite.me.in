@@ -1,25 +1,49 @@
-import { generateText } from "ai";
-import { describe, expect, it, vi } from "vitest";
-import queryPerplexity from "~/lib/llm-visibility/perplexityClient";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@ai-sdk/perplexity", () => ({
-  createPerplexity: vi.fn(() => vi.fn(() => "mock-model")),
+const mockCreate = vi.hoisted(() => vi.fn());
+
+vi.mock("@perplexity-ai/perplexity_ai", () => ({
+  default: class {
+    search = {
+      create: mockCreate,
+    };
+  },
 }));
 
-vi.mock("ai", () => ({
-  generateText: vi.fn(),
-  gateway: vi.fn(),
+vi.mock("~/lib/envVars.server", () => ({
+  default: { PERPLEXITY_API_KEY: "test-key" },
 }));
 
 describe("queryPerplexity", () => {
-  it("should return citations from URL sources and the response text", async () => {
-    vi.mocked(generateText).mockResolvedValue({
-      sources: [
-        { type: "source", sourceType: "url", url: "https://example.com" },
-        { type: "source", sourceType: "url", url: "https://other.com" },
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should return citations from search results and formatted text", async () => {
+    mockCreate.mockResolvedValue({
+      id: "search_abc123",
+      server_time: 1678886400,
+      results: [
+        {
+          title: "Paris - Wikipedia",
+          url: "https://example.com/paris",
+          snippet: "Paris is the capital of France.",
+          date: "2024-01-15",
+          last_updated: "2024-01-16",
+        },
+        {
+          title: "France Capital",
+          url: "https://other.com/france",
+          snippet: "The capital city of France is Paris.",
+          date: "2024-01-10",
+          last_updated: "2024-01-11",
+        },
       ],
-      text: "Paris is the capital of France.",
-    } as never);
+    });
+
+    const { default: queryPerplexity } = await import(
+      "~/lib/llm-visibility/perplexityClient"
+    );
 
     const result = await queryPerplexity({
       maxRetries: 0,
@@ -28,36 +52,24 @@ describe("queryPerplexity", () => {
     });
 
     expect(result.citations).toEqual([
-      "https://example.com",
-      "https://other.com",
+      "https://example.com/paris",
+      "https://other.com/france",
     ]);
-    expect(result.text).toBe("Paris is the capital of France.");
+    expect(result.text).toContain("Paris - Wikipedia");
+    expect(result.text).toContain("Paris is the capital of France.");
     expect(result.extraQueries).toEqual([]);
   });
 
-  it("should filter out non-URL sources", async () => {
-    vi.mocked(generateText).mockResolvedValue({
-      sources: [
-        { type: "source", sourceType: "url", url: "https://example.com" },
-        { sourceType: "document", id: "doc-1" },
-      ],
-      text: "Response",
-    } as never);
-
-    const result = await queryPerplexity({
-      maxRetries: 0,
-      timeout: 0,
-      query: "query",
+  it("should return empty citations when no results", async () => {
+    mockCreate.mockResolvedValue({
+      id: "search_abc123",
+      server_time: 1678886400,
+      results: [],
     });
 
-    expect(result.citations).toEqual(["https://example.com"]);
-  });
-
-  it("should return empty citations when there are no sources", async () => {
-    vi.mocked(generateText).mockResolvedValue({
-      sources: [],
-      text: "I don't know.",
-    } as never);
+    const { default: queryPerplexity } = await import(
+      "~/lib/llm-visibility/perplexityClient"
+    );
 
     const result = await queryPerplexity({
       maxRetries: 0,
@@ -66,5 +78,41 @@ describe("queryPerplexity", () => {
     });
 
     expect(result.citations).toEqual([]);
+    expect(result.text).toBe("");
+  });
+
+  it("should filter out results with empty URLs", async () => {
+    mockCreate.mockResolvedValue({
+      id: "search_abc123",
+      server_time: 1678886400,
+      results: [
+        {
+          title: "Valid Result",
+          url: "https://example.com",
+          snippet: "Valid snippet",
+          date: "2024-01-15",
+          last_updated: "2024-01-16",
+        },
+        {
+          title: "No URL",
+          url: "",
+          snippet: "No URL snippet",
+          date: "2024-01-15",
+          last_updated: "2024-01-16",
+        },
+      ],
+    });
+
+    const { default: queryPerplexity } = await import(
+      "~/lib/llm-visibility/perplexityClient"
+    );
+
+    const result = await queryPerplexity({
+      maxRetries: 0,
+      timeout: 0,
+      query: "query",
+    });
+
+    expect(result.citations).toEqual(["https://example.com"]);
   });
 });

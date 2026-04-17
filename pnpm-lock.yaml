@@ -11,9 +11,6 @@ importers:
       '@ai-sdk/google':
         specifier: ^3.0.64
         version: 3.0.64(zod@4.3.6)
-      '@ai-sdk/perplexity':
-        specifier: ^3.0.29
-        version: 3.0.29(zod@4.3.6)
       '@anthropic-ai/sdk':
         specifier: ^0.90.0
         version: 0.90.0(zod@4.3.6)
@@ -32,6 +29,9 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.29.0
         version: 1.29.0(zod@4.3.6)
+      '@perplexity-ai/perplexity_ai':
+        specifier: ^0.27.0
+        version: 0.27.0
       '@prisma/adapter-pg':
         specifier: ^7.7.0
         version: 7.7.0(pg-native@3.7.0)
@@ -254,12 +254,6 @@ packages:
 
   '@ai-sdk/google@3.0.64':
     resolution: {integrity: sha512-CbR82EgGPNrj/6q0HtclwuCqe0/pDShyv3nWDP/A9DroujzWXnLMlUJVrgPOsg4b40zQCwwVs2XSKCxvt/4QaA==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      zod: ^3.25.76 || ^4.1.8
-
-  '@ai-sdk/perplexity@3.0.29':
-    resolution: {integrity: sha512-9UfV7ywpnxNLPI/hdheFPHXDdLG9vLqNoPSdRTPV+nPAX117zMtBmqD5KSvmXTjeF7IXpObUZ9bWzwMR/ewL1g==}
     engines: {node: '>=18'}
     peerDependencies:
       zod: ^3.25.76 || ^4.1.8
@@ -1742,6 +1736,9 @@ packages:
     resolution: {integrity: sha512-6hIU3RQu45B+VNTY4Ru8ppFwjVS/S5qwYyGhBotmjxfEKk41I2DlGtRfGJndZ5+6lneE2pwloqunlOyZuX/XAw==}
     cpu: [x64]
     os: [win32]
+
+  '@perplexity-ai/perplexity_ai@0.27.0':
+    resolution: {integrity: sha512-iavFLkvSjuja81lSat6+Ewq1aDcxi5kierzhfcet9t2sKlsAXS208Nf+JcXzskquZlHkana3Impn69oMNYpg/w==}
 
   '@playwright/test@1.59.1':
     resolution: {integrity: sha512-PG6q63nQg5c9rIi4/Z5lR5IVF7yU5MqmKaPOe0HSc0O2cX1fPi96sUQu5j7eo4gKCkB2AnNGoWt7y4/Xx3Kcqg==}
@@ -6111,12 +6108,6 @@ snapshots:
       '@ai-sdk/provider-utils': 4.0.23(zod@4.3.6)
       zod: 4.3.6
 
-  '@ai-sdk/perplexity@3.0.29(zod@4.3.6)':
-    dependencies:
-      '@ai-sdk/provider': 3.0.8
-      '@ai-sdk/provider-utils': 4.0.23(zod@4.3.6)
-      zod: 4.3.6
-
   '@ai-sdk/provider-utils@4.0.23(zod@4.3.6)':
     dependencies:
       '@ai-sdk/provider': 3.0.8
@@ -7489,6 +7480,8 @@ snapshots:
 
   '@oxc-resolver/binding-win32-x64-msvc@11.19.1':
     optional: true
+
+  '@perplexity-ai/perplexity_ai@0.27.0': {}
 
   '@playwright/test@1.59.1':
     dependencies:
