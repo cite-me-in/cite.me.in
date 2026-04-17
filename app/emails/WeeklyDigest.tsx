@@ -87,7 +87,7 @@ export function WeeklyDigestEmail({
   score,
   topQueries,
   visits,
-}: WeeklyDigestEmailProps) {
+}: Omit<WeeklyDigestEmailProps, "subject">) {
   return (
     <>
       <TopMetrics

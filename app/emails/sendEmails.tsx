@@ -70,6 +70,7 @@ export async function sendEmail({
           domain={domain}
           subject={subject}
           unsubscribeURL={!isTransactional && unsubscribeURL}
+          user={sendTo}
         >
           {email}
         </EmailLayout>

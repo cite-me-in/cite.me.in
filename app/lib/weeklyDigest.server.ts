@@ -133,7 +133,7 @@ export async function loadWeeklyDigestMetrics(
   );
   const subject = `${formatDateShort(new Date(weekStart))} — ${formatDateShort(
     new Date(today.toJSON()),
-  )} • ${domain}`;
+  )}`;
 
   const citationsURL = new URL(
     `/site/${domain}/citations`,

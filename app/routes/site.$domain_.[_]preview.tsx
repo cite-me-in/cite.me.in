@@ -2,10 +2,8 @@ import { render } from "@react-email/components";
 import { MailIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useFetcher } from "react-router";
-import { EmailLinkContext } from "~/components/email/context";
 import { Button } from "~/components/ui/Button";
 import EmailLayout from "~/emails/EmailLayout";
-import generateUnsubscribeToken from "~/emails/generateUnsubscribeToken";
 import { WeeklyDigestEmail, sendSiteDigestEmails } from "~/emails/WeeklyDigest";
 import { requireUserAccess } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
@@ -16,14 +14,11 @@ export const handle = { siteNav: true };
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { site, user } = await findAdminAndSite(request, params.domain);
-  const data = await loadWeeklyDigestMetrics(site.id);
-  const token = generateUnsubscribeToken(user.email);
+  const { domain, subject, ...data } = await loadWeeklyDigestMetrics(site.id);
   const html = await render(
-    <EmailLinkContext.Provider value={{ email: user.email, token }}>
-      <EmailLayout domain={data.domain} subject={data.subject}>
-        <WeeklyDigestEmail {...data} />
-      </EmailLayout>
-    </EmailLinkContext.Provider>,
+    <EmailLayout domain={domain} subject={subject} user={user}>
+      <WeeklyDigestEmail domain={domain} {...data} />
+    </EmailLayout>,
   );
   return { html, user };
 }

@@ -13,8 +13,10 @@ import {
   Text,
   pixelBasedPreset,
 } from "@react-email/components";
+import { EmailLinkContext } from "~/components/email/context";
 import Link from "~/components/email/Link";
 import envVars from "~/lib/envVars.server";
+import generateUnsubscribeToken from "./generateUnsubscribeToken";
 
 /**
  * EmailLayout is a component that wraps the email content and provides a consistent layout.
@@ -32,46 +34,52 @@ export default function EmailLayout({
   preview,
   subject,
   unsubscribeURL,
+  user,
 }: {
   children: React.ReactNode;
   domain?: string;
   preview?: string;
   subject: string;
   unsubscribeURL?: string | false;
+  user: { email: string };
 }) {
+  const token = generateUnsubscribeToken(user.email);
+
   return (
-    <Html>
-      <Head />
-      <Preview>{preview ?? subject}</Preview>
-      <Tailwind
-        config={{
-          presets: [pixelBasedPreset],
-          theme: {
-            extend: {
-              colors: {
-                primary: "#4f46e5",
-                text: "#374151",
-                dark: "#1f2937",
-                light: "#6b7280",
-                background: "#f6f9fc",
-                white: "#ffffff",
-                highlightBg: "#f3f4f6",
-                border: "#e5e7eb",
-                borderLight: "#f0f0f0",
+    <EmailLinkContext.Provider value={{ email: user.email, token }}>
+      <Html>
+        <Head />
+        <Preview>{preview ?? subject}</Preview>
+        <Tailwind
+          config={{
+            presets: [pixelBasedPreset],
+            theme: {
+              extend: {
+                colors: {
+                  primary: "#4f46e5",
+                  text: "#374151",
+                  dark: "#1f2937",
+                  light: "#6b7280",
+                  background: "#f6f9fc",
+                  white: "#ffffff",
+                  highlightBg: "#f3f4f6",
+                  border: "#e5e7eb",
+                  borderLight: "#f0f0f0",
+                },
               },
             },
-          },
-        }}
-      >
-        <Body className="bg-background font-sans text-text">
-          <Container className="mx-auto my-40px max-w-600px bg-white p-4">
-            <Header domain={domain} subject={subject} />
-            {children}
-            <Footer unsubscribeURL={unsubscribeURL} />
-          </Container>
-        </Body>
-      </Tailwind>
-    </Html>
+          }}
+        >
+          <Body className="bg-background font-sans text-text">
+            <Container className="mx-auto my-40px max-w-600px bg-white p-4">
+              <Header domain={domain} subject={subject} />
+              {children}
+              <Footer unsubscribeURL={unsubscribeURL} />
+            </Container>
+          </Body>
+        </Tailwind>
+      </Html>
+    </EmailLinkContext.Provider>
   );
 }
 
@@ -93,10 +101,12 @@ function Header({ domain, subject }: { domain?: string; subject: string }) {
                   envVars.VITE_APP_URL,
                 ).toString()}
               >
-                <Text className="m-0 font-bold text-2xl text-dark leading-tight">
+                <Text className="m-0 line-clamp-1 font-bold text-2xl text-dark leading-tight">
                   {domain}
                 </Text>
-                <Text className="m-0 mt-4px text-light text-sm">{subject}</Text>
+                <Text className="m-0 mt-4px line-clamp-1 text-light text-sm">
+                  {subject}
+                </Text>
               </Link>
             </Column>
           </Row>
