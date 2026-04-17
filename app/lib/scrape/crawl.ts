@@ -1,12 +1,12 @@
 import { ms } from "convert";
 import debug from "debug";
-import { discoverURLs } from "./discover";
-import { fetchAndExtract } from "./extract";
+import discoverURLs from "./discover";
+import fetchAndExtract from "./extract";
 
 const logger = debug("crawl");
 const CONCURRENCY = 3;
 
-export async function crawl({
+export default async function crawl({
   domain,
   maxWords = 5_000,
   maxPages = 20,

@@ -13,7 +13,7 @@ const client = new OpenAI({
  * @param content - The content to summarize.
  * @returns The summary.
  */
-export async function summarize({
+export default async function summarize({
   domain,
   content,
 }: {

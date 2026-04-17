@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { discoverURLs } from "~/lib/scrape/discover";
+import discoverURLs from "~/lib/scrape/discover";
 import {
   HOMEPAGE_HTML,
   RSS_FEED,

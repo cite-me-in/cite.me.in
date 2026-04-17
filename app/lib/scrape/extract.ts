@@ -22,7 +22,7 @@ const logger = debug("crawl");
  * @param signal - The abort signal to use to cancel the fetch.
  * @returns The title, text, and HTML of the document or null if the fetch or extraction fails.
  */
-export async function fetchAndExtract({
+export default async function fetchAndExtract({
   url,
   signal,
 }: {

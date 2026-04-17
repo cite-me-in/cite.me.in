@@ -1,3 +1,4 @@
+import captureAndLogError from "~/lib/captureAndLogError.server";
 import envVars from "~/lib/envVars.server";
 import {
   MODEL_ID as CLAUDE_MODEL_ID,
@@ -18,8 +19,7 @@ import {
 import { SERPAPI_PRICING } from "~/lib/llm-visibility/serpApi.server";
 import prisma from "~/lib/prisma.server";
 import { Prisma } from "~/prisma";
-import captureAndLogError from "../captureAndLogError.server";
-import { UsageLimitExceededError } from "./UsageLimitExceededError";
+import UsageLimitExceededError from "./UsageLimitExceededError";
 
 export async function recordUsageEvent({
   siteId,

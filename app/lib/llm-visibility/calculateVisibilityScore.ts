@@ -15,7 +15,11 @@
  *   softMentionRate      × 0.15
  */
 
-import { isSameDomain, normalizeDomain, normalizeURL } from "../isSameDomain";
+import {
+  isSameDomain,
+  normalizeDomain,
+  normalizeURL,
+} from "~/lib/isSameDomain";
 
 const weights = {
   queryCoverageRate: 0.35,

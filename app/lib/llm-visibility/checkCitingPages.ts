@@ -1,8 +1,7 @@
 import { parallel } from "radashi";
-import { sendCitingPageAlertEmail } from "~/emails/CitingPageAlert";
-import { checkCitingPageHealth } from "~/lib/citingPageHealth.server";
+import checkCitingPageHealth from "~/lib/citingPageHealth.server";
+import { hoursAgo } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
-import { hoursAgo } from "../formatDate";
 
 export default async function ({
   staleHours = 24,
@@ -25,15 +24,11 @@ export default async function ({
     const { statusCode, contentHash, isHealthy } = await checkCitingPageHealth(
       page.url,
     );
-    const wasHealthy = page.isHealthy;
 
     await prisma.citingPage.update({
       where: { id: page.id },
       data: { statusCode, contentHash, isHealthy, lastCheckedAt: new Date() },
     });
-
-    if (wasHealthy && !isHealthy)
-      await sendCitingPageAlertEmail({ page: page.url, site: page.site });
 
     return { url: page.url, statusCode, isHealthy };
   });

@@ -1,4 +1,4 @@
-export class UsageLimitExceededError extends Error {
+export default class UsageLimitExceededError extends Error {
   public readonly current: number;
   public readonly limit: number;
   public readonly timeWindow: string;

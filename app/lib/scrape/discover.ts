@@ -18,7 +18,7 @@ const logger = debug("crawl");
  * @param signal - The abort signal to use to cancel the discovery.
  * @returns The discovered URLs and the disallowed URLs.
  */
-export async function discoverURLs({
+export default async function discoverURLs({
   url,
   homepage,
   signal,

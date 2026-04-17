@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { checkCitingPageHealth } from "~/lib/citingPageHealth.server";
+import checkCitingPageHealth from "~/lib/citingPageHealth.server";
 
 describe("checkCitingPageHealth", () => {
   afterEach(() => {

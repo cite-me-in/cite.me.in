@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import prisma from "~/lib/prisma.server";
-import { crawl } from "~/lib/scrape/crawl";
-import { summarize } from "~/lib/scrape/summarize";
+import crawl from "~/lib/scrape/crawl";
+import summarize from "~/lib/scrape/summarize";
 import { createSite, deleteSite, extractDomain } from "~/lib/sites.server";
 import * as webhooks from "~/lib/webhooks.server";
 

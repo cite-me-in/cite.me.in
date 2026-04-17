@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { crawl } from "~/lib/scrape/crawl";
+import crawl from "~/lib/scrape/crawl";
 import {
   HTML_MAIN_CONTENT,
   llmsTxtSite,

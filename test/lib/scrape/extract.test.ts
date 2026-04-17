@@ -1,6 +1,6 @@
 import { ms } from "convert";
 import { describe, expect, it, vi } from "vitest";
-import { fetchAndExtract } from "~/lib/scrape/extract";
+import fetchAndExtract from "~/lib/scrape/extract";
 import {
   CANONICAL_SKIP_HTML,
   HTML_ARTICLE_CONTENT,

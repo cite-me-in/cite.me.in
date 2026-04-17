@@ -1,5 +1,5 @@
+import captureAndLogError from "~/lib/captureAndLogError.server";
 import type { Prisma } from "~/prisma";
-import captureAndLogError from "../captureAndLogError.server";
 import prisma from "../prisma.server";
 import analyzeSentiment from "./analyzeSentiment";
 

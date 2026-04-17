@@ -1,6 +1,6 @@
 import { group, listify } from "radashi";
 import PLATFORMS from "~/lib/llm-visibility/platformQueries.server";
-import prisma from "../prisma.server";
+import prisma from "~/lib/prisma.server";
 
 /**
  * Citing pages are web pages (by URL) that may have been citing the domain

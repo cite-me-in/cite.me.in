@@ -10,7 +10,7 @@ const logger = debug("server");
  * @param url - The URL of the page to check.
  * @returns The status code, content hash, and whether the page is healthy.
  */
-export async function checkCitingPageHealth(url: string): Promise<{
+export default async function checkCitingPageHealth(url: string): Promise<{
   statusCode: number | null;
   contentHash: string | null;
   isHealthy: boolean;

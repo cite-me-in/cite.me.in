@@ -1,8 +1,8 @@
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { Output, generateText } from "ai";
 import { z } from "zod";
+import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
-import envVars from "../envVars.server";
 import queryGroups from "./queryGroups";
 
 const anthropic = createAnthropic({
