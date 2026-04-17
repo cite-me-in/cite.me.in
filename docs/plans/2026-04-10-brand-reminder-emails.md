@@ -13,6 +13,7 @@
 ### Task 1: Create `BrandReminder.tsx`
 
 **Files:**
+
 - Create: `app/components/email/BrandReminder.tsx`
 
 No test needed — the component is covered by the visual regression tests in Tasks 3 and 4.
@@ -23,22 +24,19 @@ No test needed — the component is covered by the visual regression tests in Ta
 import { Text } from "@react-email/components";
 import Card from "~/components/email/Card";
 
-export function BrandReminderCard({
-  domain,
-  citations,
-}: {
-  domain: string;
-  citations: number;
-}) {
+export function BrandReminderCard({ domain, citations }: { domain: string; citations: number }) {
   const n = citations.toLocaleString();
   const noun = citations === 1 ? "citation" : "citations";
   return (
     <Card withBorder>
       <Text className="text-base text-text leading-relaxed">
-        cite.me.in is your window into how AI talks about your brand. Every day
-        it asks ChatGPT, Claude, Gemini, and Perplexity the questions your
-        customers ask — and records every time <strong>{domain}</strong> shows
-        up. So far: <strong>{n} {noun}</strong> and counting.
+        cite.me.in is your window into how AI talks about your brand. Every day it asks ChatGPT,
+        Claude, Gemini, and Perplexity the questions your customers ask — and records every time{" "}
+        <strong>{domain}</strong> shows up. So far:{" "}
+        <strong>
+          {n} {noun}
+        </strong>{" "}
+        and counting.
       </Text>
     </Card>
   );
@@ -83,6 +81,7 @@ git commit -m "feat: add BrandReminderCard component and brandReminderText helpe
 `WeeklyDigestEmailProps` does not currently include `domain`, but it's needed by `BrandReminderCard`. The `domain` value is already computed in `weeklyDigest.server.ts` at line 46 (`const { domain } = metrics.site`) but not returned.
 
 **Files:**
+
 - Modify: `app/emails/WeeklyDigest.tsx`
 - Modify: `app/lib/weeklyDigest.server.ts`
 - Modify: `test/routes/email.weekly-digest.test.ts`
@@ -124,7 +123,7 @@ In `test/routes/email.weekly-digest.test.ts`, add `domain: "rentail.space"` to t
 
 ```ts
 await sendSiteDigestEmails({
-  domain: "rentail.space",   // ← add this
+  domain: "rentail.space", // ← add this
   // ... rest unchanged
 });
 ```
@@ -149,6 +148,7 @@ git commit -m "feat: add domain to WeeklyDigestEmailProps and thread through ser
 ### Task 3: Add `BrandReminderCard` to `WeeklyDigest`
 
 **Files:**
+
 - Modify: `app/emails/WeeklyDigest.tsx`
 
 **Step 1: Import and render the card**
@@ -202,6 +202,7 @@ git commit -m "feat: add BrandReminderCard to WeeklyDigest email"
 ### Task 4: Add `BrandReminderCard` to `SiteSetupComplete`
 
 **Files:**
+
 - Modify: `app/emails/SiteSetupComplete.tsx`
 
 **Step 1: Import and render the card**
@@ -245,6 +246,7 @@ git commit -m "feat: add BrandReminderCard to SiteSetupComplete email"
 ### Task 5: Update `TrialEnding`
 
 **Files:**
+
 - Modify: `app/emails/TrialEnding.tsx`
 
 **Step 1: Import `brandReminderText`**
@@ -258,6 +260,7 @@ import { brandReminderText } from "~/components/email/BrandReminder";
 The current email has three `<Text>` blocks plus a button. Replace paragraphs 2 and 3 with a single paragraph that fuses the brand reminder with the upgrade CTA:
 
 Before:
+
 ```tsx
 <Text>
   So far you've collected {citationCount} citation
@@ -271,10 +274,11 @@ Before:
 ```
 
 After:
+
 ```tsx
 <Text>
-  {brandReminderText({ domain, citations: citationCount })} If you'd like to
-  keep your history and continue daily runs, upgrade to Pro for ${prices.monthlyAmount}/month.
+  {brandReminderText({ domain, citations: citationCount })} If you'd like to keep your history and
+  continue daily runs, upgrade to Pro for ${prices.monthlyAmount}/month.
 </Text>
 ```
 
@@ -296,6 +300,7 @@ git commit -m "feat: add brand reminder to TrialEnding email"
 ### Task 6: Update `TrialEnded`
 
 **Files:**
+
 - Modify: `app/emails/TrialEnded.tsx`
 
 **Step 1: Import `brandReminderText`**
@@ -309,6 +314,7 @@ import { brandReminderText } from "~/components/email/BrandReminder";
 The current email has two `<Text>` blocks plus a button. Merge them into one paragraph that fuses the brand reminder with the upgrade CTA:
 
 Before:
+
 ```tsx
 <Text>
   Over the last 25 days, you tracked {citationCount} citation
@@ -323,11 +329,12 @@ Before:
 ```
 
 After:
+
 ```tsx
 <Text>
-  {brandReminderText({ domain, citations: citationCount })} Your free trial has
-  ended and daily runs have paused. Upgrade to Pro to keep your history and
-  resume monitoring — ${prices.monthlyAmount}/month or ${prices.annualAmount}/year.
+  {brandReminderText({ domain, citations: citationCount })} Your free trial has ended and daily runs
+  have paused. Upgrade to Pro to keep your history and resume monitoring — ${prices.monthlyAmount}
+  /month or ${prices.annualAmount}/year.
 </Text>
 ```
 

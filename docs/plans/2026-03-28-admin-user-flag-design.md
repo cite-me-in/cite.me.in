@@ -52,6 +52,7 @@ Remove `ADMIN_API_SECRET` from `envVars.ts`. Admins authenticate with their pers
 ## Setting an Admin
 
 Directly in the DB:
+
 ```sql
 UPDATE users SET is_admin = true WHERE email = 'you@example.com';
 ```

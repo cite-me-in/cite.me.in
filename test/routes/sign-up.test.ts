@@ -1,8 +1,8 @@
-import { afterEach, beforeAll, beforeEach, describe, it } from "vitest";
 import { type Page, expect } from "@playwright/test";
+import { afterEach, beforeAll, beforeEach, describe, it } from "vitest";
 import { hashPassword } from "~/lib/auth.server";
-import { goto, port } from "../helpers/launchBrowser";
 import prisma from "~/lib/prisma.server";
+import { goto, port } from "../helpers/launchBrowser";
 
 const EXISTING_EMAIL = "sign-up-existing@example.com";
 

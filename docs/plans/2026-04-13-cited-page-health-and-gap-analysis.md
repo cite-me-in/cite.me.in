@@ -17,6 +17,7 @@
 ### Task 1: Add `Citation` model to schema
 
 **Files:**
+
 - Modify: `prisma/schema.prisma`
 
 **Step 1: Add the model**
@@ -76,6 +77,7 @@ git commit -m "feat: add Citation model to schema"
 ### Task 2: Dual-write Citation records in `singleQueryRepetition`
 
 **Files:**
+
 - Modify: `app/lib/llm-visibility/queryPlatform.ts`
 - Modify: `test/lib/llm-visibility/queryPlatform.test.ts`
 
@@ -84,29 +86,33 @@ git commit -m "feat: add Citation model to schema"
 Add to the describe block in `test/lib/llm-visibility/queryPlatform.test.ts`:
 
 ```ts
-it("should create Citation records for each cited URL", {
-  timeout: 30_000,
-}, async () => {
-  const citations = await prisma.citation.findMany({
-    where: { siteId: site.id },
-    orderBy: { createdAt: "asc" },
-  });
+it(
+  "should create Citation records for each cited URL",
+  {
+    timeout: 30_000,
+  },
+  async () => {
+    const citations = await prisma.citation.findMany({
+      where: { siteId: site.id },
+      orderBy: { createdAt: "asc" },
+    });
 
-  // 2 queries × their URL counts: query[0] has 2 URLs, query[1] has 3 URLs
-  expect(citations.length).toBe(5);
+    // 2 queries × their URL counts: query[0] has 2 URLs, query[1] has 3 URLs
+    expect(citations.length).toBe(5);
 
-  const domains = citations.map((c) => c.domain);
-  expect(domains).toContain("rentail.space");
-  expect(domains).toContain("other.com");
-  expect(domains).toContain("example.com");
+    const domains = citations.map((c) => c.domain);
+    expect(domains).toContain("rentail.space");
+    expect(domains).toContain("other.com");
+    expect(domains).toContain("example.com");
 
-  // Each citation has queryId and runId
-  for (const c of citations) {
-    expect(c.queryId).toBeTruthy();
-    expect(c.runId).toBeTruthy();
-    expect(c.siteId).toBe(site.id);
-  }
-});
+    // Each citation has queryId and runId
+    for (const c of citations) {
+      expect(c.queryId).toBeTruthy();
+      expect(c.runId).toBeTruthy();
+      expect(c.siteId).toBe(site.id);
+    }
+  },
+);
 ```
 
 **Step 2: Run test to verify it fails**
@@ -162,6 +168,7 @@ git commit -m "feat: dual-write Citation records alongside CitationQuery"
 ### Task 3: Write `relationship` to `Citation` after sentiment analysis
 
 **Files:**
+
 - Modify: `app/lib/llm-visibility/queryPlatform.ts`
 - Modify: `test/lib/llm-visibility/queryPlatform.test.ts`
 
@@ -170,27 +177,31 @@ git commit -m "feat: dual-write Citation records alongside CitationQuery"
 Add to `queryPlatform.test.ts` (after Task 2 test, mock `analyzeSentiment`):
 
 ```ts
-it("should update Citation relationship after sentiment analysis", {
-  timeout: 30_000,
-}, async () => {
-  // Re-run with a mocked sentiment that classifies the rentail.space URL as "direct"
-  vi.mock("~/lib/llm-visibility/analyzeSentiment", () => ({
-    default: vi.fn().mockResolvedValue({
-      label: "positive",
-      summary: "Good coverage.",
-      citations: [
-        { url: "https://rentail.space/listings", relationship: "direct", reason: "Own domain" },
-        { url: "https://rentail.space/faq", relationship: "direct", reason: "Own domain" },
-      ],
-    }),
-  }));
+it(
+  "should update Citation relationship after sentiment analysis",
+  {
+    timeout: 30_000,
+  },
+  async () => {
+    // Re-run with a mocked sentiment that classifies the rentail.space URL as "direct"
+    vi.mock("~/lib/llm-visibility/analyzeSentiment", () => ({
+      default: vi.fn().mockResolvedValue({
+        label: "positive",
+        summary: "Good coverage.",
+        citations: [
+          { url: "https://rentail.space/listings", relationship: "direct", reason: "Own domain" },
+          { url: "https://rentail.space/faq", relationship: "direct", reason: "Own domain" },
+        ],
+      }),
+    }));
 
-  const cited = await prisma.citation.findMany({
-    where: { siteId: site.id, relationship: "direct" },
-  });
-  expect(cited.length).toBeGreaterThan(0);
-  expect(cited[0].relationship).toBe("direct");
-});
+    const cited = await prisma.citation.findMany({
+      where: { siteId: site.id, relationship: "direct" },
+    });
+    expect(cited.length).toBeGreaterThan(0);
+    expect(cited[0].relationship).toBe("direct");
+  },
+);
 ```
 
 **Step 2: Run test to verify it fails**
@@ -236,6 +247,7 @@ git commit -m "feat: update Citation relationship from sentiment analysis"
 ### Task 4: Write and run backfill script
 
 **Files:**
+
 - Create: `scripts/backfill-citations.ts`
 
 **Step 1: Write the script**
@@ -253,9 +265,7 @@ const classifications = await prisma.citationClassification.findMany({
   select: { url: true, runId: true, relationship: true, reason: true },
 });
 
-const classMap = new Map(
-  classifications.map((c) => [`${c.runId}:${c.url}`, c]),
-);
+const classMap = new Map(classifications.map((c) => [`${c.runId}:${c.url}`, c]));
 
 let created = 0;
 for (const q of queries) {
@@ -317,6 +327,7 @@ git commit -m "feat: add backfill script for Citation records"
 ### Task 5: Switch citation reads to use `Citation` table
 
 **Files:**
+
 - Modify: `app/routes/site.$domain_.citations/route.tsx`
 - Modify: `app/routes/site.$domain_.citations/TopCompetitors.tsx`
 - Modify: `test/lib/topCompetitors.test.ts`
@@ -398,6 +409,7 @@ git commit -m "refactor: switch citation reads to use Citation table"
 ### Task 6: Remove old citation structures (contract phase)
 
 **Files:**
+
 - Modify: `prisma/schema.prisma`
 - Modify: `app/lib/llm-visibility/queryPlatform.ts`
 - Modify: `app/lib/llm-visibility/analyzeSentiment.ts`
@@ -405,6 +417,7 @@ git commit -m "refactor: switch citation reads to use Citation table"
 **Step 1: Remove `citations String[]` from `CitationQuery`**
 
 In `prisma/schema.prisma`:
+
 - Remove `citations String[] @map("citations")` from `CitationQuery`
 - Remove `CitationClassification` model entirely
 - Remove `classifications CitationClassification[]` from `CitationQueryRun`
@@ -413,11 +426,13 @@ In `prisma/schema.prisma`:
 **Step 2: Remove dual-write code**
 
 In `queryPlatform.ts`:
+
 - Remove `prisma.citationClassification.createMany(...)` call in `updateRunSentiment`
 - Remove the `CitationClassification` import/usage
 - Keep `prisma.citation.updateMany(...)` for relationship updates
 
 In `singleQueryRepetition`:
+
 - Change `prisma.citationQuery.create({ data: { citations, ... } })` → remove `citations` from the data
 
 **Step 3: Update `analyzeSentiment` caller**
@@ -468,6 +483,7 @@ git commit -m "refactor: remove CitationQuery.citations[] and CitationClassifica
 ### Task 7: Add `CitedPage` model to schema
 
 **Files:**
+
 - Modify: `prisma/schema.prisma`
 
 **Step 1: Add model**
@@ -519,6 +535,7 @@ git commit -m "feat: add CitedPage model to schema"
 ### Task 8: Upsert `CitedPage` after each citation run
 
 **Files:**
+
 - Modify: `app/lib/llm-visibility/queryPlatform.ts`
 - Modify: `test/lib/llm-visibility/queryPlatform.test.ts`
 
@@ -527,15 +544,19 @@ git commit -m "feat: add CitedPage model to schema"
 Add to `queryPlatform.test.ts`:
 
 ```ts
-it("should upsert CitedPage for own-domain URLs after run", {
-  timeout: 30_000,
-}, async () => {
-  const pages = await prisma.citedPage.findMany({ where: { siteId: site.id } });
-  // rentail.space URLs: /listings and /faq
-  expect(pages).toHaveLength(2);
-  expect(pages.map((p) => p.url)).toContain("https://rentail.space/listings");
-  expect(pages.every((p) => p.citationCount > 0)).toBe(true);
-});
+it(
+  "should upsert CitedPage for own-domain URLs after run",
+  {
+    timeout: 30_000,
+  },
+  async () => {
+    const pages = await prisma.citedPage.findMany({ where: { siteId: site.id } });
+    // rentail.space URLs: /listings and /faq
+    expect(pages).toHaveLength(2);
+    expect(pages.map((p) => p.url)).toContain("https://rentail.space/listings");
+    expect(pages.every((p) => p.citationCount > 0)).toBe(true);
+  },
+);
 ```
 
 **Step 2: Run to verify fail**
@@ -564,8 +585,7 @@ async function upsertCitedPages({ siteId, runId }: { siteId: string; runId: stri
   });
 
   const urlCounts = new Map<string, number>();
-  for (const { url } of ownCitations)
-    urlCounts.set(url, (urlCounts.get(url) ?? 0) + 1);
+  for (const { url } of ownCitations) urlCounts.set(url, (urlCounts.get(url) ?? 0) + 1);
 
   for (const [url, count] of urlCounts) {
     await prisma.citedPage.upsert({
@@ -584,7 +604,15 @@ await upsertCitedPages({ siteId: site.id, runId: run.id, domain: site.domain });
 ```
 
 ```ts
-async function upsertCitedPages({ siteId, runId, domain }: { siteId: string; runId: string; domain: string }) {
+async function upsertCitedPages({
+  siteId,
+  runId,
+  domain,
+}: {
+  siteId: string;
+  runId: string;
+  domain: string;
+}) {
   const ownCitations = await prisma.citation.findMany({
     where: { runId, siteId, domain },
     select: { url: true },
@@ -613,6 +641,7 @@ git commit -m "feat: upsert CitedPage records after citation run"
 ### Task 9: Create page health checker utility
 
 **Files:**
+
 - Create: `app/lib/citedPageHealth.server.ts`
 - Create: `test/lib/citedPageHealth.test.ts`
 
@@ -625,10 +654,13 @@ import { checkCitedPageHealth } from "~/lib/citedPageHealth.server";
 
 describe("checkCitedPageHealth", () => {
   it("should return healthy for a 200 response", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      status: 200,
-      text: vi.fn().mockResolvedValue("<html>content</html>"),
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        status: 200,
+        text: vi.fn().mockResolvedValue("<html>content</html>"),
+      }),
+    );
 
     const result = await checkCitedPageHealth("https://example.com/page");
     expect(result.statusCode).toBe(200);
@@ -637,10 +669,13 @@ describe("checkCitedPageHealth", () => {
   });
 
   it("should return unhealthy for a 404 response", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-      status: 404,
-      text: vi.fn().mockResolvedValue("Not found"),
-    }));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        status: 404,
+        text: vi.fn().mockResolvedValue("Not found"),
+      }),
+    );
 
     const result = await checkCitedPageHealth("https://example.com/gone");
     expect(result.statusCode).toBe(404);
@@ -713,6 +748,7 @@ git commit -m "feat: add citedPageHealth utility"
 ### Task 10: Create cron job for page health checks
 
 **Files:**
+
 - Create: `app/routes/cron.check-cited-pages.ts`
 - Create: `test/routes/cron.check-cited-pages.test.ts`
 
@@ -751,7 +787,12 @@ describe("cron.check-cited-pages", () => {
       },
     });
     await prisma.citedPage.create({
-      data: { id: "page-ccp-1", url: "https://example.com/guide", siteId: site.id, citationCount: 5 },
+      data: {
+        id: "page-ccp-1",
+        url: "https://example.com/guide",
+        siteId: site.id,
+        citationCount: 5,
+      },
     });
   });
 
@@ -862,6 +903,7 @@ git commit -m "feat: add cron job for cited page health checks"
 ### Task 11: Alert email for broken cited page
 
 **Files:**
+
 - Create: `app/emails/CitedPageAlert.tsx`
 
 **Step 1: Implement**
@@ -895,7 +937,10 @@ export async function sendCitedPageAlertEmail({
   });
   if (already) return;
 
-  const user = await prisma.user.findUnique({ where: { id: siteOwnerId }, select: { email: true } });
+  const user = await prisma.user.findUnique({
+    where: { id: siteOwnerId },
+    select: { email: true },
+  });
   if (!user || user.unsubscribed) return;
 
   try {
@@ -933,6 +978,7 @@ git commit -m "feat: add cited page alert email"
 ### Task 12: Cited Pages UI route
 
 **Files:**
+
 - Create: `app/routes/site.$domain_.pages/route.tsx`
 - Modify: `app/components/ui/SiteNav.tsx` (or wherever the site nav is defined)
 
@@ -982,7 +1028,9 @@ export default function SitePagesRoute({ loaderData }: Route.ComponentProps) {
         {broken > 0 && <span className="text-red-700 font-medium">{broken} broken</span>}
       </div>
       {pages.length === 0 ? (
-        <p className="text-foreground/60">No cited pages yet — run a citation check to populate this list.</p>
+        <p className="text-foreground/60">
+          No cited pages yet — run a citation check to populate this list.
+        </p>
       ) : (
         <table className="w-full text-sm">
           <thead>
@@ -997,7 +1045,12 @@ export default function SitePagesRoute({ loaderData }: Route.ComponentProps) {
             {pages.map((page) => (
               <tr key={page.id} className="border-b last:border-0">
                 <td className="py-2 pr-4">
-                  <a href={page.url} target="_blank" rel="noreferrer" className="truncate font-medium hover:underline max-w-xs block">
+                  <a
+                    href={page.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="truncate font-medium hover:underline max-w-xs block"
+                  >
                     {new URL(page.url).pathname}
                   </a>
                   <span className="text-foreground/50 text-xs">{new URL(page.url).hostname}</span>
@@ -1009,7 +1062,9 @@ export default function SitePagesRoute({ loaderData }: Route.ComponentProps) {
                   ) : page.isHealthy ? (
                     <span className="text-green-700">✓ {page.statusCode}</span>
                   ) : (
-                    <span className="text-red-700 font-medium">✗ {page.statusCode ?? "Unreachable"}</span>
+                    <span className="text-red-700 font-medium">
+                      ✗ {page.statusCode ?? "Unreachable"}
+                    </span>
                   )}
                 </td>
                 <td className="py-2 text-right text-foreground/50">
@@ -1049,6 +1104,7 @@ git commit -m "feat: add Cited Pages UI route"
 ### Task 13: Implement citation gap analysis logic
 
 **Files:**
+
 - Create: `app/lib/citationGapAnalysis.server.ts`
 - Create: `test/lib/citationGapAnalysis.test.ts`
 
@@ -1063,7 +1119,7 @@ describe("getCitationGaps", () => {
   it("should identify queries where competitor appears but own domain does not", () => {
     const citations = [
       { url: "https://competitor.com/a", domain: "competitor.com", queryId: "q1" },
-      { url: "https://mysite.com/page",  domain: "mysite.com",     queryId: "q1" },
+      { url: "https://mysite.com/page", domain: "mysite.com", queryId: "q1" },
       { url: "https://competitor.com/b", domain: "competitor.com", queryId: "q2" },
       // q2: competitor cited, mysite not cited
     ];
@@ -1083,7 +1139,7 @@ describe("getCitationGaps", () => {
   it("should return empty when own domain appears in all queries with competitor", () => {
     const citations = [
       { url: "https://competitor.com/a", domain: "competitor.com", queryId: "q1" },
-      { url: "https://mysite.com/page",  domain: "mysite.com",     queryId: "q1" },
+      { url: "https://mysite.com/page", domain: "mysite.com", queryId: "q1" },
     ];
     const queries = [{ id: "q1", query: "query one" }];
 
@@ -1092,9 +1148,7 @@ describe("getCitationGaps", () => {
   });
 
   it("should exclude non-competitor domains", () => {
-    const citations = [
-      { url: "https://reddit.com/r/retail", domain: "reddit.com", queryId: "q1" },
-    ];
+    const citations = [{ url: "https://reddit.com/r/retail", domain: "reddit.com", queryId: "q1" }];
     const queries = [{ id: "q1", query: "query one" }];
     const gaps = getCitationGaps({ citations, queries, ownDomain: "mysite.com" });
     expect(gaps).toHaveLength(0);
@@ -1175,6 +1229,7 @@ git commit -m "feat: add citation gap analysis logic"
 ### Task 14: Add Gap Analysis UI to Citations page
 
 **Files:**
+
 - Create: `app/routes/site.$domain_.citations/CitationGapAnalysis.tsx`
 - Modify: `app/routes/site.$domain_.citations/route.tsx`
 
@@ -1210,8 +1265,7 @@ export default function CitationGapAnalysis({
 }) {
   const [expanded, setExpanded] = useState<string | null>(null);
 
-  if (gaps.length === 0)
-    return null;
+  if (gaps.length === 0) return null;
 
   return (
     <Card>
@@ -1231,12 +1285,16 @@ export default function CitationGapAnalysis({
                 onClick={() => setExpanded(expanded === competitorDomain ? null : competitorDomain)}
               >
                 <span>{competitorDomain}</span>
-                <Badge variant="neutral">{queries.length} {queries.length === 1 ? "query" : "queries"}</Badge>
+                <Badge variant="neutral">
+                  {queries.length} {queries.length === 1 ? "query" : "queries"}
+                </Badge>
               </button>
               {expanded === competitorDomain && (
                 <ul className="mt-1 ml-4 flex flex-col gap-1">
                   {queries.map((q) => (
-                    <li key={q.id} className="text-sm text-foreground/60">— {q.query}</li>
+                    <li key={q.id} className="text-sm text-foreground/60">
+                      — {q.query}
+                    </li>
                   ))}
                 </ul>
               )}

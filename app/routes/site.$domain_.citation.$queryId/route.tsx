@@ -131,7 +131,7 @@ export default function SiteCitationsPage({
         </CardContent>
 
         <CardContent>
-          <hr className="my-8 border border-border/40"/>
+          <hr className="my-8 border border-border/40" />
           <Streamdown
             mode="static"
             components={{

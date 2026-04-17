@@ -11,7 +11,9 @@ describe("unauthenticated access", () => {
   it("should redirect to /sign-in", async () => {
     const response = await fetch(
       `http://localhost:${port}/site/some-id/queries`,
-      { redirect: "manual" },
+      {
+        redirect: "manual",
+      },
     );
     expect(response.status).toBe(302);
     expect(response.headers.get("location")).toContain("/sign-in");

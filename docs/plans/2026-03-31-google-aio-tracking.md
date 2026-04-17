@@ -13,6 +13,7 @@
 ### Task 1: Schema changes
 
 **Files:**
+
 - Modify: `prisma/schema.prisma`
 
 **Step 1: Add `SerpRun` and `SerpQuery` models, remove `position` from `CitationQuery`**
@@ -20,17 +21,20 @@
 In `prisma/schema.prisma`:
 
 1. Remove `position` field from `CitationQuery`:
+
 ```prisma
 // Remove this line:
 position     Int?             @map("position")
 ```
 
 2. Add `serpRuns` relation to `Site` (after `siteUsers`):
+
 ```prisma
 serpRuns             SerpRun[]
 ```
 
 3. Add at the end of the file (before the enums):
+
 ```prisma
 model SerpRun {
   id        String      @id @default(cuid())
@@ -81,11 +85,13 @@ git commit -m "feat: add SerpRun/SerpQuery models, remove unused CitationQuery.p
 ### Task 2: Add env vars
 
 **Files:**
+
 - Modify: `app/lib/envVars.server.ts`
 
 **Step 1: Add the two new vars**
 
 After `CRON_SECRET`, add:
+
 ```ts
 DATAFORSEO_LOGIN: env.get("DATAFORSEO_LOGIN").required(false).asString(),
 DATAFORSEO_PASSWORD: env.get("DATAFORSEO_PASSWORD").required(false).asString(),
@@ -105,6 +111,7 @@ git commit -m "feat: add DATAFORSEO_LOGIN/PASSWORD env vars"
 ### Task 3: DataForSEO client + test
 
 **Files:**
+
 - Create: `app/lib/serp/dataForSeo.server.ts`
 - Create: `test/lib/serp/dataForSeo.test.ts`
 
@@ -137,10 +144,7 @@ describe("fetchAioResults", () => {
       makeResponse([
         {
           type: "ai_overview",
-          references: [
-            { url: "https://example.com/page" },
-            { url: "https://other.com/" },
-          ],
+          references: [{ url: "https://example.com/page" }, { url: "https://other.com/" }],
         },
         { type: "organic", url: "https://example.com" },
       ]),
@@ -155,11 +159,9 @@ describe("fetchAioResults", () => {
   });
 
   it("should return aioPresent=false and empty citations when no AIO block", async () => {
-    global.fetch = vi.fn().mockResolvedValue(
-      makeResponse([
-        { type: "organic", url: "https://example.com" },
-      ]),
-    );
+    global.fetch = vi
+      .fn()
+      .mockResolvedValue(makeResponse([{ type: "organic", url: "https://example.com" }]));
 
     const result = await fetchAioResults("niche query with no AIO");
 
@@ -167,9 +169,9 @@ describe("fetchAioResults", () => {
   });
 
   it("should return aioPresent=true and empty citations when AIO has no references", async () => {
-    global.fetch = vi.fn().mockResolvedValue(
-      makeResponse([{ type: "ai_overview", references: [] }]),
-    );
+    global.fetch = vi
+      .fn()
+      .mockResolvedValue(makeResponse([{ type: "ai_overview", references: [] }]));
 
     const result = await fetchAioResults("query");
 
@@ -203,15 +205,12 @@ Create `app/lib/serp/dataForSeo.server.ts`:
 ```ts
 import envVars from "~/lib/envVars.server";
 
-const ENDPOINT =
-  "https://api.dataforseo.com/v3/serp/google/organic/live/advanced";
+const ENDPOINT = "https://api.dataforseo.com/v3/serp/google/organic/live/advanced";
 
 export default async function fetchAioResults(
   keyword: string,
 ): Promise<{ aioPresent: boolean; citations: string[] }> {
-  const credentials = btoa(
-    `${envVars.DATAFORSEO_LOGIN}:${envVars.DATAFORSEO_PASSWORD}`,
-  );
+  const credentials = btoa(`${envVars.DATAFORSEO_LOGIN}:${envVars.DATAFORSEO_PASSWORD}`);
 
   const response = await fetch(ENDPOINT, {
     method: "POST",
@@ -219,9 +218,7 @@ export default async function fetchAioResults(
       Authorization: `Basic ${credentials}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify([
-      { keyword, location_code: 2840, language_code: "en", depth: 10 },
-    ]),
+    body: JSON.stringify([{ keyword, location_code: 2840, language_code: "en", depth: 10 }]),
   });
 
   if (!response.ok) {
@@ -263,6 +260,7 @@ git commit -m "feat: add DataForSEO SERP client with AIO citation parsing"
 ### Task 4: queryGoogleAio runner + test
 
 **Files:**
+
 - Create: `app/lib/serp/queryGoogleAio.server.ts`
 - Create: `test/lib/serp/queryGoogleAio.test.ts`
 
@@ -377,10 +375,7 @@ import fetchAioResults from "./dataForSeo.server";
 
 const logger = debug("server");
 
-export default async function queryGoogleAio(site: {
-  id: string;
-  domain: string;
-}): Promise<void> {
+export default async function queryGoogleAio(site: { id: string; domain: string }): Promise<void> {
   if (!envVars.DATAFORSEO_LOGIN || !envVars.DATAFORSEO_PASSWORD) {
     logger("[%s:google-aio] Skipping — DATAFORSEO credentials not set", site.id);
     return;
@@ -419,7 +414,13 @@ export default async function queryGoogleAio(site: {
             citations,
           },
         });
-        logger("[%s:google-aio] %s — aioPresent=%s citations=%d", site.id, siteQuery.query, aioPresent, citations.length);
+        logger(
+          "[%s:google-aio] %s — aioPresent=%s citations=%d",
+          site.id,
+          siteQuery.query,
+          aioPresent,
+          citations.length,
+        );
       } catch (error) {
         captureAndLogError(error, { extra: { siteId: site.id, query: siteQuery.query } });
       }
@@ -450,21 +451,25 @@ git commit -m "feat: add queryGoogleAio runner"
 ### Task 5: Wire into cron
 
 **Files:**
+
 - Modify: `app/routes/cron.process-sites.ts`
 
 **Step 1: Import and call `queryGoogleAio`**
 
 Add import at the top of `cron.process-sites.ts` (after the existing imports):
+
 ```ts
 import queryGoogleAio from "~/lib/serp/queryGoogleAio.server";
 ```
 
 In `nextCitationRun`, the existing `Promise.all` call is:
+
 ```ts
 await Promise.all([nextCitationRun(site), updateBotInsight(site)]);
 ```
 
 Change to:
+
 ```ts
 await Promise.all([nextCitationRun(site), updateBotInsight(site), queryGoogleAio(site)]);
 ```

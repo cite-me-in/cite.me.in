@@ -13,6 +13,7 @@
 ### Task 1: Update schema and run migration
 
 **Files:**
+
 - Modify: `prisma/schema.prisma`
 
 **Step 1: Add `isAdmin` to the User model**
@@ -24,6 +25,7 @@ isAdmin                 Boolean                  @default(false)           @map(
 ```
 
 The full User model field list (alphabetical, matching existing style) should have it between `id` and `ownedSites`:
+
 ```prisma
   id                      String                                             @id @default(cuid())
   isAdmin                 Boolean                  @default(false)           @map("is_admin")
@@ -35,6 +37,7 @@ The full User model field list (alphabetical, matching existing style) should ha
 ```bash
 cd /Users/assaf/Projects/cite.me.in && infisical --env dev run -- pnpm prisma db push 2>&1 | tail -5
 ```
+
 Expected: `Your database is now in sync with your Prisma schema.`
 
 ```bash
@@ -46,6 +49,7 @@ cd /Users/assaf/Projects/cite.me.in && pnpm prisma generate 2>&1 | tail -3
 ```bash
 cd /Users/assaf/Projects/cite.me.in && pnpm check:type 2>&1 | grep -E "error TS" | head -10
 ```
+
 Expected: no errors.
 
 **Step 4: Commit**
@@ -59,6 +63,7 @@ cd /Users/assaf/Projects/cite.me.in && git add prisma/schema.prisma && git commi
 ### Task 2: Update tests for `requireAdmin`
 
 **Files:**
+
 - Modify: `test/lib/apiAuth.test.ts`
 
 The current `requireAdminApiKey` describe block uses `envVars.ADMIN_API_SECRET`. Replace it with a `requireAdmin` describe block that seeds a real admin user.
@@ -114,12 +119,9 @@ describe("requireAdmin", () => {
 ```
 
 Also update the import at the top — change `requireAdminApiKey` to `requireAdmin`:
+
 ```ts
-import {
-  requireAdmin,
-  verifySiteAccess,
-  verifyUserAccess,
-} from "~/lib/api/apiAuth.server";
+import { requireAdmin, verifySiteAccess, verifyUserAccess } from "~/lib/api/apiAuth.server";
 ```
 
 And remove the `envVars` import if it's only used for `ADMIN_API_SECRET` (check whether it's used elsewhere in the file — if not, remove the import line).
@@ -129,6 +131,7 @@ And remove the `envVars` import if it's only used for `ADMIN_API_SECRET` (check 
 ```bash
 cd /Users/assaf/Projects/cite.me.in && infisical --env dev run -- pnpm vitest run test/lib/apiAuth.test.ts 2>&1 | grep -E "error|FAIL|cannot find" | head -10
 ```
+
 Expected: TypeScript/import error — `requireAdmin` not exported yet.
 
 **Step 3: Commit**
@@ -142,6 +145,7 @@ cd /Users/assaf/Projects/cite.me.in && git add test/lib/apiAuth.test.ts && git c
 ### Task 3: Implement `requireAdmin`, remove `requireAdminApiKey`
 
 **Files:**
+
 - Modify: `app/lib/api/apiAuth.server.ts`
 
 **Step 1: Rewrite the file**
@@ -178,8 +182,7 @@ export async function verifyUserAccess(request: Request): Promise<{
   const auth = request.headers.get("authorization");
   if (!auth) throw new Response("Unauthorized", { status: 401 });
   const [tokenType, token] = auth.split(/\s+/);
-  if (tokenType !== "Bearer")
-    throw new Response("Unauthorized", { status: 401 });
+  if (tokenType !== "Bearer") throw new Response("Unauthorized", { status: 401 });
 
   const userId = parseTokenUserId(token);
   if (!userId) throw new Response("Not found", { status: 404 });
@@ -224,6 +227,7 @@ Note: `requireAdmin`'s return type omits `isAdmin` (callers don't need it) but `
 ```bash
 cd /Users/assaf/Projects/cite.me.in && infisical --env dev run -- pnpm vitest run test/lib/apiAuth.test.ts 2>&1 | tail -20
 ```
+
 Expected: all tests pass.
 
 **Step 3: Run typecheck**
@@ -231,6 +235,7 @@ Expected: all tests pass.
 ```bash
 cd /Users/assaf/Projects/cite.me.in && pnpm check:type 2>&1 | grep -E "error TS" | head -10
 ```
+
 Expected: no errors (there may be a temporary error in `api.admin.users.ts` — that's fixed next).
 
 **Step 4: Commit**
@@ -244,6 +249,7 @@ cd /Users/assaf/Projects/cite.me.in && git add app/lib/api/apiAuth.server.ts && 
 ### Task 4: Update `api.admin.users.ts` and remove `ADMIN_API_SECRET`
 
 **Files:**
+
 - Modify: `app/routes/api.admin.users.ts`
 - Modify: `app/lib/envVars.ts`
 
@@ -263,6 +269,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 **Step 2: Remove `ADMIN_API_SECRET` from envVars**
 
 In `app/lib/envVars.ts`, delete this line:
+
 ```ts
   ADMIN_API_SECRET: env.get("ADMIN_API_SECRET").required(false).asString(),
 ```
@@ -272,6 +279,7 @@ In `app/lib/envVars.ts`, delete this line:
 ```bash
 cd /Users/assaf/Projects/cite.me.in && pnpm check:type 2>&1 | grep -E "error TS" | head -10
 ```
+
 Expected: no errors.
 
 **Step 4: Commit**
@@ -285,6 +293,7 @@ cd /Users/assaf/Projects/cite.me.in && git add app/routes/api.admin.users.ts app
 ### Task 5: Update `api.admin.users.test.ts`
 
 **Files:**
+
 - Modify: `test/routes/api.admin.users.test.ts`
 
 Replace `envVars.ADMIN_API_SECRET` with a seeded admin user token.
@@ -441,6 +450,7 @@ describe("api.admin.users", () => {
 ```bash
 cd /Users/assaf/Projects/cite.me.in && pnpm check:type 2>&1 | grep -E "error TS" | head -10
 ```
+
 Expected: no errors.
 
 **Step 3: Commit**
@@ -458,6 +468,7 @@ cd /Users/assaf/Projects/cite.me.in && git add test/routes/api.admin.users.test.
 ```bash
 cd /Users/assaf/Projects/cite.me.in && pnpm check:type 2>&1 | grep -E "error TS" | head -20
 ```
+
 Expected: no errors.
 
 **Step 2: Lint**
@@ -465,4 +476,5 @@ Expected: no errors.
 ```bash
 cd /Users/assaf/Projects/cite.me.in && pnpm check:lint 2>&1 | tail -5
 ```
+
 Expected: `No fixes applied.`

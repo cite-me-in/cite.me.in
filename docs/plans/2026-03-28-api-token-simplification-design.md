@@ -31,39 +31,35 @@ The server splits on `_` to extract the prefix, userId, and secret.
 
 ## API Changes
 
-| Before | After |
-|--------|-------|
-| `GET /api/me/{email}` | `GET /api/me` |
+| Before                   | After                                    |
+| ------------------------ | ---------------------------------------- |
+| `GET /api/me/{email}`    | `GET /api/me`                            |
 | Requires email URL param | No param needed; user derived from token |
 
 ## `verifySiteAccess` Simplification
 
 Before (nested joins through apiKey):
+
 ```ts
 prisma.site.findFirst({
   where: {
     domain,
-    OR: [
-      { owner: { apiKey: token } },
-      { siteUsers: { some: { user: { apiKey: token } } } },
-    ],
+    OR: [{ owner: { apiKey: token } }, { siteUsers: { some: { user: { apiKey: token } } } }],
   },
-})
+});
 ```
 
 After (userId-first, cleaner join):
+
 ```ts
 // 1. verify token → userId (reuse verifyUserAccess)
 // 2. check site access
 prisma.site.findFirst({
   where: {
     domain,
-    OR: [
-      { ownerId: userId },
-      { siteUsers: { some: { userId } } },
-    ],
+    OR: [{ ownerId: userId }, { siteUsers: { some: { userId } } }],
   },
-})
+});
 ```
 
 ## Schema

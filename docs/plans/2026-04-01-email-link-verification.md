@@ -13,6 +13,7 @@
 ### Task 1: Create the `/r` proxy route (test-first)
 
 **Files:**
+
 - Create: `test/routes/r.test.ts`
 - Create: `app/routes/r.ts`
 
@@ -56,7 +57,12 @@ describe("/r proxy route", () => {
     const email = "r-route-test-2@example.com";
     const verifiedAt = new Date("2025-01-01");
     await prisma.user.create({
-      data: { id: "r-route-2", email, passwordHash: await hashPassword("x"), emailVerifiedAt: verifiedAt },
+      data: {
+        id: "r-route-2",
+        email,
+        passwordHash: await hashPassword("x"),
+        emailVerifiedAt: verifiedAt,
+      },
     });
     const token = generateUnsubscribeToken(email);
     const url = new URL("/r", BASE);
@@ -147,6 +153,7 @@ git commit -m "feat: add /r proxy route for email link verification"
 ### Task 2: Create email link context and custom Link/Button components
 
 **Files:**
+
 - Create: `app/components/email/context.ts`
 - Create: `app/components/email/Link.tsx`
 - Create: `app/components/email/Button.tsx`
@@ -247,6 +254,7 @@ git commit -m "feat: add email Link and Button components with proxy link wrappi
 ### Task 3: Wire context into sendEmails.tsx
 
 **Files:**
+
 - Modify: `app/emails/sendEmails.tsx`
 
 **Step 1: Update the render call**
@@ -262,13 +270,11 @@ Then update the `render(...)` call (lines 58–67) to wrap with the provider.
 The existing token variable (line 52) is already the HMAC of `user.email` — reuse it.
 
 Change:
+
 ```tsx
 const html = await pretty(
   await render(
-    <EmailLayout
-      subject={subject}
-      unsubscribeURL={canUnsubscribe ? unsubscribeURL : undefined}
-    >
+    <EmailLayout subject={subject} unsubscribeURL={canUnsubscribe ? unsubscribeURL : undefined}>
       {email}
     </EmailLayout>,
   ),
@@ -276,14 +282,12 @@ const html = await pretty(
 ```
 
 To:
+
 ```tsx
 const html = await pretty(
   await render(
     <EmailLinkContext.Provider value={{ email: user.email, token }}>
-      <EmailLayout
-        subject={subject}
-        unsubscribeURL={canUnsubscribe ? unsubscribeURL : undefined}
-      >
+      <EmailLayout subject={subject} unsubscribeURL={canUnsubscribe ? unsubscribeURL : undefined}>
         {email}
       </EmailLayout>
     </EmailLinkContext.Provider>,
@@ -305,6 +309,7 @@ git commit -m "feat: inject email link context into sendEmail render"
 For each file below, swap the `Button` / `Link` import from `@react-email/components` to `~/components/email/`. Remove the now-redundant `className` from `<Button>` calls since it's baked into the component.
 
 **Files:**
+
 - Modify: `app/emails/EmailLayout.tsx`
 - Modify: `app/emails/PasswordRecovery.tsx`
 - Modify: `app/emails/SiteInvitation.tsx`
@@ -314,21 +319,27 @@ For each file below, swap the `Button` / `Link` import from `@react-email/compon
 **Step 1: Update EmailLayout.tsx**
 
 Find the import line:
+
 ```ts
 import { ..., Link, ... } from "@react-email/components";
 ```
+
 Add a new import for the custom `Link`:
+
 ```ts
 import Link from "~/components/email/Link";
 ```
+
 Remove `Link` from the `@react-email/components` import.
 
 **Step 2: Update PasswordRecovery.tsx**
 
 Add:
+
 ```ts
 import Button from "~/components/email/Button";
 ```
+
 Remove `Button` from the `@react-email/components` import.
 
 Remove `className="rounded-md bg-primary px-4 py-2 text-white hover:bg-primary-hover"` from the `<Button>` — it's now the default.
@@ -371,6 +382,7 @@ git commit -m "feat: swap email templates to use custom Link/Button components"
 ### Task 5: Remove the email verification flow
 
 **Files:**
+
 - Delete: `app/emails/EmailVerification.tsx`
 - Delete: `app/routes/verify-email.$token.tsx`
 - Modify: `prisma/schema.prisma` — remove `EmailVerificationToken` model and `emailVerificationTokens` relation from `User`
@@ -426,11 +438,7 @@ Remove the email verification call from the `action` in `app/routes/sign-up.tsx`
 
 ```ts
 import sendEmailVerificationEmail from "~/emails/EmailVerification";
-import {
-  createEmailVerificationToken,
-  createSession,
-  hashPassword,
-} from "~/lib/auth.server";
+import { createEmailVerificationToken, createSession, hashPassword } from "~/lib/auth.server";
 ```
 
 Becomes:

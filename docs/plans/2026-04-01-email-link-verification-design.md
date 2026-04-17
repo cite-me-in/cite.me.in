@@ -22,7 +22,7 @@ them to the destination. This replaces the dedicated email verification flow
 **`app/components/email/context.ts`**
 
 ```ts
-type EmailLinkContextValue = { email: string; token: string } | null
+type EmailLinkContextValue = { email: string; token: string } | null;
 ```
 
 Default is `null` so components degrade gracefully outside a provider (tests,

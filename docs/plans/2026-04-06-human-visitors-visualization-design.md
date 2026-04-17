@@ -36,15 +36,18 @@ AI platforms are derived dynamically from distinct `aiReferral` values present i
 ## Page Layout
 
 ### 1. Header
+
 "Human Visitors" title + `DateRangeSelector` (same as Bots page).
 
 ### 2. Key Metrics Row (4 cards)
+
 - Total unique visitors
 - Total page views
 - AI-referred visitors
 - % of traffic from AI
 
 ### 3. Stacked Area Chart — "Traffic by Source"
+
 - X-axis: date
 - Y-axis: unique visitors
 - Grey base area: non-AI traffic
@@ -52,9 +55,11 @@ AI platforms are derived dynamically from distinct `aiReferral` values present i
 - Tooltip: per-platform breakdown for that day
 
 ### 4. Platform Breakdown
+
 Horizontal bar chart (or stat list) showing each AI platform's total visitors and % of overall traffic for the selected period. Only platforms with data are shown.
 
 ### 5. Empty State
+
 If no human visits recorded yet, show a message explaining what will appear here.
 
 ## Implementation Notes

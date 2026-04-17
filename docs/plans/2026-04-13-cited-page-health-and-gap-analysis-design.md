@@ -2,7 +2,7 @@
 
 ## Motivation
 
-[LynkDog](https://lynkdog.com) is a competitor targeting SEO agencies with the pitch: *"Your backlinks power your AEO/GEO visibility — when links break, you disappear from ChatGPT and Perplexity."* Their product monitors traditional backlinks and reframes it as an AI visibility tool.
+[LynkDog](https://lynkdog.com) is a competitor targeting SEO agencies with the pitch: _"Your backlinks power your AEO/GEO visibility — when links break, you disappear from ChatGPT and Perplexity."_ Their product monitors traditional backlinks and reframes it as an AI visibility tool.
 
 cite.me.in has a stronger position: we measure actual AI citations, not a proxy signal. These two features turn that data advantage into a direct counter-offer to the SEO agency audience LynkDog targets.
 
@@ -31,7 +31,7 @@ New nav tab: `site.$domain_.pages` — "Cited Pages"
 
 ### Pitch to SEO agencies
 
-*"We don't just tell you when AI cites you — we tell you when those cited pages are broken."* This is more directly useful than LynkDog's backlink monitoring because it targets the exact pages AI is using, not a proxy.
+_"We don't just tell you when AI cites you — we tell you when those cited pages are broken."_ This is more directly useful than LynkDog's backlink monitoring because it targets the exact pages AI is using, not a proxy.
 
 ---
 
@@ -89,17 +89,20 @@ model Citation {
 ### Migration strategy: expand → migrate → contract
 
 **Phase 1 — Expand (additive, no breakage)**
+
 - Add `Citation` table to schema; keep `CitationQuery.citations[]` untouched.
 - Update the citation runner to dual-write: populate both `citations[]` and `Citation` records.
 - Deploy schema + code.
 - Before removing `CitationClassification`, audit where the LLM classification step runs and ensure it writes to `Citation.relationship` going forward.
 
 **Phase 2 — Backfill + cut over reads**
+
 - Run a one-time backfill script: extract each URL from `CitationQuery.citations[]`, join with `CitationClassification` where available to carry over `relationship`/`reason`, insert into `Citation`.
 - Switch all reads (citations page, TopCompetitors, VisibilityCharts, gap analysis) to use `Citation`.
 - Deploy code, verify.
 
 **Phase 3 — Contract (remove old)**
+
 - Remove `citations[]` from `CitationQuery`.
 - Remove `CitationClassification` table.
 - Remove dual-write code from citation runner.
@@ -135,6 +138,7 @@ model CitedPage {
 ## Implementation Phases
 
 ### Phase 1: Schema foundation
+
 1. Add `Citation` table
 2. Update citation runner to dual-write
 3. Write + run backfill script
@@ -142,11 +146,13 @@ model CitedPage {
 5. Remove `CitationQuery.citations[]` and `CitationClassification`
 
 ### Phase 2: Feature A — Cited Page Health Monitor
+
 1. Add `CitedPage` table
 2. Background job: crawl cited pages daily, update health status
 3. Alert email when page becomes unhealthy
 4. New route `site.$domain_.pages` with health dashboard UI
 
 ### Phase 3: Feature B — Citation Gap Analysis
+
 1. Query logic: find queries where competitor domain appears, user domain doesn't
 2. UI panel in `site.$domain_.citations`: Gap Analysis section with competitor+query breakdown

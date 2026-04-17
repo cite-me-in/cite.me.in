@@ -88,10 +88,11 @@ Single function, single signature:
 export async function emitWebhookEvent(
   eventType: WebhookEventType,
   payload: Record<string, unknown>,
-): Promise<void>
+): Promise<void>;
 ```
 
 Internally:
+
 1. Reads `WEBHOOK_EVENT_CONFIG[eventType]` to determine scope
 2. For `"user"` scope with `resolveBy: "siteId"`: looks up `site.ownerId` from `payload.siteId`
 3. Queries active endpoints subscribed to `eventType` matching the scope:

@@ -1,7 +1,7 @@
-import { afterEach, describe, it, expect } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
+import generateUnsubscribeToken from "~/emails/generateUnsubscribeToken";
 import { hashPassword } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
-import generateUnsubscribeToken from "~/emails/generateUnsubscribeToken";
 import { port } from "../helpers/launchBrowser";
 
 const BASE = `http://localhost:${port}`;

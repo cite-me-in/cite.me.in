@@ -13,6 +13,7 @@
 ### Task 1: Add SentEmail model to Prisma schema (Task #6)
 
 **Files:**
+
 - Modify: `prisma/schema.prisma` — User model (~line 254), end of file
 
 **Step 1: Add SentEmail model**
@@ -58,6 +59,7 @@ git commit -m "feat: add SentEmail model to track automated emails per user"
 ### Task 2: Add daysAgo utility (Task #7)
 
 **Files:**
+
 - Modify: `app/lib/formatDate.ts`
 
 **Step 1: Add Temporal import and daysAgo function**
@@ -72,9 +74,7 @@ At the end of the file, add:
 
 ```ts
 export function daysAgo(days: number): Date {
-  return new Date(
-    Temporal.Now.instant().subtract({ hours: days * 24 }).epochMilliseconds,
-  );
+  return new Date(Temporal.Now.instant().subtract({ hours: days * 24 }).epochMilliseconds);
 }
 ```
 
@@ -90,6 +90,7 @@ git commit -m "feat: add daysAgo date utility"
 ### Task 3: Write failing test for TrialEnded deduplication (Task #8)
 
 **Files:**
+
 - Modify: `test/routes/cron.process-sites.test.ts`
 
 **Step 1: Add a new describe block for trial emails**
@@ -108,9 +109,7 @@ describe("trial emails", () => {
         id: "user-trial-email-1",
         email: "trial-email-ended@test.com",
         passwordHash: "test",
-        createdAt: new Date(
-          Temporal.Now.instant().subtract({ hours: 24 * 26 }).epochMilliseconds,
-        ),
+        createdAt: new Date(Temporal.Now.instant().subtract({ hours: 24 * 26 }).epochMilliseconds),
         ownedSites: {
           create: {
             id: "site-trial-email-1",
@@ -160,6 +159,7 @@ git commit -m "test: add failing test for TrialEnded deduplication"
 ### Task 4: Refactor TrialEnded to use SentEmail (Task #9)
 
 **Files:**
+
 - Modify: `app/emails/TrialEnded.tsx`
 
 **Step 1: Replace the implementation**
@@ -198,8 +198,7 @@ export default async function sendTrialEndedEmails() {
       domain: site.domain,
       queryCount: site._count.citationRuns,
     });
-    if (result)
-      await prisma.sentEmail.create({ data: { userId: user.id, type: "TrialEnded" } });
+    if (result) await prisma.sentEmail.create({ data: { userId: user.id, type: "TrialEnded" } });
   }
 }
 ```
@@ -226,6 +225,7 @@ git commit -m "feat: refactor TrialEnded to use SentEmail deduplication"
 ### Task 5: Write failing test + refactor TrialEnding (Task #10)
 
 **Files:**
+
 - Modify: `test/routes/cron.process-sites.test.ts`
 - Modify: `app/emails/TrialEnding.tsx`
 
@@ -238,9 +238,7 @@ it("should not send TrialEnding if TrialEnded already sent", async () => {
       id: "user-trial-email-2",
       email: "trial-email-ending-skip@test.com",
       passwordHash: "test",
-      createdAt: new Date(
-        Temporal.Now.instant().subtract({ hours: 24 * 25 }).epochMilliseconds,
-      ),
+      createdAt: new Date(Temporal.Now.instant().subtract({ hours: 24 * 25 }).epochMilliseconds),
       sentEmails: { create: { type: "TrialEnded" } },
       ownedSites: {
         create: {
@@ -268,9 +266,7 @@ it("should send TrialEnding once and not again", async () => {
       id: "user-trial-email-3",
       email: "trial-email-ending@test.com",
       passwordHash: "test",
-      createdAt: new Date(
-        Temporal.Now.instant().subtract({ hours: 24 * 24 }).epochMilliseconds,
-      ),
+      createdAt: new Date(Temporal.Now.instant().subtract({ hours: 24 * 24 }).epochMilliseconds),
       ownedSites: {
         create: {
           id: "site-trial-email-3",
@@ -342,8 +338,7 @@ export default async function sendTrialEndingEmails() {
       citationCount,
       domain: site.domain,
     });
-    if (result)
-      await prisma.sentEmail.create({ data: { userId: user.id, type: "TrialEnding" } });
+    if (result) await prisma.sentEmail.create({ data: { userId: user.id, type: "TrialEnding" } });
   }
 }
 ```
@@ -370,19 +365,19 @@ git commit -m "feat: refactor TrialEnding to use SentEmail deduplication"
 ### Task 6: Fix cron execution order (Task #11)
 
 **Files:**
+
 - Modify: `app/routes/cron.process-sites.ts`
 
 **Step 1: Replace Promise.all with sequential execution**
 
 Find:
+
 ```ts
-await Promise.all([
-  sendTrialEndingEmails(trialDays),
-  sendTrialEndedEmails(trialDays),
-]);
+await Promise.all([sendTrialEndingEmails(trialDays), sendTrialEndedEmails(trialDays)]);
 ```
 
 Replace with:
+
 ```ts
 await sendTrialEndedEmails();
 await sendTrialEndingEmails();
@@ -410,6 +405,7 @@ git commit -m "fix: run TrialEnded before TrialEnding to prevent same-run race"
 ### Task 7: Run migration backfill (Task #12)
 
 **Files:**
+
 - Create: `scripts/backfill-sent-emails.ts` (delete after running)
 
 **Step 1: Write the script**
@@ -436,9 +432,7 @@ await prisma.sentEmail.createMany({
   data: oldEnding.map((u) => ({ userId: u.id, type: "TrialEnding" })),
 });
 
-console.log(
-  `Backfilled: ${oldEnded.length} TrialEnded, ${oldEnding.length} TrialEnding`,
-);
+console.log(`Backfilled: ${oldEnded.length} TrialEnded, ${oldEnding.length} TrialEnding`);
 ```
 
 **Step 2: Run against dev database**

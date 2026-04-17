@@ -3,12 +3,14 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 const mockComplete = vi.fn();
 
 class MockOpenAI {
-  chat = { completions: { create: mockComplete, }, };
+  chat = { completions: { create: mockComplete } };
 }
 
-vi.mock("openai", () => ({ default: MockOpenAI, }));
+vi.mock("openai", () => ({ default: MockOpenAI }));
 
-afterEach(() => { mockComplete.mockReset(); });
+afterEach(() => {
+  mockComplete.mockReset();
+});
 
 describe("analyzeSentiment", () => {
   it("should return neutral when no queries provided", async () => {

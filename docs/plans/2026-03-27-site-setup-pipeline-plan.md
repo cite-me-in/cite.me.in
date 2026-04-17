@@ -13,6 +13,7 @@
 ### Task 1: Create shared Redis client module
 
 **Files:**
+
 - Create: `app/lib/redis.server.ts`
 
 The `sendEmails.tsx` file creates Redis instances inline for test use only. Production code needs a shared client.
@@ -39,6 +40,7 @@ git commit -m "feat: add shared Redis client module"
 ### Task 2: Create setup progress helpers
 
 **Files:**
+
 - Create: `app/lib/setupProgress.server.ts`
 
 **Step 1: Write the module**
@@ -98,6 +100,7 @@ git commit -m "feat: add setup progress helpers for Redis log streaming"
 ### Task 3: Refactor `addSiteToUser` to fast site creation
 
 **Files:**
+
 - Modify: `app/lib/sites.server.ts`
 
 Replace `addSiteToUser` with `createSite`: validates the URL, checks for existing, checks limits, does a HEAD request for reachability, then creates the site record with empty `content`/`summary`. Crawling moves to the worker.
@@ -189,6 +192,7 @@ git commit -m "refactor: replace addSiteToUser with fast createSite (crawl moved
 ### Task 4: Create setup confirmation email
 
 **Files:**
+
 - Create: `app/emails/SiteSetupComplete.tsx`
 
 A simple transactional email sent when the pipeline finishes. Pattern follows `EmailVerification.tsx`.
@@ -234,9 +238,8 @@ function SiteSetupComplete({
       </Text>
 
       <Text className="my-4 text-base text-text leading-relaxed">
-        We've crawled your site, generated search queries, and checked how
-        ChatGPT, Claude, Perplexity, and Gemini cite you. Your results are
-        ready.
+        We've crawled your site, generated search queries, and checked how ChatGPT, Claude,
+        Perplexity, and Gemini cite you. Your results are ready.
       </Text>
 
       <Section className="my-8 text-center">
@@ -270,6 +273,7 @@ git commit -m "feat: add site setup complete email"
 ### Task 5: Create setup worker route
 
 **Files:**
+
 - Create: `app/routes/site.$domain_.setup.run.ts`
 
 This is the pipeline. It must only handle POST. Auth via `requireSiteAccess`. Guards against double-start with the Redis status key. Runs crawl → summarize → generate queries → add queries to DB → query all 4 platforms in parallel (each platform logs per-query) → send email → set status `complete`.
@@ -294,11 +298,7 @@ import logError from "~/lib/logError.server";
 import prisma from "~/lib/prisma.server";
 import { crawl } from "~/lib/scrape/crawl";
 import { summarize } from "~/lib/scrape/summarize";
-import {
-  appendLog,
-  getStatus,
-  setStatus,
-} from "~/lib/setupProgress.server";
+import { appendLog, getStatus, setStatus } from "~/lib/setupProgress.server";
 import type { Route } from "./+types/site.$domain_.setup.run";
 
 const PLATFORMS: {
@@ -309,13 +309,17 @@ const PLATFORMS: {
 }[] = [
   { platform: "chatgpt", modelId: "gpt-5-chat-latest", queryFn: openaiClient, label: "ChatGPT" },
   { platform: "perplexity", modelId: "sonar", queryFn: queryPerplexity, label: "Perplexity" },
-  { platform: "claude", modelId: "claude-haiku-4-5-20251001", queryFn: queryClaude, label: "Claude" },
+  {
+    platform: "claude",
+    modelId: "claude-haiku-4-5-20251001",
+    queryFn: queryClaude,
+    label: "Claude",
+  },
   { platform: "gemini", modelId: "gemini-2.5-flash", queryFn: queryGemini, label: "Gemini" },
 ];
 
 export async function action({ request, params }: Route.ActionArgs) {
-  if (request.method !== "POST")
-    throw new Response("Method not allowed", { status: 405 });
+  if (request.method !== "POST") throw new Response("Method not allowed", { status: 405 });
 
   const { site, user } = await requireSiteAccess({
     domain: params.domain,
@@ -324,8 +328,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 
   // Idempotency: don't start a second pipeline if one is running or done.
   const current = await getStatus(site.id, user.id);
-  if (current === "running" || current === "complete")
-    return new Response(null, { status: 204 });
+  if (current === "running" || current === "complete") return new Response(null, { status: 204 });
 
   await setStatus(site.id, user.id, "running");
 
@@ -475,6 +478,7 @@ git commit -m "feat: add setup pipeline worker route"
 ### Task 6: Create setup status polling endpoint
 
 **Files:**
+
 - Create: `app/routes/site.$domain_.setup.status.ts`
 
 Simple GET resource route. Reads offset from search params, calls `getProgress`, returns JSON.
@@ -516,6 +520,7 @@ git commit -m "feat: add setup status polling endpoint"
 ### Task 7: Create setup page
 
 **Files:**
+
 - Create: `app/routes/site.$domain_.setup/route.tsx`
 
 Shows the live log. On mount, fires the worker if not already started. Polls the status endpoint every 2s and appends lines. Redirects to citations when done.
@@ -575,11 +580,8 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
     if (done) return;
     const id = setInterval(async () => {
       try {
-        const res = await fetch(
-          `/site/${domain}/setup/status?offset=${offsetRef.current}`,
-        );
-        const data: { lines: string[]; done: boolean; nextOffset: number } =
-          await res.json();
+        const res = await fetch(`/site/${domain}/setup/status?offset=${offsetRef.current}`);
+        const data: { lines: string[]; done: boolean; nextOffset: number } = await res.json();
         if (data.lines.length > 0) {
           setLines((prev) => [...prev, ...data.lines]);
           offsetRef.current = data.nextOffset;
@@ -600,10 +602,7 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
   // Redirect to citations after pipeline completes.
   useEffect(() => {
     if (!done) return;
-    const timer = setTimeout(
-      () => navigate(`/site/${domain}/citations`),
-      2_000,
-    );
+    const timer = setTimeout(() => navigate(`/site/${domain}/citations`), 2_000);
     return () => clearTimeout(timer);
   }, [done, domain, navigate]);
 
@@ -630,16 +629,12 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
             ref={logRef}
             className="h-96 overflow-y-auto rounded border border-border bg-muted p-4 font-mono text-sm leading-relaxed"
           >
-            {lines.length === 0 && !done && (
-              <span className="text-foreground/40">Starting…</span>
-            )}
+            {lines.length === 0 && !done && <span className="text-foreground/40">Starting…</span>}
             {lines.map((line, i) => (
               <div key={i}>{line}</div>
             ))}
             {done && (
-              <div className="mt-2 font-semibold text-green-700">
-                ✓ Redirecting to citations…
-              </div>
+              <div className="mt-2 font-semibold text-green-700">✓ Redirecting to citations…</div>
             )}
           </pre>
         </CardContent>
@@ -667,6 +662,7 @@ git commit -m "feat: add site setup page with live log streaming"
 ### Task 8: Update `/sites` action to use `createSite` and redirect to setup
 
 **Files:**
+
 - Modify: `app/routes/sites/route.tsx`
 
 **Step 1: Replace the POST case in the action**
@@ -674,6 +670,7 @@ git commit -m "feat: add site setup page with live log streaming"
 In `app/routes/sites/route.tsx`, find the POST case (lines 54–65) and replace:
 
 Old:
+
 ```ts
 const { site, existing } = await addSiteToUser(user, url);
 if (existing) {
@@ -685,6 +682,7 @@ if (existing) {
 ```
 
 New:
+
 ```ts
 const { site, existing } = await createSite(user, url);
 if (existing) return redirect(`/site/${site.domain}/citations`);
@@ -713,6 +711,7 @@ git commit -m "feat: redirect new sites to setup page instead of suggestions"
 ### Task 9: Retire the suggestions route
 
 **Files:**
+
 - Modify: `app/routes/site.$domain_.suggestions/route.tsx`
 
 New sites will never reach the suggestions route (redirected to setup instead). Old sites still have suggestions in the DB, so the route stays functional. The only change: remove the `queryAccount` call from the POST action (queries are now run by the setup worker) and redirect to citations instead of running queries inline.
@@ -720,6 +719,7 @@ New sites will never reach the suggestions route (redirected to setup instead). 
 **Step 1: In the POST case of the action, replace the body**
 
 Old (lines 61–71):
+
 ```ts
 case "POST": {
   const raw = await request.json();
@@ -736,6 +736,7 @@ case "POST": {
 ```
 
 New:
+
 ```ts
 case "POST": {
   const raw = await request.json();
@@ -769,6 +770,7 @@ git commit -m "refactor: remove inline queryAccount from suggestions route"
 ### Task 10: End-to-end smoke test
 
 **Files:**
+
 - Modify or create: `test/routes/site-setup.test.ts` (Playwright)
 
 **Step 1: Write the test**

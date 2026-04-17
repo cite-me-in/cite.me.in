@@ -1,7 +1,7 @@
 {
   "name": "cite.me.in",
-  "type": "module",
   "license": "AGPL-3.0-only",
+  "type": "module",
   "scripts": {
     "build": "prisma generate && react-router build --force",
     "check:format": "biome format --write",
@@ -81,8 +81,8 @@
     "@types/node": "^25.6.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@vercel/sdk": "^1.19.37",
     "@vercel/config": "^0.2.0",
+    "@vercel/sdk": "^1.19.37",
     "diff": "^9.0.0",
     "fast-xml-parser": "^5.6.0",
     "knip": "^6.4.1",

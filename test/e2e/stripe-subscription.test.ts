@@ -1,9 +1,9 @@
-import { createHash, createHmac } from "node:crypto";
-import { goto, port } from "~/test/helpers/launchBrowser";
 import test, { type Page, expect } from "@playwright/test";
-import envVars from "~/lib/envVars.server";
+import { createHash, createHmac } from "node:crypto";
 import Stripe from "stripe";
+import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
+import { goto, port } from "~/test/helpers/launchBrowser";
 import "~/test/helpers/toMatchVisual";
 
 const TEST_EMAIL = "stripe-e2e@example.com";

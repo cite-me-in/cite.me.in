@@ -1,7 +1,7 @@
-import type { createDocument } from "zod-openapi";
-import { beforeAll, describe, expect, it } from "vitest";
-import { port } from "~/test/helpers/launchBrowser";
 import invariant from "tiny-invariant";
+import { beforeAll, describe, expect, it } from "vitest";
+import type { createDocument } from "zod-openapi";
+import { port } from "~/test/helpers/launchBrowser";
 
 const BASE = `http://localhost:${port}`;
 

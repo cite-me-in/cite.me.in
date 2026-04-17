@@ -1,8 +1,8 @@
-import { describe, it } from "vitest";
-import { goto, port } from "~/test/helpers/launchBrowser";
 import { expect } from "@playwright/test";
-import { signIn } from "~/test/helpers/signIn";
+import { describe, it } from "vitest";
 import prisma from "~/lib/prisma.server";
+import { goto, port } from "~/test/helpers/launchBrowser";
+import { signIn } from "~/test/helpers/signIn";
 
 const EMAIL_A = "pricing-flow-a@example.com";
 const EMAIL_B = "pricing-flow-b@example.com";

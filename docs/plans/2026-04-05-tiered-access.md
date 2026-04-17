@@ -15,6 +15,7 @@
 ### Task 1: Schema migration
 
 **Files:**
+
 - Modify: `prisma/schema.prisma`
 
 **Step 1: Add the `Plan` enum, `User.plan`, `Site.lastProcessedAt`, remove `Account.status`**
@@ -31,16 +32,19 @@ enum Plan {
 ```
 
 On the `User` model, add after `passwordHash`:
+
 ```prisma
   plan  Plan  @map("plan")  @default(trial)
 ```
 
 On the `Site` model, add after `id`:
+
 ```prisma
   lastProcessedAt  DateTime?  @map("last_processed_at")
 ```
 
 On the `Account` model, remove the entire `status` line:
+
 ```prisma
   status  String  @map("status")   ← DELETE THIS LINE
 ```
@@ -86,6 +90,7 @@ git commit -m "feat: add Plan enum to User, lastProcessedAt to Site, remove Acco
 ### Task 2: Central tier logic module
 
 **Files:**
+
 - Create: `app/lib/userPlan.server.ts`
 - Create: `test/lib/userPlan.test.ts`
 
@@ -191,10 +196,7 @@ export function processingIntervalHours(plan: Plan): number {
 
 // Whether a site should be processed right now.
 // Trial expires after TRIAL_DAYS — no processing after that.
-export function isProcessingEligible(user: {
-  plan: Plan;
-  createdAt: Date;
-}): boolean {
+export function isProcessingEligible(user: { plan: Plan; createdAt: Date }): boolean {
   if (user.plan === "cancelled") return false;
   if (user.plan === "trial") return daysSince(user.createdAt) < TRIAL_DAYS;
   return true; // paid, gratis
@@ -202,10 +204,7 @@ export function isProcessingEligible(user: {
 
 // Whether to send the weekly digest to this user's sites.
 // Same eligibility as processing.
-export function isDigestEligible(user: {
-  plan: Plan;
-  createdAt: Date;
-}): boolean {
+export function isDigestEligible(user: { plan: Plan; createdAt: Date }): boolean {
   return isProcessingEligible(user);
 }
 
@@ -234,6 +233,7 @@ git commit -m "feat: add userPlan.server.ts with tier logic"
 ### Task 3: Update `prepareSites.server.ts`
 
 **Files:**
+
 - Modify: `app/lib/prepareSites.server.ts`
 - Modify: `test/routes/cron.process-sites.test.ts`
 
@@ -242,10 +242,12 @@ git commit -m "feat: add userPlan.server.ts with tier logic"
 In `test/routes/cron.process-sites.test.ts`, the `site processing` describe block needs to be rewritten.
 
 All test seeds that create users with `account: { create: { status: "active", ... } }` must change to:
+
 - Remove `status` from account create (field no longer exists)
 - Add `plan: "paid"` directly on the user
 
 The processing gate changes from `digestSentAt` to `lastProcessedAt`:
+
 - For paid: process if `lastProcessedAt > 24h ago` (or null)
 - For trial: process if `lastProcessedAt > 7 days ago` (or null)
 
@@ -295,9 +297,7 @@ describe("site processing", () => {
         domain: "paid-site.example.com",
         id: "site-process-1",
         summary: "Test summary",
-        lastProcessedAt: new Date(
-          Temporal.Now.instant().subtract({ hours: 25 }).epochMilliseconds,
-        ),
+        lastProcessedAt: new Date(Temporal.Now.instant().subtract({ hours: 25 }).epochMilliseconds),
         owner: {
           create: {
             id: "user-process-1",
@@ -328,9 +328,7 @@ describe("site processing", () => {
         domain: "paid-site.example.com",
         id: "site-process-1",
         summary: "Test summary",
-        lastProcessedAt: new Date(
-          Temporal.Now.instant().subtract({ hours: 12 }).epochMilliseconds,
-        ),
+        lastProcessedAt: new Date(Temporal.Now.instant().subtract({ hours: 12 }).epochMilliseconds),
         owner: {
           create: {
             id: "user-process-1",
@@ -433,9 +431,7 @@ describe("site processing", () => {
         domain: "gratis-site.example.com",
         id: "site-process-5",
         summary: "Test summary",
-        lastProcessedAt: new Date(
-          Temporal.Now.instant().subtract({ hours: 25 }).epochMilliseconds,
-        ),
+        lastProcessedAt: new Date(Temporal.Now.instant().subtract({ hours: 25 }).epochMilliseconds),
         owner: {
           create: {
             id: "user-process-5",
@@ -538,8 +534,7 @@ export default async function prepareSites(): Promise<
             plan: "trial",
             createdAt: {
               gte: new Date(
-                Temporal.Now.instant().subtract({ hours: TRIAL_DAYS * 24 })
-                  .epochMilliseconds,
+                Temporal.Now.instant().subtract({ hours: TRIAL_DAYS * 24 }).epochMilliseconds,
               ),
             },
           },
@@ -552,18 +547,13 @@ export default async function prepareSites(): Promise<
   const due = candidates.filter((site) => {
     const { plan, createdAt } = site.owner;
     if (!isProcessingEligible({ plan: plan as Plan, createdAt })) return false;
-    const intervalMs =
-      processingIntervalHours(plan as Plan) * 60 * 60 * 1000;
+    const intervalMs = processingIntervalHours(plan as Plan) * 60 * 60 * 1000;
     // null lastProcessedAt means never processed — always due.
     const lastRun = site.lastProcessedAt ?? new Date(0);
     return Date.now() - lastRun.getTime() >= intervalMs;
   });
 
-  logger(
-    "[prepareSites] Processing %d sites: %s",
-    due.length,
-    due.map((s) => s.domain).join(", "),
-  );
+  logger("[prepareSites] Processing %d sites: %s", due.length, due.map((s) => s.domain).join(", "));
 
   await map(due, async (site) => {
     await Promise.all([nextCitationRun(site), updateBotInsight(site)]);
@@ -607,6 +597,7 @@ git commit -m "feat: prepareSites uses user.plan + lastProcessedAt, daily for pa
 ### Task 4: Update Stripe webhook
 
 **Files:**
+
 - Modify: `app/routes/api.stripe.webhook.ts`
 - Modify: `test/routes/api.stripe.webhook.test.ts`
 
@@ -617,6 +608,7 @@ In `test/routes/api.stripe.webhook.test.ts`:
 The `beforeAll` seed and the `checkout.session.completed` tests check `account?.status`. Remove all `status` from seed data and switch assertions to `user.plan`:
 
 In `beforeAll`:
+
 ```ts
 // No change to user seed — no account needed upfront
 await prisma.user.create({
@@ -629,6 +621,7 @@ await prisma.user.create({
 ```
 
 In "should activate account and store Stripe IDs" (line 78), replace the assertion:
+
 ```ts
 // before:
 const account = await prisma.account.findUnique({ where: { userId: "user-webhook-1" } });
@@ -647,6 +640,7 @@ expect(account?.stripeSubscriptionId).toBe("sub_webhook_1");
 ```
 
 In "should cancel account when subscription is deleted" (line 129):
+
 - Update the upsert seed to remove `status: "active"` from account, add `plan: "paid"` to user
 - Change assertion from `account?.status` to `user?.plan`:
 
@@ -675,6 +669,7 @@ expect(user?.plan).toBe("cancelled");
 ```
 
 Also add a test for the webhook event emission:
+
 ```ts
 it("should emit subscription.cancelled webhook on subscription deletion", async () => {
   // Set up an active user with known subscription
@@ -729,6 +724,7 @@ Expected: FAIL — seed references `status` field.
 **Step 3: Update `app/routes/api.stripe.webhook.ts`**
 
 Replace the `checkout.session.completed` handler:
+
 ```ts
 if (event.type === "checkout.session.completed") {
   const session = event.data.object;
@@ -756,15 +752,12 @@ if (event.type === "checkout.session.completed") {
     }),
   ]);
 
-  logger(
-    "[stripe] Activated account for user %s (interval: %s)",
-    userId,
-    interval,
-  );
+  logger("[stripe] Activated account for user %s (interval: %s)", userId, interval);
 }
 ```
 
 Replace the `customer.subscription.deleted` handler:
+
 ```ts
 if (event.type === "customer.subscription.deleted") {
   const subscription = event.data.object;
@@ -780,10 +773,7 @@ if (event.type === "customer.subscription.deleted") {
     await emitWebhookEvent("subscription.cancelled", {
       userId: account.userId,
     });
-    logger(
-      "[stripe] Cancelled account for subscription %s",
-      subscription.id,
-    );
+    logger("[stripe] Cancelled account for subscription %s", subscription.id);
   }
 }
 ```
@@ -808,6 +798,7 @@ git commit -m "feat: stripe webhook writes user.plan, emits subscription.cancell
 ### Task 5: Update `sites.server.ts`
 
 **Files:**
+
 - Modify: `app/lib/sites.server.ts`
 
 The `createSite` function currently reads `account.status` to determine the site limit. Switch it to `user.plan`.
@@ -855,6 +846,7 @@ git commit -m "refactor: createSite uses user.plan instead of account.status"
 ### Task 6: Update `api.admin.users.ts` and its test
 
 **Files:**
+
 - Modify: `app/routes/api.admin.users.ts`
 - Modify: `test/routes/api.admin.users.test.ts`
 
@@ -863,6 +855,7 @@ git commit -m "refactor: createSite uses user.plan instead of account.status"
 In `test/routes/api.admin.users.test.ts`:
 
 Update the seed for `admin-users-test-user-1`: remove `status: "active"` from account, add `plan: "paid"` on user:
+
 ```ts
 await prisma.user.upsert({
   where: { id: "admin-users-test-user-1" },
@@ -886,6 +879,7 @@ await prisma.user.upsert({
 ```
 
 Update assertions:
+
 ```ts
 // line 125: expect(user.status).toBe("active") →
 expect(user.status).toBe("paid");
@@ -911,7 +905,7 @@ const users = await prisma.user.findMany({
   select: {
     id: true,
     email: true,
-    plan: true,           // ← add this
+    plan: true, // ← add this
     createdAt: true,
     account: {
       select: {
@@ -928,12 +922,14 @@ const users = await prisma.user.findMany({
 ```
 
 Update the mapping:
+
 ```ts
 status: user.plan,                                          // was: account?.status ?? "free_trial"
 plan: user.plan === "paid" ? account?.interval : null,      // was: account?.status === "active" ? account?.interval : null
 ```
 
 Update the Zod schema:
+
 ```ts
 status: z.enum(["trial", "paid", "cancelled", "gratis"]),  // was: z.enum(["free_trial", "active", "cancelled"])
 plan: z.enum(["monthly", "yearly"]).nullable(),
@@ -959,6 +955,7 @@ git commit -m "refactor: admin users API uses user.plan instead of account.statu
 ### Task 7: Update trial emails
 
 **Files:**
+
 - Modify: `app/emails/TrialEnded.tsx`
 - Modify: `app/emails/TrialEnding.tsx`
 
@@ -967,6 +964,7 @@ Both files currently find trial users by `account: null` (i.e., no Stripe accoun
 **Step 1: Update `TrialEnded.tsx`**
 
 Change the user query `where` clause:
+
 ```ts
 where: {
   plan: "trial",                          // was: account: null
@@ -978,6 +976,7 @@ where: {
 **Step 2: Update `TrialEnding.tsx`**
 
 Change the user query `where` clause:
+
 ```ts
 where: {
   plan: "trial",                          // was: account: null

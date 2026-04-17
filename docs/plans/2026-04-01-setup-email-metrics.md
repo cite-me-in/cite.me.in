@@ -13,6 +13,7 @@
 ### Task 1: Write the failing test with new signature and fixture metrics
 
 **Files:**
+
 - Modify: `test/routes/email.site-setup.test.ts`
 
 **Step 1: Update the test to pass fixture metrics**
@@ -68,9 +69,27 @@ describe("SiteSetupComplete email", () => {
           { query: "Short-term shop rental near me", count: 2 },
         ],
         competitors: [
-          { domain: "popupinsider.com", brandName: "Popup Insider", url: "https://popupinsider.com", count: 22, pct: 31 },
-          { domain: "storeshq.com", brandName: "Stores HQ", url: "https://storeshq.com", count: 14, pct: 20 },
-          { domain: "siteselectiongroup.com", brandName: "Site Selection Group", url: "https://siteselectiongroup.com", count: 9, pct: 13 },
+          {
+            domain: "popupinsider.com",
+            brandName: "Popup Insider",
+            url: "https://popupinsider.com",
+            count: 22,
+            pct: 31,
+          },
+          {
+            domain: "storeshq.com",
+            brandName: "Stores HQ",
+            url: "https://storeshq.com",
+            count: 14,
+            pct: 20,
+          },
+          {
+            domain: "siteselectiongroup.com",
+            brandName: "Site Selection Group",
+            url: "https://siteselectiongroup.com",
+            count: 9,
+            pct: 13,
+          },
         ],
       },
     });
@@ -109,6 +128,7 @@ Expected: TypeScript error — `metrics` is not a valid prop on `sendSiteSetupEm
 ### Task 2: Add `SetupMetrics` type and update `sendSiteSetupEmail` signature
 
 **Files:**
+
 - Modify: `app/emails/SiteSetupComplete.tsx`
 
 **Step 1: Add the `SetupMetrics` type and update the function signature**
@@ -186,6 +206,7 @@ Expected: errors about `SiteSetupComplete` component not accepting `metrics` yet
 ### Task 3: Add metric sections to the email template
 
 **Files:**
+
 - Modify: `app/emails/SiteSetupComplete.tsx`
 
 Replace the `SiteSetupComplete` component and add all helper components. The full new bottom half of the file (replacing everything from `function SiteSetupComplete` onwards):
@@ -209,8 +230,8 @@ function SiteSetupComplete({
       </Text>
 
       <Text className="my-4 text-base text-text leading-relaxed">
-        We've crawled your site, generated search queries, and checked how
-        ChatGPT, Claude, Perplexity, and Gemini cite you. Here's what we found.
+        We've crawled your site, generated search queries, and checked how ChatGPT, Claude,
+        Perplexity, and Gemini cite you. Here's what we found.
       </Text>
 
       <PlatformCitations byPlatform={metrics.byPlatform} />
@@ -236,15 +257,8 @@ function SiteSetupComplete({
   );
 }
 
-function PlatformCitations({
-  byPlatform,
-}: {
-  byPlatform: SetupMetrics["byPlatform"];
-}) {
-  const platforms = alphabetical(
-    Object.entries(byPlatform),
-    ([name]) => name,
-  ).slice(0, 4);
+function PlatformCitations({ byPlatform }: { byPlatform: SetupMetrics["byPlatform"] }) {
+  const platforms = alphabetical(Object.entries(byPlatform), ([name]) => name).slice(0, 4);
 
   return (
     <Card title="Citations found">
@@ -273,18 +287,10 @@ function PlatformCitations({
   );
 }
 
-function SetupTopQueries({
-  topQueries,
-}: {
-  topQueries: SetupMetrics["topQueries"];
-}) {
+function SetupTopQueries({ topQueries }: { topQueries: SetupMetrics["topQueries"] }) {
   if (topQueries.length === 0) return null;
   return (
-    <Card
-      title="↑ Top queries"
-      subtitle="Queries most cited in your first run"
-      withBorder
-    >
+    <Card title="↑ Top queries" subtitle="Queries most cited in your first run" withBorder>
       <table>
         <thead>
           <tr className="text-center text-light text-xs uppercase tracking-wide">
@@ -305,11 +311,7 @@ function SetupTopQueries({
   );
 }
 
-function SetupSentiment({
-  byPlatform,
-}: {
-  byPlatform: SetupMetrics["byPlatform"];
-}) {
+function SetupSentiment({ byPlatform }: { byPlatform: SetupMetrics["byPlatform"] }) {
   const platforms = alphabetical(
     Object.entries(byPlatform).filter(([, { sentimentSummary }]) => sentimentSummary),
     ([name]) => name,
@@ -329,9 +331,7 @@ function SetupSentiment({
         <Section key={platform} className="border-border border-b py-3">
           <Row>
             <Column className="w-1/4">
-              <Text className="text-light text-xs uppercase tracking-wide">
-                {platform}
-              </Text>
+              <Text className="text-light text-xs uppercase tracking-wide">{platform}</Text>
               <Text
                 className={twMerge(
                   "text-sm font-semibold uppercase",
@@ -342,9 +342,7 @@ function SetupSentiment({
               </Text>
             </Column>
             <Column>
-              <Text className="text-light text-sm leading-6">
-                {sentimentSummary}
-              </Text>
+              <Text className="text-light text-sm leading-6">{sentimentSummary}</Text>
             </Column>
           </Row>
         </Section>
@@ -353,18 +351,10 @@ function SetupSentiment({
   );
 }
 
-function SetupTopCompetitors({
-  competitors,
-}: {
-  competitors: SetupMetrics["competitors"];
-}) {
+function SetupTopCompetitors({ competitors }: { competitors: SetupMetrics["competitors"] }) {
   if (competitors.length === 0) return null;
   return (
-    <Card
-      title="Top competitors"
-      subtitle="Sites appearing in your queries"
-      withBorder
-    >
+    <Card title="Top competitors" subtitle="Sites appearing in your queries" withBorder>
       <table>
         <tbody>
           {competitors.map(({ domain, brandName, url, count, pct }) => (
@@ -375,12 +365,9 @@ function SetupTopCompetitors({
                 </Link>
               </td>
               <td className="w-30 whitespace-nowrap px-2 py-4 font-bold tabular-nums">
-                {count.toLocaleString()}{" "}
-                {count === 1 ? "citation" : "citations"}
+                {count.toLocaleString()} {count === 1 ? "citation" : "citations"}
               </td>
-              <td className="w-15 px-2 py-4 text-right tabular-nums">
-                {pct}%
-              </td>
+              <td className="w-15 px-2 py-4 text-right tabular-nums">{pct}%</td>
             </tr>
           ))}
         </tbody>
@@ -413,12 +400,8 @@ function Card({
       {(title || subtitle) && (
         <Row>
           <Column className="px-5 pt-4">
-            {title && (
-              <Text className="font-bold text-2xl text-dark">{title}</Text>
-            )}
-            {subtitle && (
-              <Text className="text-light text-sm">{subtitle}</Text>
-            )}
+            {title && <Text className="font-bold text-2xl text-dark">{title}</Text>}
+            {subtitle && <Text className="text-light text-sm">{subtitle}</Text>}
           </Column>
         </Row>
       )}
@@ -457,6 +440,7 @@ git commit -m "feat: add first-run metrics to site setup complete email"
 ### Task 4: Create `loadSetupMetrics`
 
 **Files:**
+
 - Create: `app/lib/setupMetrics.server.ts`
 
 **Step 1: Write the function**
@@ -468,9 +452,7 @@ import { getDomainMeta } from "~/lib/domainMeta.server";
 import prisma from "~/lib/prisma.server";
 import { topCompetitors } from "~/routes/site.$domain_.citations/TopCompetitors";
 
-export default async function loadSetupMetrics(
-  siteId: string,
-): Promise<SetupMetrics> {
+export default async function loadSetupMetrics(siteId: string): Promise<SetupMetrics> {
   const site = await prisma.site.findUniqueOrThrow({
     where: { id: siteId },
     select: { domain: true },
@@ -539,25 +521,28 @@ Expected: no errors related to the new file.
 ### Task 5: Wire up `loadSetupMetrics` in `setup.run.ts`
 
 **Files:**
+
 - Modify: `app/routes/site.$domain_.setup.run.ts`
 
 **Step 1: Import and call `loadSetupMetrics` before sending the email**
 
 At line 4 (after the `sendSiteSetupEmail` import), add:
+
 ```ts
 import loadSetupMetrics from "~/lib/setupMetrics.server";
 ```
 
 Replace lines 87–92 (Phase 6 block):
+
 ```ts
-    // Phase 6: Email
-    await log("Sending confirmation email...");
-    const owner = await prisma.user.findUniqueOrThrow({
-      where: { id: user.id },
-      select: { email: true, unsubscribed: true },
-    });
-    const metrics = await loadSetupMetrics(site.id);
-    await sendSiteSetupEmail({ domain: site.domain, user: owner, metrics });
+// Phase 6: Email
+await log("Sending confirmation email...");
+const owner = await prisma.user.findUniqueOrThrow({
+  where: { id: user.id },
+  select: { email: true, unsubscribed: true },
+});
+const metrics = await loadSetupMetrics(site.id);
+await sendSiteSetupEmail({ domain: site.domain, user: owner, metrics });
 ```
 
 **Step 2: Run typecheck**

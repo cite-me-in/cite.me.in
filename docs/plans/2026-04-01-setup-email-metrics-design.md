@@ -18,8 +18,11 @@ Add `loadSetupMetrics(domain: string)` — a new function in `app/lib/setupMetri
 ```ts
 type SetupMetrics = {
   totalCitations: number;
-  byPlatform: Record<Platform, { citations: number; sentiment: string | null; sentimentSummary: string | null }>;
-  topQueries: Array<{ query: string; citations: number }>;   // top 5
+  byPlatform: Record<
+    Platform,
+    { citations: number; sentiment: string | null; sentimentSummary: string | null }
+  >;
+  topQueries: Array<{ query: string; citations: number }>; // top 5
   competitors: Array<{ domain: string; citations: number }>; // top 5
 };
 ```

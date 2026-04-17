@@ -35,7 +35,9 @@ export async function goto(path: string, headers?: HeadersInit): Promise<Page> {
   await page.reload({ waitUntil: "load" });
   await page.waitForFunction(
     () => document.body.getAttribute("data-hydrated") === "true",
-    { timeout: ms("15s") },
+    {
+      timeout: ms("15s"),
+    },
   );
 
   return page;

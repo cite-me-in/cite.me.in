@@ -13,6 +13,7 @@
 ### Task 1: Update `apiAuth.test.ts` for new token format and interface
 
 **Files:**
+
 - Modify: `test/lib/apiAuth.test.ts`
 
 The new token format embeds the userId: `cite.me.in_{userId}_{24chars}`.
@@ -28,9 +29,11 @@ const userApiKey = "cite.me.in_api-auth-test-user-1_testabcdefghijklmnop";
 ```
 
 In `verifySiteAccess` describe, change line 60:
+
 ```ts
 update: { apiKey: userApiKey },
 ```
+
 (already there — just update the constant value above)
 
 In `verifyUserAccess` describe block, update all three tests:
@@ -79,6 +82,7 @@ Expected: `verifyUserAccess` tests fail (wrong signature), `verifySiteAccess` te
 ### Task 2: Implement new `verifyUserAccess` and `verifySiteAccess`
 
 **Files:**
+
 - Modify: `app/lib/api/apiAuth.server.ts`
 
 **Step 1: Rewrite the file**
@@ -91,8 +95,7 @@ export async function requireAdminApiKey(request: Request): Promise<void> {
   const auth = request.headers.get("authorization");
   if (!auth) throw new Response("Unauthorized", { status: 401 });
   const [tokenType, token] = auth.split(/\s+/);
-  if (tokenType !== "Bearer")
-    throw new Response("Unauthorized", { status: 401 });
+  if (tokenType !== "Bearer") throw new Response("Unauthorized", { status: 401 });
   if (!envVars.ADMIN_API_SECRET || token !== envVars.ADMIN_API_SECRET)
     throw new Response("Unauthorized", { status: 401 });
 }
@@ -113,8 +116,7 @@ export async function verifyUserAccess(request: Request): Promise<{
   const auth = request.headers.get("authorization");
   if (!auth) throw new Response("Unauthorized", { status: 401 });
   const [tokenType, token] = auth.split(/\s+/);
-  if (tokenType !== "Bearer")
-    throw new Response("Unauthorized", { status: 401 });
+  if (tokenType !== "Bearer") throw new Response("Unauthorized", { status: 401 });
 
   const userId = parseTokenUserId(token);
   if (!userId) throw new Response("Not found", { status: 404 });
@@ -143,10 +145,7 @@ export async function verifySiteAccess({
   const site = await prisma.site.findFirst({
     where: {
       domain,
-      OR: [
-        { ownerId: userId },
-        { siteUsers: { some: { userId } } },
-      ],
+      OR: [{ ownerId: userId }, { siteUsers: { some: { userId } } }],
     },
     select: { id: true, domain: true, createdAt: true },
   });
@@ -175,6 +174,7 @@ git commit -m "feat: encode userId in API token for primary-key auth lookup"
 ### Task 3: Update `regenerateApiKey` to use new token format
 
 **Files:**
+
 - Modify: `app/routes/profile/route.tsx:120-134`
 
 **Step 1: Update `regenerateApiKey`**
@@ -219,6 +219,7 @@ git commit -m "feat: embed userId in generated API token"
 ### Task 4: Replace `api.me.$email.ts` with `api.me.ts`
 
 **Files:**
+
 - Create: `app/routes/api.me.ts`
 - Delete: `app/routes/api.me.$email.ts`
 
@@ -288,11 +289,13 @@ git commit -m "feat: replace api/me/:email with api/me — user derived from tok
 ### Task 5: Update OpenAPI spec
 
 **Files:**
+
 - Modify: `app/lib/api/openapi.ts:156-183`
 
 **Step 1: Replace the `/api/me/{email}` path entry**
 
 Change:
+
 ```ts
 "/api/me/{email}": {
   get: {
@@ -324,6 +327,7 @@ Change:
 ```
 
 To:
+
 ```ts
 "/api/me": {
   get: {
@@ -366,6 +370,7 @@ git commit -m "feat: update OpenAPI spec — /api/me has no email param"
 ### Task 6: Update `api.me.test.ts`
 
 **Files:**
+
 - Modify: `test/routes/api.me.test.ts`
 
 **Step 1: Rewrite the test file**
@@ -416,10 +421,7 @@ beforeAll(async () => {
                   extraQueries: [],
                   text: "Some answer",
                   position: 1,
-                  citations: [
-                    `https://${DOMAIN}/page1`,
-                    `https://${DOMAIN}/page2`,
-                  ],
+                  citations: [`https://${DOMAIN}/page1`, `https://${DOMAIN}/page2`],
                 },
               },
             },
@@ -462,9 +464,7 @@ describe("GET /api/me", () => {
       expect(body.email).toBe(EMAIL);
       expect(Array.isArray(body.sites)).toBe(true);
       expect(body.sites[0].domain).toBe(DOMAIN);
-      expect(body.sites[0].createdAt).toBe(
-        new Date().toISOString().split("T")[0],
-      );
+      expect(body.sites[0].createdAt).toBe(new Date().toISOString().split("T")[0]);
     });
   });
 });

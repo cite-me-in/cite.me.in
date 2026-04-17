@@ -69,6 +69,7 @@ Remove unused `position` field.
 ## Environment Variables
 
 Two new required vars added to `envVars.server.ts`:
+
 - `DATAFORSEO_LOGIN` — account email
 - `DATAFORSEO_PASSWORD` — account password
 

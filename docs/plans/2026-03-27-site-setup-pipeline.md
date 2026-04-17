@@ -9,6 +9,7 @@ When a user adds a new site, the entire pipeline (crawl → summarize → genera
 ### 1. Submit URL (synchronous)
 
 POST `/sites` does only:
+
 - Parse and validate the URL format
 - Make a single HEAD request to confirm the site is reachable
 - Create a minimal `Site` record in DB
@@ -18,6 +19,7 @@ POST `/sites` does only:
 ### 2. Setup Page
 
 `/site/{domain}/setup` — a dedicated route that:
+
 - Requires auth (`requireUser`)
 - Polls `GET /site/{domain}/setup/status?offset=N` every 2 seconds
 - Renders each log line as it arrives (append-only, scrolling)
@@ -28,6 +30,7 @@ POST `/sites` does only:
 `POST /site/{domain}/setup/run` — runs in its own Vercel function invocation with its own timeout budget. Executes the full pipeline sequentially, writing to Redis after each operation:
 
 **Steps and example log lines:**
+
 ```
 Checking site access...
 Crawling site...
@@ -86,10 +89,10 @@ TTL: set to 24 hours on both keys after pipeline completes.
 
 ## Routes Added / Changed
 
-| Route | Change |
-|---|---|
-| `POST /sites` | Slim down to validate + fire-and-forget only |
-| `GET /site/{domain}/setup` | New — live log page |
-| `POST /site/{domain}/setup/run` | New — pipeline worker endpoint |
-| `GET /site/{domain}/setup/status` | New — polling endpoint |
-| `GET /site/{domain}/suggestions` | Remove or redirect to citations |
+| Route                             | Change                                       |
+| --------------------------------- | -------------------------------------------- |
+| `POST /sites`                     | Slim down to validate + fire-and-forget only |
+| `GET /site/{domain}/setup`        | New — live log page                          |
+| `POST /site/{domain}/setup/run`   | New — pipeline worker endpoint               |
+| `GET /site/{domain}/setup/status` | New — polling endpoint                       |
+| `GET /site/{domain}/suggestions`  | Remove or redirect to citations              |

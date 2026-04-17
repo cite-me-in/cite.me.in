@@ -6,12 +6,12 @@ Introduce four explicit access tiers — `trial`, `paid`, `cancelled`, `gratis` 
 
 ## Tiers
 
-| Tier      | Processing     | Weekly digest | Requires subscription |
-|-----------|---------------|---------------|-----------------------|
-| trial     | Once per week, stops after 25 days | Yes, stops after 25 days | No |
-| paid      | Once per day  | Yes           | Yes (Stripe)          |
-| cancelled | None          | No            | —                     |
-| gratis    | Once per day  | Yes           | No (manually granted) |
+| Tier      | Processing                         | Weekly digest            | Requires subscription |
+| --------- | ---------------------------------- | ------------------------ | --------------------- |
+| trial     | Once per week, stops after 25 days | Yes, stops after 25 days | No                    |
+| paid      | Once per day                       | Yes                      | Yes (Stripe)          |
+| cancelled | None                               | No                       | —                     |
+| gratis    | Once per day                       | Yes                      | No (manually granted) |
 
 Setting a user to gratis: `UPDATE users SET plan = 'gratis' WHERE email = '...'`
 
@@ -138,13 +138,13 @@ await prisma.user.update({ where: { id: account.userId }, data: { plan: "cancell
 await emitWebhookEvent("subscription.cancelled", { userId: account.userId });
 ```
 
-**21-day payment failure rule** — configure in Stripe dashboard: *Subscriptions → Settings → Manage failed payments → Cancel after 21 days*. This fires `customer.subscription.deleted` which the code already handles. No custom logic needed.
+**21-day payment failure rule** — configure in Stripe dashboard: _Subscriptions → Settings → Manage failed payments → Cancel after 21 days_. This fires `customer.subscription.deleted` which the code already handles. No custom logic needed.
 
 ## Callsites to update
 
-| File | Change |
-|------|--------|
-| `app/lib/sites.server.ts` | `isPro = user.plan === "paid" \|\| user.plan === "gratis"` |
-| `app/routes/api.admin.users.ts` | `status: user.plan`; update Zod enum |
-| `app/emails/TrialEnded.tsx` | Query `plan: "trial"` users past 25 days |
-| `app/emails/TrialEnding.tsx` | Query `plan: "trial"` users approaching 25 days |
+| File                            | Change                                                     |
+| ------------------------------- | ---------------------------------------------------------- |
+| `app/lib/sites.server.ts`       | `isPro = user.plan === "paid" \|\| user.plan === "gratis"` |
+| `app/routes/api.admin.users.ts` | `status: user.plan`; update Zod enum                       |
+| `app/emails/TrialEnded.tsx`     | Query `plan: "trial"` users past 25 days                   |
+| `app/emails/TrialEnding.tsx`    | Query `plan: "trial"` users approaching 25 days            |
