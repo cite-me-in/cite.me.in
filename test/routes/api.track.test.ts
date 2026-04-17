@@ -52,18 +52,16 @@ describe("api.track", () => {
     });
   });
 
-  describe("method handling", () => {
-    it("should return 204 with CORS headers", async () => {
-      const res = await fetch(BASE_URL);
-      expect(res.status).toBe(204);
-      expect(res.headers.get("access-control-allow-origin")).toBe("*");
-      expect(res.headers.get("access-control-allow-methods")).toBe(
-        "POST, OPTIONS",
-      );
-      expect(res.headers.get("access-control-allow-headers")).toBe(
-        "Content-Type",
-      );
-    });
+  it("should return 405 when method is not POST", async () => {
+    const res = await fetch(BASE_URL, { method: "GET" });
+    expect(res.status).toBe(405);
+    expect(res.headers.get("access-control-allow-origin")).toBe("*");
+    expect(res.headers.get("access-control-allow-methods")).toBe(
+      "POST, OPTIONS",
+    );
+    expect(res.headers.get("access-control-allow-headers")).toBe(
+      "Content-Type",
+    );
   });
 
   describe("validation", () => {
@@ -94,11 +92,10 @@ describe("api.track", () => {
       expect(res.status).toBe(400);
     });
 
-    it("should return 401 when apiKey is invalid", async () => {
+    it("should return 403 when apiKey is invalid", async () => {
       const res = await post({
         apiKey: "invalid-api-key",
         url: "https://apitrack.example.com/",
-        userAgent: "GPTBot/1.0",
       });
       expect(res.status).toBe(403);
     });

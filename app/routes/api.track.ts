@@ -19,23 +19,32 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
-export async function loader() {
-  return new Response(null, { status: 204, headers: CORS_HEADERS });
+export async function loader({ request }: { request: Request }) {
+  if (request.method === "OPTIONS")
+    return new Response(null, { headers: CORS_HEADERS });
+
+  throw new Response("Method not allowed", {
+    status: 405,
+    headers: CORS_HEADERS,
+  });
 }
 
 export async function action({ request }: { request: Request }) {
   if (request.method !== "POST")
-    return new Response("Method not allowed", { status: 405 });
+    throw new Response("Method not allowed", {
+      status: 405,
+      headers: CORS_HEADERS,
+    });
 
-  let inputs: z.infer<typeof TrackSchema>;
+  let parsed: unknown;
   try {
-    const body = await request.json();
-    const { data, error } = TrackSchema.safeParse(body);
-    if (error) throw new Error(error.message);
-    inputs = data;
+    parsed = JSON.parse(await request.text());
   } catch {
-    return new Response("Invalid JSON", { status: 400 });
+    throw new Response("Invalid JSON", { status: 400, headers: CORS_HEADERS });
   }
+  const { data: inputs, error } = TrackSchema.safeParse(parsed);
+  if (error)
+    throw new Response(error.message, { status: 400, headers: CORS_HEADERS });
 
   const site = await prisma.site.findFirst({
     where: {
@@ -47,7 +56,7 @@ export async function action({ request }: { request: Request }) {
     },
   });
   if (!site)
-    return new Response("Forbidden", { status: 403, headers: CORS_HEADERS });
+    throw new Response("Forbidden", { status: 403, headers: CORS_HEADERS });
 
   const userAgent =
     inputs.userAgent ?? request.headers.get("user-agent") ?? "Unknown";
