@@ -26,16 +26,108 @@ const handlers = [
     }),
   ),
 
-  http.post("https://api.anthropic.com/v1/messages", () =>
-    HttpResponse.json({
-      id: "msg_test",
-      type: "message",
-      role: "assistant",
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify({
-            elements: [
+  http.post("https://api.anthropic.com/v1/messages", async ({ request }) => {
+    const url = new URL(request.url);
+    const isBeta = url.searchParams.get("beta") === "true";
+    const body = await request.clone().json();
+    const hasWebSearch = body.tools?.some?.(
+      (t: { type: string }) => t.type === "web_search_20260209",
+    );
+
+    return isBeta && hasWebSearch
+      ? HttpResponse.json({
+          id: "msg_test",
+          type: "message",
+          role: "assistant",
+          content: [
+            {
+              type: "text",
+              text: "Mocked Claude response with citations [1].",
+            },
+            {
+              type: "web_search_tool_result",
+              content: [
+                {
+                  type: "web_search_result",
+                  url: "https://example.com",
+                  title: "Example Source",
+                },
+              ],
+            },
+          ],
+          model: "claude-haiku-4-5",
+          stop_reason: "end_turn",
+          usage: { input_tokens: 10, output_tokens: 20 },
+        })
+      : HttpResponse.json({
+          id: "msg_test",
+          type: "message",
+          role: "assistant",
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify([
+                { group: "1. discovery", query: "Query 1" },
+                { group: "1. discovery", query: "Query 2" },
+                { group: "1. discovery", query: "Query 3" },
+                { group: "2. active_search", query: "Query 4" },
+                { group: "2. active_search", query: "Query 5" },
+                { group: "2. active_search", query: "Query 6" },
+                { group: "3. consideration", query: "Query 7" },
+                { group: "3. consideration", query: "Query 8" },
+                { group: "3. consideration", query: "Query 9" },
+              ]),
+            },
+          ],
+          model: "claude-haiku-4-5",
+          stop_reason: "end_turn",
+          usage: { input_tokens: 10, output_tokens: 20 },
+        });
+  }),
+
+  http.post(
+    "https://api.anthropic.com/v1beta/messages",
+    async ({ request }) => {
+      const body = await request.clone().json();
+      const hasWebSearch = body.tools?.some?.(
+        (t: { type: string }) => t.type === "web_search_20260209",
+      );
+
+      if (hasWebSearch) {
+        return HttpResponse.json({
+          id: "msg_test",
+          type: "message",
+          role: "assistant",
+          content: [
+            {
+              type: "text",
+              text: "Mocked Claude response with citations [1].",
+            },
+            {
+              type: "web_search_tool_result",
+              content: [
+                {
+                  type: "web_search_result",
+                  url: "https://example.com",
+                  title: "Example Source",
+                },
+              ],
+            },
+          ],
+          model: "claude-haiku-4-5",
+          stop_reason: "end_turn",
+          usage: { input_tokens: 10, output_tokens: 20 },
+        });
+      }
+
+      return HttpResponse.json({
+        id: "msg_test",
+        type: "message",
+        role: "assistant",
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify([
               { group: "1. discovery", query: "Query 1" },
               { group: "1. discovery", query: "Query 2" },
               { group: "1. discovery", query: "Query 3" },
@@ -45,14 +137,14 @@ const handlers = [
               { group: "3. consideration", query: "Query 7" },
               { group: "3. consideration", query: "Query 8" },
               { group: "3. consideration", query: "Query 9" },
-            ],
-          }),
-        },
-      ],
-      model: "claude-haiku-4-5",
-      stop_reason: "end_turn",
-      usage: { input_tokens: 10, output_tokens: 20 },
-    }),
+            ]),
+          },
+        ],
+        model: "claude-haiku-4-5",
+        stop_reason: "end_turn",
+        usage: { input_tokens: 10, output_tokens: 20 },
+      });
+    },
   ),
 
   http.post(
