@@ -63,7 +63,9 @@ export async function action({ request, params }: Route.ActionArgs) {
 
 export default function SiteSettingsPage({ loaderData }: Route.ComponentProps) {
   const { apiKey, content, site, isOwner } = loaderData;
-  const trackingScript = `<script defer src="${import.meta.env.VITE_APP_URL}/pixel.js?key=${apiKey}" crossorigin="anonymous" />`;
+  const trackingScript = `
+<script defer crossorigin="anonymous"
+        src="${import.meta.env.VITE_APP_URL}/pixel.js?key=${apiKey}" />`.trim();
 
   return (
     <Main variant="wide">
