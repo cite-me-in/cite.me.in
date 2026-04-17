@@ -1,7 +1,7 @@
 import { redirect } from "react-router";
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
-import { requireSiteOwner, requireUserAccess } from "~/lib/auth.server";
+import { requireSiteAccess, requireSiteOwner } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
 import { deleteSite } from "~/lib/sites.server";
 import type { Route } from "./+types/route";
@@ -16,30 +16,25 @@ export function meta({ loaderData }: Route.MetaArgs) {
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const { user } = await requireUserAccess(request);
-  const site = await prisma.site.findFirst({
-    where: {
-      domain: params.domain,
-      OR: [{ ownerId: user.id }, { siteUsers: { some: { userId: user.id } } }],
-    },
+  const { user, site } = await requireSiteAccess({
+    domain: params.domain,
+    request,
+  });
+  const { content, apiKey } = await prisma.site.findUniqueOrThrow({
+    where: { id: site.id },
+    select: { content: true, apiKey: true },
+  });
+  const fullyLoaded = await prisma.site.findUniqueOrThrow({
+    where: { id: site.id },
     select: {
-      apiKey: true,
-      content: true,
       domain: true,
-      id: true,
       owner: { select: { id: true, email: true } },
-      ownerId: true,
-      siteUsers: { include: { user: { select: { id: true, email: true } } } },
-      siteInvitations: {
-        where: { status: "PENDING" },
-        orderBy: { createdAt: "desc" },
-      },
+      siteUsers: { select: { user: { select: { id: true, email: true } } } },
+      siteInvitations: { select: { id: true, email: true, createdAt: true } },
     },
   });
-  if (!site) throw new Response("Not found", { status: 404 });
-
-  const isOwner = site.ownerId === user.id;
-  return { site, isOwner };
+  const isOwner = fullyLoaded.owner.id === user.id;
+  return { apiKey, content, isOwner, site: fullyLoaded };
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
@@ -67,8 +62,8 @@ export async function action({ request, params }: Route.ActionArgs) {
 }
 
 export default function SiteSettingsPage({ loaderData }: Route.ComponentProps) {
-  const { site, isOwner } = loaderData;
-  const trackingScript = `<script defer src="${import.meta.env.VITE_APP_URL}/pixel.js?key=${site.apiKey}" crossorigin="anonymous" />`;
+  const { apiKey, content, site, isOwner } = loaderData;
+  const trackingScript = `<script defer src="${import.meta.env.VITE_APP_URL}/pixel.js?key=${apiKey}" crossorigin="anonymous" />`;
 
   return (
     <Main variant="wide">
@@ -76,7 +71,7 @@ export default function SiteSettingsPage({ loaderData }: Route.ComponentProps) {
 
       <section className="space-y-8">
         <SiteContentButton
-          content={loaderData.site?.content ?? ""}
+          content={content}
           isOwner={isOwner}
           domain={site.domain}
         />
