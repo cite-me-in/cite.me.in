@@ -2,7 +2,7 @@
   <div>
     <p></p>
     <h1 class="font-heading text-3xl">
-      Human Visitors
+      Traffic
     </h1>
   </div>
   <div data-activation-direction="none" data-orientation="horizontal">
@@ -65,7 +65,10 @@
   <div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
     <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
       <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
-        Traffic by Source
+        Human Visitors by Source
+      </div>
+      <div class="font-base text-base text-foreground/60" data-slot="card-description">
+        This chart shows human visitors and highlights the portion of people who were referred by AI.
       </div>
     </div>
     <div class="px-6" data-slot="card-content"></div>
@@ -81,13 +84,13 @@
         <table class="w-full caption-bottom text-base">
           <thead class="[&amp;_tr]:border-b">
             <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-              <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px]">
+              <th class="h-10 px-2 text-left align-middle text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] w-2/3 font-bold">
                 Platform
               </th>
-              <th class="h-10 px-2 align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              <th class="h-10 px-2 align-middle text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right font-bold">
                 Visitors
               </th>
-              <th class="h-10 px-2 align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
+              <th class="h-10 px-2 align-middle text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right font-bold">
                 % of Total
               </th>
             </tr>

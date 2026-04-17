@@ -7,13 +7,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/Card";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import { ChartContainer } from "~/components/ui/Chart";
 import { formatDateMed, formatDateShort } from "~/lib/formatDate";
 
@@ -40,10 +34,7 @@ export default function BotTrafficTrend({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Bot Visits Trend</CardTitle>
-        <CardDescription className="text-foreground/60">
-          This chart shows the bot visits trend for the selected date range.
-        </CardDescription>
+        <CardTitle>Traffic Trend</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer

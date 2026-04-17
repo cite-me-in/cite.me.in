@@ -1,12 +1,12 @@
 <div class="flex items-center justify-between gap-4">
   <div>
     <p>
-      <a class="block max-w-md truncate font-mono text-foreground/60 hover:underline" data-discover="true" href="/site/bots-test.example.com" title="bots-test.example.com">
-        bots-test.example.com
+      <a class="block max-w-md truncate font-mono text-foreground/60 hover:underline" data-discover="true" href="/site/traffic-test.example.com" title="traffic-test.example.com">
+        traffic-test.example.com
       </a>
     </p>
     <h1 class="font-heading text-3xl">
-      Bot Traffic
+      Traffic
     </h1>
   </div>
   <div data-activation-direction="none" data-orientation="horizontal">
@@ -23,15 +23,21 @@
     </div>
   </div>
 </div>
-<div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
-  <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
-    <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
-      No bot traffic recorded
+<section class="space-y-6">
+  <div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
+    <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
+      <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
+        No visitors recorded
+      </div>
+    </div>
+    <div class="px-6" data-slot="card-content">
+      <p class="text-base text-foreground/60">
+        Install the tracking snippet on
+        <span class="font-mono">
+          traffic-test.example.com
+        </span>
+        to start seeing human visitor data here.
+      </p>
     </div>
   </div>
-  <div class="px-6" data-slot="card-content">
-    <p class="text-base text-foreground/60">
-      Bot visits are tracked automatically. Check back once bots have crawled bots-test.example.com.
-    </p>
-  </div>
-</div>
+</section>

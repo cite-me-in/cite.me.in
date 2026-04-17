@@ -1,18 +1,11 @@
-import type { User } from "~/prisma";
+import { expect } from "@playwright/test";
 import { afterAll, beforeAll, describe, it } from "vitest";
 import { removeElements } from "~/lib/html/parseHTML";
-import { goto, port } from "../helpers/launchBrowser";
-import { expect } from "@playwright/test";
-import { signIn } from "../helpers/signIn";
 import prisma from "~/lib/prisma.server";
+import type { User } from "~/prisma";
+import { goto, port } from "../helpers/launchBrowser";
+import { signIn } from "../helpers/signIn";
 
-// ---------------------------------------------------------------------------
-// Fixed seed data — deterministic so baselines never drift
-// ---------------------------------------------------------------------------
-
-// Use a fixed "today" so the date range doesn't shift between test runs.
-// The default range is the last 30 days so visits within 30 days of this
-// date will appear; visits older than 30 days will not.
 const BASE_DATE = new Date("2026-02-26T00:00:00.000Z");
 
 const BOT_VISITS = [
@@ -50,25 +43,53 @@ const BOT_VISITS = [
   },
 ] as const;
 
+const HUMAN_VISITS = [
+  {
+    visitorId: "hv-visitor-1",
+    browser: "Chrome",
+    deviceType: "desktop",
+    aiReferral: "chatgpt",
+    count: 3,
+    daysAgo: 0,
+  },
+  {
+    visitorId: "hv-visitor-2",
+    browser: "Firefox",
+    deviceType: "mobile",
+    aiReferral: "gemini",
+    count: 1,
+    daysAgo: 1,
+  },
+  {
+    visitorId: "hv-visitor-3",
+    browser: "Chrome",
+    deviceType: "desktop",
+    aiReferral: null,
+    count: 5,
+    daysAgo: 2,
+  },
+] as const;
+
 function daysAgo(n: number): Date {
   const d = new Date(BASE_DATE);
   d.setDate(d.getDate() - n);
   return d;
 }
 
-// ---------------------------------------------------------------------------
-
 describe("unauthenticated access", () => {
   it("should redirect to /sign-in", async () => {
-    const response = await fetch(`http://localhost:${port}/site/some-id/bots`, {
-      redirect: "manual",
-    });
+    const response = await fetch(
+      `http://localhost:${port}/site/some-id/traffic`,
+      {
+        redirect: "manual",
+      },
+    );
     expect(response.status).toBe(302);
     expect(response.headers.get("location")).toContain("/sign-in");
   });
 });
 
-describe("site bots page", () => {
+describe("traffic page", () => {
   let user: User;
   let siteId: string;
   let siteDomain: string;
@@ -76,17 +97,17 @@ describe("site bots page", () => {
   beforeAll(async () => {
     user = await prisma.user.create({
       data: {
-        id: "user-bots-1",
-        email: "site-bots-test@test.com",
+        id: "user-traffic-1",
+        email: "traffic-test@test.com",
         passwordHash: "test",
       },
     });
     const site = await prisma.site.create({
       data: {
-        apiKey: "test-api-key-bots-1",
+        apiKey: "test-api-key-traffic-1",
         content: "Test content",
-        domain: "bots-test.example.com",
-        id: "site-bots-1",
+        domain: "traffic-test.example.com",
+        id: "site-traffic-1",
         ownerId: user.id,
         summary: "Test summary",
       },
@@ -95,27 +116,89 @@ describe("site bots page", () => {
     siteDomain = site.domain;
   });
 
+  afterAll(async () => {
+    await prisma.user.delete({ where: { id: user.id } });
+  });
+
   describe("empty state", () => {
     let page: Awaited<ReturnType<typeof goto>>;
 
     beforeAll(async () => {
       await signIn(user.id);
-      page = await goto(`/site/${siteDomain}/bots`);
+      page = await goto(`/site/${siteDomain}/traffic`);
     });
 
-    it("should show empty state message", async () => {
-      await expect(page.getByText("No bot traffic recorded")).toBeVisible();
+    it("should show no visitors message", async () => {
+      await expect(page.getByText("No visitors recorded")).toBeVisible();
     });
 
     it("should show site domain breadcrumb", async () => {
+      await expect(page.getByRole("link", { name: siteDomain })).toBeVisible();
+    });
+
+    it("should match visually", { timeout: 30_000 }, async () => {
+      await expect(page.locator("main")).toMatchVisual({
+        name: "site/traffic-empty",
+      });
+    });
+  });
+
+  describe("with human visits", () => {
+    let page: Awaited<ReturnType<typeof goto>>;
+
+    beforeAll(async () => {
+      for (const v of HUMAN_VISITS) {
+        const date = daysAgo(v.daysAgo);
+        await prisma.humanVisit.create({
+          data: {
+            siteId,
+            visitorId: v.visitorId,
+            browser: v.browser,
+            deviceType: v.deviceType,
+            aiReferral: v.aiReferral ?? null,
+            count: v.count,
+            date,
+            firstSeen: date,
+            lastSeen: date,
+          },
+        });
+      }
+      page = await goto(
+        `/site/${siteDomain}/traffic?from=2026-01-27&until=2026-02-26`,
+      );
+    });
+
+    afterAll(async () => {
+      await prisma.humanVisit.deleteMany({ where: { siteId } });
+    });
+
+    it("should show total unique visitors", async () => {
       await expect(
-        page.getByRole("link", { name: "bots-test.example.com" }),
+        page
+          .locator('[data-slot="card"]')
+          .filter({ hasText: "Unique Visitors" })
+          .getByText("3"),
+      ).toBeVisible();
+    });
+
+    it("should show AI platforms in the breakdown table", async () => {
+      await expect(
+        page.getByRole("cell", { name: "chatgpt", exact: true }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("cell", { name: "gemini", exact: true }),
       ).toBeVisible();
     });
 
     it("should match visually", { timeout: 30_000 }, async () => {
       await expect(page.locator("main")).toMatchVisual({
-        name: "site/bots-empty",
+        name: "site/traffic-with-visitors",
+        modify: (html) =>
+          removeElements(html, (node) => {
+            if (node.attributes["data-slot"] === "chart") return true;
+            const href = node.attributes.href ?? "";
+            return href.startsWith("/site/") && !href.endsWith("/traffic");
+          }),
       });
     });
   });
@@ -139,10 +222,13 @@ describe("site bots page", () => {
           },
         });
       }
-      // Navigate with a fixed date range so the page content is deterministic
       page = await goto(
-        `/site/${siteDomain}/bots?from=2026-01-27&until=2026-02-26`,
+        `/site/${siteDomain}/traffic?from=2026-01-27&until=2026-02-26`,
       );
+    });
+
+    afterAll(async () => {
+      await prisma.botVisit.deleteMany({ where: { siteId } });
     });
 
     it("should list all bot types in the activity table", async () => {
@@ -157,39 +243,8 @@ describe("site bots page", () => {
       ).toBeVisible();
     });
 
-    it("should list crawled paths", async () => {
-      await expect(
-        page.getByRole("cell", { name: "/", exact: true }),
-      ).toBeVisible();
-      await expect(
-        page.getByRole("cell", { name: "/blog", exact: true }),
-      ).toBeVisible();
-      await expect(
-        page.getByRole("cell", { name: "/about", exact: true }),
-      ).toBeVisible();
-    });
-
-    it("should show MIME types in Accept Types table", async () => {
-      // Scope to the Accept Types table (column header "MIME Type") to avoid
-      // matching the "text/html" cell in the Bot Activity accepts column.
-      const mimeTable = page
-        .locator("table")
-        .filter({ has: page.locator("th", { hasText: "MIME Type" }) });
-      await expect(
-        mimeTable.getByRole("cell", { name: "text/html", exact: true }),
-      ).toBeVisible();
-    });
-
-    it("should match visually", { timeout: 30_000 }, async () => {
-      await expect(page.locator("main")).toMatchVisual({
-        name: "site/bots-with-visits",
-        modify: (html) =>
-          removeElements(html, (node) => {
-            if (node.attributes["data-slot"] === "chart") return true;
-            const href = node.attributes.href ?? "";
-            return href.startsWith("/site/") && !href.endsWith("/bots");
-          }),
-      });
+    it("should show bot traffic trend chart", async () => {
+      await expect(page.getByText("Traffic Trend")).toBeVisible();
     });
   });
 
@@ -205,7 +260,7 @@ describe("site bots page", () => {
         },
       });
       page = await goto(
-        `/site/${siteDomain}/bots?from=2026-01-27&until=2026-02-26`,
+        `/site/${siteDomain}/traffic?from=2026-01-27&until=2026-02-26`,
       );
     });
 

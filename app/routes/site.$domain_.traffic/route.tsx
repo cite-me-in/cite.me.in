@@ -12,7 +12,6 @@ import AiPlatformBreakdown from "./AiPlatformBreakdown";
 import BotActivity from "./BotActivity";
 import BotInsights from "./BotInsights";
 import BotTrafficTrend from "./BotTrafficTrend";
-import NoTraffic from "./NoTraffic";
 import NoVisitors from "./NoVisitors";
 import VisitorKeyMetrics from "./VisitorKeyMetrics";
 import VisitorTrafficChart from "./VisitorTrafficChart";
@@ -245,13 +244,11 @@ export default function TrafficPage({ loaderData }: Route.ComponentProps) {
 
         {insight && <BotInsights insight={insight} />}
 
-        {hasBots ? (
+        {hasBots && (
           <>
             <BotTrafficTrend topBots={topBots} chartData={botChartData} />
             <BotActivity botActivity={botActivity} />
           </>
-        ) : (
-          <NoTraffic domain={site.domain} />
         )}
       </section>
     </Main>
