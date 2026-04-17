@@ -116,7 +116,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     }
     case "suggest": {
       try {
-        const suggestions = await generateSiteQueries(site);
+        const suggestions = await generateSiteQueries(site.id);
         return { ok: true, suggestions };
       } catch (error) {
         captureAndLogError(error, { extra: { siteId: site.id } });

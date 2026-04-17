@@ -22,7 +22,7 @@ export default async function generateSiteQueries(
     where: { id: siteId },
     select: { content: true },
   });
-  const { content, ...x } = await client.beta.messages.create({
+  const { content } = await client.beta.messages.create({
     model: "claude-haiku-4-5",
     output_config: {
       format: {

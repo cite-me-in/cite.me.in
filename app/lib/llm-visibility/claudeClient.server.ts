@@ -1,21 +1,16 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { BetaWebSearchResultBlock } from "@anthropic-ai/sdk/resources/beta/messages/messages.mjs";
-import * as ai from "ai";
-import { wrapAISDK } from "braintrust";
 import envVars from "~/lib/envVars.server";
 import type { QueryFn } from "./queryFn";
 
 export const MODEL_ID = "claude-haiku-4-5-20251001";
 export const MODEL_PRICING = { costPerInputM: 1.0, costPerOutputM: 5.0 };
 
-const { generateText } = wrapAISDK(ai);
-
 const client = new Anthropic({
   apiKey: envVars.ANTHROPIC_API_KEY,
 });
 
 export default async function queryClaude({
-  maxRetries,
   timeout,
   query,
 }: {
