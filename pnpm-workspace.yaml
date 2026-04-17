@@ -5,7 +5,8 @@ minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - "@biomejs/biome"
   - "@biomejs/*"
-  - "typescript"
+  - "react-email"
+  - "@react-email/render"
 
 onlyBuiltDependencies:
   - "@infisical/cli"

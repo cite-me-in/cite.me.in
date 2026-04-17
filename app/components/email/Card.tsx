@@ -1,4 +1,4 @@
-import { Column, Heading, Row, Section } from "@react-email/components";
+import { Column, Heading, Row, Section } from "react-email";
 import { twMerge } from "tailwind-merge";
 
 export default function Card({

@@ -12,7 +12,7 @@ import {
   Tailwind,
   Text,
   pixelBasedPreset,
-} from "@react-email/components";
+} from "react-email";
 import { EmailLinkContext } from "~/components/email/context";
 import Link from "~/components/email/Link";
 import envVars from "~/lib/envVars.server";

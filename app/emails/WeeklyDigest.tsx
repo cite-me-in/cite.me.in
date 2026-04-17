@@ -1,5 +1,5 @@
-import { Column, Img, Row, Section, Text } from "@react-email/components";
 import { map } from "radashi";
+import { Column, Img, Row, Section, Text } from "react-email";
 import { twMerge } from "tailwind-merge";
 import { BrandReminderCard } from "~/components/email/BrandReminder";
 import Button from "~/components/email/Button";

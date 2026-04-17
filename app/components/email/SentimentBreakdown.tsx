@@ -1,4 +1,4 @@
-import { Column, Row, Section, Text } from "@react-email/components";
+import { Column, Row, Section, Text } from "react-email";
 import { twMerge } from "tailwind-merge";
 import PLATFORMS from "~/lib/llm-visibility/platforms";
 import type { SentimentLabel } from "~/prisma";

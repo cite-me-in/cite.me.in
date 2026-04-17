@@ -1,6 +1,6 @@
-import { render } from "@react-email/components";
 import { MailIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { render } from "react-email";
 import { useFetcher } from "react-router";
 import { Button } from "~/components/ui/Button";
 import EmailLayout from "~/emails/EmailLayout";

@@ -1,4 +1,4 @@
-import { Link as EmailLink } from "@react-email/components";
+import { Link as EmailLink } from "react-email";
 import envVars from "~/lib/envVars.server";
 import { useEmailLinkContext } from "./context";
 

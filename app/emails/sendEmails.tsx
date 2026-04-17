@@ -1,9 +1,9 @@
-import { pretty, render } from "@react-email/components";
 import { ms } from "convert";
 import debug from "debug";
 import Redis from "ioredis";
 import type { Page } from "playwright";
 import { retry, sleep } from "radashi";
+import { pretty, render } from "react-email";
 import { Resend } from "resend";
 import invariant from "tiny-invariant";
 import { EmailLinkContext } from "~/components/email/context";

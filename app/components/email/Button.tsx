@@ -1,4 +1,4 @@
-import { Button as EmailButton } from "@react-email/components";
+import { Button as EmailButton } from "react-email";
 import { twMerge } from "tailwind-merge";
 import envVars from "~/lib/envVars.server";
 import { useEmailLinkContext } from "./context";

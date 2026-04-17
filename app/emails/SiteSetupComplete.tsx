@@ -1,4 +1,4 @@
-import { Section, Text } from "@react-email/components";
+import { Section, Text } from "react-email";
 import { BrandReminderCard } from "~/components/email/BrandReminder";
 import Button from "~/components/email/Button";
 import Card from "~/components/email/Card";
