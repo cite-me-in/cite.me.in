@@ -1,14 +1,13 @@
-import { openai } from "@ai-sdk/openai";
-import * as ai from "ai";
-import { wrapAISDK } from "braintrust";
-import invariant from "tiny-invariant";
+import OpenAI from "openai";
 import envVars from "~/lib/envVars.server";
 import type { QueryFn } from "./queryFn";
 
 export const MODEL_ID = "gpt-5-chat-latest";
 export const MODEL_PRICING = { costPerInputM: 1.25, costPerOutputM: 10.0 };
 
-const { generateText } = wrapAISDK(ai);
+const client = new OpenAI({
+  apiKey: envVars.OPENAI_API_KEY,
+});
 
 export default async function openaiClient({
   maxRetries,
@@ -19,46 +18,61 @@ export default async function openaiClient({
   query: string;
   timeout: number;
 }): ReturnType<QueryFn> {
-  invariant(envVars.OPENAI_API_KEY, "OPENAI_API_KEY is not set");
-
-  const { sources, text, usage } = await generateText({
-    model: openai(MODEL_ID),
-    providerOptions: {
-      openai: {
-        apiKey: envVars.OPENAI_API_KEY,
-      },
-    },
-
-    prompt: [
-      {
-        role: "system",
-        content: `
-You are ChatGPT with web search capabilities. When answering questions, search
+  const { output, usage } = await client.responses.create(
+    {
+      model: MODEL_ID,
+      input: [
+        {
+          role: "system",
+          content: [
+            {
+              type: "input_text",
+              text: `You are ChatGPT with web search capabilities. When answering questions, search
 the web for current information and cite your sources using numbered citations
 like [1], [2], etc. Always include a 'Sources:' section at the end with numbered
 references, with a link to each source URL.`,
-      },
-      {
-        role: "user",
-        content: [{ text: query, type: "text" }],
-      },
-    ],
-    tools: {
-      web_search: openai.tools.webSearch({
-        externalWebAccess: true,
-        searchContextSize: "high",
-      }),
+            },
+          ],
+        },
+        {
+          role: "user",
+          content: [{ type: "input_text", text: query }],
+        },
+      ],
+      tools: [{ type: "web_search" }],
+      tool_choice: "auto",
     },
-    toolChoice: { type: "tool", toolName: "web_search" },
+    {
+      maxRetries,
+      timeout,
+    },
+  );
 
-    maxOutputTokens: 5000,
-    maxRetries,
-    timeout,
-  });
-  const urlSources = sources.filter(
-    (source) =>
-      source.type === "source" && source.sourceType === "url" && source.url,
-  ) as { url: string }[];
-  const citations = [...new Set(urlSources.map(({ url }) => url))];
-  return { citations, extraQueries: [], text, usage };
+  const message = output.find((item) => item.type === "message");
+  const text =
+    message?.type === "message" && message.content[0]?.type === "output_text"
+      ? message.content[0].text
+      : "";
+
+  const annotations =
+    message?.type === "message" && message.content[0]?.type === "output_text"
+      ? (message.content[0].annotations ?? [])
+      : [];
+  const citations = [
+    ...new Set(
+      annotations
+        .filter((a) => a.type === "url_citation")
+        .map((a) => (a as { url: string }).url),
+    ),
+  ];
+
+  return {
+    citations,
+    extraQueries: [],
+    text,
+    usage: {
+      inputTokens: usage?.input_tokens ?? 0,
+      outputTokens: usage?.output_tokens ?? 0,
+    },
+  };
 }

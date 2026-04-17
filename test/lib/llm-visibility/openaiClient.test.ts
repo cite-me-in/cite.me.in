@@ -1,31 +1,47 @@
-import { generateText } from "ai";
-import { describe, expect, it, vi } from "vitest";
-import openaiClient from "~/lib/llm-visibility/openaiClient";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@ai-sdk/openai", () => {
-  const openai = Object.assign(
-    vi.fn(() => "mock-model"),
-    {
-      tools: { webSearch: vi.fn(() => "mock-web-search") },
-    },
-  );
-  return { openai };
-});
+const mockCreate = vi.hoisted(() => vi.fn());
 
-vi.mock("ai", () => ({
-  generateText: vi.fn(),
-  gateway: vi.fn(),
+vi.mock("openai", () => ({
+  default: class {
+    responses = {
+      create: mockCreate,
+    };
+  },
+}));
+
+vi.mock("~/lib/envVars.server", () => ({
+  default: { OPENAI_API_KEY: "test-key" },
 }));
 
 describe("openaiClient", () => {
-  it("should return citations from URL sources and the response text", async () => {
-    vi.mocked(generateText).mockResolvedValue({
-      sources: [
-        { type: "source", sourceType: "url", url: "https://example.com" },
-        { type: "source", sourceType: "url", url: "https://other.com" },
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should return citations from URL annotations and the response text", async () => {
+    mockCreate.mockResolvedValue({
+      output: [
+        {
+          type: "message",
+          content: [
+            {
+              type: "output_text",
+              text: "Paris is the capital of France.",
+              annotations: [
+                { type: "url_citation", url: "https://example.com" },
+                { type: "url_citation", url: "https://other.com" },
+              ],
+            },
+          ],
+        },
       ],
-      text: "Paris is the capital of France.",
-    } as never);
+      usage: { input_tokens: 100, output_tokens: 50 },
+    });
+
+    const { default: openaiClient } = await import(
+      "~/lib/llm-visibility/openaiClient"
+    );
 
     const result = await openaiClient({
       maxRetries: 0,
@@ -41,14 +57,29 @@ describe("openaiClient", () => {
     expect(result.extraQueries).toEqual([]);
   });
 
-  it("should filter out non-URL sources", async () => {
-    vi.mocked(generateText).mockResolvedValue({
-      sources: [
-        { type: "source", sourceType: "url", url: "https://example.com" },
-        { sourceType: "document", id: "doc-1" },
+  it("should filter out non-URL annotations", async () => {
+    mockCreate.mockResolvedValue({
+      output: [
+        {
+          type: "message",
+          content: [
+            {
+              type: "output_text",
+              text: "Response",
+              annotations: [
+                { type: "url_citation", url: "https://example.com" },
+                { type: "other", id: "doc-1" },
+              ],
+            },
+          ],
+        },
       ],
-      text: "Response",
-    } as never);
+      usage: { input_tokens: 100, output_tokens: 50 },
+    });
+
+    const { default: openaiClient } = await import(
+      "~/lib/llm-visibility/openaiClient"
+    );
 
     const result = await openaiClient({
       maxRetries: 0,
@@ -59,11 +90,59 @@ describe("openaiClient", () => {
     expect(result.citations).toEqual(["https://example.com"]);
   });
 
-  it("should return empty citations when there are no sources", async () => {
-    vi.mocked(generateText).mockResolvedValue({
-      sources: [],
-      text: "I don't know.",
-    } as never);
+  it("should deduplicate citations", async () => {
+    mockCreate.mockResolvedValue({
+      output: [
+        {
+          type: "message",
+          content: [
+            {
+              type: "output_text",
+              text: "Response",
+              annotations: [
+                { type: "url_citation", url: "https://example.com" },
+                { type: "url_citation", url: "https://example.com" },
+              ],
+            },
+          ],
+        },
+      ],
+      usage: { input_tokens: 100, output_tokens: 50 },
+    });
+
+    const { default: openaiClient } = await import(
+      "~/lib/llm-visibility/openaiClient"
+    );
+
+    const result = await openaiClient({
+      maxRetries: 0,
+      timeout: 0,
+      query: "query",
+    });
+
+    expect(result.citations).toEqual(["https://example.com"]);
+  });
+
+  it("should return empty citations when there are no annotations", async () => {
+    mockCreate.mockResolvedValue({
+      output: [
+        {
+          type: "message",
+          content: [
+            {
+              type: "output_text",
+              text: "I don't know.",
+              annotations: [],
+            },
+          ],
+        },
+      ],
+      usage: { input_tokens: 100, output_tokens: 50 },
+    });
+
+    const { default: openaiClient } = await import(
+      "~/lib/llm-visibility/openaiClient"
+    );
 
     const result = await openaiClient({
       maxRetries: 0,
