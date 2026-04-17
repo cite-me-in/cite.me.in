@@ -9,7 +9,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     throw new Response("Unauthorized", { status: 401 });
 
   try {
-    const results = await checkCitingPages({ staleHours: 24, limit: 100 });
+    const results = await checkCitingPages({ staleDays: 7, limit: 500 });
     return data({ ok: true, checked: results.length, results });
   } catch (error) {
     captureAndLogError(error);

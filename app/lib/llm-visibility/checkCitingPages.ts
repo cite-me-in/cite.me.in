@@ -1,23 +1,30 @@
 import { parallel } from "radashi";
 import checkCitingPageHealth from "~/lib/citingPageHealth.server";
-import { hoursAgo } from "~/lib/formatDate";
+import { daysAgo } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
 
-export default async function ({
-  staleHours = 24,
-  limit = 100,
+/**
+ * Check the health of citing pages that have not been checked in a while.
+ *
+ * @param staleDays - The number of days to consider a page stale.
+ * @param limit - The maximum number of pages to check.
+ * @returns The citing pages that were just checked.
+ */
+export default async function checkCitingPages({
+  staleDays,
+  limit,
 }: {
-  staleHours?: number;
-  limit?: number;
+  staleDays: number;
+  limit: number;
 }): Promise<{ url: string; statusCode: number | null; isHealthy: boolean }[]> {
-  const staleThreshold = hoursAgo(staleHours);
+  const staleThreshold = daysAgo(staleDays);
   const pages = await prisma.citingPage.findMany({
+    include: { site: { select: { domain: true, owner: true } } },
+    orderBy: { citationCount: "desc" },
+    take: limit,
     where: {
       OR: [{ lastCheckedAt: null }, { lastCheckedAt: { lt: staleThreshold } }],
     },
-    include: { site: { select: { domain: true, owner: true } } },
-    take: limit,
-    orderBy: { citationCount: "desc" },
   });
 
   return await parallel({ limit: 10 }, pages, async (page) => {
