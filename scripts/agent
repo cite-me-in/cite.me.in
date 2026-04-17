@@ -1,2 +1,2 @@
 #!/bin/bash
-claude $1
+opencode 
