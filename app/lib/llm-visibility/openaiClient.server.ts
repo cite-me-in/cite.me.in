@@ -22,7 +22,7 @@ export default async function openaiClient({
   const { output, usage } = await client.responses.create(
     {
       input: query,
-      model: "gpt-4.1-nano",
+      model: MODEL_ID,
       tools: [{ type: "web_search" }],
     },
     {
@@ -59,11 +59,3 @@ export default async function openaiClient({
     },
   };
 }
-
-console.log(
-  await openaiClient({
-    maxRetries: 0,
-    timeout: 10_000_000,
-    query: "What is the capital of France?",
-  }),
-);
