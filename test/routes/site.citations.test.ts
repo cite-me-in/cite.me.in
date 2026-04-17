@@ -1,10 +1,11 @@
 import { expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vitest";
 import { removeElements } from "~/lib/html/parseHTML";
+import PLATFORMS from "~/lib/llm-visibility/platforms";
 import prisma from "~/lib/prisma.server";
 import type { User } from "~/prisma";
-import { goto, port } from "../helpers/launchBrowser";
-import { signIn } from "../helpers/signIn";
+import { goto, port } from "~/test/helpers/launchBrowser";
+import { signIn } from "~/test/helpers/signIn";
 
 // ---------------------------------------------------------------------------
 // Fixed seed data — deterministic so HTML/screenshot baselines never drift
@@ -93,12 +94,6 @@ const CITATION_SETS: Array<{ citations: string[] }> = [
   },
 ];
 
-const PLATFORMS = [
-  { platform: "chatgpt", model: "gpt-5-chat-latest" },
-  { platform: "claude", model: "claude-haiku-4-5-20251001" },
-  { platform: "gemini", model: "gemini-2.5-flash" },
-] as const;
-
 // Fixed base date so createdAt values — and the date shown in the UI — never drift.
 const BASE_DATE = new Date("2026-02-26T10:00:00.000Z");
 function daysAgo(n: number): Date {
@@ -155,12 +150,12 @@ describe("site page", () => {
     // Three runs per platform (oldest → newest) so charts have ≥2 data points.
     const runDays = [14, 7, 0];
 
-    for (const { platform, model } of PLATFORMS) {
+    for (const { name, model } of PLATFORMS) {
       for (let runIdx = 0; runIdx < runDays.length; runIdx++) {
         const run = await prisma.citationQueryRun.create({
           data: {
             siteId: site.id,
-            platform,
+            platform: name,
             model,
             onDate: daysAgo(runDays[runIdx]).toISOString().split("T")[0],
             queries: {
@@ -175,19 +170,19 @@ describe("site page", () => {
             },
             ...(runIdx === 2 && {
               sentimentLabel:
-                platform === "chatgpt"
+                name === "chatgpt"
                   ? "positive"
-                  : platform === "gemini"
+                  : name === "gemini"
                     ? "negative"
-                    : platform === "claude"
+                    : name === "claude"
                       ? "neutral"
                       : "mixed",
               sentimentSummary:
-                platform === "chatgpt"
+                name === "chatgpt"
                   ? "Rentail.space is cited positively across multiple queries, frequently appearing as a top recommendation for finding short-term retail space. It ranks prominently in citations and is described as a reliable marketplace for pop-up and kiosk leasing."
-                  : platform === "gemini"
+                  : name === "gemini"
                     ? "Rentail.space receives unfavorable mentions in several responses, with competitors ranked more prominently. Some responses question the platform's selection compared to established alternatives."
-                    : platform === "claude"
+                    : name === "claude"
                       ? "Rentail.space is mentioned neutrally, appearing as one of several options without particular emphasis. Citations are factual with no positive or negative framing."
                       : "Rentail.space receives a mix of positive and critical mentions across queries. It ranks well for some use cases but is overlooked in others where competitors dominate.",
             }),
