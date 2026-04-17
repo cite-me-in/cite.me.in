@@ -42,7 +42,7 @@ describe("queryPerplexity", () => {
     });
 
     const { default: queryPerplexity } = await import(
-      "~/lib/llm-visibility/perplexityClient"
+      "~/lib/llm-visibility/perplexityClient.server"
     );
 
     const result = await queryPerplexity({
@@ -68,7 +68,7 @@ describe("queryPerplexity", () => {
     });
 
     const { default: queryPerplexity } = await import(
-      "~/lib/llm-visibility/perplexityClient"
+      "~/lib/llm-visibility/perplexityClient.server"
     );
 
     const result = await queryPerplexity({
@@ -104,7 +104,7 @@ describe("queryPerplexity", () => {
     });
 
     const { default: queryPerplexity } = await import(
-      "~/lib/llm-visibility/perplexityClient"
+      "~/lib/llm-visibility/perplexityClient.server"
     );
 
     const result = await queryPerplexity({

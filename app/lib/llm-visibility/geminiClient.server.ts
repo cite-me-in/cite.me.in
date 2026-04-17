@@ -4,6 +4,7 @@ import { map } from "radashi";
 import envVars from "~/lib/envVars.server";
 import type { QueryFn } from "./queryFn";
 
+// https://ai.google.dev/gemini-api/docs/pricing
 export const MODEL_ID = "gemini-2.5-flash";
 export const MODEL_PRICING = { costPerInputM: 0.3, costPerOutputM: 2.5 };
 

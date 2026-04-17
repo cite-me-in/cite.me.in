@@ -40,7 +40,7 @@ describe("openaiClient", () => {
     });
 
     const { default: openaiClient } = await import(
-      "~/lib/llm-visibility/openaiClient"
+      "~/lib/llm-visibility/openaiClient.server"
     );
 
     const result = await openaiClient({
@@ -78,7 +78,7 @@ describe("openaiClient", () => {
     });
 
     const { default: openaiClient } = await import(
-      "~/lib/llm-visibility/openaiClient"
+      "~/lib/llm-visibility/openaiClient.server"
     );
 
     const result = await openaiClient({
@@ -111,7 +111,7 @@ describe("openaiClient", () => {
     });
 
     const { default: openaiClient } = await import(
-      "~/lib/llm-visibility/openaiClient"
+      "~/lib/llm-visibility/openaiClient.server"
     );
 
     const result = await openaiClient({
@@ -141,7 +141,7 @@ describe("openaiClient", () => {
     });
 
     const { default: openaiClient } = await import(
-      "~/lib/llm-visibility/openaiClient"
+      "~/lib/llm-visibility/openaiClient.server"
     );
 
     const result = await openaiClient({

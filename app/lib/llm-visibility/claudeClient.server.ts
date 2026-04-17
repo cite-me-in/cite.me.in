@@ -3,6 +3,7 @@ import type { BetaWebSearchResultBlock } from "@anthropic-ai/sdk/resources/beta/
 import envVars from "~/lib/envVars.server";
 import type { QueryFn } from "./queryFn";
 
+// https://platform.claude.com/docs/en/about-claude/pricing
 export const MODEL_ID = "claude-haiku-4-5-20251001";
 export const MODEL_PRICING = { costPerInputM: 1.0, costPerOutputM: 5.0 };
 

@@ -2,8 +2,9 @@ import OpenAI from "openai";
 import envVars from "~/lib/envVars.server";
 import type { QueryFn } from "./queryFn";
 
-export const MODEL_ID = "gpt-5-chat-latest";
-export const MODEL_PRICING = { costPerInputM: 1.25, costPerOutputM: 10.0 };
+// https://developers.openai.com/api/docs/pricing
+export const MODEL_ID = "gpt-4o-mini";
+export const MODEL_PRICING = { costPerInputM: 0.4, costPerOutputM: 1.6 };
 
 const client = new OpenAI({
   apiKey: envVars.OPENAI_API_KEY,
@@ -20,27 +21,9 @@ export default async function openaiClient({
 }): ReturnType<QueryFn> {
   const { output, usage } = await client.responses.create(
     {
-      model: MODEL_ID,
-      input: [
-        {
-          role: "system",
-          content: [
-            {
-              type: "input_text",
-              text: `You are ChatGPT with web search capabilities. When answering questions, search
-the web for current information and cite your sources using numbered citations
-like [1], [2], etc. Always include a 'Sources:' section at the end with numbered
-references, with a link to each source URL.`,
-            },
-          ],
-        },
-        {
-          role: "user",
-          content: [{ type: "input_text", text: query }],
-        },
-      ],
+      input: query,
+      model: "gpt-4.1-nano",
       tools: [{ type: "web_search" }],
-      tool_choice: "auto",
     },
     {
       maxRetries,
@@ -76,3 +59,11 @@ references, with a link to each source URL.`,
     },
   };
 }
+
+console.log(
+  await openaiClient({
+    maxRetries: 0,
+    timeout: 10_000_000,
+    query: "What is the capital of France?",
+  }),
+);

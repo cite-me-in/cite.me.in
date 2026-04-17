@@ -1,9 +1,9 @@
+import queryClaude from "~/lib/llm-visibility/claudeClient.server";
+import queryGemini from "~/lib/llm-visibility/geminiClient.server";
+import openaiClient from "~/lib/llm-visibility/openaiClient.server";
+import PLATFORMS from "~/lib/llm-visibility/platforms";
 import type { QueryFn } from "./queryFn";
 import fetchSERPResults from "./serpApi.server";
-import openaiClient from "~/lib/llm-visibility/openaiClient";
-import queryClaude from "~/lib/llm-visibility/claudeClient.server";
-import queryGemini from "~/lib/llm-visibility/geminiClient";
-import PLATFORMS from "~/lib/llm-visibility/platforms";
 
 const platforms = Object.fromEntries(
   PLATFORMS.map(({ name, model, label }) => [name, { name, model, label }]),

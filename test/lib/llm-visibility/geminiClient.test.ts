@@ -27,8 +27,18 @@ describe("queryGemini", () => {
           groundingMetadata: {
             webSearchQueries: ["capital of France"],
             groundingChunks: [
-              { web: { uri: "https://redirect.example.com/1", title: "Source 1" } },
-              { web: { uri: "https://redirect.example.com/2", title: "Source 2" } },
+              {
+                web: {
+                  uri: "https://redirect.example.com/1",
+                  title: "Source 1",
+                },
+              },
+              {
+                web: {
+                  uri: "https://redirect.example.com/2",
+                  title: "Source 2",
+                },
+              },
             ],
           },
         },
@@ -48,7 +58,7 @@ describe("queryGemini", () => {
     );
 
     const { default: queryGemini } = await import(
-      "~/lib/llm-visibility/geminiClient"
+      "~/lib/llm-visibility/geminiClient.server"
     );
 
     const result = await queryGemini({
@@ -87,7 +97,7 @@ describe("queryGemini", () => {
     });
 
     const { default: queryGemini } = await import(
-      "~/lib/llm-visibility/geminiClient"
+      "~/lib/llm-visibility/geminiClient.server"
     );
 
     await queryGemini({
@@ -112,7 +122,7 @@ describe("queryGemini", () => {
     });
 
     const { default: queryGemini } = await import(
-      "~/lib/llm-visibility/geminiClient"
+      "~/lib/llm-visibility/geminiClient.server"
     );
 
     const result = await queryGemini({
@@ -135,7 +145,7 @@ describe("queryGemini", () => {
     });
 
     const { default: queryGemini } = await import(
-      "~/lib/llm-visibility/geminiClient"
+      "~/lib/llm-visibility/geminiClient.server"
     );
 
     const result = await queryGemini({

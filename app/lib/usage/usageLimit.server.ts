@@ -7,15 +7,15 @@ import {
 import {
   MODEL_ID as GEMINI_MODEL_ID,
   MODEL_PRICING as GEMINI_PRICING,
-} from "~/lib/llm-visibility/geminiClient";
+} from "~/lib/llm-visibility/geminiClient.server";
 import {
   MODEL_ID as OPENAI_MODEL_ID,
   MODEL_PRICING as OPENAI_PRICING,
-} from "~/lib/llm-visibility/openaiClient";
+} from "~/lib/llm-visibility/openaiClient.server";
 import {
   MODEL_ID as PERPLEXITY_MODEL_ID,
   MODEL_PRICING as PERPLEXITY_PRICING,
-} from "~/lib/llm-visibility/perplexityClient";
+} from "~/lib/llm-visibility/perplexityClient.server";
 import { SERPAPI_PRICING } from "~/lib/llm-visibility/serpApi.server";
 import prisma from "~/lib/prisma.server";
 import { Prisma } from "~/prisma";
