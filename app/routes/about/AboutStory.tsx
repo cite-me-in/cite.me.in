@@ -27,8 +27,10 @@ export default function AboutStory() {
                 manual spot-checking.
               </p>
               <p>
-                Now we're making it available to any brand that wants to
-                understand and improve their presence in AI-generated answers.
+                It worked better than expected. We spent nothing on ads, yet 12%
+                of visitors converted. That's when we knew this wasn't just a
+                side project — we turned it into Cite.me.in so other brands
+                could see the same clarity.
               </p>
             </div>
           </div>
