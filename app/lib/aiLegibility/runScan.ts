@@ -5,10 +5,9 @@ import checkMetaTags from "./checks/metaTags";
 import checkRobotsTxt from "./checks/robotsTxt";
 import checkSitemapTxt from "./checks/sitemapTxt";
 import checkSitemapXml from "./checks/sitemapXml";
+import { withMinDelay } from "./delay";
 import generateSuggestions from "./generateSuggestions";
-import type { CheckResult, ScanResult, Suggestion } from "./types";
-
-export type { CheckResult, ScanResult, Suggestion };
+import type { CheckResult, ScanResult } from "./types";
 
 export async function runScan({
   log,
@@ -22,22 +21,30 @@ export async function runScan({
 
   const checks: CheckResult[] = [];
 
-  // Critical checks
-  const homepageResult = await checkHomepageContent({ log, url });
+  const homepageResult = await withMinDelay(() =>
+    checkHomepageContent({ log, url }),
+  );
   checks.push(homepageResult);
-  checks.push(await checkSitemapTxt({ log, url }));
-  checks.push(await checkSitemapXml({ log, url }));
-
-  // Important checks
-  checks.push(await checkRobotsTxt({ log, url }));
-  checks.push(await checkJsonLd({ log, html: homepageResult.html, url }));
-
-  // Optimization checks
-  checks.push(await checkMetaTags({ log, html: homepageResult.html, url }));
-  checks.push(await checkLlmsTxt({ log, url }));
+  checks.push(await withMinDelay(() => checkSitemapTxt({ log, url })));
+  checks.push(await withMinDelay(() => checkSitemapXml({ log, url })));
+  checks.push(await withMinDelay(() => checkRobotsTxt({ log, url })));
+  checks.push(
+    await withMinDelay(() =>
+      checkJsonLd({ log, html: homepageResult.html, url }),
+    ),
+  );
+  checks.push(
+    await withMinDelay(() =>
+      checkMetaTags({ log, html: homepageResult.html, url }),
+    ),
+  );
+  checks.push(await withMinDelay(() => checkLlmsTxt({ log, url })));
 
   const summary = await summarize({ checks, log });
-  const suggestions = await generateSuggestions({ log, checks, url });
+  const suggestions = await withMinDelay(() =>
+    generateSuggestions({ log, checks, url }),
+  );
+
   return {
     url,
     scannedAt: new Date().toISOString(),
