@@ -4,11 +4,6 @@ import envVars from "./envVars.server";
 
 const logger = debug("ratelimit");
 
-const DEFAULT_CONFIG = {
-  maxRequests: 60,
-  windowSeconds: 60,
-};
-
 function getRedis(): Redis {
   const redis = new Redis(envVars.REDIS_URL, {
     maxRetriesPerRequest: 3,
@@ -30,42 +25,40 @@ function key(userId: string): string {
  * and resetAt is the timestamp when the rate limit will next reset in
  * milliseconds.
  *
- * @param userId - The user ID
- * @param config - The rate limit configuration
+ * @param identity - The identity to use for the rate limit
+ * @param maxRequests - The maximum number of requests allowed
+ * @param windowSeconds - The number of seconds in the rate limit window
  * @returns allowed - true if the user is within the rate limit, false otherwise
  * @returns remaining - the number of requests remaining in the current window
  * @returns resetAt - the timestamp when the rate limit will next reset in milliseconds
  */
-export async function checkRateLimit(
-  userId: string,
-  config: {
-    maxRequests: number;
-    windowSeconds: number;
-  } = DEFAULT_CONFIG,
-): Promise<{
+export async function checkRateLimit({
+  identity,
+  maxRequests,
+  windowSeconds,
+}: {
+  identity: string;
+  maxRequests: number;
+  windowSeconds: number;
+}): Promise<{
   allowed: boolean;
   remaining: number;
   resetAt: number;
 }> {
   const redis = getRedis();
-  const k = key(userId);
+  const uniqueKey = key(identity);
 
-  const count = await redis.incr(k);
-  if (count === 1) await redis.expire(k, config.windowSeconds);
+  const count = await redis.incr(uniqueKey);
+  if (count === 1) await redis.expire(uniqueKey, windowSeconds);
 
-  const ttl = await redis.ttl(k);
+  const ttl = await redis.ttl(uniqueKey);
   const resetAt = Date.now() + ttl * 1000;
 
-  const allowed = count <= config.maxRequests;
-  const remaining = Math.max(0, config.maxRequests - count);
+  const allowed = count <= maxRequests;
+  const remaining = Math.max(0, maxRequests - count);
 
   if (!allowed) {
-    logger(
-      "Rate limit exceeded for user %s: %d/%d",
-      userId,
-      count,
-      config.maxRequests,
-    );
+    logger("Rate limit exceeded for user %s: %d/%d", key, count, maxRequests);
   }
 
   return { allowed, remaining, resetAt };

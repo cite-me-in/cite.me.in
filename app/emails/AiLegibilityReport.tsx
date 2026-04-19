@@ -1,0 +1,171 @@
+import { Section, Text } from "react-email";
+import { BrandReminderCard } from "~/components/email/BrandReminder";
+import Button from "~/components/email/Button";
+import Card from "~/components/email/Card";
+import type { ScanResult } from "~/lib/aiLegibility/types";
+import envVars from "~/lib/envVars.server";
+import prisma from "~/lib/prisma.server";
+import { sendEmail } from "./sendEmails";
+
+export default async function sendAiLegibilityReport({
+  domain,
+  reportId,
+  result,
+  sendTo,
+}: {
+  domain: string;
+  reportId: string;
+  result: ScanResult;
+  sendTo: { id: string; email: string; unsubscribed: boolean };
+}) {
+  const reportUrl = new URL(`/ai-legibility/${reportId}`, envVars.VITE_APP_URL).toString();
+
+  const totalPassed =
+    result.summary.critical.passed +
+    result.summary.important.passed +
+    result.summary.optimization.passed;
+  const totalChecks =
+    result.summary.critical.total +
+    result.summary.important.total +
+    result.summary.optimization.total;
+
+  await sendEmail({
+    domain,
+    email: (
+      <AiLegibilityReport
+        domain={domain}
+        result={result}
+        reportUrl={reportUrl}
+        totalPassed={totalPassed}
+        totalChecks={totalChecks}
+      />
+    ),
+    isTransactional: true,
+    sendTo,
+    subject: `AI Legibility Report for ${domain}`,
+  });
+  await prisma.sentEmail.create({
+    data: { userId: sendTo.id, type: "AiLegibilityReport" },
+  });
+}
+
+function AiLegibilityReport({
+  domain,
+  result,
+  reportUrl,
+  totalPassed,
+  totalChecks,
+}: {
+  domain: string;
+  result: ScanResult;
+  reportUrl: string;
+  totalPassed: number;
+  totalChecks: number;
+}) {
+  const score = Math.round((totalPassed / totalChecks) * 100);
+
+  return (
+    <Section>
+      <Text className="my-4 text-base text-text leading-relaxed">
+        Your AI Legibility Report for <strong>{domain}</strong> is ready.
+      </Text>
+
+      <Card
+        title={`AI Legibility Score: ${score}%`}
+        subtitle={`${totalPassed}/${totalChecks} checks passed`}
+        withBorder
+      >
+        <SummaryTable result={result} />
+      </Card>
+
+      <Section className="my-8 text-center">
+        <Button href={reportUrl}>View Full Report</Button>
+      </Section>
+
+      {result.suggestions.length > 0 && (
+        <Card title="Top Suggestions" withBorder>
+          {result.suggestions.slice(0, 3).map((suggestion, i) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: suggestions are static for a report, index is stable
+            <SuggestionItem key={i} suggestion={suggestion} />
+          ))}
+        </Card>
+      )}
+
+      <BrandReminderCard domain={domain} citations={totalPassed} />
+
+      <Text className="my-4 text-base text-text leading-relaxed">
+        Best regards,
+        <br />
+        The Cite.me.in Team
+      </Text>
+    </Section>
+  );
+}
+
+function SummaryTable({ result }: { result: ScanResult }) {
+  return (
+    <table>
+      <thead>
+        <tr className="text-center text-light text-xs uppercase tracking-wide">
+          <th className="p-4 text-left">Category</th>
+          <th className="p-4">Passed</th>
+          <th className="p-4">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <SummaryRow
+          category="Critical"
+          passed={result.summary.critical.passed}
+          total={result.summary.critical.total}
+        />
+        <SummaryRow
+          category="Important"
+          passed={result.summary.important.passed}
+          total={result.summary.important.total}
+        />
+        <SummaryRow
+          category="Optimization"
+          passed={result.summary.optimization.passed}
+          total={result.summary.optimization.total}
+        />
+      </tbody>
+    </table>
+  );
+}
+
+function SummaryRow({
+  category,
+  passed,
+  total,
+}: {
+  category: string;
+  passed: number;
+  total: number;
+}) {
+  const status = passed === total ? "✓" : `${passed}/${total}`;
+  const statusColor = passed === total ? "text-green-600" : "text-red-600";
+
+  return (
+    <tr className="border-border border-t">
+      <td className="p-4 text-left font-medium">{category}</td>
+      <td className="p-4 text-center">
+        {passed}/{total}
+      </td>
+      <td className={`p-4 text-center font-bold ${statusColor}`}>{status}</td>
+    </tr>
+  );
+}
+
+function SuggestionItem({
+  suggestion,
+}: {
+  suggestion: ScanResult["suggestions"][0];
+}) {
+  return (
+    <div className="border-border border-t p-4">
+      <div className="mb-1 font-bold text-sm">{suggestion.title}</div>
+      <div className="text-light text-xs">{suggestion.effort}</div>
+      <div className="mt-2 text-sm">{suggestion.description}</div>
+    </div>
+  );
+}

@@ -33,7 +33,11 @@ export async function action({ request }: Route.ActionArgs) {
 
   const { userId, scopes } = tokenData;
 
-  const rateLimit = await checkRateLimit(userId);
+  const rateLimit = await checkRateLimit({
+    identity: userId,
+    maxRequests: 10,
+    windowSeconds: 60 * 2,
+  });
   if (!rateLimit.allowed)
     throw new Response("Too Many Requests", {
       status: 429,
