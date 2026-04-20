@@ -76,7 +76,7 @@ Disallow: /private/
 Sitemap: https://acme.com/sitemap.xml
 `;
 
-export const ROBOTS_EMPTY = ``;
+export const ROBOTS_EMPTY = "";
 
 export const SITEMAP_TXT = `https://acme.com/
 https://acme.com/about

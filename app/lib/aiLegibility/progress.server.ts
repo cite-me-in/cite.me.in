@@ -1,7 +1,6 @@
 import { convert } from "convert";
 import debug from "debug";
 import Redis from "ioredis";
-import captureAndLogError from "~/lib/captureAndLogError.server";
 import envVars from "~/lib/envVars.server";
 import type { ScanProgress, ScanResult } from "./types";
 
@@ -66,20 +65,6 @@ export async function getProgress({
   }
 
   return { lines, done, nextOffset: offset + lines.length, result };
-}
-
-export async function getStatus({
-  scanId,
-}: {
-  scanId: string;
-}): Promise<"running" | "complete" | "error" | null> {
-  try {
-    const status = await getRedis().get(statusKey(scanId));
-    return status as "running" | "complete" | "error" | null;
-  } catch (error) {
-    captureAndLogError(error, { extra: { scanId } });
-    return null;
-  }
 }
 
 function getRedis(): Redis {

@@ -22,7 +22,6 @@ export async function withMinDelay<T>(fn: () => Promise<T>): Promise<T> {
   } finally {
     const elapsed = Date.now() - startTime;
     const minDuration = MIN_DELAY + Math.random() * (MAX_DELAY - MIN_DELAY);
-
     if (elapsed < minDuration) await sleep(minDuration - elapsed);
   }
 }
