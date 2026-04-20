@@ -95,6 +95,7 @@ export async function requireUserAccess(request: Request): Promise<{
     id: string;
     passwordHash: string;
     plan: string;
+    unsubscribed: boolean;
   };
   account: { interval: string } | null;
   ownedSites: { id: string; domain: string; summary: string }[];
@@ -117,6 +118,7 @@ export async function requireUserAccess(request: Request): Promise<{
             ownedSites: { select: { domain: true, id: true, summary: true } },
             passwordHash: true,
             plan: true,
+            unsubscribed: true,
             siteUsers: {
               select: {
                 site: { select: { domain: true, id: true, summary: true } },

@@ -61,21 +61,21 @@ export function normalizeDomain(input: string | URL): string {
  * For example:
  * - "https://example.com/?utm_source=openai" -> "https://example.com"
  * - "https://example.com/page?utm_medium=email" -> "https://example.com/page"
+ * - "example.com" -> "https://example.com"
  *
  * @param url - The URL to normalize.
  * @returns The normalized URL or the original string if invalid.
  */
 export function normalizeURL(url: string): string {
   try {
-    const parsed = new URL(url);
+    const parsed = new URL(/^https?:\/\//i.test(url) ? url : `https://${url}`);
     parsed.searchParams.delete("utm_source");
     parsed.searchParams.delete("utm_medium");
     parsed.searchParams.delete("utm_campaign");
     parsed.searchParams.delete("utm_term");
     parsed.searchParams.delete("utm_content");
-    if (parsed.pathname === "/" && parsed.search === "") {
-      return parsed.origin;
-    }
+    if (parsed.pathname === "/" && parsed.search === "") return parsed.origin;
+
     return parsed.origin + parsed.pathname + parsed.search;
   } catch {
     return url;

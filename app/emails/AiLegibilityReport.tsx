@@ -9,16 +9,19 @@ import { sendEmail } from "./sendEmails";
 
 export default async function sendAiLegibilityReport({
   domain,
-  reportId,
+  scanId,
   result,
   sendTo,
 }: {
   domain: string;
-  reportId: string;
+  scanId: string;
   result: ScanResult;
   sendTo: { id: string; email: string; unsubscribed: boolean };
 }) {
-  const reportUrl = new URL(`/ai-legibility/${reportId}`, envVars.VITE_APP_URL).toString();
+  const reportURL = new URL(
+    `/ai-legibility/${scanId}`,
+    envVars.VITE_APP_URL,
+  ).toString();
 
   const totalPassed =
     result.summary.critical.passed +
@@ -35,7 +38,7 @@ export default async function sendAiLegibilityReport({
       <AiLegibilityReport
         domain={domain}
         result={result}
-        reportUrl={reportUrl}
+        reportUrl={reportURL}
         totalPassed={totalPassed}
         totalChecks={totalChecks}
       />
@@ -45,7 +48,7 @@ export default async function sendAiLegibilityReport({
     subject: `AI Legibility Report for ${domain}`,
   });
   await prisma.sentEmail.create({
-    data: { userId: sendTo.id, type: "AiLegibilityReport" },
+    data: { user: { connect: { id: sendTo.id } }, type: "AiLegibilityReport" },
   });
 }
 

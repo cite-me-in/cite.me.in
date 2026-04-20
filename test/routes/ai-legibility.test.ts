@@ -234,7 +234,9 @@ describe("ai-legibility report page", () => {
     const checkSection = reportPage
       .locator('[data-slot="card"]')
       .filter({ hasText: "Optimization" });
-    await expect(checkSection.getByText("llms.txt", { exact: true })).toBeVisible();
+    await expect(
+      checkSection.getByText("llms.txt", { exact: true }),
+    ).toBeVisible();
     await expect(checkSection.getByText("✗")).toBeVisible();
   });
 
@@ -266,7 +268,7 @@ describe("ai-legibility email", () => {
 
     await sendAiLegibilityReport({
       domain: "example.com",
-      reportId: "test-email-report-id",
+      scanId: "test-email-report-id",
       result: SCAN_RESULT,
       sendTo: user,
     });

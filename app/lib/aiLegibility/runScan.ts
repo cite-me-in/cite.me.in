@@ -1,4 +1,5 @@
 import { shuffle } from "radashi";
+import { normalizeURL } from "~/lib/isSameDomain";
 import checkHomepageContent from "./checks/homepageContent";
 import checkJsonLd from "./checks/jsonLd";
 import checkLlmsTxt from "./checks/llmsTxt";
@@ -69,25 +70,6 @@ export async function runScan({
     summary,
     suggestions,
   };
-}
-
-function normalizeURL(url: string): string {
-  // Normalize URL: ensure starts with http(s):// and is lowercase, fix common input cases
-  let normalizedUrl = url.trim();
-
-  if (!/^https?:\/\//i.test(normalizedUrl))
-    // If user entered just domain or www-domain, add https://
-    normalizedUrl = `https://${normalizedUrl}`;
-
-  try {
-    // Use URL constructor to normalize and force hostname to lowercase
-    const url = new URL(normalizedUrl);
-    url.hostname = url.hostname.toLowerCase();
-    return url.toString();
-  } catch {
-    // fallback: keep original if normalization fails
-    return normalizedUrl;
-  }
 }
 
 async function summarize({

@@ -69,7 +69,7 @@ export async function sendTrialEndingEmail({
     ),
   });
   await prisma.sentEmail.create({
-    data: { userId: sendTo.id, type: "TrialEnding" },
+    data: { user: { connect: { id: sendTo.id } }, type: "TrialEnding" },
   });
   return emailId;
 }

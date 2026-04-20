@@ -61,7 +61,7 @@ async function main() {
   });
   await sendAiLegibilityReport({
     domain: new URL(result.url).hostname,
-    reportId: scanId,
+    scanId: scanId,
     result,
     sendTo: user,
   });

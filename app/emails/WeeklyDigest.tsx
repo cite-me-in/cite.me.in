@@ -69,7 +69,7 @@ export async function sendSiteDigestEmails(
       sendTo,
     });
     await prisma.sentEmail.create({
-      data: { userId: sendTo.id, type: "WeeklyDigest" },
+      data: { user: { connect: { id: sendTo.id } }, type: "WeeklyDigest" },
     });
     return emailId;
   });

@@ -56,7 +56,7 @@ export default async function sendSiteSetupEmail({
     subject: "Setup complete",
   });
   await prisma.sentEmail.create({
-    data: { userId: sendTo.id, type: "SiteSetupComplete" },
+    data: { user: { connect: { id: sendTo.id } }, type: "SiteSetupComplete" },
   });
 }
 
