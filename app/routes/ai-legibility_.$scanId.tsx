@@ -67,7 +67,7 @@ export default function AiLegibilityReport({
             AI Legibility Report
           </h1>
           <p className="text-black/60 text-lg">{url}</p>
-          <p className="mt-2 text-black/40 text-sm">
+          <p className="mt-2 text-base text-black/40">
             Scanned {new Date(scannedAt).toLocaleString()}
           </p>
         </div>
@@ -207,7 +207,7 @@ function CheckResults({
               </span>
               <div>
                 <div className="font-medium">{check.name}</div>
-                <div className="text-foreground/60 text-sm">
+                <div className="text-base text-foreground/60">
                   {check.message}
                 </div>
               </div>
@@ -242,18 +242,19 @@ function SuggestionCard({
       className={`rounded border p-4 ${categoryColors[suggestion.category]}`}
     >
       <div className="mb-2 flex items-start justify-between gap-4">
-        <h4 className="font-bold">{suggestion.title}</h4>
+        <h4 className="font-bold text-lg">{suggestion.title}</h4>
         <span
-          className={`shrink-0 font-medium text-sm ${effortColors[suggestion.effort]}`}
+          className={`shrink-0 font-medium text-base ${effortColors[suggestion.effort]}`}
         >
           {suggestion.effort}
         </span>
       </div>
-      <p className="text-foreground/80 text-sm leading-relaxed">
+
+      <p className="text-base text-foreground/80 leading-relaxed">
         {suggestion.description}
       </p>
       {suggestion.fixExample && (
-        <pre className="mt-3 overflow-x-auto rounded bg-black/5 p-2 font-mono text-xs">
+        <pre className="mt-3 overflow-x-auto rounded bg-black/5 p-2 font-mono text-base">
           {suggestion.fixExample}
         </pre>
       )}
