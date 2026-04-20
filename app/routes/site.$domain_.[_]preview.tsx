@@ -1,3 +1,4 @@
+import { Temporal } from "@js-temporal/polyfill";
 import { MailIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { render } from "react-email";
@@ -6,6 +7,7 @@ import { Button } from "~/components/ui/Button";
 import EmailLayout from "~/emails/EmailLayout";
 import { WeeklyDigestEmail, sendSiteDigestEmails } from "~/emails/WeeklyDigest";
 import { requireUserAccess } from "~/lib/auth.server";
+import { formatDateShort } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
 import { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
 import type { Route } from "./+types/site.$domain_.[_]preview";
@@ -14,7 +16,9 @@ export const handle = { siteNav: true };
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { site, user } = await findAdminAndSite(request, params.domain);
-  const { domain, subject, ...data } = await loadWeeklyDigestMetrics(site.id);
+  const { domain, ...data } = await loadWeeklyDigestMetrics(site.id);
+  const today = Temporal.Now.plainDateISO("UTC");
+  const subject = `${domain} • ${formatDateShort(today.subtract({ days: 7 }))} — ${formatDateShort(today)}`;
   const html = await render(
     <EmailLayout domain={domain} subject={subject} user={user}>
       <WeeklyDigestEmail domain={domain} {...data} />

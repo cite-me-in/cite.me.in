@@ -8,7 +8,6 @@ import { normalizeDomain } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
 import type { SentimentLabel } from "~/prisma";
 import { topCompetitors } from "~/routes/site.$domain_.citations/TopCompetitors";
-import { formatDateShort } from "./formatDate";
 
 export async function loadWeeklyDigestMetrics(
   siteId: string,
@@ -131,9 +130,6 @@ export async function loadWeeklyDigestMetrics(
   const sendTo = [owner, ...siteUsers.map((siteUser) => siteUser.user)].filter(
     ({ unsubscribed }) => !unsubscribed,
   );
-  const subject = `${formatDateShort(new Date(weekStart))} — ${formatDateShort(
-    new Date(today.toJSON()),
-  )}`;
 
   const citationsURL = new URL(
     `/site/${domain}/citations`,
@@ -201,7 +197,6 @@ export async function loadWeeklyDigestMetrics(
     },
     sendTo,
     siteId,
-    subject,
     topQueries,
     visits,
   };

@@ -1,3 +1,4 @@
+import { Temporal } from "@js-temporal/polyfill";
 import { map } from "radashi";
 import { Column, Img, Row, Section, Text } from "react-email";
 import { twMerge } from "tailwind-merge";
@@ -7,6 +8,7 @@ import Card from "~/components/email/Card";
 import KeyMetrics from "~/components/email/KeyMetric";
 import PlatformBreakdown from "~/components/email/PlatformBreakdown";
 import SentimentBreakdown from "~/components/email/SentimentBreakdown";
+import { formatDateShort } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
 import type { SentimentLabel } from "~/prisma";
 import { TopCompetitors } from "../components/email/TopCompetitors";
@@ -38,7 +40,6 @@ export type WeeklyDigestEmailProps = {
   score: { current: number; previous: number };
   sendTo: { id: string; email: string; unsubscribed: boolean }[];
   siteId: string;
-  subject: string;
   topQueries: { query: string; count: number; delta: number }[];
   visits: {
     // Total page views (human + bot)
@@ -60,12 +61,17 @@ export async function sendSiteDigestEmails(
     data: { digestSentAt: new Date() },
   });
 
+  const today = Temporal.Now.plainDateISO("UTC");
+  const subject = `${data.domain} • ${formatDateShort(
+    today.subtract({ days: 7 }),
+  )} — ${formatDateShort(today)}`;
+
   const emailIds = await map(data.sendTo, async (sendTo) => {
     const emailId = await sendEmail({
       domain: data.domain,
       isTransactional: false,
       email: <WeeklyDigestEmail {...data} />,
-      subject: data.subject,
+      subject: subject,
       sendTo,
     });
     await prisma.sentEmail.create({
@@ -87,7 +93,7 @@ export function WeeklyDigestEmail({
   score,
   topQueries,
   visits,
-}: Omit<WeeklyDigestEmailProps, "subject">) {
+}: WeeklyDigestEmailProps) {
   return (
     <>
       <TopMetrics

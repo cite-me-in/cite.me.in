@@ -19,8 +19,8 @@ const shortDate = new Intl.DateTimeFormat("en-US", {
  * @example
  * formatDateShort(new Date("2026-03-23")) // "Mar 23"
  */
-export function formatDateShort(date: Date): string {
-  return shortDate.format(date);
+export function formatDateShort(date: Date | Temporal.PlainDate): string {
+  return shortDate.format(new Date(date.toJSON()));
 }
 
 /**
