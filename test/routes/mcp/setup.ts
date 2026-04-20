@@ -1,5 +1,6 @@
 import { beforeAll } from "vitest";
 import prisma from "~/lib/prisma.server";
+import { resetRateLimit } from "~/lib/rateLimit.server";
 import { port } from "~/test/helpers/launchBrowser";
 
 export const accessToken = `test-access-token-${Date.now()}`;
@@ -45,6 +46,8 @@ export async function initSession(): Promise<void> {
 }
 
 beforeAll(async () => {
+  await resetRateLimit("mcp-test-user-1");
+
   await prisma.user.upsert({
     where: { id: "mcp-test-user-1" },
     create: {
