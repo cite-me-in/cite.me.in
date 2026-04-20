@@ -3,6 +3,7 @@ type MockResponse = {
   status: number;
   headers: { get: (name: string) => string | null };
   text: () => Promise<string>;
+  json: () => Promise<unknown>;
 };
 
 function html(body: string, contentType = "text/html"): MockResponse {
@@ -11,6 +12,7 @@ function html(body: string, contentType = "text/html"): MockResponse {
     status: 200,
     headers: { get: (name) => (name === "content-type" ? contentType : null) },
     text: async () => body,
+    json: async () => JSON.parse(body),
   };
 }
 
@@ -20,6 +22,7 @@ function notFound(): MockResponse {
     status: 404,
     headers: { get: () => null },
     text: async () => "",
+    json: async () => ({}),
   };
 }
 
@@ -153,6 +156,19 @@ This is the main documentation for Acme Corp.
 - Product B
 `;
 
+const SAMPLE_PAGE_CONTENT = `<!DOCTYPE html>
+<html>
+<head>
+  <title>Acme Corp</title>
+</head>
+<body>
+  <main>
+    <h1>Page Title</h1>
+    <p>This page has enough content to pass the sample pages check. We need at least 100 characters of text content here.</p>
+  </main>
+</body>
+</html>`;
+
 export function passingSite(): Record<string, MockResponse> {
   return {
     "https://acme.com/": html(HOMEPAGE_WITH_CONTENT),
@@ -160,6 +176,9 @@ export function passingSite(): Record<string, MockResponse> {
     "https://acme.com/sitemap.txt": html(SITEMAP_TXT, "text/plain"),
     "https://acme.com/sitemap.xml": html(SITEMAP_XML, "application/xml"),
     "https://acme.com/llms.txt": html(LLMS_TXT, "text/plain"),
+    "https://acme.com/about": html(SAMPLE_PAGE_CONTENT),
+    "https://acme.com/pricing": html(SAMPLE_PAGE_CONTENT),
+    "https://acme.com/blog": html(SAMPLE_PAGE_CONTENT),
   };
 }
 
