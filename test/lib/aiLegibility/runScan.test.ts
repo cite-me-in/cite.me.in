@@ -75,7 +75,7 @@ describe("runScan", () => {
 
     expect(result.summary.critical.passed).toBe(2);
     expect(result.summary.critical.total).toBe(3);
-    expect(result.summary.important.passed).toBe(2);
+    expect(result.summary.important.passed).toBe(3);
   });
 
   it("should normalize URL without protocol", async () => {
@@ -83,7 +83,7 @@ describe("runScan", () => {
 
     const result = await runScan({ log, url: "acme.com" });
 
-    expect(result.url).toBe("https://acme.com/");
+    expect(result.url).toBe("https://acme.com");
   });
 
   it("should normalize URL with www prefix", async () => {
@@ -91,7 +91,7 @@ describe("runScan", () => {
 
     const result = await runScan({ log, url: "www.acme.com" });
 
-    expect(result.url).toBe("https://www.acme.com/");
+    expect(result.url).toBe("https://www.acme.com");
   });
 
   it("should lowercase hostname", async () => {
@@ -99,7 +99,7 @@ describe("runScan", () => {
 
     const result = await runScan({ log, url: "https://ACME.COM" });
 
-    expect(result.url).toBe("https://acme.com/");
+    expect(result.url).toBe("https://acme.com");
   });
 
   it("should preserve existing https protocol", async () => {
@@ -107,7 +107,7 @@ describe("runScan", () => {
 
     const result = await runScan({ log, url: "https://acme.com" });
 
-    expect(result.url).toBe("https://acme.com/");
+    expect(result.url).toBe("https://acme.com");
   });
 
   it("should log progress messages", async () => {

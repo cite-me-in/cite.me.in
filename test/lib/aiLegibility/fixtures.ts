@@ -81,7 +81,7 @@ Sitemap: https://acme.com/sitemap.xml
 
 export const ROBOTS_EMPTY = "";
 
-export const SITEMAP_TXT = `https://acme.com/
+export const SITEMAP_TXT = `https://acme.com
 https://acme.com/about
 https://acme.com/pricing
 https://acme.com/blog
@@ -93,7 +93,7 @@ Also not a URL
 
 export const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://acme.com/</loc></url>
+  <url><loc>https://acme.com</loc></url>
   <url><loc>https://acme.com/about</loc></url>
   <url><loc>https://acme.com/pricing</loc></url>
 </urlset>`;
@@ -171,7 +171,7 @@ const SAMPLE_PAGE_CONTENT = `<!DOCTYPE html>
 
 export function passingSite(): Record<string, MockResponse> {
   return {
-    "https://acme.com/": html(HOMEPAGE_WITH_CONTENT),
+    "https://acme.com": html(HOMEPAGE_WITH_CONTENT),
     "https://acme.com/robots.txt": html(ROBOTS_TXT, "text/plain"),
     "https://acme.com/sitemap.txt": html(SITEMAP_TXT, "text/plain"),
     "https://acme.com/sitemap.xml": html(SITEMAP_XML, "application/xml"),
@@ -184,7 +184,7 @@ export function passingSite(): Record<string, MockResponse> {
 
 export function failingSite(): Record<string, MockResponse> {
   return {
-    "https://acme.com/": html(HOMEPAGE_SPA_SHELL),
+    "https://acme.com": html(HOMEPAGE_SPA_SHELL),
     "https://acme.com/robots.txt": notFound(),
     "https://acme.com/sitemap.txt": notFound(),
     "https://acme.com/sitemap.xml": notFound(),
@@ -194,10 +194,12 @@ export function failingSite(): Record<string, MockResponse> {
 
 export function partialSite(): Record<string, MockResponse> {
   return {
-    "https://acme.com/": html(HOMEPAGE_WITH_CONTENT),
+    "https://acme.com": html(HOMEPAGE_WITH_CONTENT),
     "https://acme.com/robots.txt": html(ROBOTS_TXT, "text/plain"),
     "https://acme.com/sitemap.txt": notFound(),
     "https://acme.com/sitemap.xml": html(SITEMAP_XML, "application/xml"),
     "https://acme.com/llms.txt": notFound(),
+    "https://acme.com/about": html(SAMPLE_PAGE_CONTENT),
+    "https://acme.com/pricing": html(SAMPLE_PAGE_CONTENT),
   };
 }
