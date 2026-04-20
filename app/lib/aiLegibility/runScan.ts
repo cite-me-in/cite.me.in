@@ -57,9 +57,7 @@ export async function runScan({
   );
 
   const summary = await summarize({ checks, log });
-  const suggestions = await withMinDelay(() =>
-    generateSuggestions({ log, checks, url }),
-  );
+  const suggestions = await generateSuggestions({ log, checks, url });
 
   return {
     url,

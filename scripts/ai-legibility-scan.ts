@@ -5,6 +5,7 @@ import {
   setStatus,
 } from "../app/lib/aiLegibility/progress.server";
 import { runScan } from "../app/lib/aiLegibility/runScan";
+import { normalizeDomain } from "../app/lib/isSameDomain";
 import prisma from "../app/lib/prisma.server";
 
 const url = process.argv[2];
@@ -24,17 +25,24 @@ async function main() {
   console.log(`Scan ID: ${scanId}`);
   console.log("");
 
-  await setStatus({ scanId, status: "running" });
+  const site = await prisma.site.findFirst({
+    where: { domain: normalizeDomain(url) },
+  });
+  if (!site) {
+    console.error(`Site ${normalizeDomain(url)} not found`);
+    process.exit(1);
+  }
+
+  await setStatus({ domain: site.domain, status: "running" });
 
   const log = async (line: string) => {
     console.log(line);
-    await appendLog({ line, scanId });
+    await appendLog({ line, domain: site.domain });
   };
+  const result = await runScan({ log, domain: site.domain });
 
-  const result = await runScan({ log, url });
-
-  await setResult({ result, scanId });
-  await setStatus({ scanId, status: "complete" });
+  await setResult({ result, domain: site.domain });
+  await setStatus({ domain: site.domain, status: "complete" });
 
   console.info("\n--- RESULTS ---\n");
   console.info(
@@ -59,12 +67,7 @@ async function main() {
   const user = await prisma.user.findUniqueOrThrow({
     where: { email: "assaf@labnotes.org" },
   });
-  await sendAiLegibilityReport({
-    domain: new URL(result.url).hostname,
-    scanId: scanId,
-    result,
-    sendTo: user,
-  });
+  await sendAiLegibilityReport({ site, result, sendTo: user });
 
   console.info("\n--- FULL JSON ---\n");
   console.info(JSON.stringify(result, null, 2));

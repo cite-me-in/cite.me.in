@@ -1,4 +1,6 @@
+import { ms } from "convert";
 import OpenAI from "openai";
+import { sleep } from "radashi";
 import { z } from "zod";
 import envVars from "~/lib/envVars.server";
 import type { CheckResult, Suggestion } from "./types";
@@ -34,6 +36,10 @@ export default async function generateSuggestions({
   const failedChecks = checks.filter((c) => !c.passed);
 
   if (failedChecks.length === 0) return [];
+
+  // Log messages to keep the user informed - in backgroung and terminated when we're done
+  const abort = new AbortController();
+  logInBackground({ log, signal: abort.signal });
 
   const checkSummaries = failedChecks.map((c) => ({
     name: c.name,
@@ -111,6 +117,8 @@ Generate suggestions for each failed check.`,
     const message = `Suggestion generation parse error: ${error instanceof Error ? error.message : "Unknown error"}`;
     await log(`✗ ${message}`);
     return generateFallbackSuggestions(failedChecks, url);
+  } finally {
+    abort.abort();
   }
 }
 
@@ -156,4 +164,33 @@ function generateFallbackSuggestions(
 
     return base;
   });
+}
+
+/**
+ * Log messages in background and terminate when the abort signal is triggered.
+ * We use this to keep the user informed about the progress so they don't think
+ * the scan is stuck.
+ *
+ * @param {Function} log - The function to log the message
+ * @param {AbortSignal} signal - The abort signal
+ */
+async function logInBackground({
+  log,
+  signal,
+}: {
+  log: (line: string) => Promise<void>;
+  signal: AbortSignal;
+}) {
+  const messages = [
+    "We're consulting the AI to generate suggestions...",
+    "This will take a few minutes...",
+    "Please wait. This is normal...",
+    "We will send you an email with the suggestions once we're done...",
+  ];
+
+  for (const message of messages) {
+    await sleep(ms("5s"));
+    if (signal.aborted) return;
+    await log(message);
+  }
 }
