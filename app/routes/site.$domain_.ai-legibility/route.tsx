@@ -48,7 +48,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
           result:
             typeof report.result === "string"
               ? (JSON.parse(report.result) as ScanResult)
-              : report.result,
+              : (report.result as ScanResult),
           scannedAt: report.scannedAt.toISOString(),
         }
       : null,
