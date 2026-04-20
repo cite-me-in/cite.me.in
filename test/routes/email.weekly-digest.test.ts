@@ -120,7 +120,7 @@ describe("WeeklyDigestEmail", () => {
   });
 
   it("should send with correct subject", () => {
-    expect(email.subject).toBe("Weekly Digest · Mar 17 — Mar 24, 2026");
+    expect(email.subject).toBe("rentail.space • Nov 7 — Nov 14");
   });
 
   it("should send to correct recipient", () => {
