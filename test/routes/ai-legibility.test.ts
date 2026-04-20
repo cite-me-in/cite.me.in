@@ -2,10 +2,12 @@ import { expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vitest";
 import sendAiLegibilityReport from "~/emails/AiLegibilityReport";
 import { getLastEmailSent } from "~/emails/sendEmails";
+import { appendLog, startNewScan } from "~/lib/aiLegibility/progress.server";
 import type { ScanResult } from "~/lib/aiLegibility/types";
 import prisma from "~/lib/prisma.server";
 import { goto, port } from "~/test/helpers/launchBrowser";
 import { signIn } from "~/test/helpers/signIn";
+import "~/test/helpers/toMatchVisual";
 
 const SCAN_RESULT: ScanResult = {
   url: "https://example.com",
@@ -107,7 +109,7 @@ describe("ai-legibility page - no scan yet", () => {
     });
 
     await signIn(user.id);
-    page = await goto(`/site/no-scan-example.com/ai-legibility`);
+    page = await goto("/site/no-scan-example.com/ai-legibility");
   });
 
   it("should show the main heading", async () => {
@@ -122,6 +124,12 @@ describe("ai-legibility page - no scan yet", () => {
 
   it("should show run scan button", async () => {
     await expect(page.getByRole("button", { name: "Run Scan" })).toBeVisible();
+  });
+
+  it("should match visually - initial state", async () => {
+    await expect(page.locator("main")).toMatchVisual({
+      name: "ai-legibility/initial-state",
+    });
   });
 });
 
@@ -158,7 +166,7 @@ describe("ai-legibility page - with report", () => {
     });
 
     await signIn(user.id);
-    reportPage = await goto(`/site/report-example.com/ai-legibility`);
+    reportPage = await goto("/site/report-example.com/ai-legibility");
   });
 
   it("should show overall score", async () => {
@@ -199,6 +207,62 @@ describe("ai-legibility page - with report", () => {
     await expect(
       reportPage.getByRole("button", { name: "Run New Scan" }),
     ).toBeVisible();
+  });
+
+  it("should match visually - results", async () => {
+    await expect(reportPage.locator("main")).toMatchVisual({
+      name: "ai-legibility/results",
+    });
+  });
+});
+
+describe("ai-legibility page - scanning", () => {
+  let scanningPage: import("playwright").Page;
+
+  beforeAll(async () => {
+    const user = await prisma.user.create({
+      data: {
+        id: "ai-legibility-scanning-user",
+        email: "scanning-test@example.com",
+        passwordHash: "test",
+      },
+    });
+
+    await prisma.site.create({
+      data: {
+        apiKey: "test-api-key-ai-legibility-4",
+        content: "",
+        domain: "scanning-example.com",
+        id: "site-scanning",
+        ownerId: user.id,
+        summary: "",
+      },
+    });
+
+    await startNewScan({ domain: "scanning-example.com" });
+    await appendLog({ domain: "scanning-example.com", line: "Checking homepage content..." });
+    await appendLog({ domain: "scanning-example.com", line: "✓ Homepage has meaningful content (150+ characters)" });
+    await appendLog({ domain: "scanning-example.com", line: "Checking sitemap.xml..." });
+    await appendLog({ domain: "scanning-example.com", line: "✓ sitemap.xml found with valid XML structure" });
+    await appendLog({ domain: "scanning-example.com", line: "Checking robots.txt..." });
+
+    await signIn(user.id);
+    scanningPage = await goto("/site/scanning-example.com/ai-legibility");
+  });
+
+  it("should show scanning indicator", async () => {
+    await expect(scanningPage.getByText("Scanning…")).toBeVisible();
+  });
+
+  it("should show scan log", async () => {
+    await expect(scanningPage.getByText("Checking homepage content...")).toBeVisible();
+    await expect(scanningPage.getByText("✓ Homepage has meaningful content")).toBeVisible();
+  });
+
+  it("should match visually - scanning", async () => {
+    await expect(scanningPage.locator("main")).toMatchVisual({
+      name: "ai-legibility/scanning",
+    });
   });
 });
 

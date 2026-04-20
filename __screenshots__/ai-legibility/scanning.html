@@ -1,64 +1,54 @@
-<div class="mx-auto max-w-4xl py-12">
-  <div class="mb-12 text-center">
-    <h1 class="mb-4 font-bold text-4xl text-black md:text-5xl">
-      AI Legibility Checker
-    </h1>
-    <p class="text-black/60 text-lg">
-      Check if your website is readable by AI agents like ChatGPT, Claude, and Gemini. Get actionable suggestions to improve discoverability.
+<div class="flex items-center justify-between gap-4">
+  <div>
+    <p>
+      <a class="block max-w-md truncate font-mono text-foreground/60 hover:underline" data-discover="true" href="/site/scanning-example.com" title="scanning-example.com">
+        scanning-example.com
+      </a>
     </p>
+    <h1 class="font-heading text-3xl">
+      AI Legibility
+    </h1>
   </div>
-  <div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
-    <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
-      <div class="justify-center font-heading text-2xl leading-none flex items-center gap-2" data-slot="card-title">
-        <div class="size-6 animate-spin rounded-full border-2 border-foreground/20 border-t-foreground"></div>
-        Scanning…
+  <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold text-base transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-black bg-white text-black shadow-[3px_3px_0px_0px_black] hover:bg-[hsl(60,100%,99%)] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] h-12 px-6 py-3" disabled type="button">
+    <svg aria-hidden="true" class="lucide lucide-refresh-ccw size-4 animate-spin" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+      <path d="M3 3v5h5"></path>
+      <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+      <path d="M16 16h5v5"></path>
+    </svg>
+    Run New Scan
+  </button>
+</div>
+<div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
+  <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
+    <div class="justify-center font-heading text-2xl leading-none flex items-center gap-2" data-slot="card-title">
+      <div class="size-6 animate-spin rounded-full border-2 border-foreground/20 border-t-foreground"></div>
+      Scanning…
+    </div>
+  </div>
+  <div class="px-6" data-slot="card-content">
+    <p class="mb-4 text-foreground/60">
+      Scanning:
+      <code class="font-mono">
+        scanning-example.com
+      </code>
+    </p>
+    <pre class="h-96 overflow-y-auto whitespace-break-spaces rounded border border-border bg-muted p-4 font-mono text-foreground/60 text-sm leading-relaxed">
+      <div>
+        Checking homepage content...
       </div>
-    </div>
-    <div class="px-6" data-slot="card-content">
-      <p class="mb-4 text-foreground/60">
-        Scanning:
-        <code class="font-mono">
-          https://example.com
-        </code>
-      </p>
-      <pre class="h-96 overflow-y-auto whitespace-break-spaces rounded border border-border bg-muted p-4 font-mono text-foreground/60 text-sm leading-relaxed">
-        <div>
-          Starting scan for https://example.com...
-        </div>
-        <div>
-          Checking homepage content...
-        </div>
-        <div>
-          Homepage has meaningful content (150+ characters)
-        </div>
-        <div>
-          Checking sitemap.txt...
-        </div>
-        <div>
-          sitemap.txt found with 10 valid URLs
-        </div>
-        <div>
-          Checking sitemap.xml...
-        </div>
-        <div>
-          Starting scan for https://example.com...
-        </div>
-        <div>
-          Checking homepage content...
-        </div>
-        <div>
-          Homepage has meaningful content (150+ characters)
-        </div>
-        <div>
-          Checking sitemap.txt...
-        </div>
-        <div>
-          sitemap.txt found with 10 valid URLs
-        </div>
-        <div>
-          Checking sitemap.xml...
-        </div>
-      </pre>
-    </div>
+      <div>
+        ✓ Homepage has meaningful content (150+ characters)
+      </div>
+      <div>
+        Checking sitemap.xml...
+      </div>
+      <div>
+        ✓ sitemap.xml found with valid XML structure
+      </div>
+      <div>
+        Checking robots.txt...
+      </div>
+    </pre>
   </div>
 </div>

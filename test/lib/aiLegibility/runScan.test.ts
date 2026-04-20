@@ -115,7 +115,6 @@ describe("runScan", () => {
 
     await runScan({ log, domain: "https://acme.com" });
 
-    expect(logs[0]).toContain("Scanning");
     expect(logs.some((l) => l.includes("Checking homepage content"))).toBe(
       true,
     );

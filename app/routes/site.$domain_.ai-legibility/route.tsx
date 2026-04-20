@@ -12,6 +12,7 @@ import {
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
 import { getProgress } from "~/lib/aiLegibility/progress.server";
+import type { ScanResult } from "~/lib/aiLegibility/types";
 import { requireSiteAccess } from "~/lib/auth.server";
 import { formatDateMed } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
@@ -44,7 +45,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     report: report
       ? {
           id: report.id,
-          result: JSON.parse(report.result as string),
+          result: JSON.parse(report.result as string) as ScanResult,
           scannedAt: report.scannedAt.toISOString(),
         }
       : null,

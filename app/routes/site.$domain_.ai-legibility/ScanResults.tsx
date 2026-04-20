@@ -25,12 +25,18 @@ export default function ScanResults({ result }: { result: ScanResult }) {
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-4">
-        <Figure title="Overall Score" score={score} />
-        <Figure title="Critical" score={summary?.critical?.passed ?? 0} />
-        <Figure title="Important" score={summary?.important?.passed ?? 0} />
+        <Figure title="Overall Score" value={`${score}%`} />
+        <Figure
+          title="Critical"
+          value={`${summary?.critical?.passed ?? 0}/${summary?.critical?.total ?? 0}`}
+        />
+        <Figure
+          title="Important"
+          value={`${summary?.important?.passed ?? 0}/${summary?.important?.total ?? 0}`}
+        />
         <Figure
           title="Optimization"
-          score={summary?.optimization?.passed ?? 0}
+          value={`${summary?.optimization?.passed ?? 0}/${summary?.optimization?.total ?? 0}`}
         />
       </div>
 
@@ -66,12 +72,12 @@ export default function ScanResults({ result }: { result: ScanResult }) {
   );
 }
 
-function Figure({ title, score }: { title: string; score: number }) {
+function Figure({ title, value }: { title: string; value: string }) {
   return (
     <Card>
       <CardContent className="space-y-2">
         <div className="text-center">{title}</div>
-        <div className="text-center font-bold text-3xl">{score}%</div>
+        <div className="text-center font-bold text-3xl">{value}</div>
       </CardContent>
     </Card>
   );
