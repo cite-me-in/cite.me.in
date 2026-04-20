@@ -1,8 +1,10 @@
+import { shuffle } from "radashi";
 import checkHomepageContent from "./checks/homepageContent";
 import checkJsonLd from "./checks/jsonLd";
 import checkLlmsTxt from "./checks/llmsTxt";
 import checkMetaTags from "./checks/metaTags";
 import checkRobotsTxt from "./checks/robotsTxt";
+import checkSamplePages from "./checks/samplePages";
 import checkSitemapTxt from "./checks/sitemapTxt";
 import checkSitemapXml from "./checks/sitemapXml";
 import { withMinDelay } from "./delay";
@@ -25,8 +27,16 @@ export async function runScan({
     checkHomepageContent({ log, url }),
   );
   checks.push(homepageResult);
-  checks.push(await withMinDelay(() => checkSitemapTxt({ log, url })));
-  checks.push(await withMinDelay(() => checkSitemapXml({ log, url })));
+
+  const sitemmapXmlResult = await withMinDelay(() =>
+    checkSitemapXml({ log, url }),
+  );
+  checks.push(sitemmapXmlResult);
+  const sitemapTxtResult = await withMinDelay(() =>
+    checkSitemapTxt({ log, url }),
+  );
+  checks.push(sitemapTxtResult);
+
   checks.push(await withMinDelay(() => checkRobotsTxt({ log, url })));
   checks.push(
     await withMinDelay(() =>
@@ -39,6 +49,13 @@ export async function runScan({
     ),
   );
   checks.push(await withMinDelay(() => checkLlmsTxt({ log, url })));
+
+  const sampleURLs = shuffle([
+    ...new Set([...sitemmapXmlResult.urls, ...sitemapTxtResult.urls]).values(),
+  ]).slice(0, 10);
+  checks.push(
+    await withMinDelay(() => checkSamplePages({ log, url, sampleURLs })),
+  );
 
   const summary = await summarize({ checks, log });
   const suggestions = await withMinDelay(() =>
