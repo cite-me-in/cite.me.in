@@ -1,0 +1,64 @@
+<div class="mx-auto max-w-4xl py-12">
+  <div class="mb-12 text-center">
+    <h1 class="mb-4 font-bold text-4xl text-black md:text-5xl">
+      AI Legibility Checker
+    </h1>
+    <p class="text-black/60 text-lg">
+      Check if your website is readable by AI agents like ChatGPT, Claude, and Gemini. Get actionable suggestions to improve discoverability.
+    </p>
+  </div>
+  <div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
+    <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
+      <div class="justify-center font-heading text-2xl leading-none flex items-center gap-2" data-slot="card-title">
+        <div class="size-6 animate-spin rounded-full border-2 border-foreground/20 border-t-foreground"></div>
+        Scanning…
+      </div>
+    </div>
+    <div class="px-6" data-slot="card-content">
+      <p class="mb-4 text-foreground/60">
+        Scanning:
+        <code class="font-mono">
+          https://example.com
+        </code>
+      </p>
+      <pre class="h-96 overflow-y-auto whitespace-break-spaces rounded border border-border bg-muted p-4 font-mono text-foreground/60 text-sm leading-relaxed">
+        <div>
+          Starting scan for https://example.com...
+        </div>
+        <div>
+          Checking homepage content...
+        </div>
+        <div>
+          Homepage has meaningful content (150+ characters)
+        </div>
+        <div>
+          Checking sitemap.txt...
+        </div>
+        <div>
+          sitemap.txt found with 10 valid URLs
+        </div>
+        <div>
+          Checking sitemap.xml...
+        </div>
+        <div>
+          Starting scan for https://example.com...
+        </div>
+        <div>
+          Checking homepage content...
+        </div>
+        <div>
+          Homepage has meaningful content (150+ characters)
+        </div>
+        <div>
+          Checking sitemap.txt...
+        </div>
+        <div>
+          sitemap.txt found with 10 valid URLs
+        </div>
+        <div>
+          Checking sitemap.xml...
+        </div>
+      </pre>
+    </div>
+  </div>
+</div>
