@@ -1,5 +1,5 @@
-import { last } from "radashi";
 import { SettingsIcon } from "lucide-react";
+import { last } from "radashi";
 import { NavLink, type UIMatch, useMatches } from "react-router";
 import { twMerge } from "tailwind-merge";
 import AccountMenu from "./AccountMenu";
@@ -30,6 +30,7 @@ function HeaderLinks() {
       { to: `/site/${siteDomain}/citations`, label: "Citations" },
       { to: `/site/${siteDomain}/pages`, label: "Pages" },
       { to: `/site/${siteDomain}/traffic`, label: "Traffic" },
+      { to: `/site/${siteDomain}/ai-legibility`, label: "AI Legibility" },
       { to: `/site/${siteDomain}/settings`, label: <SettingsIcon size={20} /> },
     );
 

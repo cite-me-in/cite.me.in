@@ -14,14 +14,12 @@ import type { CheckResult, ScanResult } from "./types";
 
 export async function runScan({
   log,
-  url,
+  domain,
 }: {
   log: (line: string) => Promise<void>;
-  url: string;
+  domain: string;
 }): Promise<ScanResult> {
-  url = normalizeURL(url);
-  await log(`Scanning ${url}...`);
-
+  const url = normalizeURL(domain);
   const checks: CheckResult[] = [];
 
   const homepageResult = await withMinDelay(() =>

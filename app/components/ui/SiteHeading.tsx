@@ -11,8 +11,8 @@ export default function SiteHeading({
 }: {
   site: { domain: string };
   title: string;
-  subtitle?: string;
-  backTo?: { label: string; path: string };
+  subtitle?: string | null;
+  backTo?: { label: string; path: string } | null;
   children?: React.ReactNode;
 }) {
   return (

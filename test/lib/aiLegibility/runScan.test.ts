@@ -31,7 +31,7 @@ describe("runScan", () => {
   it("should run all checks in the correct order", async () => {
     vi.stubGlobal("fetch", mockFetch(passingSite()));
 
-    const result = await runScan({ log, url: "https://acme.com" });
+    const result = await runScan({ log, domain: "https://acme.com" });
 
     const checkNames = result.checks.map((c) => c.name);
     expect(checkNames).toEqual([
@@ -49,7 +49,7 @@ describe("runScan", () => {
   it("should produce correct summary for passing site", async () => {
     vi.stubGlobal("fetch", mockFetch(passingSite()));
 
-    const result = await runScan({ log, url: "https://acme.com" });
+    const result = await runScan({ log, domain: "https://acme.com" });
 
     expect(result.summary.critical.passed).toBeGreaterThan(0);
     expect(result.summary.critical.total).toBe(3);
@@ -60,7 +60,7 @@ describe("runScan", () => {
   it("should produce correct summary for failing site", async () => {
     vi.stubGlobal("fetch", mockFetch(failingSite()));
 
-    const result = await runScan({ log, url: "https://acme.com" });
+    const result = await runScan({ log, domain: "https://acme.com" });
 
     expect(result.summary.critical.passed).toBe(0);
     expect(result.summary.critical.total).toBe(3);
@@ -71,7 +71,7 @@ describe("runScan", () => {
   it("should produce correct summary for partial site", async () => {
     vi.stubGlobal("fetch", mockFetch(partialSite()));
 
-    const result = await runScan({ log, url: "https://acme.com" });
+    const result = await runScan({ log, domain: "https://acme.com" });
 
     expect(result.summary.critical.passed).toBe(2);
     expect(result.summary.critical.total).toBe(3);
@@ -81,7 +81,7 @@ describe("runScan", () => {
   it("should normalize URL without protocol", async () => {
     vi.stubGlobal("fetch", mockFetch(passingSite()));
 
-    const result = await runScan({ log, url: "acme.com" });
+    const result = await runScan({ log, domain: "acme.com" });
 
     expect(result.url).toBe("https://acme.com");
   });
@@ -89,7 +89,7 @@ describe("runScan", () => {
   it("should normalize URL with www prefix", async () => {
     vi.stubGlobal("fetch", mockFetch(passingSite()));
 
-    const result = await runScan({ log, url: "www.acme.com" });
+    const result = await runScan({ log, domain: "www.acme.com" });
 
     expect(result.url).toBe("https://www.acme.com");
   });
@@ -97,7 +97,7 @@ describe("runScan", () => {
   it("should lowercase hostname", async () => {
     vi.stubGlobal("fetch", mockFetch(passingSite()));
 
-    const result = await runScan({ log, url: "https://ACME.COM" });
+    const result = await runScan({ log, domain: "https://ACME.COM" });
 
     expect(result.url).toBe("https://acme.com");
   });
@@ -105,7 +105,7 @@ describe("runScan", () => {
   it("should preserve existing https protocol", async () => {
     vi.stubGlobal("fetch", mockFetch(passingSite()));
 
-    const result = await runScan({ log, url: "https://acme.com" });
+    const result = await runScan({ log, domain: "https://acme.com" });
 
     expect(result.url).toBe("https://acme.com");
   });
@@ -113,7 +113,7 @@ describe("runScan", () => {
   it("should log progress messages", async () => {
     vi.stubGlobal("fetch", mockFetch(passingSite()));
 
-    await runScan({ log, url: "https://acme.com" });
+    await runScan({ log, domain: "https://acme.com" });
 
     expect(logs[0]).toContain("Scanning");
     expect(logs.some((l) => l.includes("Checking homepage content"))).toBe(
@@ -128,7 +128,7 @@ describe("runScan", () => {
   it("should include scannedAt timestamp", async () => {
     vi.stubGlobal("fetch", mockFetch(passingSite()));
 
-    const result = await runScan({ log, url: "https://acme.com" });
+    const result = await runScan({ log, domain: "https://acme.com" });
 
     expect(result.scannedAt).toBeDefined();
     expect(new Date(result.scannedAt).toISOString()).toBe(result.scannedAt);
@@ -137,7 +137,7 @@ describe("runScan", () => {
   it("should generate suggestions for failed checks", async () => {
     vi.stubGlobal("fetch", mockFetch(failingSite()));
 
-    const result = await runScan({ log, url: "https://acme.com" });
+    const result = await runScan({ log, domain: "https://acme.com" });
 
     expect(result.suggestions.length).toBeGreaterThan(0);
     expect(result.suggestions.some((s) => s.category === "critical")).toBe(
@@ -148,7 +148,7 @@ describe("runScan", () => {
   it("should return empty suggestions when all checks pass", async () => {
     vi.stubGlobal("fetch", mockFetch(passingSite()));
 
-    const result = await runScan({ log, url: "https://acme.com" });
+    const result = await runScan({ log, domain: "https://acme.com" });
 
     expect(result.suggestions).toEqual([]);
   });
@@ -156,7 +156,7 @@ describe("runScan", () => {
   it("should continue running all checks even when some fail", async () => {
     vi.stubGlobal("fetch", mockFetch(failingSite()));
 
-    const result = await runScan({ log, url: "https://acme.com" });
+    const result = await runScan({ log, domain: "https://acme.com" });
 
     expect(result.checks).toHaveLength(8);
     expect(result.checks.every((c) => c.name && c.category && c.message)).toBe(
@@ -167,7 +167,7 @@ describe("runScan", () => {
   it("should categorize checks correctly", async () => {
     vi.stubGlobal("fetch", mockFetch(passingSite()));
 
-    const result = await runScan({ log, url: "https://acme.com" });
+    const result = await runScan({ log, domain: "https://acme.com" });
 
     const criticalChecks = result.checks.filter(
       (c) => c.category === "critical",
@@ -279,7 +279,7 @@ describe("runScan with LLM suggestions", () => {
       ),
     );
 
-    const result = await runScan({ log, url: "https://test-site.com" });
+    const result = await runScan({ log, domain: "https://test-site.com" });
 
     expect(result.suggestions.length).toBeGreaterThanOrEqual(3);
 

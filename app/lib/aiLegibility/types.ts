@@ -17,15 +17,17 @@ export type Suggestion = {
   fixExample?: string;
 };
 
+export type ScanSummary = {
+  critical: { passed: number; total: number };
+  important: { passed: number; total: number };
+  optimization: { passed: number; total: number };
+};
+
 export type ScanResult = {
   url: string;
   scannedAt: string;
   checks: CheckResult[];
-  summary: {
-    critical: { passed: number; total: number };
-    important: { passed: number; total: number };
-    optimization: { passed: number; total: number };
-  };
+  summary: ScanSummary;
   suggestions: Suggestion[];
 };
 

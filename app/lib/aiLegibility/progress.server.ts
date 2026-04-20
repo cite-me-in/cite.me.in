@@ -9,57 +9,68 @@ const TTL = convert(24, "hours").to("seconds");
 
 export async function appendLog({
   line,
-  scanId,
+  domain,
 }: {
   line: string;
-  scanId: string;
+  domain: string;
 }): Promise<number> {
-  return await getRedis().rpush(logKey(scanId), line);
+  return await getRedis().rpush(logKey(domain), line);
+}
+
+export async function startNewScan({
+  domain,
+}: {
+  domain: string;
+}): Promise<void> {
+  const redis = getRedis();
+  await redis.del(logKey(domain));
+  await redis.del(resultKey(domain));
+  await redis.set(statusKey(domain), "running", "EX", TTL);
 }
 
 export async function setStatus({
-  scanId,
+  domain,
   status,
 }: {
-  scanId: string;
+  domain: string;
   status: "running" | "complete" | "error";
 }) {
   const redis = getRedis();
-  await redis.set(statusKey(scanId), status, "EX", TTL);
-  await redis.expire(logKey(scanId), TTL);
+  await redis.set(statusKey(domain), status, "EX", TTL);
+  await redis.expire(logKey(domain), TTL);
 }
 
 export async function setResult({
   result,
-  scanId,
+  domain,
 }: {
   result: ScanResult;
-  scanId: string;
+  domain: string;
 }) {
   const redis = getRedis();
-  await redis.set(resultKey(scanId), JSON.stringify(result), "EX", TTL);
+  await redis.set(resultKey(domain), JSON.stringify(result), "EX", TTL);
 }
 
 export async function getProgress({
   offset,
-  scanId,
+  domain,
 }: {
   offset: number;
-  scanId: string;
+  domain: string;
 }): Promise<ScanProgress> {
   const redis = getRedis();
-  const lines = await redis.lrange(logKey(scanId), offset, -1);
-  const status = await redis.get(statusKey(scanId));
+  const lines = await redis.lrange(logKey(domain), offset, -1);
+  const status = await redis.get(statusKey(domain));
   const done = status === "complete" || status === "error";
 
   let result: ScanResult | undefined;
   if (done) {
-    const resultJson = await redis.get(resultKey(scanId));
+    const resultJson = await redis.get(resultKey(domain));
     if (resultJson) {
       try {
         result = JSON.parse(resultJson) as ScanResult;
       } catch {
-        logger("Failed to parse result JSON for scan %s", scanId);
+        logger("Failed to parse result JSON for scan %s", domain);
       }
     }
   }
@@ -77,14 +88,14 @@ function getRedis(): Redis {
   return redis;
 }
 
-function logKey(scanId: string) {
-  return `ai-legibility:${scanId}:log`;
+function logKey(domain: string) {
+  return `ai-legibility:${domain}:log`;
 }
 
-function statusKey(scanId: string) {
-  return `ai-legibility:${scanId}:status`;
+function statusKey(domain: string) {
+  return `ai-legibility:${domain}:status`;
 }
 
-function resultKey(scanId: string) {
-  return `ai-legibility:${scanId}:result`;
+function resultKey(domain: string) {
+  return `ai-legibility:${domain}:result`;
 }

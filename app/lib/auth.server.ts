@@ -169,7 +169,7 @@ export async function requireSiteAccess({
   request: Request;
 }): Promise<{
   site: { id: string; domain: string; summary: string };
-  user: { id: string; email: string };
+  user: { id: string; email: string; unsubscribed: boolean };
 }> {
   const { user, ownedSites, siteUsers } = await requireUserAccess(request);
   if (user.isAdmin) {

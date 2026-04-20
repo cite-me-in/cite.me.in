@@ -4,6 +4,7 @@ import sendSiteSetupEmail from "~/emails/SiteSetupComplete";
 import addSiteQueries from "~/lib/addSiteQueries";
 import { requireSiteAccess } from "~/lib/auth.server";
 import captureAndLogError from "~/lib/captureAndLogError.server";
+import runScanInBackground from "~/lib/aiLegibility/runScanInBackground";
 import analyzeSentiment from "~/lib/llm-visibility/analyzeSentiment";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import PLATFORMS from "~/lib/llm-visibility/platformQueries.server";
@@ -97,6 +98,13 @@ export async function action({ request, params }: Route.ActionArgs) {
     });
     const metrics = await loadSetupMetrics(site.id);
     await sendSiteSetupEmail({ domain: site.domain, sendTo: owner, metrics });
+
+    // Phase 7: AI Legibility scan (runs in background)
+    await log("Starting AI legibility scan...");
+    await runScanInBackground({
+      site,
+      user: { id: user.id, email: user.email, unsubscribed: user.unsubscribed },
+    });
 
     await log("Done! Your citations are ready.");
     await setStatus({ siteId: site.id, userId: user.id, status: "complete" });

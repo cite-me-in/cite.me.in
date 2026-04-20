@@ -8,18 +8,16 @@ import prisma from "~/lib/prisma.server";
 import { sendEmail } from "./sendEmails";
 
 export default async function sendAiLegibilityReport({
-  domain,
-  scanId,
+  site,
   result,
   sendTo,
 }: {
-  domain: string;
-  scanId: string;
+  site: { id: string; domain: string };
   result: ScanResult;
   sendTo: { id: string; email: string; unsubscribed: boolean };
 }) {
   const reportURL = new URL(
-    `/ai-legibility/${scanId}`,
+    `/site/${site.domain}/ai-legibility`,
     envVars.VITE_APP_URL,
   ).toString();
 
@@ -33,10 +31,10 @@ export default async function sendAiLegibilityReport({
     result.summary.optimization.total;
 
   await sendEmail({
-    domain,
+    domain: site.domain,
     email: (
       <AiLegibilityReport
-        domain={domain}
+        site={site}
         result={result}
         reportUrl={reportURL}
         totalPassed={totalPassed}
@@ -45,7 +43,7 @@ export default async function sendAiLegibilityReport({
     ),
     isTransactional: true,
     sendTo,
-    subject: `AI Legibility Report for ${domain}`,
+    subject: `AI Legibility Report for ${site.domain}`,
   });
   await prisma.sentEmail.create({
     data: { user: { connect: { id: sendTo.id } }, type: "AiLegibilityReport" },
@@ -53,13 +51,13 @@ export default async function sendAiLegibilityReport({
 }
 
 function AiLegibilityReport({
-  domain,
+  site,
   result,
   reportUrl,
   totalPassed,
   totalChecks,
 }: {
-  domain: string;
+  site: { id: string; domain: string };
   result: ScanResult;
   reportUrl: string;
   totalPassed: number;
@@ -70,7 +68,7 @@ function AiLegibilityReport({
   return (
     <Section>
       <Text className="my-4 text-base text-text leading-relaxed">
-        Your AI Legibility Report for <strong>{domain}</strong> is ready.
+        Your AI Legibility Report for <strong>{site.domain}</strong> is ready.
       </Text>
 
       <Card
@@ -94,7 +92,7 @@ function AiLegibilityReport({
         </Card>
       )}
 
-      <BrandReminderCard domain={domain} citations={totalPassed} />
+      <BrandReminderCard domain={site.domain} citations={totalPassed} />
 
       <Text className="my-4 text-base text-text leading-relaxed">
         Best regards,

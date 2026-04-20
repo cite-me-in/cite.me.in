@@ -256,6 +256,7 @@ model Session {
 }
 
 model Site {
+  aiLegibilityReports  AiLegibilityReport[]
   apiKey               String                @map("api_key")           @unique @default("")
   botInsight           BotInsight?
   botVisits            BotVisit[]
@@ -400,13 +401,14 @@ model User {
 }
 
 model AiLegibilityReport {
-  id        String   @id @default(cuid())
+  id        String                      @id @default(cuid())
   userId    String   @map("user_id")
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  url       String   @map("url")
   scannedAt DateTime @map("scanned_at") @default(now())
   result    Json     @map("result")
   createdAt DateTime @map("created_at") @default(now())
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId    String   @map("site_id")
 
   @@index([userId])
   @@map("ai_legibility_reports")
