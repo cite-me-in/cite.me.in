@@ -18,6 +18,7 @@ describe("checkSitemapXml", () => {
       "fetch",
       mockFetch({
         "https://acme.com/sitemap.xml": {
+          json: async () => ({}),
           ok: true,
           status: 200,
           headers: { get: () => "application/xml" },
@@ -44,6 +45,7 @@ describe("checkSitemapXml", () => {
       "fetch",
       mockFetch({
         "https://acme.com/sitemap.xml": {
+          json: async () => ({}),
           ok: true,
           status: 200,
           headers: { get: () => "text/xml" },
@@ -66,6 +68,7 @@ describe("checkSitemapXml", () => {
       "fetch",
       mockFetch({
         "https://acme.com/sitemap.xml": {
+          json: async () => ({}),
           ok: false,
           status: 404,
           headers: { get: () => null },
@@ -89,6 +92,7 @@ describe("checkSitemapXml", () => {
       "fetch",
       mockFetch({
         "https://acme.com/sitemap.xml": {
+          json: async () => ({}),
           ok: true,
           status: 200,
           headers: { get: () => "text/html" },
@@ -111,6 +115,7 @@ describe("checkSitemapXml", () => {
       "fetch",
       mockFetch({
         "https://acme.com/sitemap.xml": {
+          json: async () => ({}),
           ok: true,
           status: 200,
           headers: { get: () => "application/xml" },
@@ -133,6 +138,7 @@ describe("checkSitemapXml", () => {
       "fetch",
       mockFetch({
         "https://acme.com/sitemap.xml": {
+          json: async () => ({}),
           ok: true,
           status: 200,
           headers: { get: () => "application/xml" },

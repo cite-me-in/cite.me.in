@@ -18,6 +18,7 @@ describe("checkRobotsTxt", () => {
       "fetch",
       mockFetch({
         "https://acme.com/robots.txt": {
+          json: async () => ({}),
           ok: true,
           status: 200,
           headers: { get: () => "text/plain" },
@@ -47,6 +48,7 @@ Disallow: /admin/`;
       "fetch",
       mockFetch({
         "https://acme.com/robots.txt": {
+          json: async () => ({}),
           ok: true,
           status: 200,
           headers: { get: () => "text/plain" },
@@ -70,6 +72,7 @@ Disallow: /admin/`;
       "fetch",
       mockFetch({
         "https://acme.com/robots.txt": {
+          json: async () => ({}),
           ok: true,
           status: 200,
           headers: { get: () => "text/plain" },
@@ -92,6 +95,7 @@ Disallow: /admin/`;
       "fetch",
       mockFetch({
         "https://acme.com/robots.txt": {
+          json: async () => ({}),
           ok: false,
           status: 404,
           headers: { get: () => null },
