@@ -11,11 +11,9 @@ export async function action({ request, params }: Route.ActionArgs) {
     domain: params.domain,
     request,
   });
-
   await runScanInBackground({
     site,
     user: { id: user.id, email: user.email, unsubscribed: user.unsubscribed },
   });
-
   return redirect(`/site/${site.domain}/ai-legibility`);
 }
