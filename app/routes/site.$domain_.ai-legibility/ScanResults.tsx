@@ -57,7 +57,7 @@ export default function ScanResults({ result }: { result: ScanResult }) {
       />
 
       {suggestions.length > 0 && (
-        <Card>
+        <Card id="suggestions">
           <CardHeader>
             <CardTitle>Suggestions</CardTitle>
           </CardHeader>

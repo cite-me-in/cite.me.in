@@ -1,3 +1,4 @@
+import sendAiLegibilityReport from "~/emails/AiLegibilityReport";
 import runAILegibilityScan from "~/lib/aiLegibility/runAILegibilityScan";
 import { requireSiteAccess } from "~/lib/auth.server";
 import type { Route } from "./+types/site.$domain_.ai-legibility.scan";
@@ -12,6 +13,16 @@ export async function action({ request, params }: Route.ActionArgs) {
     domain: params.domain,
     request,
   });
-  await runAILegibilityScan({ site, user });
+
+  const progress = await runAILegibilityScan({ site, user });
+
+  if (progress.done && progress.result) {
+    await sendAiLegibilityReport({
+      site,
+      sendTo: user,
+      result: progress.result,
+    });
+  }
+
   return new Response(null, { status: 204 });
 }

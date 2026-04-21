@@ -1,5 +1,4 @@
 import { shuffle } from "radashi";
-import sendAiLegibilityReport from "~/emails/AiLegibilityReport";
 import {
   appendLog,
   getProgress,
@@ -63,11 +62,6 @@ export default async function runAILegibilityScan({
       },
     });
 
-    await sendAiLegibilityReport({
-      site,
-      sendTo: user,
-      result,
-    });
     return { lines: [], done: true, nextOffset: 0, result };
   } catch (error) {
     captureAndLogError(error, { extra: { site } });

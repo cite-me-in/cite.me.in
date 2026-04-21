@@ -2,6 +2,7 @@ import { Section, Text } from "react-email";
 import { BrandReminderCard } from "~/components/email/BrandReminder";
 import Button from "~/components/email/Button";
 import Card from "~/components/email/Card";
+import Link from "~/components/email/Link";
 import type { ScanResult } from "~/lib/aiLegibility/types";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
@@ -64,6 +65,8 @@ function AiLegibilityReport({
   totalChecks: number;
 }) {
   const score = Math.round((totalPassed / totalChecks) * 100);
+  const visibleSuggestions = result.suggestions.slice(0, 3);
+  const hasMoreSuggestions = result.suggestions.length > 3;
 
   return (
     <Section>
@@ -83,12 +86,22 @@ function AiLegibilityReport({
         <Button href={reportUrl}>View Full Report</Button>
       </Section>
 
-      {result.suggestions.length > 0 && (
+      {visibleSuggestions.length > 0 && (
         <Card title="Top Suggestions" withBorder>
-          {result.suggestions.slice(0, 3).map((suggestion, i) => (
+          {visibleSuggestions.map((suggestion, i) => (
             // biome-ignore lint/suspicious/noArrayIndexKey: suggestions are static for a report, index is stable
             <SuggestionItem key={i} suggestion={suggestion} />
           ))}
+          {hasMoreSuggestions && (
+            <div className="border-border border-t p-4 text-center">
+              <Link
+                href={`${reportUrl}#suggestions`}
+                style={{ color: "#6366f1", textDecoration: "underline" }}
+              >
+                View all {result.suggestions.length} suggestions →
+              </Link>
+            </div>
+          )}
         </Card>
       )}
 
@@ -167,6 +180,23 @@ function SuggestionItem({
       <div className="mb-1 font-bold text-sm">{suggestion.title}</div>
       <div className="text-light text-xs">{suggestion.effort}</div>
       <div className="mt-2 text-sm">{suggestion.description}</div>
+      {suggestion.fixExample && (
+        <pre
+          className="mt-2 overflow-x-auto rounded text-sm"
+          style={{
+            backgroundColor: "#f5f5f5",
+            border: "1px solid #e5e5e5",
+            fontFamily: "monospace",
+            lineHeight: "1.5",
+            margin: 0,
+            padding: "12px 16px",
+            whiteSpace: "pre-wrap",
+            wordBreak: "break-word",
+          }}
+        >
+          {suggestion.fixExample}
+        </pre>
+      )}
     </div>
   );
 }

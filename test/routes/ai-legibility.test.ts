@@ -71,6 +71,29 @@ const SCAN_RESULT: ScanResult = {
       fixExample:
         "# Example Site\n\nMain description here.\n\n## Sections\n- /about\n- /pricing",
     },
+    {
+      title: "Add sitemap.txt",
+      category: "critical",
+      effort: "5 min",
+      description:
+        "Create a plain-text file at https://example.com/sitemap.txt with one URL per line listing all important pages on your site.",
+      fixExample:
+        "# 1. robots.txt — add a Sitemap line:\nSitemap: https://example.com/sitemap.txt\n\n# 2. HTML <head> — add a link tag:\n<link rel=\"sitemap\" type=\"text/plain\" title=\"Sitemap\" href=\"/sitemap.txt\">\n\n# sitemap.txt content:\nhttps://example.com/\nhttps://example.com/about\nhttps://example.com/products",
+    },
+    {
+      title: "Add JSON-LD structured data",
+      category: "important",
+      effort: "15 min",
+      description:
+        "Add a <script type=\"application/ld+json\"> block to your pages with schema.org structured data to help AI agents understand your content.",
+    },
+    {
+      title: "Fix meta description",
+      category: "optimization",
+      effort: "2 min",
+      description:
+        "Add a meta description tag to your homepage to help AI agents summarize your content.",
+    },
   ],
 };
 
@@ -201,6 +224,12 @@ describe("ai-legibility page - with report", () => {
     await expect(
       reportPage.getByText("Add llms.txt for AI discoverability"),
     ).toBeVisible();
+    await expect(
+      reportPage.getByText("Add sitemap.txt"),
+    ).toBeVisible();
+    await expect(
+      reportPage.getByText("Fix meta description"),
+    ).toBeVisible();
   });
 
   it("should show run new scan button", async () => {
@@ -320,6 +349,18 @@ describe("ai-legibility email", () => {
   it("should show top suggestions", async () => {
     await expect(
       email.page.getByText("Add llms.txt for AI discoverability"),
+    ).toBeVisible();
+  });
+
+  it("should show code block for fix example", async () => {
+    const codeBlock = email.page.locator("pre").first();
+    await expect(codeBlock).toBeVisible();
+    await expect(codeBlock).toContainText("# Example Site");
+  });
+
+  it("should show link to view all suggestions", async () => {
+    await expect(
+      email.page.getByText("View all 4 suggestions"),
     ).toBeVisible();
   });
 

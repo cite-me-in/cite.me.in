@@ -31,10 +31,6 @@ vi.mock("~/lib/prisma.server", () => ({
   },
 }));
 
-vi.mock("~/emails/AiLegibilityReport", () => ({
-  default: vi.fn(),
-}));
-
 vi.mock("~/lib/captureAndLogError.server", () => ({
   default: vi.fn(),
 }));
