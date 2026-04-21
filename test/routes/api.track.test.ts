@@ -74,30 +74,31 @@ describe("api.track", () => {
       expect(res.status).toBe(400);
     });
 
-    it("should return 400 when url is missing", async () => {
+    it("should return 404 when url is missing", async () => {
       const res = await post({
         apiKey: "test-api-key-apitrack-1",
         userAgent: "Googlebot/2.1",
         accept: "text/html",
         ip: "1.2.3.4",
       });
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(404);
     });
 
-    it("should return 400 when apiKey is missing", async () => {
+    it("should return 404 when apiKey is missing", async () => {
       const res = await post({
         url: "https://apitrack.example.com/",
         userAgent: "GPTBot/1.0",
       });
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(404);
     });
 
-    it("should return 403 when apiKey is invalid", async () => {
+    it("should return 404 when apiKey is invalid", async () => {
       const res = await post({
         apiKey: "invalid-api-key",
         url: "https://apitrack.example.com/",
       });
-      expect(res.status).toBe(403);
+      console.log(await res.text(), res.status);
+      expect(res.status).toBe(404);
     });
   });
 

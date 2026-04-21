@@ -1,9 +1,11 @@
+import debug from "debug";
 import { data } from "react-router";
 import { z } from "zod";
 import recordBotVisit, { classifyBot } from "~/lib/botTracking.server";
-import captureAndLogError from "~/lib/captureAndLogError.server";
 import recordHumanVisit from "~/lib/humanTracking.server";
 import prisma from "~/lib/prisma.server";
+
+const logger = debug("server");
 
 const TrackSchema = z.object({
   apiKey: z.string().min(1),
@@ -37,44 +39,45 @@ export async function action({ request }: { request: Request }) {
       headers: CORS_HEADERS,
     });
 
+  let parsed: unknown;
   try {
-    let parsed: unknown;
-    try {
-      parsed = await request.json();
-    } catch (err) {
-      captureAndLogError(err, { extra: { request } });
-      throw new Response("Invalid JSON", {
-        status: 400,
-        headers: CORS_HEADERS,
-      });
-    }
-
-    const { data: inputs, error } = TrackSchema.safeParse(parsed);
-    if (error) {
-      captureAndLogError(error, { extra: { request } });
-      throw new Response(error.message, { status: 400, headers: CORS_HEADERS });
-    }
-
-    const site = await prisma.site.findFirst({
-      where: {
-        OR: [
-          { domain: new URL(inputs.url).hostname },
-          { domain: new URL(inputs.url).hostname.replace(/^[^.]+\./, "") },
-        ],
-        apiKey: inputs.apiKey,
-      },
+    parsed = await request.json();
+  } catch (error) {
+    logger(
+      "api.track: invalid JSON",
+      error instanceof Error ? error.stack : String(error),
+    );
+    throw new Response("Invalid JSON", {
+      status: 400,
+      headers: CORS_HEADERS,
     });
-    if (!site) {
-      captureAndLogError("Forbidden: No matching site in /api/track.", {
-        extra: { url: inputs.url, apiKey: inputs.apiKey },
-      });
-      throw new Response("Forbidden", { status: 403, headers: CORS_HEADERS });
-    }
+  }
 
-    const userAgent =
-      inputs.userAgent ?? request.headers.get("user-agent") ?? "Unknown";
-    const ip = inputs.ip ?? request.headers.get("x-forwarded-for");
+  const { data: inputs, error } = TrackSchema.safeParse(parsed);
+  if (error) {
+    logger("api.track: invalid schema", error.message);
+    throw new Response(error.message, { status: 404, headers: CORS_HEADERS });
+  }
 
+  const site = await prisma.site.findFirst({
+    where: {
+      OR: [
+        { domain: new URL(inputs.url).hostname },
+        { domain: new URL(inputs.url).hostname.replace(/^[^.]+\./, "") },
+      ],
+      apiKey: inputs.apiKey,
+    },
+  });
+  if (!site) {
+    logger("api.track: not found", { url: inputs.url, apiKey: inputs.apiKey });
+    throw new Response("Not Found", { status: 404, headers: CORS_HEADERS });
+  }
+
+  const userAgent =
+    inputs.userAgent ?? request.headers.get("user-agent") ?? "Unknown";
+  const ip = inputs.ip ?? request.headers.get("x-forwarded-for");
+
+  try {
     if (classifyBot(userAgent)) {
       await recordBotVisit({
         accept: inputs.accept,
@@ -96,7 +99,10 @@ export async function action({ request }: { request: Request }) {
       return data({ ok: true }, { headers: CORS_HEADERS });
     }
   } catch (error) {
-    captureAndLogError(error, { extra: { request } });
+    logger(
+      "api.track: error tracking visit",
+      error instanceof Error ? error.stack : String(error),
+    );
     throw new Response("Bad Request", { status: 400, headers: CORS_HEADERS });
   }
 }
