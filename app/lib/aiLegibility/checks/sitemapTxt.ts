@@ -2,12 +2,9 @@ import type { CheckResult } from "../types";
 
 export default async function checkSitemapTxt({
   url,
-  log,
 }: {
   url: string;
-  log: (line: string) => Promise<void>;
 }): Promise<CheckResult & { urls: string[] }> {
-  await log("Checking sitemap.txt...");
   const sitemapUrl = new URL("/sitemap.txt", url).href;
   const startTime = Date.now();
 
@@ -21,13 +18,11 @@ export default async function checkSitemapTxt({
     });
 
     if (!response.ok) {
-      const message = `sitemap.txt not found (HTTP ${response.status})`;
-      await log(`✗ ${message}`);
       return {
         name: "sitemap.txt",
         category: "critical",
         passed: false,
-        message,
+        message: `sitemap.txt not found (HTTP ${response.status})`,
         details: { statusCode: response.status, url: sitemapUrl },
         urls: [],
       };
@@ -53,13 +48,11 @@ export default async function checkSitemapTxt({
     const elapsed = Date.now() - startTime;
 
     if (urls.length === 0) {
-      const message = "sitemap.txt exists but contains no valid URLs";
-      await log(`✗ ${message}`);
       return {
         name: "sitemap.txt",
         category: "critical",
         passed: false,
-        message,
+        message: "sitemap.txt exists but contains no valid URLs",
         details: {
           url: sitemapUrl,
           lineCount: lines.length,
@@ -70,13 +63,11 @@ export default async function checkSitemapTxt({
     }
 
     if (invalidLines.length > 0) {
-      const message = `sitemap.txt has ${urls.length} URLs (${invalidLines.length} invalid lines)`;
-      await log(`✗ ${message}`);
       return {
         name: "sitemap.txt",
         category: "critical",
         passed: true,
-        message,
+        message: `sitemap.txt has ${urls.length} URLs (${invalidLines.length} invalid lines)`,
         details: {
           url: sitemapUrl,
           validUrls: urls.length,
@@ -87,13 +78,11 @@ export default async function checkSitemapTxt({
       };
     }
 
-    const message = `sitemap.txt has ${urls.length} valid URLs`;
-    await log(`✓ ${message}`);
     return {
       name: "sitemap.txt",
       category: "critical",
       passed: true,
-      message,
+      message: `sitemap.txt has ${urls.length} valid URLs`,
       details: { url: sitemapUrl, validUrls: urls.length, elapsed },
       urls,
     };
@@ -101,25 +90,22 @@ export default async function checkSitemapTxt({
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
     if (error instanceof Error && error.name === "TimeoutError") {
-      const message = "sitemap.txt request timed out (10s limit)";
-      await log(`✗ ${message}`);
       return {
         name: "sitemap.txt",
         category: "critical",
         passed: false,
-        message,
+        message: "sitemap.txt request timed out (10s limit)",
         timedOut: true,
         details: { url: sitemapUrl },
         urls: [],
       };
     }
-    const message = `Failed to fetch sitemap.txt: ${errorMessage}`;
-    await log(`✗ ${message}`);
+
     return {
       name: "sitemap.txt",
       category: "critical",
       passed: false,
-      message,
+      message: `Failed to fetch sitemap.txt: ${errorMessage}`,
       details: { url: sitemapUrl, error: errorMessage },
       urls: [],
     };

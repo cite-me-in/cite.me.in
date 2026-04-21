@@ -4,14 +4,10 @@ import type { CheckResult } from "../types";
 const parser = new XMLParser({ ignoreAttributes: false });
 
 export default async function checkSitemapXml({
-  log,
   url,
 }: {
-  log: (line: string) => Promise<void>;
   url: string;
 }): Promise<CheckResult & { urls: string[] }> {
-  await log("Checking sitemap.xml...");
-
   const sitemapUrl = new URL("/sitemap.xml", url).href;
   const startTime = Date.now();
 
@@ -25,13 +21,11 @@ export default async function checkSitemapXml({
     });
 
     if (!response.ok) {
-      const message = `sitemap.xml not found (HTTP ${response.status})`;
-      await log(`✗ ${message}`);
       return {
         name: "sitemap.xml",
         category: "critical",
         passed: false,
-        message,
+        message: `sitemap.xml not found (HTTP ${response.status})`,
         details: { statusCode: response.status, url: sitemapUrl },
         urls: [],
       };
@@ -43,13 +37,11 @@ export default async function checkSitemapXml({
     const isReadable = isTextXml || isAppXml;
 
     if (!isReadable) {
-      const message = `sitemap.xml has incorrect MIME type: ${contentType}`;
-      await log(`✗ ${message}`);
       return {
         name: "sitemap.xml",
         category: "critical",
         passed: false,
-        message,
+        message: `sitemap.xml has incorrect MIME type: ${contentType}`,
         details: {
           contentType,
           url: sitemapUrl,
@@ -75,25 +67,21 @@ export default async function checkSitemapXml({
         .filter(Boolean);
 
       if (urls.length === 0) {
-        const message = "sitemap.xml is valid but contains no URLs";
-        await log(`✗ ${message}`);
         return {
           name: "sitemap.xml",
           category: "critical",
           passed: true,
-          message,
+          message: "sitemap.xml is valid but contains no URLs",
           details: { url: sitemapUrl, elapsed, mimeType: contentType },
           urls: [],
         };
       }
 
-      const message = `sitemap.xml has ${urls.length} URLs (${contentType})`;
-      await log(`✓ ${message}`);
       return {
         name: "sitemap.xml",
         category: "critical",
         passed: true,
-        message,
+        message: `sitemap.xml has ${urls.length} URLs (${contentType})`,
         details: {
           url: sitemapUrl,
           validUrls: urls.length,
@@ -103,13 +91,11 @@ export default async function checkSitemapXml({
         urls,
       };
     } catch (parseError) {
-      const message = `sitemap.xml failed to parse: ${parseError instanceof Error ? parseError.message : "Unknown error"}`;
-      await log(`✗ ${message}`);
       return {
         name: "sitemap.xml",
         category: "critical",
         passed: false,
-        message,
+        message: `sitemap.xml failed to parse: ${parseError instanceof Error ? parseError.message : "Unknown error"}`,
         details: { url: sitemapUrl, elapsed, mimeType: contentType },
         urls: [],
       };
@@ -118,25 +104,21 @@ export default async function checkSitemapXml({
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
     if (error instanceof Error && error.name === "TimeoutError") {
-      const message = "sitemap.xml request timed out (10s limit)";
-      await log(`✗ ${message}`);
       return {
         name: "sitemap.xml",
         category: "critical",
         passed: false,
-        message,
+        message: "sitemap.xml request timed out (10s limit)",
         timedOut: true,
         details: { url: sitemapUrl },
         urls: [],
       };
     }
-    const message = `Failed to fetch sitemap.xml: ${errorMessage}`;
-    await log(`✗ ${message}`);
     return {
       name: "sitemap.xml",
       category: "critical",
       passed: false,
-      message,
+      message: `Failed to fetch sitemap.xml: ${errorMessage}`,
       details: { url: sitemapUrl, error: errorMessage },
       urls: [],
     };

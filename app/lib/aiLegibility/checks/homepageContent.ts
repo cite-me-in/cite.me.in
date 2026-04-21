@@ -9,12 +9,9 @@ const SPA_PATTERNS = [
 
 export default async function checkHomepageContent({
   url,
-  log,
 }: {
   url: string;
-  log: (line: string) => Promise<void>;
 }): Promise<CheckResult & { html: string }> {
-  await log("Checking homepage content...");
   const startTime = Date.now();
 
   try {
@@ -30,13 +27,11 @@ export default async function checkHomepageContent({
     const elapsed = Date.now() - startTime;
 
     if (!response.ok) {
-      const message = `Homepage returned HTTP ${response.status}`;
-      await log(`✗ ${message}`);
       return {
         name: "Homepage content",
         category: "critical",
         passed: false,
-        message,
+        message: `Homepage returned HTTP ${response.status}`,
         details: { statusCode: response.status, elapsed },
         html,
       };
@@ -51,51 +46,43 @@ export default async function checkHomepageContent({
     const hasRealContent = contentLength >= MIN_CONTENT_LENGTH;
 
     if (isSpaShell && !hasRealContent) {
-      const message = `Homepage appears to be an empty SPA shell (${contentLength} characters of text content)`;
-      await log(`✗ ${message}`);
       return {
         name: "Homepage content",
         category: "critical",
         passed: false,
-        message,
+        message: `Homepage appears to be an empty SPA shell (${contentLength} characters of text content)`,
         details: { contentLength, isSpaShell: true, elapsed },
         html,
       };
     }
 
     if (!hasRealContent) {
-      const message = `Homepage has minimal content (${contentLength} characters)`;
-      await log(`✗ ${message}`);
       return {
         name: "Homepage content",
         category: "critical",
         passed: false,
-        message,
+        message: `Homepage has minimal content (${contentLength} characters)`,
         details: { contentLength, elapsed },
         html,
       };
     }
 
-    const message = `Homepage has ${contentLength.toLocaleString()} characters of text content`;
-    await log(`✓ ${message}`);
     return {
       name: "Homepage content",
       category: "critical",
       passed: true,
-      message,
+      message: `Homepage has ${contentLength.toLocaleString()} characters of text content`,
       details: { contentLength, elapsed },
       html,
     };
   } catch (error) {
     const elapsed = Date.now() - startTime;
     if (error instanceof Error && error.name === "TimeoutError") {
-      const message = "Homepage request timed out (10s limit)";
-      await log(`✗ ${message}`);
       return {
         name: "Homepage content",
         category: "critical",
         passed: false,
-        message,
+        message: "Homepage request timed out (10s limit)",
         timedOut: true,
         details: { elapsed },
         html: "",
@@ -105,15 +92,13 @@ export default async function checkHomepageContent({
       error instanceof Error ? error.message : "Unknown error";
     const isDnsError =
       errorMessage.includes("ENOTFOUND") || errorMessage.includes("EAI_AGAIN");
-    const message = isDnsError
-      ? `Could not resolve domain: ${new URL(url).hostname}`
-      : `Failed to fetch homepage: ${errorMessage}`;
-    await log(`✗ ${message}`);
     return {
       name: "Homepage content",
       category: "critical",
       passed: false,
-      message,
+      message: isDnsError
+        ? `Could not resolve domain: ${new URL(url).hostname}`
+        : `Failed to fetch homepage: ${errorMessage}`,
       details: { elapsed, error: errorMessage },
       html: "",
     };

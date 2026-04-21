@@ -17,14 +17,10 @@ type PageResult = {
 export default async function checkSamplePages({
   sampleURLs,
   url,
-  log,
 }: {
   sampleURLs: string[];
   url: string;
-  log: (line: string) => Promise<void>;
 }): Promise<CheckResult & { pages: PageResult[] }> {
-  await log("Checking sample pages...");
-
   const startTime = Date.now();
   const TOTAL_TIMEOUT = 120_000;
   const PAGE_TIMEOUT = 10_000;
@@ -32,13 +28,11 @@ export default async function checkSamplePages({
   const pagesToCheck = sampleURLs.filter((u) => u !== url);
 
   if (pagesToCheck.length === 0) {
-    const message = "No sample URLs found in sitemap";
-    await log(`✗ ${message}`);
     return {
       name: "Sample pages",
       category: "important",
       passed: false,
-      message,
+      message: "No sample URLs found in sitemap",
       details: { sitemapUrlCount: sampleURLs.length },
       pages: [],
     };
@@ -49,12 +43,10 @@ export default async function checkSamplePages({
   for (const pageUrl of pagesToCheck) {
     const totalElapsed = Date.now() - startTime;
     if (totalElapsed >= TOTAL_TIMEOUT) {
-      const message = "Skipped (total timeout exceeded)";
-      await log(`✗ ${message}`);
       results.push({
         url: pageUrl,
         passed: false,
-        message,
+        message: "Skipped (total timeout exceeded)",
         timedOut: true,
         contentLength: 0,
       });
@@ -75,12 +67,10 @@ export default async function checkSamplePages({
       const html = await response.text();
 
       if (!response.ok) {
-        const message = `HTTP ${response.status}`;
-        await log(`✗ ${message}`);
         results.push({
           url: pageUrl,
           passed: false,
-          message,
+          message: `HTTP ${response.status}`,
           timedOut: false,
           contentLength: 0,
         });
@@ -96,12 +86,10 @@ export default async function checkSamplePages({
       const hasRealContent = contentLength >= MIN_CONTENT_LENGTH;
 
       if (isSpaShell && !hasRealContent) {
-        const message = `Empty SPA shell (${contentLength} chars)`;
-        await log(`✗ ${message}`);
         results.push({
           url: pageUrl,
           passed: false,
-          message,
+          message: `Empty SPA shell (${contentLength} chars)`,
           timedOut: false,
           contentLength,
         });
@@ -109,46 +97,37 @@ export default async function checkSamplePages({
       }
 
       if (!hasRealContent) {
-        const message = `Minimal content (${contentLength} chars)`;
-        await log(`✗ ${message}`);
         results.push({
           url: pageUrl,
           passed: false,
-          message,
+          message: `Minimal content (${contentLength} chars)`,
           timedOut: false,
           contentLength,
         });
         continue;
       }
 
-      const message = `${contentLength.toLocaleString()} chars`;
-      await log(`✓ ${message}`);
       results.push({
         url: pageUrl,
         passed: true,
-        message,
+        message: `${contentLength.toLocaleString()} chars`,
         timedOut: false,
         contentLength,
       });
     } catch (error) {
       if (error instanceof Error && error.name === "TimeoutError") {
-        const message = "Timed out (10s limit)";
-        await log(`✗ ${message}`);
         results.push({
           url: pageUrl,
           passed: false,
-          message,
+          message: "Timed out (10s limit)",
           timedOut: true,
           contentLength: 0,
         });
       } else {
-        const message =
-          error instanceof Error ? error.message : "Unknown error";
-        await log(`✗ ${message}`);
         results.push({
           url: pageUrl,
           passed: false,
-          message,
+          message: error instanceof Error ? error.message : "Unknown error",
           timedOut: false,
           contentLength: 0,
         });
@@ -162,25 +141,21 @@ export default async function checkSamplePages({
   const elapsed = Date.now() - startTime;
 
   if (passedCount === totalCount) {
-    const message = `All ${totalCount} sample pages have content`;
-    await log(`✓ ${message}`);
     return {
       name: "Sample pages",
       category: "important",
       passed: true,
-      message,
+      message: `All ${totalCount} sample pages have content`,
       details: { passedCount, totalCount, timedOutCount, elapsed },
       pages: results,
     };
   }
 
-  const message = `${passedCount}/${totalCount} pages have content${timedOutCount > 0 ? ` (${timedOutCount} timed out)` : ""}`;
-  await log(`✗ ${message}`);
   return {
     name: "Sample pages",
     category: "important",
     passed: false,
-    message,
+    message: `${passedCount}/${totalCount} pages have content${timedOutCount > 0 ? ` (${timedOutCount} timed out)` : ""}`,
     details: { passedCount, totalCount, timedOutCount, elapsed },
     pages: results,
   };

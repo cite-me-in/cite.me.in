@@ -40,13 +40,9 @@ function parseRobotsTxt(content: string) {
       continue;
     }
 
-    const ruleMatch = trimmed.match(
-      /^(allow|disallow):\s*(.*)/i,
-    );
+    const ruleMatch = trimmed.match(/^(allow|disallow):\s*(.*)/i);
     if (ruleMatch && current) {
-      current.rules.push(
-        `${ruleMatch[1]}: ${ruleMatch[2].trim()}`,
-      );
+      current.rules.push(`${ruleMatch[1]}: ${ruleMatch[2].trim()}`);
     }
   }
 
@@ -64,8 +60,8 @@ function findBlockedAiBots(content: string) {
       );
       if (!matchesBot) continue;
 
-      const isFullyBlocked = group.rules.some(
-        (r) => /^disallow:\s*\/\s*$/i.test(r),
+      const isFullyBlocked = group.rules.some((r) =>
+        /^disallow:\s*\/\s*$/i.test(r),
       );
       if (isFullyBlocked) {
         blocked.push({
@@ -83,19 +79,17 @@ function generateRobotsFix(
   blockedBots: { agent: string; displayName: string }[],
 ) {
   const lines = blockedBots.map(
-    (b) => `# ${b.displayName} — allow AI agents to read your content\nUser-agent: ${b.agent}\nAllow: /`,
+    (b) =>
+      `# ${b.displayName} — allow AI agents to read your content\nUser-agent: ${b.agent}\nAllow: /`,
   );
   return lines.join("\n\n");
 }
 
 export default async function checkRobotsTxt({
   url,
-  log,
 }: {
-  log: (line: string) => Promise<void>;
   url: string;
 }): Promise<CheckResult> {
-  await log("Checking robots.txt...");
   const robotsUrl = new URL("/robots.txt", url).href;
   const startTime = Date.now();
 
@@ -109,13 +103,11 @@ export default async function checkRobotsTxt({
     });
 
     if (!response.ok) {
-      const message = `robots.txt not found (HTTP ${response.status})`;
-      await log(`✗ ${message}`);
       return {
         name: "robots.txt",
         category: "important",
         passed: false,
-        message,
+        message: `robots.txt not found (HTTP ${response.status})`,
         details: { statusCode: response.status, url: robotsUrl },
       };
     }
@@ -131,13 +123,11 @@ export default async function checkRobotsTxt({
     const hasSitemap = lines.some((line) => /sitemap/i.test(line));
 
     if (!hasUserAgent && !hasAllowOrDisallow) {
-      const message = "robots.txt exists but has no crawl rules";
-      await log(`✗ ${message}`);
       return {
         name: "robots.txt",
         category: "important",
         passed: true,
-        message,
+        message: "robots.txt exists but has no crawl rules",
         details: {
           url: robotsUrl,
           lineCount: lines.length,
@@ -150,13 +140,11 @@ export default async function checkRobotsTxt({
     const blockedAiBots = findBlockedAiBots(content);
     if (blockedAiBots.length > 0) {
       const botNames = blockedAiBots.map((b) => b.displayName).join(", ");
-      const message = `robots.txt blocks AI bots: ${botNames}`;
-      await log(`✗ ${message}`);
       return {
         name: "robots.txt",
         category: "important",
         passed: false,
-        message,
+        message: `robots.txt blocks AI bots: ${botNames}`,
         details: {
           url: robotsUrl,
           lineCount: lines.length,
@@ -168,37 +156,31 @@ export default async function checkRobotsTxt({
       };
     }
 
-    const message = `robots.txt found with ${lines.length} lines${hasSitemap ? " (includes sitemap reference)" : ""}`;
-    await log(`✓ ${message}`);
     return {
       name: "robots.txt",
       category: "important",
       passed: true,
-      message,
+      message: `robots.txt found with ${lines.length} lines${hasSitemap ? " (includes sitemap reference)" : ""}`,
       details: { url: robotsUrl, lineCount: lines.length, hasSitemap, elapsed },
     };
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
     if (error instanceof Error && error.name === "TimeoutError") {
-      const message = "robots.txt request timed out (10s limit)";
-      await log(`✗ ${message}`);
       return {
         name: "robots.txt",
         category: "important",
         passed: false,
-        message,
+        message: "robots.txt request timed out (10s limit)",
         timedOut: true,
         details: { url: robotsUrl },
       };
     }
-    const message = `Failed to fetch robots.txt: ${errorMessage}`;
-    await log(`✗ ${message}`);
     return {
       name: "robots.txt",
       category: "important",
       passed: false,
-      message,
+      message: `Failed to fetch robots.txt: ${errorMessage}`,
       details: { url: robotsUrl, error: errorMessage },
     };
   }

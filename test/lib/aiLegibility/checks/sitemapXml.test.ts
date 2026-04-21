@@ -1,14 +1,8 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import checkSitemapXml from "~/lib/aiLegibility/checks/sitemapXml";
 import { SITEMAP_XML, SITEMAP_XML_INVALID, mockFetch } from "../fixtures";
 
 describe("checkSitemapXml", () => {
-  const log = vi.fn().mockResolvedValue(undefined);
-
-  beforeEach(() => {
-    log.mockClear();
-  });
-
   afterEach(() => {
     vi.unstubAllGlobals();
   });
@@ -26,17 +20,13 @@ describe("checkSitemapXml", () => {
       }),
     );
 
-    const result = await checkSitemapXml({
-      url: "https://acme.com/",
-      log,
-    });
+    const result = await checkSitemapXml({ url: "https://acme.com/" });
 
     expect(result.passed).toBe(true);
     expect(result.name).toBe("sitemap.xml");
     expect(result.category).toBe("critical");
     expect(result.message).toContain("3 URLs");
     expect(result.urls).toHaveLength(3);
-    expect(log).toHaveBeenCalledWith(expect.stringContaining("✓"));
   });
 
   it("should pass with text/xml MIME type", async () => {
@@ -52,10 +42,7 @@ describe("checkSitemapXml", () => {
       }),
     );
 
-    const result = await checkSitemapXml({
-      url: "https://acme.com/",
-      log,
-    });
+    const result = await checkSitemapXml({ url: "https://acme.com/" });
 
     expect(result.passed).toBe(true);
     expect(result.message).toContain("text/xml");
@@ -74,10 +61,7 @@ describe("checkSitemapXml", () => {
       }),
     );
 
-    const result = await checkSitemapXml({
-      url: "https://acme.com/",
-      log,
-    });
+    const result = await checkSitemapXml({ url: "https://acme.com/" });
 
     expect(result.passed).toBe(false);
     expect(result.message).toContain("not found");
@@ -97,11 +81,7 @@ describe("checkSitemapXml", () => {
       }),
     );
 
-    const result = await checkSitemapXml({
-      url: "https://acme.com/",
-      log,
-    });
-
+    const result = await checkSitemapXml({ url: "https://acme.com/" });
     expect(result.passed).toBe(false);
     expect(result.message).toContain("incorrect MIME type");
   });
@@ -119,11 +99,7 @@ describe("checkSitemapXml", () => {
       }),
     );
 
-    const result = await checkSitemapXml({
-      url: "https://acme.com/",
-      log,
-    });
-
+    const result = await checkSitemapXml({ url: "https://acme.com/" });
     expect(result.passed).toBe(true);
     expect(result.message).toContain("no URLs");
   });
@@ -143,11 +119,7 @@ describe("checkSitemapXml", () => {
       }),
     );
 
-    const result = await checkSitemapXml({
-      url: "https://acme.com/",
-      log,
-    });
-
+    const result = await checkSitemapXml({ url: "https://acme.com/" });
     expect(result.passed).toBe(true);
     expect(result.message).toContain("no URLs");
   });

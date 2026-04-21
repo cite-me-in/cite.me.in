@@ -341,9 +341,10 @@ describe("ai-legibility email", () => {
   });
 
   it("should show category summary", async () => {
-    await expect(email.page.getByText("Critical")).toBeVisible();
-    await expect(email.page.getByText("Important")).toBeVisible();
-    await expect(email.page.getByText("Optimization")).toBeVisible();
+    const table = email.page.locator("table");
+    await expect(table.getByText("Critical", { exact: true })).toBeVisible();
+    await expect(table.getByText("Important", { exact: true })).toBeVisible();
+    await expect(table.getByText("Optimization", { exact: true })).toBeVisible();
   });
 
   it("should show top suggestions", async () => {

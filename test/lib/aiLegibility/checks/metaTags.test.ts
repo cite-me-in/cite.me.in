@@ -1,19 +1,12 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import checkMetaTags from "~/lib/aiLegibility/checks/metaTags";
 import { HOMEPAGE_WITH_CONTENT } from "../fixtures";
 
 describe("checkMetaTags", () => {
-  const log = vi.fn().mockResolvedValue(undefined);
-
-  beforeEach(() => {
-    log.mockClear();
-  });
-
   it("should pass when all meta tags are present", async () => {
     const result = await checkMetaTags({
       url: "https://acme.com/",
       html: HOMEPAGE_WITH_CONTENT,
-      log,
     });
 
     expect(result.passed).toBe(true);
@@ -25,7 +18,6 @@ describe("checkMetaTags", () => {
     expect(result.description).toBe("Acme Corp builds great software");
     expect(result.ogTitle).toBe("Acme Corp");
     expect(result.canonical).toBe("https://acme.com/");
-    expect(log).toHaveBeenCalledWith(expect.stringContaining("✓"));
   });
 
   it("should pass when only description is present", async () => {
@@ -41,7 +33,6 @@ describe("checkMetaTags", () => {
     const result = await checkMetaTags({
       url: "https://acme.com/",
       html,
-      log,
     });
 
     expect(result.passed).toBe(true);
@@ -63,7 +54,6 @@ describe("checkMetaTags", () => {
     const result = await checkMetaTags({
       url: "https://acme.com/",
       html,
-      log,
     });
 
     expect(result.passed).toBe(true);
@@ -85,7 +75,6 @@ describe("checkMetaTags", () => {
     const result = await checkMetaTags({
       url: "https://acme.com/",
       html,
-      log,
     });
 
     expect(result.passed).toBe(true);
@@ -105,7 +94,6 @@ describe("checkMetaTags", () => {
     const result = await checkMetaTags({
       url: "https://acme.com/",
       html,
-      log,
     });
 
     expect(result.passed).toBe(false);
@@ -127,7 +115,6 @@ describe("checkMetaTags", () => {
     const result = await checkMetaTags({
       url: "https://acme.com/",
       html,
-      log,
     });
 
     expect(result.passed).toBe(false);

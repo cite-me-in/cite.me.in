@@ -1,14 +1,8 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import checkSitemapTxt from "~/lib/aiLegibility/checks/sitemapTxt";
 import { SITEMAP_TXT, SITEMAP_TXT_INVALID, mockFetch } from "../fixtures";
 
 describe("checkSitemapTxt", () => {
-  const log = vi.fn().mockResolvedValue(undefined);
-
-  beforeEach(() => {
-    log.mockClear();
-  });
-
   afterEach(() => {
     vi.unstubAllGlobals();
   });
@@ -26,17 +20,13 @@ describe("checkSitemapTxt", () => {
       }),
     );
 
-    const result = await checkSitemapTxt({
-      url: "https://acme.com/",
-      log,
-    });
+    const result = await checkSitemapTxt({ url: "https://acme.com/" });
 
     expect(result.passed).toBe(true);
     expect(result.name).toBe("sitemap.txt");
     expect(result.category).toBe("critical");
     expect(result.message).toContain("4 valid URLs");
     expect(result.urls).toHaveLength(4);
-    expect(log).toHaveBeenCalledWith(expect.stringContaining("✓"));
   });
 
   it("should fail when sitemap.txt returns 404", async () => {
@@ -52,10 +42,7 @@ describe("checkSitemapTxt", () => {
       }),
     );
 
-    const result = await checkSitemapTxt({
-      url: "https://acme.com/",
-      log,
-    });
+    const result = await checkSitemapTxt({ url: "https://acme.com/" });
 
     expect(result.passed).toBe(false);
     expect(result.message).toContain("not found");
@@ -75,10 +62,7 @@ describe("checkSitemapTxt", () => {
       }),
     );
 
-    const result = await checkSitemapTxt({
-      url: "https://acme.com/",
-      log,
-    });
+    const result = await checkSitemapTxt({ url: "https://acme.com/" });
 
     expect(result.passed).toBe(false);
     expect(result.message).toContain("no valid URLs");
@@ -103,10 +87,7 @@ Also not a URL`;
       }),
     );
 
-    const result = await checkSitemapTxt({
-      url: "https://acme.com/",
-      log,
-    });
+    const result = await checkSitemapTxt({ url: "https://acme.com/" });
 
     expect(result.passed).toBe(true);
     expect(result.message).toContain("2 URLs");
@@ -119,10 +100,7 @@ Also not a URL`;
       throw new Error("ECONNREFUSED");
     });
 
-    const result = await checkSitemapTxt({
-      url: "https://acme.com/",
-      log,
-    });
+    const result = await checkSitemapTxt({ url: "https://acme.com/" });
 
     expect(result.passed).toBe(false);
     expect(result.message).toContain("Failed to fetch");

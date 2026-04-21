@@ -1,11 +1,9 @@
 import type { CheckResult } from "../types";
 
 export default async function checkMetaTags({
-  log,
   html,
   url,
 }: {
-  log: (line: string) => Promise<void>;
   html: string;
   url: string;
 }): Promise<
@@ -16,7 +14,6 @@ export default async function checkMetaTags({
     canonical?: string;
   }
 > {
-  await log("Checking meta tags...");
   const startTime = Date.now();
 
   const descriptionMatch = html.match(
@@ -44,14 +41,11 @@ export default async function checkMetaTags({
   const hasCanonical = !!canonical;
 
   if (!hasDescription && !hasOgTags && !hasCanonical) {
-    const message =
-      "No meta description, Open Graph tags, or canonical URL found";
-    await log(`✗ ${message}`);
     return {
       name: "Meta tags",
       category: "optimization",
       passed: false,
-      message,
+      message: "No meta description, Open Graph tags, or canonical URL found",
       details: { url, elapsed },
     };
   }
@@ -61,13 +55,11 @@ export default async function checkMetaTags({
   if (hasOgTags) found.push("Open Graph");
   if (hasCanonical) found.push("canonical");
 
-  const message = `Found: ${found.join(", ")}`;
-  await log(`✓ ${message}`);
   return {
     name: "Meta tags",
     category: "optimization",
     passed: true,
-    message,
+    message: `Found: ${found.join(", ")}`,
     details: { url, elapsed },
     description,
     ogTitle,

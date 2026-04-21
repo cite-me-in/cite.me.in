@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import checkJsonLd from "~/lib/aiLegibility/checks/jsonLd";
 import {
   HOMEPAGE_WITH_CONTENT,
@@ -9,17 +9,10 @@ import {
 } from "../fixtures";
 
 describe("checkJsonLd", () => {
-  const log = vi.fn().mockResolvedValue(undefined);
-
-  beforeEach(() => {
-    log.mockClear();
-  });
-
   it("should pass when JSON-LD Organization schema is valid", async () => {
     const result = await checkJsonLd({
       url: "https://acme.com/",
       html: HOMEPAGE_WITH_CONTENT,
-      log,
     });
 
     expect(result.passed).toBe(true);
@@ -34,7 +27,6 @@ describe("checkJsonLd", () => {
     const result = await checkJsonLd({
       url: "https://acme.com/blog/post",
       html: JSON_LD_ARTICLE,
-      log,
     });
 
     expect(result.passed).toBe(true);
@@ -48,7 +40,6 @@ describe("checkJsonLd", () => {
     const result = await checkJsonLd({
       url: "https://acme.com/",
       html: JSON_LD_MULTIPLE,
-      log,
     });
 
     expect(result.passed).toBe(true);
@@ -63,7 +54,6 @@ describe("checkJsonLd", () => {
     const result = await checkJsonLd({
       url: "https://acme.com/blog/post",
       html: JSON_LD_INVALID,
-      log,
     });
 
     expect(result.passed).toBe(false);
@@ -77,7 +67,6 @@ describe("checkJsonLd", () => {
     const result = await checkJsonLd({
       url: "https://acme.com/",
       html,
-      log,
     });
 
     expect(result.passed).toBe(false);
@@ -89,7 +78,6 @@ describe("checkJsonLd", () => {
     const result = await checkJsonLd({
       url: "https://acme.com/",
       html: JSON_LD_PARSE_ERROR,
-      log,
     });
 
     expect(result.passed).toBe(false);
@@ -112,7 +100,6 @@ describe("checkJsonLd", () => {
     const result = await checkJsonLd({
       url: "https://acme.com/",
       html,
-      log,
     });
 
     expect(result.passed).toBe(false);
@@ -133,7 +120,6 @@ describe("checkJsonLd", () => {
     const result = await checkJsonLd({
       url: "https://acme.com/",
       html,
-      log,
     });
 
     expect(result.passed).toBe(false);

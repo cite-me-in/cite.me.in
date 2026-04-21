@@ -1,6 +1,5 @@
 import { shuffle } from "radashi";
 import {
-  appendLog,
   getProgress,
   setResult,
   setStatus,
@@ -27,27 +26,26 @@ import type { CheckResult, ScanProgress, ScanResult } from "./types";
  * run at a time, so if a scan is already in progress, the function will return
  * the progress.
  *
+ * @param log - A function to log progress.
  * @param site - The site to scan.
  * @param user - The user who is scanning the site.
  * @returns The progress of the scan.
  */
 export default async function runAILegibilityScan({
+  log,
   user,
   site,
 }: {
+  log: (line: string) => Promise<unknown> | unknown;
   site: { id: string; domain: string };
   user: { email: string; id: string; unsubscribed: boolean };
 }): Promise<ScanProgress> {
-  const log = async (line: string) => {
-    await appendLog({ line, domain: site.domain });
-  };
-
   const progress = await getProgress({ offset: 0, domain: site.domain });
   if (progress && !progress.done) return progress;
 
   try {
     await startNewScan({ domain: site.domain });
-    await log(`Scanning ${site.domain}...`);
+    await log("Starting AI legibility scan...");
     const result = await runScanSteps({ log, domain: site.domain });
 
     await setResult({ result, domain: site.domain });
@@ -77,29 +75,63 @@ async function runScanSteps({
   log,
   domain,
 }: {
-  log: (line: string) => Promise<void>;
+  log: (line: string) => Promise<unknown> | unknown;
   domain: string;
 }): Promise<ScanResult> {
   const url = normalizeURL(domain);
   const checks: CheckResult[] = [];
 
-  const homepageResult = await checkHomepageContent({ log, url });
+  await log("Checking homepage content...");
+  const homepageResult = await checkHomepageContent({ url });
   checks.push(homepageResult);
+  await log(`${homepageResult.passed ? "✓" : "✗"} ${homepageResult.message}`);
 
-  const sitemmapXmlResult = await checkSitemapXml({ log, url });
+  await log("Checking sitemap.xml...");
+  const sitemmapXmlResult = await checkSitemapXml({ url });
   checks.push(sitemmapXmlResult);
-  const sitemapTxtResult = await checkSitemapTxt({ log, url });
+  await log(
+    `${sitemmapXmlResult.passed ? "✓" : "✗"} ${sitemmapXmlResult.message}`,
+  );
+
+  await log("Checking sitemap.txt...");
+  const sitemapTxtResult = await checkSitemapTxt({ url });
+  await log(
+    `${sitemapTxtResult.passed ? "✓" : "✗"} ${sitemapTxtResult.message}`,
+  );
   checks.push(sitemapTxtResult);
 
-  checks.push(await checkRobotsTxt({ log, url }));
-  checks.push(await checkJsonLd({ log, html: homepageResult.html, url }));
-  checks.push(await checkMetaTags({ log, html: homepageResult.html, url }));
-  checks.push(await checkLlmsTxt({ log, url }));
+  await log("Checking robots.txt...");
+  const robotsTxtResult = await checkRobotsTxt({ url });
+  await log(`${robotsTxtResult.passed ? "✓" : "✗"} ${robotsTxtResult.message}`);
+  checks.push(robotsTxtResult);
 
+  await log("Checking JSON-LD...");
+  const jsonLdResult = await checkJsonLd({ html: homepageResult.html, url });
+  checks.push(jsonLdResult);
+  await log(`${jsonLdResult.passed ? "✓" : "✗"} ${jsonLdResult.message}`);
+
+  await log("Checking meta tags...");
+  const metaTagsResult = await checkMetaTags({
+    html: homepageResult.html,
+    url,
+  });
+  checks.push(metaTagsResult);
+  await log(`${metaTagsResult.passed ? "✓" : "✗"} ${metaTagsResult.message}`);
+
+  await log("Checking llms.txt...");
+  const llmsTxtResult = await checkLlmsTxt({ url });
+  checks.push(llmsTxtResult);
+  await log(`${llmsTxtResult.passed ? "✓" : "✗"} ${llmsTxtResult.message}`);
+
+  await log("Checking sample pages...");
   const sampleURLs = shuffle([
     ...new Set([...sitemmapXmlResult.urls, ...sitemapTxtResult.urls]).values(),
   ]).slice(0, 10);
-  checks.push(await checkSamplePages({ log, url, sampleURLs }));
+  const samplePagesResult = await checkSamplePages({ url, sampleURLs });
+  checks.push(samplePagesResult);
+  await log(
+    `${samplePagesResult.passed ? "✓" : "✗"} ${samplePagesResult.message}`,
+  );
 
   const summary = await summarize({ checks, log });
   const suggestions = await generateSuggestions({ log, checks, url });
@@ -118,7 +150,7 @@ async function summarize({
   log,
 }: {
   checks: CheckResult[];
-  log: (line: string) => Promise<void>;
+  log: (line: string) => Promise<unknown> | unknown;
 }): Promise<{
   critical: { passed: number; total: number };
   important: { passed: number; total: number };

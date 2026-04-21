@@ -28,7 +28,7 @@ export default async function generateSuggestions({
   checks,
   url,
 }: {
-  log: (line: string) => Promise<void>;
+  log: (line: string) => Promise<unknown> | unknown;
   checks: CheckResult[];
   url: string;
 }): Promise<Suggestion[]> {
@@ -70,6 +70,7 @@ Guidelines:
 - For sitemap suggestions, show all three delivery methods: robots.txt Sitemap directive, HTML <link rel="sitemap"> tag, and HTTP Link header
 - For SPA issues, explain server-side rendering or injection
 - For MIME type issues, explain the correct Content-Type header
+- Write suggestions in a manner that any LLM can understand and use to fix the issue.
 
 Respond with JSON only:
 {
@@ -165,7 +166,9 @@ function generateFallbackSuggestions(
     }
 
     if (check.name === "robots.txt" && check.details?.blockedAiBots) {
-      const blockedList = (check.details.blockedAiBots as { displayName: string }[])
+      const blockedList = (
+        check.details.blockedAiBots as { displayName: string }[]
+      )
         .map((b) => b.displayName)
         .join(", ");
       return {
@@ -204,7 +207,7 @@ async function logInBackground({
   log,
   signal,
 }: {
-  log: (line: string) => Promise<void>;
+  log: (line: string) => Promise<unknown> | unknown;
   signal: AbortSignal;
 }) {
   const messages = [

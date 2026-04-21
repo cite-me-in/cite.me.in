@@ -22,15 +22,12 @@ type JsonLdResult = {
 };
 
 export default async function checkJsonLd({
-  log,
   html,
   url,
 }: {
-  log: (line: string) => Promise<void>;
   html: string;
   url: string;
 }): Promise<CheckResult & { schemas: JsonLdResult[] }> {
-  await log("Checking JSON-LD structured data...");
   const scriptMatches = html.matchAll(
     /<script\s+type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi,
   );
@@ -57,7 +54,7 @@ export default async function checkJsonLd({
           schemas.push({
             type,
             valid: true,
-            error: "Unknown schema type (not validated)",
+            error: "Unknown schema type",
           });
         }
       }
@@ -73,13 +70,11 @@ export default async function checkJsonLd({
   const elapsed = Date.now() - startTime;
 
   if (schemas.length === 0) {
-    const message = "No JSON-LD structured data found";
-    await log(`✗ ${message}`);
     return {
       name: "JSON-LD",
       category: "important",
       passed: false,
-      message,
+      message: "No JSON-LD structured data found",
       details: { url, elapsed },
       schemas: [],
     };
@@ -92,26 +87,22 @@ export default async function checkJsonLd({
     const errors = invalidSchemas
       .map((s) => `${s.type}: ${s.error}`)
       .join("; ");
-    const message = `${validCount}/${schemas.length} schemas valid (${errors})`;
-    await log(`✗ ${message}`);
     return {
       name: "JSON-LD",
       category: "important",
       passed: false,
-      message,
+      message: `${validCount}/${schemas.length} schemas valid (${errors})`,
       details: { url, validCount, totalCount: schemas.length, elapsed },
       schemas,
     };
   }
 
   const uniqueTypes = [...new Set(schemas.map((s) => s.type))];
-  const message = `Valid JSON-LD: ${uniqueTypes.join(", ")}`;
-  await log(`✓ ${message}`);
   return {
     name: "JSON-LD",
     category: "important",
     passed: true,
-    message,
+    message: `Valid JSON-LD: ${uniqueTypes.join(", ")}`,
     details: { url, validCount, totalCount: schemas.length, elapsed },
     schemas,
   };

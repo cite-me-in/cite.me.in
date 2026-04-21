@@ -1,16 +1,10 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { HttpResponse, http } from "msw";
-import msw from "~/test/mocks/msw";
+import { afterEach, describe, expect, it } from "vitest";
 import checkLlmsTxt from "~/lib/aiLegibility/checks/llmsTxt";
+import msw from "~/test/mocks/msw";
 import { LLMS_TXT } from "../fixtures";
 
 describe("checkLlmsTxt", () => {
-  const log = vi.fn().mockResolvedValue(undefined);
-
-  beforeEach(() => {
-    log.mockClear();
-  });
-
   afterEach(() => {
     msw.resetHandlers();
   });
@@ -26,14 +20,12 @@ describe("checkLlmsTxt", () => {
 
     const result = await checkLlmsTxt({
       url: "https://acme.com/",
-      log,
     });
 
     expect(result.passed).toBe(true);
     expect(result.name).toBe("llms.txt");
     expect(result.category).toBe("optimization");
     expect(result.message).toContain("5 lines");
-    expect(log).toHaveBeenCalledWith(expect.stringContaining("✓"));
   });
 
   it("should pass when llms.txt exists but is empty", async () => {
@@ -45,10 +37,7 @@ describe("checkLlmsTxt", () => {
       ),
     );
 
-    const result = await checkLlmsTxt({
-      url: "https://acme.com/",
-      log,
-    });
+    const result = await checkLlmsTxt({ url: "https://acme.com/" });
 
     expect(result.passed).toBe(true);
     expect(result.message).toContain("empty");
@@ -61,24 +50,16 @@ describe("checkLlmsTxt", () => {
       ),
     );
 
-    const result = await checkLlmsTxt({
-      url: "https://acme.com/",
-      log,
-    });
+    const result = await checkLlmsTxt({ url: "https://acme.com/" });
 
     expect(result.passed).toBe(false);
     expect(result.message).toContain("not found");
   });
 
   it("should handle network errors", async () => {
-    msw.use(
-      http.get("https://acme.com/llms.txt", () => HttpResponse.error()),
-    );
+    msw.use(http.get("https://acme.com/llms.txt", () => HttpResponse.error()));
 
-    const result = await checkLlmsTxt({
-      url: "https://acme.com/",
-      log,
-    });
+    const result = await checkLlmsTxt({ url: "https://acme.com/" });
 
     expect(result.passed).toBe(false);
     expect(result.message).toContain("Failed to fetch");

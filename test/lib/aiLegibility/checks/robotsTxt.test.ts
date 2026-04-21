@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import checkRobotsTxt from "~/lib/aiLegibility/checks/robotsTxt";
 import {
   ROBOTS_EMPTY,
@@ -10,12 +10,6 @@ import {
 } from "../fixtures";
 
 describe("checkRobotsTxt", () => {
-  const log = vi.fn().mockResolvedValue(undefined);
-
-  beforeEach(() => {
-    log.mockClear();
-  });
-
   afterEach(() => {
     vi.unstubAllGlobals();
   });
@@ -33,17 +27,13 @@ describe("checkRobotsTxt", () => {
       }),
     );
 
-    const result = await checkRobotsTxt({
-      url: "https://acme.com/",
-      log,
-    });
+    const result = await checkRobotsTxt({ url: "https://acme.com/" });
 
     expect(result.passed).toBe(true);
     expect(result.name).toBe("robots.txt");
     expect(result.category).toBe("important");
     expect(result.message).toContain("sitemap reference");
     expect(result.details?.hasSitemap).toBe(true);
-    expect(log).toHaveBeenCalledWith(expect.stringContaining("✓"));
   });
 
   it("should pass when robots.txt has crawl rules without sitemap", async () => {
@@ -62,10 +52,7 @@ Disallow: /admin/`;
       }),
     );
 
-    const result = await checkRobotsTxt({
-      url: "https://acme.com/",
-      log,
-    });
+    const result = await checkRobotsTxt({ url: "https://acme.com/" });
 
     expect(result.passed).toBe(true);
     expect(result.message).not.toContain("sitemap reference");
@@ -85,10 +72,7 @@ Disallow: /admin/`;
       }),
     );
 
-    const result = await checkRobotsTxt({
-      url: "https://acme.com/",
-      log,
-    });
+    const result = await checkRobotsTxt({ url: "https://acme.com/" });
 
     expect(result.passed).toBe(true);
     expect(result.message).toContain("no crawl rules");
@@ -107,10 +91,7 @@ Disallow: /admin/`;
       }),
     );
 
-    const result = await checkRobotsTxt({
-      url: "https://acme.com/",
-      log,
-    });
+    const result = await checkRobotsTxt({ url: "https://acme.com/" });
 
     expect(result.passed).toBe(false);
     expect(result.message).toContain("not found");
@@ -121,10 +102,7 @@ Disallow: /admin/`;
       throw new Error("ECONNREFUSED");
     });
 
-    const result = await checkRobotsTxt({
-      url: "https://acme.com/",
-      log,
-    });
+    const result = await checkRobotsTxt({ url: "https://acme.com/" });
 
     expect(result.passed).toBe(false);
     expect(result.message).toContain("Failed to fetch");
@@ -143,20 +121,24 @@ Disallow: /admin/`;
       }),
     );
 
-    const result = await checkRobotsTxt({
-      url: "https://acme.com/",
-      log,
-    });
+    const result = await checkRobotsTxt({ url: "https://acme.com/" });
 
     expect(result.passed).toBe(false);
     expect(result.message).toContain("blocks AI bots");
-    const bots = result.details?.blockedAiBots as { agent: string; displayName: string }[];
+    const bots = result.details?.blockedAiBots as {
+      agent: string;
+      displayName: string;
+    }[];
     expect(bots).toHaveLength(4);
     expect(bots.map((b) => b.agent)).toEqual(
-      expect.arrayContaining(["GPTBot", "ClaudeBot", "Google-Extended", "CCBot"]),
+      expect.arrayContaining([
+        "GPTBot",
+        "ClaudeBot",
+        "Google-Extended",
+        "CCBot",
+      ]),
     );
     expect(result.details?.suggestedFix).toContain("Allow: /");
-    expect(log).toHaveBeenCalledWith(expect.stringContaining("✗"));
   });
 
   it("should pass when robots.txt has AI bots with Allow rules", async () => {
@@ -172,10 +154,7 @@ Disallow: /admin/`;
       }),
     );
 
-    const result = await checkRobotsTxt({
-      url: "https://acme.com/",
-      log,
-    });
+    const result = await checkRobotsTxt({ url: "https://acme.com/" });
 
     expect(result.passed).toBe(true);
     expect(result.details?.blockedAiBots).toBeUndefined();
@@ -194,10 +173,7 @@ Disallow: /admin/`;
       }),
     );
 
-    const result = await checkRobotsTxt({
-      url: "https://acme.com/",
-      log,
-    });
+    const result = await checkRobotsTxt({ url: "https://acme.com/" });
 
     expect(result.passed).toBe(true);
     expect(result.details?.blockedAiBots).toBeUndefined();
@@ -220,13 +196,13 @@ Disallow: /
       }),
     );
 
-    const result = await checkRobotsTxt({
-      url: "https://acme.com/",
-      log,
-    });
+    const result = await checkRobotsTxt({ url: "https://acme.com/" });
 
     expect(result.passed).toBe(false);
-    const bots = result.details?.blockedAiBots as { agent: string; displayName: string }[];
+    const bots = result.details?.blockedAiBots as {
+      agent: string;
+      displayName: string;
+    }[];
     expect(bots).toHaveLength(1);
     expect(bots[0].agent).toBe("GPTBot");
     expect(result.details?.suggestedFix).toContain("User-agent: GPTBot");
