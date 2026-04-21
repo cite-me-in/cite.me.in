@@ -153,6 +153,21 @@ function generateFallbackSuggestions(
       };
     }
 
+    if (check.name === "robots.txt" && check.details?.blockedAiBots) {
+      const blockedList = (check.details.blockedAiBots as { displayName: string }[])
+        .map((b) => b.displayName)
+        .join(", ");
+      return {
+        ...base,
+        title: "Unblock AI bots in robots.txt",
+        effort: "2 min",
+        description: `Your robots.txt blocks the following AI crawlers: ${blockedList}. This prevents AI tools like ChatGPT, Claude, and Gemini from reading and citing your content. Remove or change the Disallow: / rules for these user-agents to Allow: /.`,
+        fixExample:
+          (check.details.suggestedFix as string) ??
+          "# Replace Disallow: / with Allow: /\nUser-agent: GPTBot\nAllow: /",
+      };
+    }
+
     if (check.name === "JSON-LD") {
       return {
         ...base,

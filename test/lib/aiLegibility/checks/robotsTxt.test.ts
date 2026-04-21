@@ -1,6 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import checkRobotsTxt from "~/lib/aiLegibility/checks/robotsTxt";
-import { ROBOTS_EMPTY, ROBOTS_TXT, mockFetch } from "../fixtures";
+import {
+  ROBOTS_EMPTY,
+  ROBOTS_TXT,
+  ROBOTS_TXT_AI_ALLOWED,
+  ROBOTS_TXT_BLOCKS_AI,
+  ROBOTS_TXT_PARTIAL_AI_BLOCK,
+  mockFetch,
+} from "../fixtures";
 
 describe("checkRobotsTxt", () => {
   const log = vi.fn().mockResolvedValue(undefined);
@@ -121,5 +128,108 @@ Disallow: /admin/`;
 
     expect(result.passed).toBe(false);
     expect(result.message).toContain("Failed to fetch");
+  });
+
+  it("should fail when robots.txt fully blocks AI bots", async () => {
+    vi.stubGlobal(
+      "fetch",
+      mockFetch({
+        "https://acme.com/robots.txt": {
+          ok: true,
+          status: 200,
+          headers: { get: () => "text/plain" },
+          text: async () => ROBOTS_TXT_BLOCKS_AI,
+        },
+      }),
+    );
+
+    const result = await checkRobotsTxt({
+      url: "https://acme.com/",
+      log,
+    });
+
+    expect(result.passed).toBe(false);
+    expect(result.message).toContain("blocks AI bots");
+    const bots = result.details?.blockedAiBots as { agent: string; displayName: string }[];
+    expect(bots).toHaveLength(4);
+    expect(bots.map((b) => b.agent)).toEqual(
+      expect.arrayContaining(["GPTBot", "ClaudeBot", "Google-Extended", "CCBot"]),
+    );
+    expect(result.details?.suggestedFix).toContain("Allow: /");
+    expect(log).toHaveBeenCalledWith(expect.stringContaining("✗"));
+  });
+
+  it("should pass when robots.txt has AI bots with Allow rules", async () => {
+    vi.stubGlobal(
+      "fetch",
+      mockFetch({
+        "https://acme.com/robots.txt": {
+          ok: true,
+          status: 200,
+          headers: { get: () => "text/plain" },
+          text: async () => ROBOTS_TXT_AI_ALLOWED,
+        },
+      }),
+    );
+
+    const result = await checkRobotsTxt({
+      url: "https://acme.com/",
+      log,
+    });
+
+    expect(result.passed).toBe(true);
+    expect(result.details?.blockedAiBots).toBeUndefined();
+  });
+
+  it("should not flag AI bots with partial Disallow (not /)", async () => {
+    vi.stubGlobal(
+      "fetch",
+      mockFetch({
+        "https://acme.com/robots.txt": {
+          ok: true,
+          status: 200,
+          headers: { get: () => "text/plain" },
+          text: async () => ROBOTS_TXT_PARTIAL_AI_BLOCK,
+        },
+      }),
+    );
+
+    const result = await checkRobotsTxt({
+      url: "https://acme.com/",
+      log,
+    });
+
+    expect(result.passed).toBe(true);
+    expect(result.details?.blockedAiBots).toBeUndefined();
+  });
+
+  it("should detect single AI bot block", async () => {
+    const robotsSingleBlock = `User-agent: GPTBot
+Disallow: /
+`;
+
+    vi.stubGlobal(
+      "fetch",
+      mockFetch({
+        "https://acme.com/robots.txt": {
+          ok: true,
+          status: 200,
+          headers: { get: () => "text/plain" },
+          text: async () => robotsSingleBlock,
+        },
+      }),
+    );
+
+    const result = await checkRobotsTxt({
+      url: "https://acme.com/",
+      log,
+    });
+
+    expect(result.passed).toBe(false);
+    const bots = result.details?.blockedAiBots as { agent: string; displayName: string }[];
+    expect(bots).toHaveLength(1);
+    expect(bots[0].agent).toBe("GPTBot");
+    expect(result.details?.suggestedFix).toContain("User-agent: GPTBot");
+    expect(result.details?.suggestedFix).toContain("Allow: /");
   });
 });

@@ -1,5 +1,93 @@
 import type { CheckResult } from "../types";
 
+const AI_BOT_USER_AGENTS = [
+  { pattern: "gptbot", name: "GPTBot (OpenAI/ChatGPT)" },
+  { pattern: "chatgpt-user", name: "ChatGPT-User" },
+  { pattern: "oai-searchbot", name: "OAI-SearchBot (OpenAI)" },
+  { pattern: "claudebot", name: "ClaudeBot (Anthropic/Claude)" },
+  { pattern: "claude-web", name: "Claude-Web (Anthropic)" },
+  { pattern: "google-extended", name: "Google-Extended (Google AI)" },
+  { pattern: "bytespider", name: "Bytespider (ByteDance/TikTok AI)" },
+  { pattern: "ccbot", name: "CCBot (Common Crawl)" },
+  { pattern: "applebot-extended", name: "Applebot-Extended (Apple AI)" },
+  { pattern: "perplexitybot", name: "PerplexityBot" },
+  { pattern: "perplexity-user", name: "Perplexity-User" },
+  { pattern: "cohere-ai", name: "Cohere-AI" },
+  { pattern: "ai2bot", name: "AI2Bot (Allen AI)" },
+  { pattern: "facebookbot", name: "FacebookBot (Meta)" },
+  { pattern: "meta-externalagent", name: "Meta-ExternalAgent" },
+  { pattern: "amazonbot", name: "Amazonbot" },
+  { pattern: "duckduckbot", name: "DuckDuckBot" },
+  { pattern: "yandex", name: "YandexBot" },
+] as const;
+
+function parseRobotsTxt(content: string) {
+  const groups: { agents: string[]; rules: string[] }[] = [];
+  let current: { agents: string[]; rules: string[] } | null = null;
+
+  for (const line of content.split("\n")) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+
+    const agentMatch = trimmed.match(/^user-agent:\s*(.+)/i);
+    if (agentMatch) {
+      const agent = agentMatch[1].trim();
+      if (!current || current.rules.length > 0) {
+        current = { agents: [], rules: [] };
+        groups.push(current);
+      }
+      current.agents.push(agent);
+      continue;
+    }
+
+    const ruleMatch = trimmed.match(
+      /^(allow|disallow):\s*(.*)/i,
+    );
+    if (ruleMatch && current) {
+      current.rules.push(
+        `${ruleMatch[1]}: ${ruleMatch[2].trim()}`,
+      );
+    }
+  }
+
+  return groups;
+}
+
+function findBlockedAiBots(content: string) {
+  const groups = parseRobotsTxt(content);
+  const blocked: { agent: string; displayName: string }[] = [];
+
+  for (const bot of AI_BOT_USER_AGENTS) {
+    for (const group of groups) {
+      const matchesBot = group.agents.some(
+        (a) => a.toLowerCase().replace(/\s+/g, "-") === bot.pattern,
+      );
+      if (!matchesBot) continue;
+
+      const isFullyBlocked = group.rules.some(
+        (r) => /^disallow:\s*\/\s*$/i.test(r),
+      );
+      if (isFullyBlocked) {
+        blocked.push({
+          agent: group.agents[0],
+          displayName: bot.name,
+        });
+      }
+    }
+  }
+
+  return blocked;
+}
+
+function generateRobotsFix(
+  blockedBots: { agent: string; displayName: string }[],
+) {
+  const lines = blockedBots.map(
+    (b) => `# ${b.displayName} — allow AI agents to read your content\nUser-agent: ${b.agent}\nAllow: /`,
+  );
+  return lines.join("\n\n");
+}
+
 export default async function checkRobotsTxt({
   url,
   log,
@@ -55,6 +143,27 @@ export default async function checkRobotsTxt({
           lineCount: lines.length,
           hasSitemap,
           elapsed,
+        },
+      };
+    }
+
+    const blockedAiBots = findBlockedAiBots(content);
+    if (blockedAiBots.length > 0) {
+      const botNames = blockedAiBots.map((b) => b.displayName).join(", ");
+      const message = `robots.txt blocks AI bots: ${botNames}`;
+      await log(`✗ ${message}`);
+      return {
+        name: "robots.txt",
+        category: "important",
+        passed: false,
+        message,
+        details: {
+          url: robotsUrl,
+          lineCount: lines.length,
+          hasSitemap,
+          elapsed,
+          blockedAiBots,
+          suggestedFix: generateRobotsFix(blockedAiBots),
         },
       };
     }

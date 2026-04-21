@@ -76,6 +76,48 @@ Sitemap: https://acme.com/sitemap.xml
 
 export const ROBOTS_EMPTY = "";
 
+export const ROBOTS_TXT_BLOCKS_AI = `User-agent: *
+Disallow: /admin/
+
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+Sitemap: https://acme.com/sitemap.xml
+`;
+
+export const ROBOTS_TXT_PARTIAL_AI_BLOCK = `User-agent: *
+Disallow: /admin/
+
+User-agent: GPTBot
+Disallow: /private/
+
+User-agent: ClaudeBot
+Allow: /public/
+
+Sitemap: https://acme.com/sitemap.xml
+`;
+
+export const ROBOTS_TXT_AI_ALLOWED = `User-agent: *
+Disallow: /admin/
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+Sitemap: https://acme.com/sitemap.xml
+`;
+
 export const SITEMAP_TXT = `https://acme.com
 https://acme.com/about
 https://acme.com/pricing
