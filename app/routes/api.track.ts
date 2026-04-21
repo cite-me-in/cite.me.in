@@ -1,6 +1,7 @@
 import { data } from "react-router";
 import { z } from "zod";
 import recordBotVisit, { classifyBot } from "~/lib/botTracking.server";
+import captureAndLogError from "~/lib/captureAndLogError.server";
 import recordHumanVisit from "~/lib/humanTracking.server";
 import prisma from "~/lib/prisma.server";
 
@@ -36,50 +37,66 @@ export async function action({ request }: { request: Request }) {
       headers: CORS_HEADERS,
     });
 
-  let parsed: unknown;
   try {
-    parsed = JSON.parse(await request.text());
-  } catch {
-    throw new Response("Invalid JSON", { status: 400, headers: CORS_HEADERS });
-  }
-  const { data: inputs, error } = TrackSchema.safeParse(parsed);
-  if (error)
-    throw new Response(error.message, { status: 400, headers: CORS_HEADERS });
+    let parsed: unknown;
+    try {
+      parsed = await request.json();
+    } catch (err) {
+      captureAndLogError(err, { extra: { request } });
+      throw new Response("Invalid JSON", {
+        status: 400,
+        headers: CORS_HEADERS,
+      });
+    }
 
-  const site = await prisma.site.findFirst({
-    where: {
-      OR: [
-        { domain: new URL(inputs.url).hostname },
-        { domain: new URL(inputs.url).hostname.replace(/^[^.]+\./, "") },
-      ],
-      apiKey: inputs.apiKey,
-    },
-  });
-  if (!site)
-    throw new Response("Forbidden", { status: 403, headers: CORS_HEADERS });
+    const { data: inputs, error } = TrackSchema.safeParse(parsed);
+    if (error) {
+      captureAndLogError(error, { extra: { request } });
+      throw new Response(error.message, { status: 400, headers: CORS_HEADERS });
+    }
 
-  const userAgent =
-    inputs.userAgent ?? request.headers.get("user-agent") ?? "Unknown";
-  const ip = inputs.ip ?? request.headers.get("x-forwarded-for");
-
-  if (classifyBot(userAgent)) {
-    await recordBotVisit({
-      accept: inputs.accept,
-      ip,
-      referer: inputs.referer,
-      site,
-      url: inputs.url,
-      userAgent,
+    const site = await prisma.site.findFirst({
+      where: {
+        OR: [
+          { domain: new URL(inputs.url).hostname },
+          { domain: new URL(inputs.url).hostname.replace(/^[^.]+\./, "") },
+        ],
+        apiKey: inputs.apiKey,
+      },
     });
-    return data({ ok: true }, { headers: CORS_HEADERS });
-  } else {
-    await recordHumanVisit({
-      ip,
-      referer: inputs.referer,
-      site,
-      userAgent,
-      url: inputs.url,
-    });
-    return data({ ok: true }, { headers: CORS_HEADERS });
+    if (!site) {
+      captureAndLogError("Forbidden: No matching site in /api/track.", {
+        extra: { url: inputs.url, apiKey: inputs.apiKey },
+      });
+      throw new Response("Forbidden", { status: 403, headers: CORS_HEADERS });
+    }
+
+    const userAgent =
+      inputs.userAgent ?? request.headers.get("user-agent") ?? "Unknown";
+    const ip = inputs.ip ?? request.headers.get("x-forwarded-for");
+
+    if (classifyBot(userAgent)) {
+      await recordBotVisit({
+        accept: inputs.accept,
+        ip,
+        referer: inputs.referer,
+        site,
+        url: inputs.url,
+        userAgent,
+      });
+      return data({ ok: true }, { headers: CORS_HEADERS });
+    } else {
+      await recordHumanVisit({
+        ip,
+        referer: inputs.referer,
+        site,
+        userAgent,
+        url: inputs.url,
+      });
+      return data({ ok: true }, { headers: CORS_HEADERS });
+    }
+  } catch (error) {
+    captureAndLogError(error, { extra: { request } });
+    throw new Response("Bad Request", { status: 400, headers: CORS_HEADERS });
   }
 }
