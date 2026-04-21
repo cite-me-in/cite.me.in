@@ -1,6 +1,7 @@
 import { convert } from "convert";
 import debug from "debug";
 import Redis from "ioredis";
+import invariant from "tiny-invariant";
 import envVars from "~/lib/envVars.server";
 import type { ScanProgress, ScanResult } from "./types";
 
@@ -57,25 +58,25 @@ export async function getProgress({
 }: {
   offset: number;
   domain: string;
-}): Promise<ScanProgress> {
+}): Promise<ScanProgress | null> {
   const redis = getRedis();
   const lines = await redis.lrange(logKey(domain), offset, -1);
   const status = await redis.get(statusKey(domain));
-  const done = status === "complete" || status === "error";
 
-  let result: ScanResult | undefined;
-  if (done) {
-    const resultJson = await redis.get(resultKey(domain));
-    if (resultJson) {
-      try {
-        result = JSON.parse(resultJson) as ScanResult;
-      } catch {
-        logger("Failed to parse result JSON for scan %s", domain);
-      }
+  switch (status) {
+    case "running":
+      return { lines, done: false, nextOffset: offset + lines.length };
+    case "complete": {
+      const resultJson = await redis.get(resultKey(domain));
+      invariant(resultJson, "Result not found");
+      const result = JSON.parse(resultJson) as ScanResult;
+      return { lines, done: true, nextOffset: offset + lines.length, result };
     }
+    case "error":
+      return { lines, done: true, nextOffset: offset + lines.length };
   }
 
-  return { lines, done, nextOffset: offset + lines.length, result };
+  return { lines, done: true, nextOffset: offset + lines.length };
 }
 
 function getRedis(): Redis {

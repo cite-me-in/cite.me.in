@@ -1,9 +1,31 @@
-function text(body: string, contentType = "text/html"): { body: string; contentType: string; status: number } {
+function text(
+  body: string,
+  contentType = "text/html",
+): { body: string; contentType: string; status: number } {
   return { body, contentType, status: 200 };
 }
 
 function notFound(): { body: string; contentType: string; status: number } {
   return { body: "", contentType: "text/plain", status: 404 };
+}
+
+type MockResponse = {
+  ok: boolean;
+  status?: number;
+  headers: { get: (name: string) => string | null };
+  text: () => Promise<string>;
+};
+
+type FixtureMap = Record<string, MockResponse>;
+
+export function mockFetch(responses: FixtureMap) {
+  return async (
+    url: string | URL,
+    _init?: RequestInit,
+  ): Promise<MockResponse> => {
+    const key = url.toString();
+    return responses[key] ?? notFound();
+  };
 }
 
 export const HOMEPAGE_WITH_CONTENT = `<!DOCTYPE html>
@@ -142,7 +164,10 @@ const SAMPLE_PAGE_CONTENT = `<!DOCTYPE html>
 </body>
 </html>`;
 
-export function passingSite(): Record<string, { body: string; contentType?: string; status?: number }> {
+export function passingSite(): Record<
+  string,
+  { body: string; contentType?: string; status?: number }
+> {
   return {
     "https://acme.com": text(HOMEPAGE_WITH_CONTENT),
     "https://acme.com/robots.txt": text(ROBOTS_TXT, "text/plain"),
@@ -155,7 +180,10 @@ export function passingSite(): Record<string, { body: string; contentType?: stri
   };
 }
 
-export function failingSite(): Record<string, { body: string; contentType?: string; status?: number }> {
+export function failingSite(): Record<
+  string,
+  { body: string; contentType?: string; status?: number }
+> {
   return {
     "https://acme.com": text(HOMEPAGE_SPA_SHELL),
     "https://acme.com/robots.txt": notFound(),
@@ -165,7 +193,10 @@ export function failingSite(): Record<string, { body: string; contentType?: stri
   };
 }
 
-export function partialSite(): Record<string, { body: string; contentType?: string; status?: number }> {
+export function partialSite(): Record<
+  string,
+  { body: string; contentType?: string; status?: number }
+> {
   return {
     "https://acme.com": text(HOMEPAGE_WITH_CONTENT),
     "https://acme.com/robots.txt": text(ROBOTS_TXT, "text/plain"),

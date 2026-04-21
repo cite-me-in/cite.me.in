@@ -44,7 +44,7 @@ export default async function runAILegibilityScan({
   };
 
   const progress = await getProgress({ offset: 0, domain: site.domain });
-  if (!progress.done) return progress;
+  if (progress && !progress.done) return progress;
 
   try {
     await startNewScan({ domain: site.domain });

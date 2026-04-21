@@ -18,7 +18,6 @@ describe("checkSitemapTxt", () => {
       "fetch",
       mockFetch({
         "https://acme.com/sitemap.txt": {
-          json: async () => ({}),
           ok: true,
           status: 200,
           headers: { get: () => "text/plain" },
@@ -45,7 +44,6 @@ describe("checkSitemapTxt", () => {
       "fetch",
       mockFetch({
         "https://acme.com/sitemap.txt": {
-          json: async () => ({}),
           ok: false,
           status: 404,
           headers: { get: () => null },
@@ -69,7 +67,6 @@ describe("checkSitemapTxt", () => {
       "fetch",
       mockFetch({
         "https://acme.com/sitemap.txt": {
-          json: async () => ({}),
           ok: true,
           status: 200,
           headers: { get: () => "text/plain" },
@@ -98,7 +95,6 @@ Also not a URL`;
       "fetch",
       mockFetch({
         "https://acme.com/sitemap.txt": {
-          json: async () => ({}),
           ok: true,
           status: 200,
           headers: { get: () => "text/plain" },

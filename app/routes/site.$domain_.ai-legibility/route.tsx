@@ -1,5 +1,5 @@
 import { RefreshCcwIcon } from "lucide-react";
-import { useFetcher } from "react-router";
+import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { Button } from "~/components/ui/Button";
 import {
@@ -38,7 +38,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   });
 
   const progress = await getProgress({ offset: 0, domain: site.domain });
-  const isRunning = !progress.done && progress.lines.length > 0;
+  const isRunning = progress && !progress.done;
 
   return {
     site,
@@ -59,15 +59,13 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
 export default function AiLegibilityPage({ loaderData }: Route.ComponentProps) {
   const { site, report, isRunning, scannedAt } = loaderData;
-  const fetcher = useFetcher<typeof loader>();
-
-  const isLoading = fetcher.state !== "idle" || isRunning;
+  const [isLoading, setIsLoading] = useState(false);
 
   const startScan = () => {
-    fetcher.submit(
-      {},
-      { method: "POST", action: "/site/$domain$/ai-legibility/scan" },
-    );
+    fetch(`/site/${site.domain}/ai-legibility/scan`, {
+      method: "POST",
+    }).finally(() => setIsLoading(false));
+    setIsLoading(true);
   };
 
   return (
@@ -87,9 +85,7 @@ export default function AiLegibilityPage({ loaderData }: Route.ComponentProps) {
         </Button>
       </SitePageHeader>
 
-      {isRunning}
-
-      {isRunning ? (
+      {isRunning || isLoading ? (
         <Scanning domain={site.domain} />
       ) : report ? (
         <ScanResults result={report.result} />

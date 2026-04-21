@@ -18,7 +18,6 @@ describe("checkLlmsTxt", () => {
       "fetch",
       mockFetch({
         "https://acme.com/llms.txt": {
-          json: async () => ({}),
           ok: true,
           status: 200,
           headers: { get: () => "text/plain" },
@@ -44,7 +43,6 @@ describe("checkLlmsTxt", () => {
       "fetch",
       mockFetch({
         "https://acme.com/llms.txt": {
-          json: async () => ({}),
           ok: true,
           status: 200,
           headers: { get: () => "text/plain" },
@@ -67,8 +65,7 @@ describe("checkLlmsTxt", () => {
       "fetch",
       mockFetch({
         "https://acme.com/llms.txt": {
-          json: async () => ({}),
-          ok: false,
+          ok: true,
           status: 404,
           headers: { get: () => null },
           text: async () => "",

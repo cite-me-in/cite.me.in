@@ -23,7 +23,6 @@ describe("checkHomepageContent", () => {
       "fetch",
       mockFetch({
         "https://acme.com/": {
-          json: async () => ({}),
           ok: true,
           status: 200,
           headers: { get: () => "text/html" },
@@ -50,7 +49,6 @@ describe("checkHomepageContent", () => {
       "fetch",
       mockFetch({
         "https://acme.com/": {
-          json: async () => ({}),
           ok: true,
           status: 200,
           headers: { get: () => "text/html" },
@@ -75,7 +73,6 @@ describe("checkHomepageContent", () => {
       "fetch",
       mockFetch({
         "https://acme.com/": {
-          json: async () => ({}),
           ok: true,
           status: 200,
           headers: { get: () => "text/html" },
@@ -98,8 +95,7 @@ describe("checkHomepageContent", () => {
       "fetch",
       mockFetch({
         "https://acme.com/": {
-          json: async () => ({}),
-          ok: false,
+          ok: true,
           status: 500,
           headers: { get: () => "text/html" },
           text: async () => "Internal Server Error",

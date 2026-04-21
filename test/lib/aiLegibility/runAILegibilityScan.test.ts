@@ -10,12 +10,7 @@ import {
 } from "vitest";
 import runAILegibilityScan from "~/lib/aiLegibility/runAILegibilityScan";
 import msw from "~/test/mocks/msw";
-import {
-  failingSite,
-  HOMEPAGE_WITH_CONTENT,
-  passingSite,
-  partialSite,
-} from "./fixtures";
+import { failingSite, partialSite, passingSite } from "./fixtures";
 
 const mockAppendLog = vi.fn();
 const mockGetProgress = vi.fn();
@@ -45,7 +40,10 @@ vi.mock("~/lib/captureAndLogError.server", () => ({
 }));
 
 function setupMswHandlers(
-  responses: Record<string, { body: string; contentType?: string; status?: number }>,
+  responses: Record<
+    string,
+    { body: string; contentType?: string; status?: number }
+  >,
 ) {
   const handlers = Object.entries(responses).map(([url, response]) => {
     const status = response.status ?? 200;
@@ -155,7 +153,8 @@ describe("runScan", () => {
   });
 
   it("should normalize URL with www prefix", async () => {
-    const responses: Record<string, { body: string; contentType?: string }> = {};
+    const responses: Record<string, { body: string; contentType?: string }> =
+      {};
     for (const [key, value] of Object.entries(passingSite())) {
       responses[key.replace("https://acme.com", "https://www.acme.com")] = {
         body: value.body,
