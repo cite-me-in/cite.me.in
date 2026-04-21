@@ -2,11 +2,49 @@ import { type Page, expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vitest";
 import { goto, port } from "../helpers/launchBrowser";
 
+describe("home page HTTP headers", () => {
+  let response: Response;
+
+  beforeAll(async () => {
+    response = await fetch(`http://localhost:${port}/`);
+  });
+
+  it("should have Link header for sitemap.xml", () => {
+    const link = response.headers.get("Link");
+    expect(link).toContain("/sitemap.xml");
+    expect(link).toContain('rel="sitemap"');
+    expect(link).toContain("application/xml");
+  });
+
+  it("should have Link header for sitemap.txt", () => {
+    const link = response.headers.get("Link");
+    expect(link).toContain("/sitemap.txt");
+    expect(link).toContain('rel="sitemap"');
+    expect(link).toContain("text/plain");
+  });
+});
+
 describe("home page", () => {
   let page: Page;
 
   beforeAll(async () => {
     page = await goto("/");
+  });
+
+  it("should have sitemap.xml link in head", async () => {
+    const link = page.locator('link[rel="sitemap"][type="application/xml"]');
+    await expect(link).toHaveAttribute(
+      "href",
+      `http://localhost:${port}/sitemap.xml`,
+    );
+  });
+
+  it("should have sitemap.txt link in head", async () => {
+    const link = page.locator('link[rel="sitemap"][type="text/plain"]');
+    await expect(link).toHaveAttribute(
+      "href",
+      `http://localhost:${port}/sitemap.txt`,
+    );
   });
 
   it("should show the landing page hero", async () => {

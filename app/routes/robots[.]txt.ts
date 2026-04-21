@@ -1,6 +1,17 @@
 import { generateRobotsTxt } from "@forge42/seo-tools/robots";
 import envVars from "~/lib/envVars.server";
 
+function splitSitemapLines(content: string): string {
+  return content.replace(
+    /^Sitemap: (.+)$/gm,
+    (_, urls: string) =>
+      urls
+        .split(",")
+        .map((url: string) => `Sitemap: ${url.trim()}`)
+        .join("\n"),
+  );
+}
+
 export async function loader() {
   const robotsTxt = generateRobotsTxt([
     {
@@ -8,7 +19,10 @@ export async function loader() {
       userAgent: "*",
       allow: ["/"],
       disallow: ["/error"],
-      sitemap: [new URL("/sitemap.xml", envVars.VITE_APP_URL).toString()],
+      sitemap: [
+        new URL("/sitemap.xml", envVars.VITE_APP_URL).toString(),
+        new URL("/sitemap.txt", envVars.VITE_APP_URL).toString(),
+      ],
     },
     { userAgent: "anthropic-ai", allow: ["/"] },
     { userAgent: "Bingbot", allow: ["/"] },
@@ -24,7 +38,7 @@ export async function loader() {
     { userAgent: "PerplexityBot", allow: ["/"] },
   ]);
 
-  return new Response(robotsTxt, {
+  return new Response(splitSitemapLines(robotsTxt), {
     headers: { "Content-Type": "text/plain" },
   });
 }

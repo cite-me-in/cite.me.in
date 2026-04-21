@@ -54,6 +54,10 @@ export function meta({ loaderData }: Route.MetaArgs): Route.MetaDescriptors {
 
 export const headers: HeadersFunction = () => ({
   "Document-Policy": "js-profiling",
+  Link: [
+    `<${new URL("/sitemap.xml", import.meta.env.VITE_APP_URL)}>; rel="sitemap"; type="application/xml"`,
+    `<${new URL("/sitemap.txt", import.meta.env.VITE_APP_URL)}>; rel="sitemap"; type="text/plain"`,
+  ].join(", "),
 });
 
 export const links: Route.LinksFunction = () => [
@@ -66,7 +70,14 @@ export const links: Route.LinksFunction = () => [
   {
     rel: "sitemap",
     type: "application/xml",
+    title: "Sitemap (XML)",
     href: new URL("/sitemap.xml", import.meta.env.VITE_APP_URL).toString(),
+  },
+  {
+    rel: "sitemap",
+    type: "text/plain",
+    title: "Sitemap (Text)",
+    href: new URL("/sitemap.txt", import.meta.env.VITE_APP_URL).toString(),
   },
   { rel: "icon", href: "/icon-192.png", type: "image/png", sizes: "192x192" },
   { rel: "icon", href: "/icon-512.png", type: "image/png", sizes: "512x512" },

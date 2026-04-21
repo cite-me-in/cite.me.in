@@ -17,6 +17,10 @@ describe("robots.txt", () => {
     expect(statements).toContain("Sitemap: http://localhost:9222/sitemap.xml");
   });
 
+  it("should reference sitemap.txt", () => {
+    expect(statements).toContain("Sitemap: http://localhost:9222/sitemap.txt");
+  });
+
   it("should allow all user agents", () => {
     expect(statements).toContain("User-agent: *");
   });
