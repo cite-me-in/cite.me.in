@@ -10,26 +10,79 @@ import {
 } from "vitest";
 import runAILegibilityScan from "~/lib/aiLegibility/runAILegibilityScan";
 import msw from "~/test/mocks/msw";
-import { failingSite, mockFetch, partialSite, passingSite } from "./fixtures";
+import {
+  failingSite,
+  HOMEPAGE_WITH_CONTENT,
+  passingSite,
+  partialSite,
+} from "./fixtures";
+
+const mockAppendLog = vi.fn();
+const mockGetProgress = vi.fn();
+
+vi.mock("~/lib/aiLegibility/progress.server", () => ({
+  appendLog: (...args: unknown[]) => mockAppendLog(...args),
+  getProgress: (...args: unknown[]) => mockGetProgress(...args),
+  setResult: vi.fn(),
+  setStatus: vi.fn(),
+  startNewScan: vi.fn(),
+}));
+
+vi.mock("~/lib/prisma.server", () => ({
+  default: {
+    aiLegibilityReport: {
+      create: vi.fn(),
+    },
+  },
+}));
+
+vi.mock("~/emails/AiLegibilityReport", () => ({
+  default: vi.fn(),
+}));
+
+vi.mock("~/lib/captureAndLogError.server", () => ({
+  default: vi.fn(),
+}));
+
+function setupMswHandlers(
+  responses: Record<string, { body: string; contentType?: string; status?: number }>,
+) {
+  const handlers = Object.entries(responses).map(([url, response]) => {
+    const status = response.status ?? 200;
+    if (status === 404) {
+      return http.get(url, () => new HttpResponse(null, { status: 404 }));
+    }
+    return http.get(url, () =>
+      HttpResponse.text(response.body, {
+        status,
+        headers: { "Content-Type": response.contentType ?? "text/html" },
+      }),
+    );
+  });
+  msw.use(...handlers);
+}
 
 describe("runScan", () => {
-  const log = vi.fn().mockResolvedValue(undefined);
   const logs: string[] = [];
 
   beforeEach(() => {
-    log.mockClear();
     logs.length = 0;
-    log.mockImplementation(async (line: string) => {
+    mockAppendLog.mockImplementation(async ({ line }: { line: string }) => {
       logs.push(line);
     });
+    mockGetProgress.mockResolvedValue({ lines: [], done: true, nextOffset: 0 });
   });
 
   afterEach(() => {
-    vi.unstubAllGlobals();
+    msw.resetHandlers();
+  });
+
+  afterAll(() => {
+    msw.resetHandlers();
   });
 
   it("should run all checks in the correct order", async () => {
-    vi.stubGlobal("fetch", mockFetch(passingSite()));
+    setupMswHandlers(passingSite());
 
     const { result } = await runAILegibilityScan({
       site: { id: "1", domain: "https://acme.com" },
@@ -50,7 +103,7 @@ describe("runScan", () => {
   });
 
   it("should produce correct summary for passing site", async () => {
-    vi.stubGlobal("fetch", mockFetch(passingSite()));
+    setupMswHandlers(passingSite());
 
     const { result } = await runAILegibilityScan({
       site: { id: "1", domain: "https://acme.com" },
@@ -64,7 +117,7 @@ describe("runScan", () => {
   });
 
   it("should produce correct summary for failing site", async () => {
-    vi.stubGlobal("fetch", mockFetch(failingSite()));
+    setupMswHandlers(failingSite());
 
     const { result } = await runAILegibilityScan({
       site: { id: "1", domain: "https://acme.com" },
@@ -78,7 +131,7 @@ describe("runScan", () => {
   });
 
   it("should produce correct summary for partial site", async () => {
-    vi.stubGlobal("fetch", mockFetch(partialSite()));
+    setupMswHandlers(partialSite());
 
     const { result } = await runAILegibilityScan({
       site: { id: "1", domain: "https://acme.com" },
@@ -91,7 +144,7 @@ describe("runScan", () => {
   });
 
   it("should normalize URL without protocol", async () => {
-    vi.stubGlobal("fetch", mockFetch(passingSite()));
+    setupMswHandlers(passingSite());
 
     const { result } = await runAILegibilityScan({
       site: { id: "1", domain: "https://acme.com" },
@@ -102,7 +155,14 @@ describe("runScan", () => {
   });
 
   it("should normalize URL with www prefix", async () => {
-    vi.stubGlobal("fetch", mockFetch(passingSite()));
+    const responses: Record<string, { body: string; contentType?: string }> = {};
+    for (const [key, value] of Object.entries(passingSite())) {
+      responses[key.replace("https://acme.com", "https://www.acme.com")] = {
+        body: value.body,
+        contentType: value.contentType,
+      };
+    }
+    setupMswHandlers(responses);
 
     const { result } = await runAILegibilityScan({
       site: { id: "1", domain: "https://www.acme.com" },
@@ -113,7 +173,7 @@ describe("runScan", () => {
   });
 
   it("should lowercase hostname", async () => {
-    vi.stubGlobal("fetch", mockFetch(passingSite()));
+    setupMswHandlers(passingSite());
 
     const { result } = await runAILegibilityScan({
       site: { id: "1", domain: "https://ACME.COM" },
@@ -124,7 +184,7 @@ describe("runScan", () => {
   });
 
   it("should preserve existing https protocol", async () => {
-    vi.stubGlobal("fetch", mockFetch(passingSite()));
+    setupMswHandlers(passingSite());
 
     const { result } = await runAILegibilityScan({
       site: { id: "1", domain: "https://acme.com" },
@@ -135,7 +195,7 @@ describe("runScan", () => {
   });
 
   it("should log progress messages", async () => {
-    vi.stubGlobal("fetch", mockFetch(passingSite()));
+    setupMswHandlers(passingSite());
 
     await runAILegibilityScan({
       site: { id: "1", domain: "https://acme.com" },
@@ -152,7 +212,7 @@ describe("runScan", () => {
   });
 
   it("should include scannedAt timestamp", async () => {
-    vi.stubGlobal("fetch", mockFetch(passingSite()));
+    setupMswHandlers(passingSite());
 
     const { result } = await runAILegibilityScan({
       site: { id: "1", domain: "https://acme.com" },
@@ -166,7 +226,7 @@ describe("runScan", () => {
   });
 
   it("should generate suggestions for failed checks", async () => {
-    vi.stubGlobal("fetch", mockFetch(failingSite()));
+    setupMswHandlers(failingSite());
 
     const { result } = await runAILegibilityScan({
       site: { id: "1", domain: "https://acme.com" },
@@ -180,7 +240,7 @@ describe("runScan", () => {
   });
 
   it("should return empty suggestions when all checks pass", async () => {
-    vi.stubGlobal("fetch", mockFetch(passingSite()));
+    setupMswHandlers(passingSite());
 
     const { result } = await runAILegibilityScan({
       site: { id: "1", domain: "https://acme.com" },
@@ -191,7 +251,7 @@ describe("runScan", () => {
   });
 
   it("should continue running all checks even when some fail", async () => {
-    vi.stubGlobal("fetch", mockFetch(failingSite()));
+    setupMswHandlers(failingSite());
 
     const { result } = await runAILegibilityScan({
       site: { id: "1", domain: "https://acme.com" },
@@ -205,7 +265,7 @@ describe("runScan", () => {
   });
 
   it("should categorize checks correctly", async () => {
-    vi.stubGlobal("fetch", mockFetch(passingSite()));
+    setupMswHandlers(passingSite());
 
     const { result } = await runAILegibilityScan({
       site: { id: "1", domain: "https://acme.com" },
@@ -239,10 +299,18 @@ describe("runScan", () => {
 });
 
 describe("runScan with LLM suggestions", () => {
-  const log = vi.fn().mockResolvedValue(undefined);
+  const logs: string[] = [];
 
   beforeEach(() => {
-    log.mockClear();
+    logs.length = 0;
+    mockAppendLog.mockImplementation(async ({ line }: { line: string }) => {
+      logs.push(line);
+    });
+    mockGetProgress.mockResolvedValue({ lines: [], done: true, nextOffset: 0 });
+  });
+
+  afterEach(() => {
+    msw.resetHandlers();
   });
 
   afterAll(() => {

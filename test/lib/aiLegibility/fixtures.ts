@@ -1,36 +1,9 @@
-type MockResponse = {
-  ok: boolean;
-  status: number;
-  headers: { get: (name: string) => string | null };
-  text: () => Promise<string>;
-  json: () => Promise<unknown>;
-};
-
-function html(body: string, contentType = "text/html"): MockResponse {
-  return {
-    ok: true,
-    status: 200,
-    headers: { get: (name) => (name === "content-type" ? contentType : null) },
-    text: async () => body,
-    json: async () => JSON.parse(body),
-  };
+function text(body: string, contentType = "text/html"): { body: string; contentType: string; status: number } {
+  return { body, contentType, status: 200 };
 }
 
-function notFound(): MockResponse {
-  return {
-    ok: false,
-    status: 404,
-    headers: { get: () => null },
-    text: async () => "",
-    json: async () => ({}),
-  };
-}
-
-export function mockFetch(responses: Record<string, MockResponse>) {
-  return async (url: string | URL): Promise<MockResponse> => {
-    const key = url.toString();
-    return responses[key] ?? notFound();
-  };
+function notFound(): { body: string; contentType: string; status: number } {
+  return { body: "", contentType: "text/plain", status: 404 };
 }
 
 export const HOMEPAGE_WITH_CONTENT = `<!DOCTYPE html>
@@ -169,22 +142,22 @@ const SAMPLE_PAGE_CONTENT = `<!DOCTYPE html>
 </body>
 </html>`;
 
-export function passingSite(): Record<string, MockResponse> {
+export function passingSite(): Record<string, { body: string; contentType?: string; status?: number }> {
   return {
-    "https://acme.com": html(HOMEPAGE_WITH_CONTENT),
-    "https://acme.com/robots.txt": html(ROBOTS_TXT, "text/plain"),
-    "https://acme.com/sitemap.txt": html(SITEMAP_TXT, "text/plain"),
-    "https://acme.com/sitemap.xml": html(SITEMAP_XML, "application/xml"),
-    "https://acme.com/llms.txt": html(LLMS_TXT, "text/plain"),
-    "https://acme.com/about": html(SAMPLE_PAGE_CONTENT),
-    "https://acme.com/pricing": html(SAMPLE_PAGE_CONTENT),
-    "https://acme.com/blog": html(SAMPLE_PAGE_CONTENT),
+    "https://acme.com": text(HOMEPAGE_WITH_CONTENT),
+    "https://acme.com/robots.txt": text(ROBOTS_TXT, "text/plain"),
+    "https://acme.com/sitemap.txt": text(SITEMAP_TXT, "text/plain"),
+    "https://acme.com/sitemap.xml": text(SITEMAP_XML, "application/xml"),
+    "https://acme.com/llms.txt": text(LLMS_TXT, "text/plain"),
+    "https://acme.com/about": text(SAMPLE_PAGE_CONTENT),
+    "https://acme.com/pricing": text(SAMPLE_PAGE_CONTENT),
+    "https://acme.com/blog": text(SAMPLE_PAGE_CONTENT),
   };
 }
 
-export function failingSite(): Record<string, MockResponse> {
+export function failingSite(): Record<string, { body: string; contentType?: string; status?: number }> {
   return {
-    "https://acme.com": html(HOMEPAGE_SPA_SHELL),
+    "https://acme.com": text(HOMEPAGE_SPA_SHELL),
     "https://acme.com/robots.txt": notFound(),
     "https://acme.com/sitemap.txt": notFound(),
     "https://acme.com/sitemap.xml": notFound(),
@@ -192,14 +165,14 @@ export function failingSite(): Record<string, MockResponse> {
   };
 }
 
-export function partialSite(): Record<string, MockResponse> {
+export function partialSite(): Record<string, { body: string; contentType?: string; status?: number }> {
   return {
-    "https://acme.com": html(HOMEPAGE_WITH_CONTENT),
-    "https://acme.com/robots.txt": html(ROBOTS_TXT, "text/plain"),
+    "https://acme.com": text(HOMEPAGE_WITH_CONTENT),
+    "https://acme.com/robots.txt": text(ROBOTS_TXT, "text/plain"),
     "https://acme.com/sitemap.txt": notFound(),
-    "https://acme.com/sitemap.xml": html(SITEMAP_XML, "application/xml"),
+    "https://acme.com/sitemap.xml": text(SITEMAP_XML, "application/xml"),
     "https://acme.com/llms.txt": notFound(),
-    "https://acme.com/about": html(SAMPLE_PAGE_CONTENT),
-    "https://acme.com/pricing": html(SAMPLE_PAGE_CONTENT),
+    "https://acme.com/about": text(SAMPLE_PAGE_CONTENT),
+    "https://acme.com/pricing": text(SAMPLE_PAGE_CONTENT),
   };
 }
