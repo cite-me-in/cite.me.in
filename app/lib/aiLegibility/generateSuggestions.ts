@@ -67,6 +67,7 @@ Guidelines:
 - Be specific about the URL (use ${url})
 - Provide actionable, concrete steps
 - Mention specific file paths when relevant (e.g., /sitemap.txt, /robots.txt)
+- For sitemap suggestions, show all three delivery methods: robots.txt Sitemap directive, HTML <link rel="sitemap"> tag, and HTTP Link header
 - For SPA issues, explain server-side rendering or injection
 - For MIME type issues, explain the correct Content-Type header
 
@@ -139,8 +140,18 @@ function generateFallbackSuggestions(
         ...base,
         title: "Add sitemap.txt",
         effort: "5 min",
-        description: `Create a plain-text file at ${url}/sitemap.txt with one URL per line listing all important pages on your site. This is the single most impactful change for AI discoverability.`,
-        fixExample: `${url}/\n${url}/about\n${url}/products\n${url}/contact`,
+        description: `Create a plain-text file at ${url}/sitemap.txt with one URL per line listing all important pages on your site. This is the single most impactful change for AI discoverability. Make it discoverable by referencing it from robots.txt, your HTML, or HTTP headers.`,
+        fixExample: `# 1. robots.txt — add a Sitemap line:\nSitemap: ${url}/sitemap.txt\n\n# 2. HTML <head> — add a link tag:\n<link rel="sitemap" type="text/plain" title="Sitemap" href="/sitemap.txt">\n\n# 3. HTTP header — add a Link header:\nLink: </sitemap.txt>; rel=sitemap; type=text/plain\n\n# sitemap.txt content:\n${url}/\n${url}/about\n${url}/products\n${url}/contact`,
+      };
+    }
+
+    if (check.name === "sitemap.xml") {
+      return {
+        ...base,
+        title: "Add sitemap.xml",
+        effort: "5 min",
+        description: `Create an XML sitemap at ${url}/sitemap.xml listing all important pages using the sitemaps.org protocol. Make it discoverable by referencing it from robots.txt, your HTML, or HTTP headers.`,
+        fixExample: `# 1. robots.txt — add a Sitemap line:\nSitemap: ${url}/sitemap.xml\n\n# 2. HTTP header — add a Link header:\nLink: </sitemap.xml>; rel=sitemap; type=application/xml\n\n# sitemap.xml content:\n<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url><loc>${url}/</loc></url>\n  <url><loc>${url}/about</loc></url>\n  <url><loc>${url}/products</loc></url>\n</urlset>`,
       };
     }
 
