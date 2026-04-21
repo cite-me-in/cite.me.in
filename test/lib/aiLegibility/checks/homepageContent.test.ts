@@ -1,10 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { HttpResponse, http } from "msw";
+import msw from "~/test/mocks/msw";
 import checkHomepageContent from "~/lib/aiLegibility/checks/homepageContent";
 import {
   HOMEPAGE_EMPTY_BODY,
   HOMEPAGE_SPA_SHELL,
   HOMEPAGE_WITH_CONTENT,
-  mockFetch,
 } from "../fixtures";
 
 describe("checkHomepageContent", () => {
@@ -15,20 +16,16 @@ describe("checkHomepageContent", () => {
   });
 
   afterEach(() => {
-    vi.unstubAllGlobals();
+    msw.resetHandlers();
   });
 
   it("should pass when homepage has sufficient content", async () => {
-    vi.stubGlobal(
-      "fetch",
-      mockFetch({
-        "https://acme.com/": {
-          ok: true,
-          status: 200,
-          headers: { get: () => "text/html" },
-          text: async () => HOMEPAGE_WITH_CONTENT,
-        },
-      }),
+    msw.use(
+      http.get("https://acme.com/", () =>
+        HttpResponse.text(HOMEPAGE_WITH_CONTENT, {
+          headers: { "Content-Type": "text/html" },
+        }),
+      ),
     );
 
     const result = await checkHomepageContent({
@@ -45,16 +42,12 @@ describe("checkHomepageContent", () => {
   });
 
   it("should fail when homepage is an empty SPA shell", async () => {
-    vi.stubGlobal(
-      "fetch",
-      mockFetch({
-        "https://acme.com/": {
-          ok: true,
-          status: 200,
-          headers: { get: () => "text/html" },
-          text: async () => HOMEPAGE_SPA_SHELL,
-        },
-      }),
+    msw.use(
+      http.get("https://acme.com/", () =>
+        HttpResponse.text(HOMEPAGE_SPA_SHELL, {
+          headers: { "Content-Type": "text/html" },
+        }),
+      ),
     );
 
     const result = await checkHomepageContent({
@@ -69,16 +62,12 @@ describe("checkHomepageContent", () => {
   });
 
   it("should fail when homepage has minimal content", async () => {
-    vi.stubGlobal(
-      "fetch",
-      mockFetch({
-        "https://acme.com/": {
-          ok: true,
-          status: 200,
-          headers: { get: () => "text/html" },
-          text: async () => HOMEPAGE_EMPTY_BODY,
-        },
-      }),
+    msw.use(
+      http.get("https://acme.com/", () =>
+        HttpResponse.text(HOMEPAGE_EMPTY_BODY, {
+          headers: { "Content-Type": "text/html" },
+        }),
+      ),
     );
 
     const result = await checkHomepageContent({
@@ -91,16 +80,10 @@ describe("checkHomepageContent", () => {
   });
 
   it("should fail when homepage returns HTTP error", async () => {
-    vi.stubGlobal(
-      "fetch",
-      mockFetch({
-        "https://acme.com/": {
-          ok: true,
-          status: 500,
-          headers: { get: () => "text/html" },
-          text: async () => "Internal Server Error",
-        },
-      }),
+    msw.use(
+      http.get("https://acme.com/", () =>
+        HttpResponse.text("Internal Server Error", { status: 500 }),
+      ),
     );
 
     const result = await checkHomepageContent({
@@ -114,9 +97,9 @@ describe("checkHomepageContent", () => {
   });
 
   it("should handle DNS resolution errors", async () => {
-    vi.stubGlobal("fetch", async () => {
-      throw new Error("ENOTFOUND acme.invalid");
-    });
+    msw.use(
+      http.get("https://acme.invalid/", () => HttpResponse.error()),
+    );
 
     const result = await checkHomepageContent({
       url: "https://acme.invalid/",
@@ -124,13 +107,13 @@ describe("checkHomepageContent", () => {
     });
 
     expect(result.passed).toBe(false);
-    expect(result.message).toContain("Could not resolve domain");
+    expect(result.message).toContain("Failed to fetch homepage");
   });
 
   it("should handle network errors", async () => {
-    vi.stubGlobal("fetch", async () => {
-      throw new Error("ECONNREFUSED");
-    });
+    msw.use(
+      http.get("https://acme.com/", () => HttpResponse.error()),
+    );
 
     const result = await checkHomepageContent({
       url: "https://acme.com/",
