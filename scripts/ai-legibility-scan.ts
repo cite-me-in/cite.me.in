@@ -1,10 +1,6 @@
 import sendAiLegibilityReport from "../app/emails/AiLegibilityReport";
-import {
-  appendLog,
-  setResult,
-  setStatus,
-} from "../app/lib/aiLegibility/progress.server";
-import { runScan } from "../app/lib/aiLegibility/runScan";
+import { setStatus } from "../app/lib/aiLegibility/progress.server";
+import runAILegibilityScan from "../app/lib/aiLegibility/runAILegibilityScan";
 import { normalizeDomain } from "../app/lib/isSameDomain";
 import prisma from "../app/lib/prisma.server";
 
@@ -32,41 +28,23 @@ async function main() {
     console.error(`Site ${normalizeDomain(url)} not found`);
     process.exit(1);
   }
+  const user = await prisma.user.findUniqueOrThrow({
+    where: { email: "assaf@labnotes.org" },
+  });
 
   await setStatus({ domain: site.domain, status: "running" });
 
-  const log = async (line: string) => {
-    console.log(line);
-    await appendLog({ line, domain: site.domain });
-  };
-  const result = await runScan({ log, domain: site.domain });
+  const { result } = await runAILegibilityScan({ site, user });
 
-  await setResult({ result, domain: site.domain });
-  await setStatus({ domain: site.domain, status: "complete" });
-
-  console.info("\n--- RESULTS ---\n");
-  console.info(
-    `Critical: ${result.summary.critical.passed}/${result.summary.critical.total}`,
-  );
-  console.info(
-    `Important: ${result.summary.important.passed}/${result.summary.important.total}`,
-  );
-  console.info(
-    `Optimization: ${result.summary.optimization.passed}/${result.summary.optimization.total}`,
-  );
-
-  if (result.suggestions.length > 0) {
+  const suggestions = result?.suggestions;
+  if (suggestions && suggestions.length > 0) {
     console.info("\n--- SUGGESTIONS ---\n");
-    for (const s of result.suggestions) {
+    for (const s of suggestions) {
       console.info(`[${s.category}] ${s.title} (${s.effort})`);
       console.info(`  ${s.description}`);
       console.info("");
     }
   }
-
-  const user = await prisma.user.findUniqueOrThrow({
-    where: { email: "assaf@labnotes.org" },
-  });
   await sendAiLegibilityReport({ site, result, sendTo: user });
 
   console.info("\n--- FULL JSON ---\n");

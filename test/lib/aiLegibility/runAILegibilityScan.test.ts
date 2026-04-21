@@ -8,7 +8,7 @@ import {
   it,
   vi,
 } from "vitest";
-import { runScan } from "~/lib/aiLegibility/runScan";
+import runAILegibilityScan from "~/lib/aiLegibility/runAILegibilityScan";
 import msw from "~/test/mocks/msw";
 import { failingSite, mockFetch, partialSite, passingSite } from "./fixtures";
 
@@ -31,9 +31,12 @@ describe("runScan", () => {
   it("should run all checks in the correct order", async () => {
     vi.stubGlobal("fetch", mockFetch(passingSite()));
 
-    const result = await runScan({ log, domain: "https://acme.com" });
+    const { result } = await runAILegibilityScan({
+      site: { id: "1", domain: "https://acme.com" },
+      user: { id: "1", email: "test@example.com", unsubscribed: false },
+    });
 
-    const checkNames = result.checks.map((c) => c.name);
+    const checkNames = result?.checks.map((c) => c.name);
     expect(checkNames).toEqual([
       "Homepage content",
       "sitemap.xml",
@@ -49,71 +52,95 @@ describe("runScan", () => {
   it("should produce correct summary for passing site", async () => {
     vi.stubGlobal("fetch", mockFetch(passingSite()));
 
-    const result = await runScan({ log, domain: "https://acme.com" });
+    const { result } = await runAILegibilityScan({
+      site: { id: "1", domain: "https://acme.com" },
+      user: { id: "1", email: "test@example.com", unsubscribed: false },
+    });
 
-    expect(result.summary.critical.passed).toBeGreaterThan(0);
-    expect(result.summary.critical.total).toBe(3);
-    expect(result.summary.important.total).toBe(3);
-    expect(result.summary.optimization.total).toBe(2);
+    expect(result?.summary.critical.passed).toBeGreaterThan(0);
+    expect(result?.summary.critical.total).toBe(3);
+    expect(result?.summary.important.total).toBe(3);
+    expect(result?.summary.optimization.total).toBe(2);
   });
 
   it("should produce correct summary for failing site", async () => {
     vi.stubGlobal("fetch", mockFetch(failingSite()));
 
-    const result = await runScan({ log, domain: "https://acme.com" });
+    const { result } = await runAILegibilityScan({
+      site: { id: "1", domain: "https://acme.com" },
+      user: { id: "1", email: "test@example.com", unsubscribed: false },
+    });
 
-    expect(result.summary.critical.passed).toBe(0);
-    expect(result.summary.critical.total).toBe(3);
-    expect(result.summary.important.passed).toBe(0);
-    expect(result.summary.optimization.passed).toBe(0);
+    expect(result?.summary.critical.passed).toBe(0);
+    expect(result?.summary.critical.total).toBe(3);
+    expect(result?.summary.important.passed).toBe(0);
+    expect(result?.summary.optimization.passed).toBe(0);
   });
 
   it("should produce correct summary for partial site", async () => {
     vi.stubGlobal("fetch", mockFetch(partialSite()));
 
-    const result = await runScan({ log, domain: "https://acme.com" });
+    const { result } = await runAILegibilityScan({
+      site: { id: "1", domain: "https://acme.com" },
+      user: { id: "1", email: "test@example.com", unsubscribed: false },
+    });
 
-    expect(result.summary.critical.passed).toBe(2);
-    expect(result.summary.critical.total).toBe(3);
-    expect(result.summary.important.passed).toBe(3);
+    expect(result?.summary.critical.passed).toBe(2);
+    expect(result?.summary.critical.total).toBe(3);
+    expect(result?.summary.important.passed).toBe(3);
   });
 
   it("should normalize URL without protocol", async () => {
     vi.stubGlobal("fetch", mockFetch(passingSite()));
 
-    const result = await runScan({ log, domain: "acme.com" });
+    const { result } = await runAILegibilityScan({
+      site: { id: "1", domain: "https://acme.com" },
+      user: { id: "1", email: "test@example.com", unsubscribed: false },
+    });
 
-    expect(result.url).toBe("https://acme.com");
+    expect(result?.url).toBe("https://acme.com");
   });
 
   it("should normalize URL with www prefix", async () => {
     vi.stubGlobal("fetch", mockFetch(passingSite()));
 
-    const result = await runScan({ log, domain: "www.acme.com" });
+    const { result } = await runAILegibilityScan({
+      site: { id: "1", domain: "https://www.acme.com" },
+      user: { id: "1", email: "test@example.com", unsubscribed: false },
+    });
 
-    expect(result.url).toBe("https://www.acme.com");
+    expect(result?.url).toBe("https://www.acme.com");
   });
 
   it("should lowercase hostname", async () => {
     vi.stubGlobal("fetch", mockFetch(passingSite()));
 
-    const result = await runScan({ log, domain: "https://ACME.COM" });
+    const { result } = await runAILegibilityScan({
+      site: { id: "1", domain: "https://ACME.COM" },
+      user: { id: "1", email: "test@example.com", unsubscribed: false },
+    });
 
-    expect(result.url).toBe("https://acme.com");
+    expect(result?.url).toBe("https://acme.com");
   });
 
   it("should preserve existing https protocol", async () => {
     vi.stubGlobal("fetch", mockFetch(passingSite()));
 
-    const result = await runScan({ log, domain: "https://acme.com" });
+    const { result } = await runAILegibilityScan({
+      site: { id: "1", domain: "https://acme.com" },
+      user: { id: "1", email: "test@example.com", unsubscribed: false },
+    });
 
-    expect(result.url).toBe("https://acme.com");
+    expect(result?.url).toBe("https://acme.com");
   });
 
   it("should log progress messages", async () => {
     vi.stubGlobal("fetch", mockFetch(passingSite()));
 
-    await runScan({ log, domain: "https://acme.com" });
+    await runAILegibilityScan({
+      site: { id: "1", domain: "https://acme.com" },
+      user: { id: "1", email: "test@example.com", unsubscribed: false },
+    });
 
     expect(logs.some((l) => l.includes("Checking homepage content"))).toBe(
       true,
@@ -127,19 +154,27 @@ describe("runScan", () => {
   it("should include scannedAt timestamp", async () => {
     vi.stubGlobal("fetch", mockFetch(passingSite()));
 
-    const result = await runScan({ log, domain: "https://acme.com" });
+    const { result } = await runAILegibilityScan({
+      site: { id: "1", domain: "https://acme.com" },
+      user: { id: "1", email: "test@example.com", unsubscribed: false },
+    });
 
-    expect(result.scannedAt).toBeDefined();
-    expect(new Date(result.scannedAt).toISOString()).toBe(result.scannedAt);
+    expect(result?.scannedAt).toBeDefined();
+    expect(new Date(result?.scannedAt ?? "").toISOString()).toBe(
+      result?.scannedAt ?? "",
+    );
   });
 
   it("should generate suggestions for failed checks", async () => {
     vi.stubGlobal("fetch", mockFetch(failingSite()));
 
-    const result = await runScan({ log, domain: "https://acme.com" });
+    const { result } = await runAILegibilityScan({
+      site: { id: "1", domain: "https://acme.com" },
+      user: { id: "1", email: "test@example.com", unsubscribed: false },
+    });
 
-    expect(result.suggestions.length).toBeGreaterThan(0);
-    expect(result.suggestions.some((s) => s.category === "critical")).toBe(
+    expect(result?.suggestions.length).toBeGreaterThan(0);
+    expect(result?.suggestions.some((s) => s.category === "critical")).toBe(
       true,
     );
   });
@@ -147,18 +182,24 @@ describe("runScan", () => {
   it("should return empty suggestions when all checks pass", async () => {
     vi.stubGlobal("fetch", mockFetch(passingSite()));
 
-    const result = await runScan({ log, domain: "https://acme.com" });
+    const { result } = await runAILegibilityScan({
+      site: { id: "1", domain: "https://acme.com" },
+      user: { id: "1", email: "test@example.com", unsubscribed: false },
+    });
 
-    expect(result.suggestions).toEqual([]);
+    expect(result?.suggestions).toEqual([]);
   });
 
   it("should continue running all checks even when some fail", async () => {
     vi.stubGlobal("fetch", mockFetch(failingSite()));
 
-    const result = await runScan({ log, domain: "https://acme.com" });
+    const { result } = await runAILegibilityScan({
+      site: { id: "1", domain: "https://acme.com" },
+      user: { id: "1", email: "test@example.com", unsubscribed: false },
+    });
 
-    expect(result.checks).toHaveLength(8);
-    expect(result.checks.every((c) => c.name && c.category && c.message)).toBe(
+    expect(result?.checks.length).toBe(8);
+    expect(result?.checks.every((c) => c.name && c.category && c.message)).toBe(
       true,
     );
   });
@@ -166,29 +207,32 @@ describe("runScan", () => {
   it("should categorize checks correctly", async () => {
     vi.stubGlobal("fetch", mockFetch(passingSite()));
 
-    const result = await runScan({ log, domain: "https://acme.com" });
+    const { result } = await runAILegibilityScan({
+      site: { id: "1", domain: "https://acme.com" },
+      user: { id: "1", email: "test@example.com", unsubscribed: false },
+    });
 
-    const criticalChecks = result.checks.filter(
+    const criticalChecks = result?.checks.filter(
       (c) => c.category === "critical",
     );
-    const importantChecks = result.checks.filter(
+    const importantChecks = result?.checks.filter(
       (c) => c.category === "important",
     );
-    const optimizationChecks = result.checks.filter(
+    const optimizationChecks = result?.checks.filter(
       (c) => c.category === "optimization",
     );
 
-    expect(criticalChecks.map((c) => c.name)).toEqual(
+    expect(criticalChecks?.map((c) => c.name)).toEqual(
       expect.arrayContaining([
         "Homepage content",
         "sitemap.txt",
         "sitemap.xml",
       ]),
     );
-    expect(importantChecks.map((c) => c.name)).toEqual(
+    expect(importantChecks?.map((c) => c.name)).toEqual(
       expect.arrayContaining(["robots.txt", "JSON-LD"]),
     );
-    expect(optimizationChecks.map((c) => c.name)).toEqual(
+    expect(optimizationChecks?.map((c) => c.name)).toEqual(
       expect.arrayContaining(["Meta tags", "llms.txt"]),
     );
   });
@@ -278,26 +322,29 @@ describe("runScan with LLM suggestions", () => {
       ),
     );
 
-    const result = await runScan({ log, domain: "https://test-site.com" });
+    const { result } = await runAILegibilityScan({
+      site: { id: "1", domain: "https://test-site.com" },
+      user: { id: "1", email: "test@example.com", unsubscribed: false },
+    });
 
-    expect(result.suggestions.length).toBeGreaterThanOrEqual(3);
+    expect(result?.suggestions.length).toBeGreaterThanOrEqual(3);
 
-    const criticalSuggestions = result.suggestions.filter(
+    const criticalSuggestions = result?.suggestions.filter(
       (s) => s.category === "critical",
     );
-    const importantSuggestions = result.suggestions.filter(
+    const importantSuggestions = result?.suggestions.filter(
       (s) => s.category === "important",
     );
-    const optimizationSuggestions = result.suggestions.filter(
+    const optimizationSuggestions = result?.suggestions.filter(
       (s) => s.category === "optimization",
     );
 
-    expect(criticalSuggestions.length).toBeGreaterThan(0);
-    expect(importantSuggestions.length).toBeGreaterThan(0);
-    expect(optimizationSuggestions.length).toBeGreaterThan(0);
+    expect(criticalSuggestions?.length).toBeGreaterThan(0);
+    expect(importantSuggestions?.length).toBeGreaterThan(0);
+    expect(optimizationSuggestions?.length).toBeGreaterThan(0);
 
-    expect(criticalSuggestions[0].title).toContain("sitemap.txt");
-    expect(importantSuggestions[0].title).toContain("JSON-LD");
-    expect(optimizationSuggestions[0].title).toContain("llms.txt");
+    expect(criticalSuggestions?.[0]?.title).toContain("sitemap.txt");
+    expect(importantSuggestions?.[0]?.title).toContain("JSON-LD");
+    expect(optimizationSuggestions?.[0]?.title).toContain("llms.txt");
   });
 });

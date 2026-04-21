@@ -1,5 +1,5 @@
 import { redirect } from "react-router";
-import runScanInBackground from "~/lib/aiLegibility/runScanInBackground";
+import runAILegibilityScan from "~/lib/aiLegibility/runAILegibilityScan";
 import { requireSiteAccess } from "~/lib/auth.server";
 import type { Route } from "./+types/site.$domain_.ai-legibility.scan";
 
@@ -13,7 +13,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     domain: params.domain,
     request,
   });
-  await runScanInBackground({
+  await runAILegibilityScan({
     site,
     user: { id: user.id, email: user.email, unsubscribed: user.unsubscribed },
   });

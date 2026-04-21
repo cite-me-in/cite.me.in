@@ -2,7 +2,7 @@ import debug from "debug";
 import invariant from "tiny-invariant";
 import sendSiteSetupEmail from "~/emails/SiteSetupComplete";
 import addSiteQueries from "~/lib/addSiteQueries";
-import runScanInBackground from "~/lib/aiLegibility/runScanInBackground";
+import runAILegibilityScan from "~/lib/aiLegibility/runAILegibilityScan";
 import { requireSiteAccess } from "~/lib/auth.server";
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import analyzeSentiment from "~/lib/llm-visibility/analyzeSentiment";
@@ -103,7 +103,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 
     // Phase 7: AI Legibility scan (runs in background)
     await log("Starting AI legibility scan...");
-    await runScanInBackground({
+    await runAILegibilityScan({
       site,
       user: { id: user.id, email: user.email, unsubscribed: user.unsubscribed },
     });
