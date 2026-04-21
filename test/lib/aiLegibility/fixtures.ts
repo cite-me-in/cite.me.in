@@ -184,6 +184,16 @@ export const JSON_LD_PARSE_ERROR = `<!DOCTYPE html>
 <body><main>Content</main></body>
 </html>`;
 
+export const JSON_LD_GRAPH = `<!DOCTYPE html>
+<html>
+<head>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"SoftwareApplication","name":"Acme App","applicationCategory":"BusinessApplication","operatingSystem":"Web"},{"@type":"Organization","name":"Acme Corp","url":"https://acme.com"},{"@type":"WebSite","name":"Acme Site","url":"https://acme.com"},{"@type":"FAQPage","name":"Acme FAQ","mainEntity":[{"@type":"Question","name":"What is Acme?","acceptedAnswer":{"@type":"Answer","text":"Acme is great."}}]}]}
+  </script>
+</head>
+<body><main>Content</main></body>
+</html>`;
+
 export const LLMS_TXT = `# Acme Corp LLM Context
 
 This is the main documentation for Acme Corp.

@@ -40,23 +40,24 @@ export default async function checkJsonLd({
 
     try {
       const parsed = JSON.parse(jsonContent);
-      const types = extractTypes(parsed);
+      const nodes = flattenNodes(parsed);
 
-      for (const type of types) {
-        if (KNOWN_SCHEMAS.includes(type)) {
-          const validation = validateSchema(type, parsed);
+      for (const node of nodes) {
+        const type = node["@type"];
+        if (typeof type !== "string" || !KNOWN_SCHEMAS.includes(type)) {
           schemas.push({
-            type,
-            valid: validation.valid,
-            error: validation.error,
-          });
-        } else {
-          schemas.push({
-            type,
+            type: typeof type === "string" ? type : "unknown",
             valid: true,
             error: "Unknown schema type",
           });
+          continue;
         }
+        const validation = validateSchema(type, node);
+        schemas.push({
+          type,
+          valid: validation.valid,
+          error: validation.error,
+        });
       }
     } catch (error) {
       schemas.push({
@@ -108,30 +109,20 @@ export default async function checkJsonLd({
   };
 }
 
-function extractTypes(data: unknown): string[] {
+function flattenNodes(data: unknown): Record<string, unknown>[] {
   if (typeof data !== "object" || data === null) return [];
-
-  if (Array.isArray(data)) {
-    return data.flatMap(extractTypes);
-  }
+  if (Array.isArray(data)) return data.flatMap(flattenNodes);
 
   const obj = data as Record<string, unknown>;
-  const types: string[] = [];
-
-  if (obj["@type"]) {
-    const t = obj["@type"];
-    if (typeof t === "string") {
-      types.push(t);
-    } else if (Array.isArray(t)) {
-      types.push(...t.filter((x): x is string => typeof x === "string"));
-    }
-  }
+  const nodes: Record<string, unknown>[] = [];
 
   if (obj["@graph"] && Array.isArray(obj["@graph"])) {
-    types.push(...obj["@graph"].flatMap(extractTypes));
+    nodes.push(...flattenNodes(obj["@graph"]));
+  } else if (obj["@type"]) {
+    nodes.push(obj);
   }
 
-  return types;
+  return nodes;
 }
 
 function validateSchema(

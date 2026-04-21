@@ -49,6 +49,7 @@ describe("FAQ page", () => {
 
     expect(structuredData["@context"]).toBe("https://schema.org");
     expect(structuredData["@type"]).toBe("FAQPage");
+    expect(structuredData.name).toBeTruthy();
     expect(Array.isArray(structuredData.mainEntity)).toBe(true);
     expect(structuredData.mainEntity.length).toBe(totalQuestions);
 

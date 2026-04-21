@@ -3,6 +3,7 @@ import checkJsonLd from "~/lib/aiLegibility/checks/jsonLd";
 import {
   HOMEPAGE_WITH_CONTENT,
   JSON_LD_ARTICLE,
+  JSON_LD_GRAPH,
   JSON_LD_INVALID,
   JSON_LD_MULTIPLE,
   JSON_LD_PARSE_ERROR,
@@ -123,5 +124,40 @@ describe("checkJsonLd", () => {
     });
 
     expect(result.passed).toBe(false);
+  });
+
+  it("should validate schemas inside @graph individually", async () => {
+    const result = await checkJsonLd({
+      url: "https://acme.com/",
+      html: JSON_LD_GRAPH,
+    });
+
+    expect(result.passed).toBe(true);
+    expect(result.schemas).toHaveLength(4);
+    expect(result.schemas.map((s) => s.type)).toContain("SoftwareApplication");
+    expect(result.schemas.map((s) => s.type)).toContain("Organization");
+    expect(result.schemas.map((s) => s.type)).toContain("WebSite");
+    expect(result.schemas.map((s) => s.type)).toContain("FAQPage");
+    expect(result.schemas.every((s) => s.valid)).toBe(true);
+  });
+
+  it("should catch missing required fields inside @graph", async () => {
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[{"@type":"Organization"},{"@type":"WebSite"}]}
+  </script>
+</head>
+<body></body>
+</html>`;
+
+    const result = await checkJsonLd({
+      url: "https://acme.com/",
+      html,
+    });
+
+    expect(result.passed).toBe(false);
+    expect(result.schemas.filter((s) => !s.valid)).toHaveLength(2);
   });
 });

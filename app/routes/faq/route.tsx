@@ -133,6 +133,7 @@ function schemaData() {
   return {
     "@context": "https://schema.org",
     "@type": "FAQPage",
+    name: "Cite.me.in FAQ",
     mainEntity,
   };
 }
