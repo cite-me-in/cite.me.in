@@ -95,6 +95,7 @@ async function createTestBotVisit(data: {
   return prisma.botVisit.create({
     data: {
       siteId: data.siteId,
+      botClass: "training",
       botType: data.botType,
       path: data.path,
       count: data.count,

@@ -149,6 +149,7 @@ async function getBotTotals(
   const byBot: Record<
     string,
     {
+      botClass: string;
       botType: string;
       total: number;
       paths: Set<string>;
@@ -159,6 +160,7 @@ async function getBotTotals(
   for (const v of visits) {
     if (!byBot[v.botType])
       byBot[v.botType] = {
+        botClass: v.botClass,
         botType: v.botType,
         total: 0,
         paths: new Set(),
@@ -172,13 +174,20 @@ async function getBotTotals(
 
   const botActivity = Object.values(byBot)
     .map((b) => ({
+      botClass: b.botClass,
       botType: b.botType,
       total: b.total,
       uniquePaths: b.paths.size,
       accepts: [...b.accepts].sort(),
       referer: b.referer,
     }))
-    .sort((a, b) => b.total - a.total);
+    .sort((a, b) => {
+      const classOrder = { retrieval: 0, search_indexing: 1, training: 2, other: 3 };
+      const aOrder = classOrder[a.botClass as keyof typeof classOrder] ?? 4;
+      const bOrder = classOrder[b.botClass as keyof typeof classOrder] ?? 4;
+      if (aOrder !== bOrder) return aOrder - bOrder;
+      return b.total - a.total;
+    });
 
   const totalBotVisits = sum(Object.values(botTotals), (c) => c);
 

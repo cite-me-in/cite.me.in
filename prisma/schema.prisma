@@ -41,6 +41,7 @@ model BotInsight {
 
 model BotVisit {
   accept    String[] @map("accept")
+  botClass  String   @map("bot_class") @default("other")
   botType   String   @map("bot_type")
   count     Int      @map("count")      @default(1)
   createdAt DateTime @map("created_at") @default(now())

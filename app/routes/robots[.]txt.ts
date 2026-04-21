@@ -13,9 +13,14 @@ export async function loader() {
     { userAgent: "anthropic-ai", allow: ["/"] },
     { userAgent: "Bingbot", allow: ["/"] },
     { userAgent: "ChatGPT-User", allow: ["/"] },
+    { userAgent: "Claude-User", allow: ["/"] },
     { userAgent: "ClaudeBot", allow: ["/"] },
     { userAgent: "Googlebot", allow: ["/"] },
     { userAgent: "GPTBot", allow: ["/"] },
+    { userAgent: "Manus-User", allow: ["/"] },
+    { userAgent: "Meta-ExternalFetcher", allow: ["/"] },
+    { userAgent: "OAI-SearchBot", allow: ["/"] },
+    { userAgent: "Perplexity-User", allow: ["/"] },
     { userAgent: "PerplexityBot", allow: ["/"] },
   ]);
 

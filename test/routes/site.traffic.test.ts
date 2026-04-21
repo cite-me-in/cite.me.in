@@ -10,6 +10,7 @@ const BASE_DATE = new Date("2026-02-26T00:00:00.000Z");
 
 const BOT_VISITS = [
   {
+    botClass: "search_indexing",
     botType: "Google",
     userAgent: "Googlebot/2.1",
     path: "/",
@@ -18,6 +19,7 @@ const BOT_VISITS = [
     daysAgo: 0,
   },
   {
+    botClass: "search_indexing",
     botType: "Google",
     userAgent: "Googlebot/2.1",
     path: "/blog",
@@ -26,7 +28,8 @@ const BOT_VISITS = [
     daysAgo: 3,
   },
   {
-    botType: "ChatGPT",
+    botClass: "training",
+    botType: "GPT Bot",
     userAgent: "GPTBot/1.0",
     path: "/",
     accept: ["text/html", "text/plain"],
@@ -34,6 +37,7 @@ const BOT_VISITS = [
     daysAgo: 1,
   },
   {
+    botClass: "other",
     botType: "Gemini",
     userAgent: "GeminiBot/1.0",
     path: "/about",
@@ -211,6 +215,7 @@ describe("traffic page", () => {
         await prisma.botVisit.create({
           data: {
             siteId,
+            botClass: v.botClass,
             botType: v.botType,
             userAgent: v.userAgent,
             path: v.path,
@@ -236,7 +241,7 @@ describe("traffic page", () => {
         page.getByRole("cell", { name: "Google", exact: true }),
       ).toBeVisible();
       await expect(
-        page.getByRole("cell", { name: "ChatGPT", exact: true }),
+        page.getByRole("cell", { name: "GPT Bot", exact: true }),
       ).toBeVisible();
       await expect(
         page.getByRole("cell", { name: "Gemini", exact: true }),

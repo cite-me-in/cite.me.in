@@ -3,75 +3,98 @@ import { Temporal } from "@js-temporal/polyfill";
 import captureAndLogError from "./captureAndLogError.server";
 import prisma from "~/lib/prisma.server";
 
+type BotClass = "retrieval" | "search_indexing" | "training" | "other";
+
 /**
  * Known bot patterns for classification
  *
+ * Classes:
+ * - retrieval: AI answering a user question about your site right now
+ * - search_indexing: AI building an index for future answers
+ * - training: AI training on your content
+ * - other: Monitoring, testing, or other bots
+ *
  * @see https://www.xseek.io/docs
  * @see https://plainsignal.com/agents/
+ * @see https://surfacedby.com/blog/nginx-logs-ai-traffic-vs-referral-traffic
  */
-const BOT_PATTERNS = [
-  { pattern: /ahrefsbot/i, type: "Ahrefs" },
-  { pattern: /amazonbot/i, type: "Amazon" },
-  { pattern: /anthropic-ai/i, type: "Claude AI" },
-  { pattern: /applebot/i, type: "Apple" },
-  { pattern: /archive\.org_bot/i, type: "Archive.org" },
-  { pattern: /baiduspider/i, type: "Baidu" },
-  { pattern: /bingbot/i, type: "Bing" },
-  { pattern: /bytespider/i, type: "ByteDance" },
-  { pattern: /chrome-lighthouse/i, type: "Lighthouse" },
-  { pattern: /claude-searchbot/i, type: "Claude Search" },
-  { pattern: /claude-user/i, type: "Claude User" },
-  { pattern: /claudebot/i, type: "Claude Bot" },
-  { pattern: /curl/i, type: "cURL" },
-  { pattern: /discordbot/i, type: "Discord" },
-  { pattern: /dotbot/i, type: "DotBot" },
-  { pattern: /duckduckbot/i, type: "DuckDuck" },
-  { pattern: /ev-crawler/i, type: "Headline" },
-  { pattern: /exabot/i, type: "Exabot" },
-  { pattern: /facebookexternalhit/i, type: "Facebook" },
-  { pattern: /findfiles.net/i, type: "FindFiles" },
-  { pattern: /googlebot/i, type: "Google" },
-  { pattern: /gptbot|chatgpt-user/i, type: "ChatGPT" },
-  { pattern: /headlesschrome/i, type: "Headless Chrome" },
-  { pattern: /ia_archiver/i, type: "Alexa" },
-  { pattern: /lighthouse/i, type: "Lighthouse" },
-  { pattern: /linkedinbot/i, type: "LinkedIn" },
-  { pattern: /meta-externalagent/i, type: "Meta" },
-  { pattern: /mj12bot/i, type: "MajesticBot" },
-  { pattern: /oai-searchbot/i, type: "OpenAI Search" },
-  { pattern: /perplexitybot/i, type: "Perplexity" },
-  { pattern: /phantomjs/i, type: "PhantomJS" },
-  { pattern: /pingdom/i, type: "Pingdom" },
-  { pattern: /python-requests/i, type: "Python Requests" },
-  { pattern: /rogerbot/i, type: "Rogerbot" },
-  { pattern: /rss-is-dead.lol/i, type: "RSS is Dead" },
-  { pattern: /saasbrowser.com/i, type: "SaaS Browser" },
-  { pattern: /scrapy/i, type: "Scrapy" },
-  { pattern: /selenium/i, type: "Selenium" },
-  { pattern: /semrushbot/i, type: "SEMrush" },
-  { pattern: /slackbot/i, type: "Slack" },
-  { pattern: /slurp/i, type: "Yahoo Slurp" },
-  { pattern: /telegrambot/i, type: "Telegram" },
-  { pattern: /twitterbot/i, type: "Twitter" },
-  { pattern: /uptimerobot/i, type: "UptimeRobot" },
-  { pattern: /webdriver/i, type: "WebDriver" },
-  { pattern: /wget/i, type: "wget" },
-  { pattern: /whatsapp/i, type: "WhatsApp" },
-  { pattern: /yandexbot/i, type: "Yandex" },
-  { pattern: /seranking/i, type: "SE Ranking" },
-  { pattern: /bot|crawl|spider|scrape/i, type: "Other Bot" },
-] as const;
+const BOT_PATTERNS: {
+  botClass: BotClass;
+  pattern: RegExp;
+  type: string;
+}[] = [
+  { botClass: "search_indexing", pattern: /ahrefsbot/i, type: "Ahrefs" },
+  { botClass: "other", pattern: /amazonbot/i, type: "Amazon" },
+  { botClass: "other", pattern: /anthropic-ai/i, type: "Claude AI" },
+  { botClass: "search_indexing", pattern: /applebot/i, type: "Apple" },
+  { botClass: "other", pattern: /archive\.org_bot/i, type: "Archive.org" },
+  { botClass: "search_indexing", pattern: /baiduspider/i, type: "Baidu" },
+  { botClass: "search_indexing", pattern: /bingbot/i, type: "Bing" },
+  { botClass: "other", pattern: /bytespider/i, type: "ByteDance" },
+  { botClass: "retrieval", pattern: /chatgpt-user/i, type: "ChatGPT User" },
+  { botClass: "other", pattern: /chrome-lighthouse/i, type: "Lighthouse" },
+  { botClass: "search_indexing", pattern: /claude-searchbot/i, type: "Claude Search" },
+  { botClass: "retrieval", pattern: /claude-user/i, type: "Claude User" },
+  { botClass: "training", pattern: /claudebot/i, type: "Claude Bot" },
+  { botClass: "other", pattern: /curl/i, type: "cURL" },
+  { botClass: "other", pattern: /discordbot/i, type: "Discord" },
+  { botClass: "other", pattern: /dotbot/i, type: "DotBot" },
+  { botClass: "search_indexing", pattern: /duckduckbot/i, type: "DuckDuck" },
+  { botClass: "other", pattern: /ev-crawler/i, type: "Headline" },
+  { botClass: "other", pattern: /exabot/i, type: "Exabot" },
+  { botClass: "other", pattern: /facebookexternalhit/i, type: "Facebook" },
+  { botClass: "other", pattern: /findfiles.net/i, type: "FindFiles" },
+  { botClass: "search_indexing", pattern: /googlebot/i, type: "Google" },
+  { botClass: "training", pattern: /gptbot/i, type: "GPT Bot" },
+  { botClass: "other", pattern: /headlesschrome/i, type: "Headless Chrome" },
+  { botClass: "other", pattern: /ia_archiver/i, type: "Alexa" },
+  { botClass: "other", pattern: /lighthouse/i, type: "Lighthouse" },
+  { botClass: "other", pattern: /linkedinbot/i, type: "LinkedIn" },
+  { botClass: "retrieval", pattern: /manus-user/i, type: "Manus User" },
+  { botClass: "training", pattern: /meta-externalagent/i, type: "Meta Agent" },
+  { botClass: "retrieval", pattern: /meta-externalfetcher/i, type: "Meta Fetcher" },
+  { botClass: "retrieval", pattern: /meta-webindexer/i, type: "Meta WebIndexer" },
+  { botClass: "other", pattern: /mj12bot/i, type: "MajesticBot" },
+  { botClass: "search_indexing", pattern: /oai-searchbot/i, type: "OpenAI Search" },
+  { botClass: "retrieval", pattern: /perplexity-user/i, type: "Perplexity User" },
+  { botClass: "search_indexing", pattern: /perplexitybot/i, type: "Perplexity Bot" },
+  { botClass: "other", pattern: /phantomjs/i, type: "PhantomJS" },
+  { botClass: "other", pattern: /pingdom/i, type: "Pingdom" },
+  { botClass: "other", pattern: /python-requests/i, type: "Python Requests" },
+  { botClass: "other", pattern: /rogerbot/i, type: "Rogerbot" },
+  { botClass: "other", pattern: /rss-is-dead.lol/i, type: "RSS is Dead" },
+  { botClass: "other", pattern: /saasbrowser.com/i, type: "SaaS Browser" },
+  { botClass: "other", pattern: /scrapy/i, type: "Scrapy" },
+  { botClass: "other", pattern: /selenium/i, type: "Selenium" },
+  { botClass: "search_indexing", pattern: /semrushbot/i, type: "SEMrush" },
+  { botClass: "other", pattern: /slackbot/i, type: "Slack" },
+  { botClass: "search_indexing", pattern: /slurp/i, type: "Yahoo Slurp" },
+  { botClass: "other", pattern: /telegrambot/i, type: "Telegram" },
+  { botClass: "other", pattern: /twitterbot/i, type: "Twitter" },
+  { botClass: "other", pattern: /uptimerobot/i, type: "UptimeRobot" },
+  { botClass: "other", pattern: /webdriver/i, type: "WebDriver" },
+  { botClass: "other", pattern: /wget/i, type: "wget" },
+  { botClass: "other", pattern: /whatsapp/i, type: "WhatsApp" },
+  { botClass: "search_indexing", pattern: /yandexbot/i, type: "Yandex" },
+  { botClass: "search_indexing", pattern: /seranking/i, type: "SE Ranking" },
+  { botClass: "other", pattern: /bot|crawl|spider|scrape/i, type: "Other Bot" },
+];
+
+interface BotClassification {
+  botClass: BotClass;
+  type: string;
+}
 
 /**
  * Classify a user agent as a bot.
  *
  * @param userAgent - The user agent.
- * @returns The bot type, or `null` if it's not suspected to be a bot.
+ * @returns The bot classification, or `null` if it's not suspected to be a bot.
  */
-export function classifyBot(userAgent: string): string | null {
-  return (
-    BOT_PATTERNS.find(({ pattern }) => pattern.test(userAgent))?.type ?? null
-  );
+export function classifyBot(userAgent: string): BotClassification | null {
+  const match = BOT_PATTERNS.find(({ pattern }) => pattern.test(userAgent));
+  if (!match) return null;
+  return { botClass: match.botClass, type: match.type };
 }
 
 /**
@@ -101,8 +124,8 @@ export default async function recordBotVisit({
 }): Promise<{ tracked: boolean; reason?: string }> {
   const { pathname } = new URL(url);
   if (!userAgent) return { tracked: false, reason: "no user agent" };
-  const botType = classifyBot(userAgent);
-  if (!botType) return { tracked: false, reason: "not a bot" };
+  const classification = classifyBot(userAgent);
+  if (!classification) return { tracked: false, reason: "not a bot" };
 
   const date = new Date(
     Temporal.Now.zonedDateTimeISO("UTC").startOfDay().epochMilliseconds,
@@ -120,7 +143,8 @@ export default async function recordBotVisit({
       update: { count: { increment: 1 }, lastSeen: new Date() },
       create: {
         accept: parseAccept(accept),
-        botType,
+        botClass: classification.botClass,
+        botType: classification.type,
         count: 1,
         date,
         ip,
@@ -133,7 +157,7 @@ export default async function recordBotVisit({
     return { tracked: true };
   } catch (error) {
     captureAndLogError(error, {
-      extra: { botType, url, userAgent },
+      extra: { botClass: classification.botClass, botType: classification.type, url, userAgent },
     });
     return { tracked: false, reason: "db error" };
   }

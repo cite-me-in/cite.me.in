@@ -146,7 +146,7 @@ describe("api.track", () => {
         where: { siteId: "site-apitrack-1", path: "/about" },
       });
       expect(record).not.toBeNull();
-      expect(record?.botType).toBe("ChatGPT");
+      expect(record?.botType).toBe("GPT Bot");
       expect(record?.userAgent).toBe("GPTBot/1.0");
       expect(record?.count).toBe(1);
     });
