@@ -63,8 +63,11 @@ export default function AiLegibilityPage({ loaderData }: Route.ComponentProps) {
 
   const isLoading = fetcher.state !== "idle" || isRunning;
 
-  const handleStartScan = () => {
-    fetcher.submit({}, { method: "POST", action: "scan" });
+  const startScan = () => {
+    fetcher.submit(
+      {},
+      { method: "POST", action: "/site/$domain$/ai-legibility/scan" },
+    );
   };
 
   return (
@@ -76,11 +79,7 @@ export default function AiLegibilityPage({ loaderData }: Route.ComponentProps) {
           scannedAt && `Last scanned: ${formatDateMed(new Date(scannedAt))}`
         }
       >
-        <Button
-          variant="outline"
-          onClick={handleStartScan}
-          disabled={isLoading}
-        >
+        <Button variant="outline" onClick={startScan} disabled={isLoading}>
           <RefreshCcwIcon
             className={twMerge("size-4", isLoading && "animate-spin")}
           />
@@ -95,7 +94,7 @@ export default function AiLegibilityPage({ loaderData }: Route.ComponentProps) {
       ) : report ? (
         <ScanResults result={report.result} />
       ) : (
-        <Fallback handleStartScan={handleStartScan} />
+        <Fallback handleStartScan={startScan} />
       )}
     </Main>
   );

@@ -2,9 +2,9 @@ import debug from "debug";
 import invariant from "tiny-invariant";
 import sendSiteSetupEmail from "~/emails/SiteSetupComplete";
 import addSiteQueries from "~/lib/addSiteQueries";
+import runScanInBackground from "~/lib/aiLegibility/runScanInBackground";
 import { requireSiteAccess } from "~/lib/auth.server";
 import captureAndLogError from "~/lib/captureAndLogError.server";
-import runScanInBackground from "~/lib/aiLegibility/runScanInBackground";
 import analyzeSentiment from "~/lib/llm-visibility/analyzeSentiment";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import PLATFORMS from "~/lib/llm-visibility/platformQueries.server";
@@ -19,6 +19,8 @@ import { appendLog, getStatus, setStatus } from "~/lib/setupProgress.server";
 import type { Route } from "./+types/site.$domain_.setup.run";
 
 const logger = debug("server");
+
+export const config = { maxDuration: 300 }; // 5 minutes in seconds
 
 export async function action({ request, params }: Route.ActionArgs) {
   if (request.method !== "POST")
