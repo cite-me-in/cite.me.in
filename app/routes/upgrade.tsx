@@ -75,7 +75,7 @@ export default function UpgradePage() {
 
           <ul className="mb-8 space-y-2 text-sm">
             {[
-              "All 4 platforms: ChatGPT, Claude, Gemini, Copilot",
+              "All 3 platforms: ChatGPT, Claude, Gemini",
               "Daily citation runs, indefinitely",
               "Full citation history preserved and growing",
               "Up to 5 sites",

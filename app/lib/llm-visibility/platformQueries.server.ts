@@ -3,7 +3,6 @@ import queryGemini from "~/lib/llm-visibility/geminiClient.server";
 import openaiClient from "~/lib/llm-visibility/openaiClient.server";
 import PLATFORMS from "~/lib/llm-visibility/platforms";
 import type { QueryFn } from "./queryFn";
-import fetchSERPResults from "./serpApi.server";
 
 const platforms = Object.fromEntries(
   PLATFORMS.map(({ name, model, label }) => [name, { name, model, label }]),
@@ -19,11 +18,7 @@ export default [
   { ...platforms.claude, queryFn: queryClaude },
   { ...platforms.gemini, queryFn: queryGemini },
   //{ ...platforms.perplexity, queryFn: queryPerplexity },
-  {
-    ...platforms.copilot,
-    queryFn: ({ query, timeout }) =>
-      fetchSERPResults({ query, engine: "bing_copilot", timeout }),
-  },
+  //{ ...platforms.copilot, queryFn: ({ query, timeout }) => fetchSERPResults({ query, engine: "bing_copilot", timeout }), },
 ] satisfies {
   name: string;
   model: string;

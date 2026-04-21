@@ -58,7 +58,7 @@ function FreeTierCard() {
       <TierFeatures
         features={[
           "1 domain",
-          "All 4 platforms: ChatGPT, Claude, Gemini, Copilot",
+          "All 3 platforms: ChatGPT, Claude, Gemini",
           "We'll monitor citations for you",
         ]}
         description="Most tools give you a week. We give you enough time to actually see results."

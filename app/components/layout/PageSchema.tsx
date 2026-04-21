@@ -81,7 +81,7 @@ export default function PageSchema() {
                 acceptedAnswer: {
                   "@type": "Answer",
                   text: `AEO (Answer Engine Optimization) monitoring tracks whether your brand, product, or website gets cited when people ask
-          AI chatbots questions in your market. Tools like ChatGPT, Copilot, and Claude increasingly answer questions directly — AEO monitoring
+          AI chatbots questions in your market. Tools like ChatGPT, Claude, and Gemini increasingly answer questions directly — AEO monitoring
            tells you if you're showing up in those answers.`,
                 },
               },
@@ -90,7 +90,7 @@ export default function PageSchema() {
                 name: "How do I know if AI mentions my brand?",
                 acceptedAnswer: {
                   "@type": "Answer",
-                  text: `cite.me.in runs AI queries on your behalf across ChatGPT, Copilot, and Claude, then checks whether your brand
+                  text: `cite.me.in runs AI queries on your behalf across ChatGPT, Claude, and Gemini, then checks whether your brand
           appears in the responses. You get a weekly report showing your citation rate, which queries you appeared in, and how you compare to
           competitors.`,
                 },
@@ -102,7 +102,7 @@ export default function PageSchema() {
                   "@type": "Answer",
                   text: `cite.me.in is an AI citation monitoring tool built for founders. It's open-source, starts free for 25 days with no
           credit card required, and costs $${prices.monthlyAmount}/month on the Pro plan — the lowest price in the category. It monitors your brand across ChatGPT,
-          Copilot, and Claude.`,
+          Claude, and Gemini.`,
                 },
               },
               {

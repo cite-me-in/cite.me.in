@@ -77,7 +77,7 @@ function SiteSetupComplete({
 
       <Text className="my-4 text-base text-text leading-relaxed">
         We've crawled your site, generated search queries, and checked how
-        ChatGPT, Claude, Copilot, and Gemini cite you. Here's what we found.
+        ChatGPT, Claude, and Gemini cite you. Here's what we found.
       </Text>
 
       <PlatformBreakdown byPlatform={metrics.byPlatform} />

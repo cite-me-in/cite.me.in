@@ -41,7 +41,7 @@ export default async function generateSiteQueries(
         },
       },
     },
-    system: `You generate search queries a user might type into an AI platform (ChatGPT, Copilot, Claude, Gemini) that should ideally return a citation to the given website.
+    system: `You generate search queries a user might type into an AI platform (ChatGPT, Claude, Gemini) that should ideally return a citation to the given website.
 
 Return exactly 9 queries: 3 per group.
 

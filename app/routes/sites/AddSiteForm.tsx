@@ -33,8 +33,8 @@ export default function AddSiteForm({
             </div>
             <p className="text-base text-foreground/60">
               Be patient, nothing will happen for a few seconds. We're going to
-              check the domain and generate queries to ask Claude, OpenAI,
-              Google, and Copilot to see if they return any citations.
+              check the domain and generate queries to ask Claude, OpenAI, and
+              Google to see if they return any citations.
             </p>
             {url && (
               <p className="text-base text-foreground/60">

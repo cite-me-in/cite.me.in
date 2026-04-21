@@ -7,7 +7,7 @@ export default [
       {
         question: "What is Cite.me.in?",
         answer:
-          "Cite.me.in monitors whether AI platforms cite your domain. We run your search queries across Claude, ChatGPT, Gemini, and Copilot, record which URLs appear in responses, and show you the trend over time.",
+          "Cite.me.in monitors whether AI platforms cite your domain. We run your search queries across Claude, ChatGPT, and Gemini, record which URLs appear in responses, and show you the trend over time.",
       },
       {
         question: "What is LLM citation visibility?",
@@ -67,7 +67,7 @@ export default [
       {
         question: "Which AI platforms does Cite.me.in monitor?",
         answer:
-          "We currently monitor Claude (Anthropic), ChatGPT (OpenAI), Gemini (Google), and Copilot. All four are queried in parallel for each monitoring run.",
+          "We currently monitor Claude (Anthropic), ChatGPT (OpenAI), and Gemini (Google). All three are queried in parallel for each monitoring run.",
       },
       {
         question: "How far back does historical data go?",

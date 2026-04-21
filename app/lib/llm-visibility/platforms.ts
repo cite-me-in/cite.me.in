@@ -3,9 +3,9 @@
  */
 export default [
   { label: "ChatGPT", model: "gpt-4o-mini", name: "chatgpt" },
-  { label: "Copilot", model: "copilot", name: "copilot" },
   { label: "Claude", model: "claude-haiku-4-5-20251001", name: "claude" },
   { label: "Gemini", model: "gemini-2.5-flash", name: "gemini" },
+  // { label: "Copilot", model: "copilot", name: "copilot" },
   //{ label: "Perplexity", model: "sonar", name: "perplexity" },
 ] satisfies {
   label: string;
