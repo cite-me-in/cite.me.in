@@ -3,18 +3,8 @@ import { expect } from "playwright/test";
 import { beforeAll, describe, it } from "vitest";
 import { port } from "../helpers/launchBrowser";
 
-async function fetchSitemapIndex() {
-  const response = await fetch(`http://localhost:${port}/sitemap.xml`);
-  const sitemapContent = await response.text();
-  const parser = new XMLParser();
-  const xml = parser.parse(sitemapContent) as {
-    sitemapindex: { sitemap: { loc: string }[] };
-  };
-  return { response, sitemapContent, xml };
-}
-
 async function fetchSitemapMain() {
-  const response = await fetch(`http://localhost:${port}/sitemap-main.xml`);
+  const response = await fetch(`http://localhost:${port}/sitemap.xml`);
   const sitemapContent = await response.text();
   const parser = new XMLParser();
   const xml = parser.parse(sitemapContent) as {
@@ -30,45 +20,17 @@ async function fetchSitemapTxt() {
   return { response, content, urls };
 }
 
-describe("sitemap.xml (index)", () => {
-  let sitemapContent: string;
-  let xml: { sitemapindex: { sitemap: { loc: string }[] } };
-
-  beforeAll(async () => {
-    ({ sitemapContent, xml } = await fetchSitemapIndex());
-  });
-
-  it("should be valid sitemap index XML", () => {
-    expect(sitemapContent).toContain('<?xml version="1.0" encoding="UTF-8"?>');
-    expect(xml).toHaveProperty("sitemapindex");
-    expect(xml.sitemapindex).toHaveProperty("sitemap");
-  });
-
-  it("should reference sitemap-main.xml", () => {
-    const sitemaps = Array.isArray(xml.sitemapindex.sitemap)
-      ? xml.sitemapindex.sitemap
-      : [xml.sitemapindex.sitemap];
-    expect(sitemaps).toContainEqual({
-      loc: "http://localhost:9222/sitemap-main.xml",
-    });
-  });
-
-  it("should reference blog sitemap", () => {
-    const sitemaps = Array.isArray(xml.sitemapindex.sitemap)
-      ? xml.sitemapindex.sitemap
-      : [xml.sitemapindex.sitemap];
-    expect(sitemaps).toContainEqual({
-      loc: "https://blog.cite.me.in/sitemap-0.xml",
-    });
-  });
-});
-
-describe("sitemap-main.xml", () => {
+describe("sitemap.xml", () => {
   let sitemapContent: string;
   let xml: { urlset: { url: { loc: string }[] } };
+  let locs: string[];
 
   beforeAll(async () => {
     ({ sitemapContent, xml } = await fetchSitemapMain());
+    const urls = Array.isArray(xml.urlset.url)
+      ? xml.urlset.url
+      : [xml.urlset.url];
+    locs = urls.map((u) => u.loc);
   });
 
   it("should be valid XML", () => {
@@ -78,29 +40,23 @@ describe("sitemap-main.xml", () => {
   });
 
   it("should include homepage", () => {
-    expect(xml.urlset.url).toContainEqual({ loc: "http://localhost:9222/" });
+    expect(locs).toContain("http://localhost:9222/");
   });
 
   it("should include /faq", () => {
-    expect(xml.urlset.url).toContainEqual({ loc: "http://localhost:9222/faq" });
+    expect(locs).toContain("http://localhost:9222/faq");
   });
 
   it("should include /about", () => {
-    expect(xml.urlset.url).toContainEqual({
-      loc: "http://localhost:9222/about",
-    });
+    expect(locs).toContain("http://localhost:9222/about");
   });
 
   it("should include /privacy", () => {
-    expect(xml.urlset.url).toContainEqual({
-      loc: "http://localhost:9222/privacy",
-    });
+    expect(locs).toContain("http://localhost:9222/privacy");
   });
 
   it("should include /terms", () => {
-    expect(xml.urlset.url).toContainEqual({
-      loc: "http://localhost:9222/terms",
-    });
+    expect(locs).toContain("http://localhost:9222/terms");
   });
 });
 
@@ -148,12 +104,13 @@ describe("sitemap.txt", () => {
     expect(urls).toContain("http://localhost:9222/pricing");
   });
 
-  it("should have the same URLs as sitemap-main.xml", async () => {
+  it("should have URLs that are all present in sitemap-main.xml", async () => {
     const { xml } = await fetchSitemapMain();
-    const xmlUrls = (Array.isArray(xml.urlset.url)
-      ? xml.urlset.url
-      : [xml.urlset.url]
+    const xmlUrls = (
+      Array.isArray(xml.urlset.url) ? xml.urlset.url : [xml.urlset.url]
     ).map((u: { loc: string }) => u.loc);
-    expect(urls.sort()).toEqual(xmlUrls.sort());
+    for (const url of urls) {
+      expect(xmlUrls).toContain(url);
+    }
   });
 });

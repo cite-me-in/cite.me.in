@@ -21,7 +21,6 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.90.0",
     "@base-ui/react": "^1.4.1",
-    "@forge42/seo-tools": "^1.4.5",
     "@google/genai": "^1.50.1",
     "@js-temporal/polyfill": "^0.5.1",
     "@logtail/node": "^0.5.8",
