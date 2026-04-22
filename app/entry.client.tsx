@@ -16,8 +16,8 @@ if (import.meta.env.PROD) {
     ignoreErrors: [
       // Browser password manager extensions (LastPass, Bitwarden, Chrome autofill)
       /Object Not Found Matching Id:\d+, MethodName:\w+, ParamCount:\d+/,
-      // Sentry/instrumentation map lookups during navigation cleanup
-      /Key not found/,
+      // Safari WebKit internal map lookups (unhandled rejection from onMessage/onResponse)
+      /Key not found:/,
     ],
     replaysOnErrorSampleRate: 1.0,
     replaysSessionSampleRate: 0.1,

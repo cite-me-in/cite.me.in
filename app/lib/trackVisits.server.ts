@@ -34,6 +34,7 @@ export async function trackVisits(request: Request): Promise<void> {
     );
     await action({ request: newRequest });
   } catch (error) {
+    if (error instanceof Response) return;
     captureAndLogError(error, { extra: { request } });
   }
 }
