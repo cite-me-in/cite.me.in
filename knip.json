@@ -17,7 +17,8 @@
   ],
   "ignoreDependencies": [
     "@prisma/client",
-    "@secretlint/secretlint-rule-preset-recommend"
+    "@secretlint/secretlint-rule-preset-recommend",
+    "vercel"
   ],
   "ignoreFiles": ["app/lib/truncateWords.ts"],
   "ignoreIssues": {

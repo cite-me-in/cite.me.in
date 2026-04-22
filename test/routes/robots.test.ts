@@ -22,7 +22,7 @@ describe("robots.txt", () => {
   });
 
   it("should reference blog sitemap.xml", () => {
-    expect(statements).toContain("Sitemap: https://blog.cite.me.in/sitemap.xml");
+    expect(statements).toContain("Sitemap: https://blog.cite.me.in/sitemap-0.xml");
   });
 
   it("should allow all user agents", () => {
