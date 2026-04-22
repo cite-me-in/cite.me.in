@@ -1,6 +1,5 @@
 catalog:
-  vite: npm:@voidzero-dev/vite-plus-core@latest
-  vite-plus: ^0.1.19
+  vite-plus: latest
 
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
