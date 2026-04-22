@@ -6,6 +6,7 @@
 backup.sql
 prisma/generated
 server.log
+opencode.json
 
 # React Router
 /.react-router/
