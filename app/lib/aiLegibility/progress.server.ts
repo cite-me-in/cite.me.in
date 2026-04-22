@@ -1,7 +1,7 @@
 import { convert } from "convert";
 import debug from "debug";
 import Redis from "ioredis";
-import invariant from "tiny-invariant";
+
 import envVars from "~/lib/envVars.server";
 import type { ScanProgress, ScanResult } from "./types";
 
@@ -24,9 +24,11 @@ export async function startNewScan({
   domain: string;
 }): Promise<void> {
   const redis = getRedis();
-  await redis.del(logKey(domain));
-  await redis.del(resultKey(domain));
-  await redis.set(statusKey(domain), "running", "EX", TTL);
+  const pipeline = redis.pipeline();
+  pipeline.del(logKey(domain));
+  pipeline.del(resultKey(domain));
+  pipeline.set(statusKey(domain), "running", "EX", TTL);
+  await pipeline.exec();
 }
 
 export async function setStatus({
@@ -68,7 +70,7 @@ export async function getProgress({
       return { lines, done: false, nextOffset: offset + lines.length };
     case "complete": {
       const resultJson = await redis.get(resultKey(domain));
-      invariant(resultJson, "Result not found");
+      if (!resultJson) return { lines, done: true, nextOffset: offset + lines.length };
       const result = JSON.parse(resultJson) as ScanResult;
       return { lines, done: true, nextOffset: offset + lines.length, result };
     }

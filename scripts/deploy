@@ -27,8 +27,8 @@ infisical --env prod run -- pnpm prisma db push
 echo -e "\033[32m  Deploying to Vercel …\033[0m"
 set $PATH=node_modules/.bin:$PATH
 vercel pull --environment=production
-vercel build --prod
+vercel build 
 vercel deploy --prebuilt > deploy.log
 
-echo -e "\033[32m  Opening dashboard …\033[0m"
-open deploy.log
+echo -e "\033[32m  Opening deployment URL …\033[0m"
+open $(cat deploy.log)

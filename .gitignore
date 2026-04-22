@@ -6,7 +6,6 @@
 backup.sql
 prisma/generated
 server.log
-.vercel
 
 # React Router
 /.react-router/
@@ -14,6 +13,7 @@ server.log
 
 # Vercel
 .vercel
+deploy.log
 
 # Ignore test results
 __screenshots__/**/*.diff.png
@@ -26,4 +26,4 @@ test-results/
 .worktrees/
 
 # Ignore scratch files
-scratch.ts
+scripts/scratch.ts
