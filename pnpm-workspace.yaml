@@ -1,4 +1,6 @@
-ignoredBuiltDependencies:
+catalog:
+  vite: npm:@voidzero-dev/vite-plus-core@latest
+  vite-plus: ^0.1.19
 
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
@@ -24,9 +26,6 @@ onlyBuiltDependencies:
   - prisma
   - protobufjs
   - sharp
-catalog:
-  vite: npm:@voidzero-dev/vite-plus-core@latest
-  vite-plus: latest
 overrides:
   vite: "catalog:"
 peerDependencyRules:
