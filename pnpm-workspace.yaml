@@ -17,4 +17,5 @@ onlyBuiltDependencies:
   - esbuild
   - msw
   - prisma
+  - protobufjs
   - sharp

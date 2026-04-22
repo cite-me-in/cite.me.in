@@ -1,3 +1,4 @@
+import path from "node:path";
 import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { type UserConfig, defineConfig, mergeConfig } from "vite";
@@ -9,6 +10,14 @@ export default defineConfig(async (config) =>
       sourcemap: true,
     },
     resolve: {
+      alias: {
+        "@tailwindcss/typography": path.resolve(
+          "node_modules/@tailwindcss/typography/src/index.js",
+        ),
+        "@tailwindcss/forms": path.resolve(
+          "node_modules/@tailwindcss/forms/src/index.js",
+        ),
+      },
       dedupe: ["react", "react-dom", "react-router"],
     },
     plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
