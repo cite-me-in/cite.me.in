@@ -1,34 +1,20 @@
-import { generateRemixSitemap } from "@forge42/seo-tools/remix/sitemap";
+import envVars from "~/lib/envVars.server";
 
 export async function loader() {
-  const sitemap = await generateRemixSitemap({
-    domain: import.meta.env.VITE_APP_URL,
-    ignore: ["*/\\*", "/error", "/.well-known/*"],
-    routes,
-  });
-  return new Response(sitemap, {
+  const baseUrl = envVars.VITE_APP_URL;
+  const sitemaps = [
+    new URL("/sitemap-main.xml", baseUrl).toString(),
+    "https://blog.cite.me.in/sitemap-0.xml",
+  ];
+
+  const xml = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...sitemaps.map((loc) => `  <sitemap><loc>${loc}</loc></sitemap>`),
+    "</sitemapindex>",
+  ].join("\n");
+
+  return new Response(xml, {
     headers: { "Content-Type": "application/xml" },
   });
 }
-
-const routes = {
-  "/": { id: "routes/home/route.tsx", module: "home", path: "/" },
-  "/faq": { id: "routes/faq/route.tsx", module: "faq", path: "/faq" },
-  "/about": { id: "routes/about/route.tsx", module: "about", path: "/about" },
-  "/privacy": {
-    id: "routes/privacy/route.tsx",
-    module: "privacy",
-    path: "/privacy",
-  },
-  "/terms": { id: "routes/terms/route.tsx", module: "terms", path: "/terms" },
-  "/docs": {
-    id: "routes/docs/route.tsx",
-    module: "docs",
-    path: "/docs",
-  },
-  "/pricing": {
-    id: "routes/pricing/route.tsx",
-    module: "pricing",
-    path: "/pricing",
-  },
-};

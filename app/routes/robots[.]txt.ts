@@ -22,7 +22,6 @@ export async function loader() {
       sitemap: [
         new URL("/sitemap.xml", envVars.VITE_APP_URL).toString(),
         new URL("/sitemap.txt", envVars.VITE_APP_URL).toString(),
-        "https://blog.cite.me.in/sitemap-0.xml",
       ],
     },
     { userAgent: "anthropic-ai", allow: ["/"] },
