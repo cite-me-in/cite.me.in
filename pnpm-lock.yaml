@@ -7,7 +7,7 @@ settings:
 catalogs:
   default:
     vite-plus:
-      specifier: latest
+      specifier: ^0.1.19
       version: 0.1.19
 
 importers:
@@ -154,8 +154,8 @@ importers:
         version: 5.4.6(zod@4.3.6)
     devDependencies:
       '@infisical/cli':
-        specifier: ^0.43.76
-        version: 0.43.76
+        specifier: ^0.43.77
+        version: 0.43.77
       '@inquirer/prompts':
         specifier: ^8.4.2
         version: 8.4.2(@types/node@25.6.0)
@@ -1027,8 +1027,8 @@ packages:
   '@iconify/utils@3.1.0':
     resolution: {integrity: sha512-Zlzem1ZXhI1iHeeERabLNzBHdOa4VhQbqAcOQaMKuTuyZCpwKbC2R4Dd0Zo3g9EAc+Y4fiarO8HIHRAth7+skw==}
 
-  '@infisical/cli@0.43.76':
-    resolution: {integrity: sha512-kuM0/r5ooLe4D7h9niq49AZZFwisy7RFEFGip/g5rznj6BJb4FYUUb1Op4YmDF0s1jViyHBpZYEGVQ/d5BAGWg==}
+  '@infisical/cli@0.43.77':
+    resolution: {integrity: sha512-KRvP8LbqqTLa4v9YW3sC0PDEJAKTEvxvgVIJJaI/lq/GLHcPKeqNWiUF9UcyveXzj7vk4909+BRajn6gCCiQFA==}
     hasBin: true
 
   '@inquirer/ansi@2.0.5':
@@ -4481,8 +4481,8 @@ packages:
   effect@3.20.0:
     resolution: {integrity: sha512-qMLfDJscrNG8p/aw+IkT9W7fgj50Z4wG5bLBy0Txsxz8iUHjDIkOgO3SV0WZfnQbNG2VJYb0b+rDLMrhM4+Krw==}
 
-  electron-to-chromium@1.5.341:
-    resolution: {integrity: sha512-1sZTssferjgDgaqRTc0ieP+ozzpOy7LQTPTtEW3yQFn4+ORdIAZWV5BthXPyHF7YqLvFJCUPhNhdAJQYlYUgiw==}
+  electron-to-chromium@1.5.342:
+    resolution: {integrity: sha512-GTuy59SdGxYgz+HN8KwOjFAVF2gfoKEmv0PFholcvVtbI9GPDND0m6ynGX3gAKOavcHRLrcfNy0QMbHbAemYdw==}
 
   emoji-regex@10.6.0:
     resolution: {integrity: sha512-toUI84YS5YmxW219erniWD0CIVOo46xGKColeNQRgOzDorgBi1v4D71/OFzgD9GO2UGKIv1C3Sp8DAn0+j5w7A==}
@@ -7998,7 +7998,7 @@ snapshots:
       '@iconify/types': 2.0.0
       mlly: 1.8.2
 
-  '@infisical/cli@0.43.76':
+  '@infisical/cli@0.43.77':
     dependencies:
       tar: 6.2.1
       yauzl: 3.3.0
@@ -10772,7 +10772,7 @@ snapshots:
     dependencies:
       baseline-browser-mapping: 2.10.20
       caniuse-lite: 1.0.30001788
-      electron-to-chromium: 1.5.341
+      electron-to-chromium: 1.5.342
       node-releases: 2.0.37
       update-browserslist-db: 1.2.3(browserslist@4.28.2)
 
@@ -11349,7 +11349,7 @@ snapshots:
       '@standard-schema/spec': 1.1.0
       fast-check: 3.23.2
 
-  electron-to-chromium@1.5.341: {}
+  electron-to-chromium@1.5.342: {}
 
   emoji-regex@10.6.0: {}
 

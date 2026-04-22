@@ -12,9 +12,8 @@
     "test:db:push": "infisical --env dev run -- pnpm prisma db push",
     "prod:db:push": "infisical --env prod run -- pnpm prisma db push",
     "test:reset": "rm -rf __screenshots__/*",
-    "test": "pnpm run check && pnpm test:db:push && pnpm test:reset && pnpm --expose-gc --max-old-space-size=3096 vp test run && playwright test",
-    "upgrade": "./scripts/upgrade.sh",
-    "prepare": "vp config"
+    "test": "pnpm run check && pnpm test:db:push && pnpm test:reset && vp test run && playwright test",
+    "upgrade": "./scripts/upgrade.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.90.0",
@@ -65,7 +64,7 @@
     "zod-openapi": "^5.4.6"
   },
   "devDependencies": {
-    "@infisical/cli": "^0.43.76",
+    "@infisical/cli": "^0.43.77",
     "@inquirer/prompts": "^8.4.2",
     "@playwright/test": "^1.59.1",
     "@react-router/dev": "^7.14.2",

@@ -107,7 +107,7 @@ jobs:
           file-output-path: "/.env"
 
       - name: Run Tests
-        run: pnpm --expose-gc vp test run
+        run: pnpm vp test --expose-gc --max-old-space-size=3096 run
 
       - name: Run Playwright Tests
         if: github.ref == 'refs/heads/not-main'

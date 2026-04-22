@@ -1,5 +1,5 @@
 catalog:
-  vite-plus: latest
+  vite-plus: ^0.1.19
 
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
