@@ -1,35 +1,61 @@
 import path from "node:path";
 import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
-import { type UserConfig, defineConfig, mergeConfig } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
 
-export default defineConfig(async (config) =>
-  mergeConfig(config, {
-    build: {
-      sourcemap: true,
+export default {
+  build: {
+    sourcemap: true,
+  },
+  resolve: {
+    alias: {
+      "@tailwindcss/typography": path.resolve(
+        "node_modules/@tailwindcss/typography/src/index.js",
+      ),
+      "@tailwindcss/forms": path.resolve(
+        "node_modules/@tailwindcss/forms/src/index.js",
+      ),
     },
-    resolve: {
-      alias: {
-        "@tailwindcss/typography": path.resolve(
-          "node_modules/@tailwindcss/typography/src/index.js",
-        ),
-        "@tailwindcss/forms": path.resolve(
-          "node_modules/@tailwindcss/forms/src/index.js",
-        ),
-      },
-      dedupe: ["react", "react-dom", "react-router"],
+    dedupe: ["react", "react-dom", "react-router"],
+    tsconfigPaths: true,
+  },
+  plugins: [tailwindcss(), reactRouter()],
+  ssr: {
+    noExternal: ["streamdown"],
+  },
+  server: {
+    allowedHosts: [".ngrok-free.app"],
+  },
+  staged: {
+    "*.{ts,tsx}": "vp check --fix",
+  },
+  lint: {
+    ignorePatterns: [
+      "__screenshots__",
+      "build",
+      "docs",
+      "node_modules",
+      "prisma/generated",
+    ],
+    rules: {
+      eqeqeq: "warn",
+      "no-console": ["error", { allow: ["assert", "error", "info", "warn"] }],
+      "no-unused-expressions": "error",
+      "no-useless-rename": "error",
+      "prefer-const": ["error", { ignoreReadBeforeAssign: true }],
+      "typescript/no-unsafe-declaration-merging": "error",
+      "typescript/prefer-as-const": "error",
     },
-    plugins: [tailwindcss(), reactRouter(), tsconfigPaths()],
-    ssr: {
-      noExternal: [
-        // NOTE: recommended by the Streamdown docs
-        // @see https://streamdown.ai/docs/faq#why-do-i-get-a-css-loading-error-when-using-streamdown-with-vite-ssr
-        "streamdown",
-      ],
-    },
-    server: {
-      allowedHosts: [".ngrok-free.app"],
-    },
-  } satisfies UserConfig),
-);
+  },
+  fmt: {
+    ignorePatterns: [
+      "__screenshots__",
+      "build",
+      "docs",
+      "node_modules",
+      "prisma/generated",
+    ],
+    printWidth: 80,
+    sortImports: { newlinesBetween: false },
+    sortTailwindcss: true,
+  },
+} satisfies import("vite-plus").UserConfig;

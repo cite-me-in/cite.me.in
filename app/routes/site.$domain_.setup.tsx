@@ -74,7 +74,6 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
   );
 
   // Auto-scroll log to bottom when new lines arrive.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: lines triggers the scroll; logRef is stable
   useEffect(() => {
     logRef.current?.scrollTo({
       top: logRef.current.scrollHeight,
@@ -114,13 +113,12 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
         <CardContent>
           <pre
             ref={logRef}
-            className="h-96 overflow-y-auto whitespace-break-spaces rounded border border-border bg-muted p-4 font-mono text-foreground/60 text-sm leading-relaxed"
+            className="border-border bg-muted text-foreground/60 h-96 overflow-y-auto rounded border p-4 font-mono text-sm leading-relaxed whitespace-break-spaces"
           >
             {lines.length === 0 && !done && (
               <span className="text-foreground/40">Starting…</span>
             )}
             {lines.map((line, i) => (
-              // biome-ignore lint/suspicious/noArrayIndexKey: lines are append-only, index is stable
               <div key={i}>{line}</div>
             ))}
             {done && (

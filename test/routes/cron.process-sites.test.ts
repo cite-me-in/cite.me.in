@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vite-plus/test";
 import { daysAgo, hoursAgo } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
 import { port } from "../helpers/launchBrowser";

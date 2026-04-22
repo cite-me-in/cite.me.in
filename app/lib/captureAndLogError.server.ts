@@ -1,12 +1,12 @@
 import { createWriteStream } from "node:fs";
-import { Logtail } from "@logtail/node";
 import { resolve } from "node:path";
+import { Logtail } from "@logtail/node";
 import {
   captureException as sentryCaptureException,
   type ExclusiveEventHintOrCaptureContext,
 } from "@sentry/react-router";
-import envVars from "./envVars.server";
 import debug from "debug";
+import envVars from "./envVars.server";
 
 const logFile =
   process.env.NODE_ENV === "test" &&

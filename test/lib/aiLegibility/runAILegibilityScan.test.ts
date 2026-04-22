@@ -7,7 +7,7 @@ import {
   expect,
   it,
   vi,
-} from "vitest";
+} from "vite-plus/test";
 import runAILegibilityScan from "~/lib/aiLegibility/runAILegibilityScan";
 import msw from "~/test/mocks/msw";
 import { failingSite, partialSite, passingSite } from "./fixtures";

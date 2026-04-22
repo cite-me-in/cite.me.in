@@ -1,7 +1,7 @@
-import { normalizeDomain } from "./isSameDomain";
 import { Temporal } from "@js-temporal/polyfill";
-import captureAndLogError from "./captureAndLogError.server";
 import prisma from "~/lib/prisma.server";
+import captureAndLogError from "./captureAndLogError.server";
+import { normalizeDomain } from "./isSameDomain";
 
 type BotClass = "retrieval" | "search_indexing" | "training" | "other";
 
@@ -33,7 +33,11 @@ const BOT_PATTERNS: {
   { botClass: "other", pattern: /bytespider/i, type: "ByteDance" },
   { botClass: "retrieval", pattern: /chatgpt-user/i, type: "ChatGPT User" },
   { botClass: "other", pattern: /chrome-lighthouse/i, type: "Lighthouse" },
-  { botClass: "search_indexing", pattern: /claude-searchbot/i, type: "Claude Search" },
+  {
+    botClass: "search_indexing",
+    pattern: /claude-searchbot/i,
+    type: "Claude Search",
+  },
   { botClass: "retrieval", pattern: /claude-user/i, type: "Claude User" },
   { botClass: "training", pattern: /claudebot/i, type: "Claude Bot" },
   { botClass: "other", pattern: /curl/i, type: "cURL" },
@@ -52,12 +56,32 @@ const BOT_PATTERNS: {
   { botClass: "other", pattern: /linkedinbot/i, type: "LinkedIn" },
   { botClass: "retrieval", pattern: /manus-user/i, type: "Manus User" },
   { botClass: "training", pattern: /meta-externalagent/i, type: "Meta Agent" },
-  { botClass: "retrieval", pattern: /meta-externalfetcher/i, type: "Meta Fetcher" },
-  { botClass: "retrieval", pattern: /meta-webindexer/i, type: "Meta WebIndexer" },
+  {
+    botClass: "retrieval",
+    pattern: /meta-externalfetcher/i,
+    type: "Meta Fetcher",
+  },
+  {
+    botClass: "retrieval",
+    pattern: /meta-webindexer/i,
+    type: "Meta WebIndexer",
+  },
   { botClass: "other", pattern: /mj12bot/i, type: "MajesticBot" },
-  { botClass: "search_indexing", pattern: /oai-searchbot/i, type: "OpenAI Search" },
-  { botClass: "retrieval", pattern: /perplexity-user/i, type: "Perplexity User" },
-  { botClass: "search_indexing", pattern: /perplexitybot/i, type: "Perplexity Bot" },
+  {
+    botClass: "search_indexing",
+    pattern: /oai-searchbot/i,
+    type: "OpenAI Search",
+  },
+  {
+    botClass: "retrieval",
+    pattern: /perplexity-user/i,
+    type: "Perplexity User",
+  },
+  {
+    botClass: "search_indexing",
+    pattern: /perplexitybot/i,
+    type: "Perplexity Bot",
+  },
   { botClass: "other", pattern: /phantomjs/i, type: "PhantomJS" },
   { botClass: "other", pattern: /pingdom/i, type: "Pingdom" },
   { botClass: "other", pattern: /python-requests/i, type: "Python Requests" },
@@ -157,7 +181,12 @@ export default async function recordBotVisit({
     return { tracked: true };
   } catch (error) {
     captureAndLogError(error, {
-      extra: { botClass: classification.botClass, botType: classification.type, url, userAgent },
+      extra: {
+        botClass: classification.botClass,
+        botType: classification.type,
+        url,
+        userAgent,
+      },
     });
     return { tracked: false, reason: "db error" };
   }

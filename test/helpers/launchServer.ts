@@ -1,7 +1,7 @@
-import { ms } from "convert";
-import debug from "debug";
 import { type ChildProcess, fork } from "node:child_process";
 import { resolve } from "node:path";
+import { ms } from "convert";
+import debug from "debug";
 import { sleep } from "radashi";
 
 let worker: ChildProcess | undefined;

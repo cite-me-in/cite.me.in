@@ -150,7 +150,7 @@ function CitationTrendsChart({
             width="520"
             data-slot="chart"
           />
-          <Text className="mt-2 text-center text-light text-sm">
+          <Text className="text-light mt-2 text-center text-sm">
             — This week &nbsp;&nbsp; - - Previous week
           </Text>
         </Column>
@@ -208,7 +208,7 @@ function TopQueries({
     >
       <table>
         <thead>
-          <tr className="text-center text-light text-xs uppercase tracking-wide">
+          <tr className="text-light text-center text-xs tracking-wide uppercase">
             <th className="p-4">Query</th>
             <th className="p-4">Citations</th>
             <th className="p-4">Change</th>

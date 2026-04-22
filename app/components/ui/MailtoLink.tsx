@@ -36,7 +36,8 @@ const mailtoLinkVariants = cva(
 );
 
 interface MailtoLinkProps
-  extends React.AnchorHTMLAttributes<HTMLAnchorElement>,
+  extends
+    React.AnchorHTMLAttributes<HTMLAnchorElement>,
     VariantProps<typeof mailtoLinkVariants> {
   email: string;
   subject?: string;

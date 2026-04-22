@@ -145,7 +145,7 @@ export default function SiteQueriesPage({ loaderData }: Route.ComponentProps) {
         }}
       />
 
-      <p className="text-base text-foreground/60">
+      <p className="text-foreground/60 text-base">
         These queries are run against AI platforms to check where your site is
         cited. Organize them into groups by topic or intent (e.g.{" "}
         <code className="font-mono">1. discovery</code>,{" "}
@@ -156,9 +156,9 @@ export default function SiteQueriesPage({ loaderData }: Route.ComponentProps) {
 
       <div className="space-y-4">
         {groups.length === 0 ? (
-          <div className="rounded-base border-2 border-black bg-secondary-background p-12 text-center shadow-shadow">
-            <p className="mb-2 font-bold text-xl">No queries yet</p>
-            <p className="text-base text-foreground/60">
+          <div className="rounded-base bg-secondary-background shadow-shadow border-2 border-black p-12 text-center">
+            <p className="mb-2 text-xl font-bold">No queries yet</p>
+            <p className="text-foreground/60 text-base">
               Add groups and queries to track your citation visibility across AI
               platforms.
             </p>

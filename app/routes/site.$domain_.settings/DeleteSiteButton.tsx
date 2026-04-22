@@ -57,7 +57,7 @@ export default function DeleteSiteButton({
           </DialogDescription>
         </DialogHeader>
 
-        <p className="mb-4 text-foreground/60 text-sm">
+        <p className="text-foreground/60 mb-4 text-sm">
           Type the domain name below to confirm deletion:
         </p>
 

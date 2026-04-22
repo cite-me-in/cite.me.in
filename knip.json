@@ -5,9 +5,10 @@
     "app/components/ui/*.tsx",
     "app/emails/sendEmails.tsx",
     "app/global.css",
+    "scripts/*",
+    "test/**/*.ts",
     "test/helpers/serverWorker.ts",
-    "vercel.ts",
-    "scripts/*"
+    "vercel.ts"
   ],
   "project": [
     "app/**/*.ts",

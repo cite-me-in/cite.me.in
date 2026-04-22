@@ -1,4 +1,4 @@
-import { beforeAll } from "vitest";
+import { beforeAll } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
 import { resetRateLimit } from "~/lib/rateLimit.server";
 import { port } from "~/test/helpers/launchBrowser";

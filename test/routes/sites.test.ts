@@ -1,5 +1,5 @@
 import { type Locator, type Page, expect } from "@playwright/test";
-import { afterAll, beforeAll, describe, it } from "vitest";
+import { afterAll, beforeAll, describe, it } from "vite-plus/test";
 import { hashPassword } from "~/lib/auth.server";
 import type { HTMLNode } from "~/lib/html/HTMLNode";
 import { modifyElements, removeElements } from "~/lib/html/parseHTML";

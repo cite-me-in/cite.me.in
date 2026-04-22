@@ -40,7 +40,7 @@ export default function RelatedCitations({
         <div className="space-y-4">
           {directCount > 0 && (
             <div>
-              <h4 className="mb-2 flex items-center gap-2 font-medium text-foreground text-sm">
+              <h4 className="text-foreground mb-2 flex items-center gap-2 text-sm font-medium">
                 Direct Citations
                 <Badge variant="green">1 pt each</Badge>
               </h4>
@@ -70,7 +70,7 @@ export default function RelatedCitations({
           )}
           {indirect.length > 0 && (
             <div>
-              <h4 className="mb-2 flex items-center gap-2 font-medium text-foreground text-sm">
+              <h4 className="text-foreground mb-2 flex items-center gap-2 text-sm font-medium">
                 Indirect Citations
                 <Badge variant="neutral">0.5 pts each</Badge>
               </h4>

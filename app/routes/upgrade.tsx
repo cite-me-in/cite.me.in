@@ -47,14 +47,14 @@ export default function UpgradePage() {
   return (
     <Main>
       <div className="mx-auto max-w-lg py-16">
-        <h1 className="mb-2 font-heading text-4xl">Upgrade to Pro</h1>
-        <p className="mb-10 text-foreground/70">
+        <h1 className="font-heading mb-2 text-4xl">Upgrade to Pro</h1>
+        <p className="text-foreground/70 mb-10">
           25 days free, no credit card. Most tools give you a week — we give you
           enough time to actually see results. When you're ready, $
           {prices.monthlyAmount}/mo keeps it all running.
         </p>
 
-        <div className="mb-6 rounded-base border-2 border-black p-8 shadow-[4px_4px_0px_0px_black]">
+        <div className="rounded-base mb-6 border-2 border-black p-8 shadow-[4px_4px_0px_0px_black]">
           <div className="mb-6 flex items-start justify-between">
             <div>
               <h2 className="font-heading text-2xl">Pro</h2>
@@ -65,7 +65,7 @@ export default function UpgradePage() {
             <div className="text-right">
               <p className="font-heading text-3xl">
                 ${prices.monthlyAmount}
-                <span className="font-normal text-base">/mo</span>
+                <span className="text-base font-normal">/mo</span>
               </p>
               <p className="text-foreground/60 text-sm">
                 or ${prices.annualAmount}/year (save ${prices.annualSavings})
@@ -100,12 +100,12 @@ export default function UpgradePage() {
           </div>
         </div>
 
-        <p className="text-center text-foreground/60 text-sm">
+        <p className="text-foreground/60 text-center text-sm">
           cite.me.in is built by one person. Your ${prices.monthlyAmount}/mo is
           what keeps it independent, updated, and not acquired by someone with
           an alt product vision.
         </p>
-        <p className="mt-2 text-center text-foreground/60 text-sm">
+        <p className="text-foreground/60 mt-2 text-center text-sm">
           cite.me.in is open-source. If we ever shut down, you take the code and
           run it yourself.
         </p>

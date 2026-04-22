@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
 
 vi.mock("~/lib/citingPageHealth.server", () => ({

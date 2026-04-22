@@ -117,7 +117,7 @@ export default function Authorize({ loaderData }: Route.ComponentProps) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <div className="w-full max-w-md rounded-lg bg-white p-8 shadow">
-        <h1 className="mb-4 font-bold text-2xl">Authorize {client.name}</h1>
+        <h1 className="mb-4 text-2xl font-bold">Authorize {client.name}</h1>
         <p className="mb-6 text-gray-600">
           This application is requesting access to your account with the
           following permissions:

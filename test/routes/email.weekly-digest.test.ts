@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { beforeAll, describe, it, vi } from "vitest";
+import { beforeAll, describe, it, vi } from "vite-plus/test";
 import { getLastEmailSent } from "~/emails/sendEmails";
 import { sendSiteDigestEmails } from "~/emails/WeeklyDigest";
 import envVars from "~/lib/envVars.server";

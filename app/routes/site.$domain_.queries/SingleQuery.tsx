@@ -3,8 +3,8 @@ import { useState } from "react";
 import { useFetcher } from "react-router";
 import { Alert, AlertTitle } from "~/components/ui/Alert";
 import { Input } from "~/components/ui/Input";
-import TrashButton from "./TrashButton";
 import type { action } from "./route";
+import TrashButton from "./TrashButton";
 
 export default function SingleQuery({
   id,

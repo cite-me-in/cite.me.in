@@ -241,7 +241,7 @@ export default function parseHTMLTree(html: string): HTMLNode[] {
 
 function isSelfClosingTagString(tag: string): boolean {
   return (
-    /\/>$/.test(tag) ||
+    tag.endsWith("/>") ||
     /<(area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)[\s/>]/i.test(
       tag,
     )

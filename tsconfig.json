@@ -7,19 +7,19 @@
     "test/**/*.ts"
   ],
   "exclude": [
-    "__screenshots__",
+    "__screenshots__/**",
     ".claude",
     ".github",
     ".vercel",
     ".vscode",
-    "biome.json",
-    "build",
-    "node_modules",
+    "build/**",
+    "docs/**",
+    "node_modules/**",
     "package.json",
     "prisma/backup.sql",
     "prisma/generated",
-    "public",
-    "scripts"
+    "public/**",
+    "scripts/**"
   ],
   "compilerOptions": {
     "esModuleInterop": true,

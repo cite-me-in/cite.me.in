@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
 const mockCreate = vi.hoisted(() => vi.fn());
 
@@ -41,9 +41,8 @@ describe("queryPerplexity", () => {
       ],
     });
 
-    const { default: queryPerplexity } = await import(
-      "~/lib/llm-visibility/perplexityClient.server"
-    );
+    const { default: queryPerplexity } =
+      await import("~/lib/llm-visibility/perplexityClient.server");
 
     const result = await queryPerplexity({
       maxRetries: 0,
@@ -67,9 +66,8 @@ describe("queryPerplexity", () => {
       results: [],
     });
 
-    const { default: queryPerplexity } = await import(
-      "~/lib/llm-visibility/perplexityClient.server"
-    );
+    const { default: queryPerplexity } =
+      await import("~/lib/llm-visibility/perplexityClient.server");
 
     const result = await queryPerplexity({
       maxRetries: 0,
@@ -103,9 +101,8 @@ describe("queryPerplexity", () => {
       ],
     });
 
-    const { default: queryPerplexity } = await import(
-      "~/lib/llm-visibility/perplexityClient.server"
-    );
+    const { default: queryPerplexity } =
+      await import("~/lib/llm-visibility/perplexityClient.server");
 
     const result = await queryPerplexity({
       maxRetries: 0,

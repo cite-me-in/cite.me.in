@@ -1,6 +1,5 @@
 // DO NOT add to setup.ts as vitest.config.js cannot upload file that imports vitest
 
-import { expect } from "@playwright/test";
 import {
   access,
   constants,
@@ -9,6 +8,7 @@ import {
   writeFile,
 } from "node:fs/promises";
 import path, { dirname } from "node:path";
+import { expect } from "@playwright/test";
 import type { Locator, Page } from "playwright";
 import invariant from "tiny-invariant";
 import diffHTMLs from "~/lib/html/diffHTMLs";

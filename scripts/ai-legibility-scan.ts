@@ -17,9 +17,9 @@ if (!url) {
 const scanId = crypto.randomUUID();
 
 async function main() {
-  console.log(`Scanning ${url}...`);
-  console.log(`Scan ID: ${scanId}`);
-  console.log("");
+  console.info(`Scanning ${url}...`);
+  console.info(`Scan ID: ${scanId}`);
+  console.info();
 
   const site = await prisma.site.findFirst({
     where: { domain: normalizeDomain(url) },
@@ -34,7 +34,11 @@ async function main() {
 
   await setStatus({ domain: site.domain, status: "running" });
 
-  const { result } = await runAILegibilityScan({ site, user });
+  const { result } = await runAILegibilityScan({
+    log: console.info,
+    site,
+    user,
+  });
 
   const suggestions = result?.suggestions;
   if (suggestions && suggestions.length > 0) {

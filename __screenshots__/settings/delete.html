@@ -1,7 +1,7 @@
 <div class="flex items-center justify-between gap-4">
   <div>
     <p>
-      <a class="block max-w-md truncate font-mono text-foreground/60 hover:underline" data-discover="true" href="/site/id" title="dashboard-test.com">
+      <a class="text-foreground/60 block max-w-md truncate font-mono hover:underline" data-discover="true" href="/site/id" title="dashboard-test.com">
         dashboard-test.com
       </a>
     </p>
@@ -38,7 +38,7 @@
       </p>
       <div class="space-y-2">
         <div class="flex items-center justify-between">
-          <h3 class="font-bold text-sm">
+          <h3 class="text-sm font-bold">
             Tracking Script
           </h3>
           <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-black bg-[hsl(120,100%,97%)] text-black shadow-[3px_3px_0px_0px_black] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] h-10 rounded-sm px-4 text-xs" type="button">
@@ -52,7 +52,7 @@
             Copy script
           </button>
         </div>
-        <pre class="overflow-x-auto rounded-base border-2 border-black bg-[hsl(60,100%,99%)] p-4 font-mono text-xs leading-relaxed">
+        <pre class="rounded-base overflow-x-auto border-2 border-black bg-[hsl(60,100%,99%)] p-4 font-mono text-xs leading-relaxed">
           &amp;lt;script defer crossorigin="anonymous" src="http://localhost:9222/pixel.js?key=test-api-key-sites-dashboard" /&amp;gt;
         </pre>
       </div>
@@ -70,7 +70,7 @@
           <span class="font-mono text-sm">
             sites-test@example.com
           </span>
-          <span class="rounded-base border-2 border-black bg-[#F59E0B] px-2 py-0.5 font-bold text-xs">
+          <span class="rounded-base border-2 border-black bg-[#F59E0B] px-2 py-0.5 text-xs font-bold">
             Owner
           </span>
         </li>
@@ -85,7 +85,7 @@
     </div>
     <div class="px-6" data-slot="card-content">
       <form action="/site/dashboard-test.com/invite" class="flex gap-3" data-discover="true" method="post">
-        <input class="flex h-12 w-full rounded-base font-medium text-black shadow-[2px_2px_0px_0px_black] transition-all duration-100 file:border-0 file:bg-transparent file:font-medium file:text-black placeholder:text-gray-600 focus-visible:translate-x-[-2px] focus-visible:translate-y-[-2px] focus-visible:shadow-[4px_4px_0px_0px_black] focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50 flex-1 rounded-base border-2 border-black bg-white px-4 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#F59E0B]" name="email" placeholder="colleague@example.com" required type="email" />
+        <input class="flex h-12 w-full rounded-base font-medium text-black shadow-[2px_2px_0px_0px_black] transition-all duration-100 file:border-0 file:bg-transparent file:font-medium file:text-black placeholder:text-gray-600 focus-visible:translate-x-[-2px] focus-visible:translate-y-[-2px] focus-visible:shadow-[4px_4px_0px_0px_black] focus-visible:outline-none disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-50 rounded-base flex-1 border-2 border-black bg-white px-4 py-2 font-mono text-sm focus:ring-2 focus:ring-[#F59E0B] focus:outline-none" name="email" placeholder="colleague@example.com" required type="email" />
         <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold text-base transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-black bg-[hsl(120,100%,97%)] text-black shadow-[3px_3px_0px_0px_black] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] h-12 px-6 py-3" type="submit">
           Send Invite
         </button>

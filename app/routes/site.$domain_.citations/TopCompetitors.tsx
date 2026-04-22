@@ -39,7 +39,7 @@ export default function TopCompetitors({
       </CardHeader>
 
       <CardContent>
-        <div className="mb-4 border-border/20 border-t-2 border-b-2 py-3">
+        <div className="border-border/20 mb-4 border-t-2 border-b-2 py-3">
           <div className="flex items-center justify-between gap-4">
             <div className="flex flex-col gap-1">
               <span className="font-medium">Your share of voice</span>

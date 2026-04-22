@@ -54,7 +54,7 @@ export async function checkUsageLimits(siteId: string): Promise<void> {
     monthly: envVars.USAGE_LIMIT_COST_USD_MONTHLY ?? 0,
   };
 
-  const hasAnyCostLimit = Object.values(costLimits).some((v) => v != null);
+  const hasAnyCostLimit = Object.values(costLimits).some((v) => v !== null);
   if (!requestLimits && !hasAnyCostLimit) return;
 
   const now = new Date();

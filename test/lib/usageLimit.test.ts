@@ -1,10 +1,10 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
-import UsageLimitExceededError from "~/lib/usage/UsageLimitExceededError";
 import {
   checkUsageLimits,
   recordUsageEvent,
 } from "~/lib/usage/usageLimit.server";
+import UsageLimitExceededError from "~/lib/usage/UsageLimitExceededError";
 
 const SITE_ID = "test-usage-site-1";
 

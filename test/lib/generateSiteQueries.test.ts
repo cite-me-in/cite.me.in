@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
 import type { Site } from "~/prisma";
 
@@ -55,9 +55,8 @@ describe("generateSiteQueries", () => {
       content: [{ type: "text", text: JSON.stringify(MOCK_QUERIES) }],
     });
 
-    const { default: generateSiteQueries } = await import(
-      "~/lib/llm-visibility/generateSiteQueries"
-    );
+    const { default: generateSiteQueries } =
+      await import("~/lib/llm-visibility/generateSiteQueries");
 
     const suggestions = await generateSiteQueries(site.id);
     expect(suggestions).toHaveLength(9);
@@ -69,9 +68,8 @@ describe("generateSiteQueries", () => {
   it("should propagate errors from API", async () => {
     mockCreate.mockRejectedValue(new Error("API error"));
 
-    const { default: generateSiteQueries } = await import(
-      "~/lib/llm-visibility/generateSiteQueries"
-    );
+    const { default: generateSiteQueries } =
+      await import("~/lib/llm-visibility/generateSiteQueries");
 
     await expect(generateSiteQueries(site.id)).rejects.toThrow("API error");
   });

@@ -35,7 +35,7 @@ export default function ProfileApiKeyForm({
         {data && "error" in data && data.error && (
           <FieldError className="text-lg">{data.error}</FieldError>
         )}
-        <p className="flex items-center gap-2 text-foreground/70 text-sm">
+        <p className="text-foreground/70 flex items-center gap-2 text-sm">
           <PointerIcon className="size-4" />
           Click text field to copy API key to clipboard.
         </p>

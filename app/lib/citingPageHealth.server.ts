@@ -1,5 +1,5 @@
-import debug from "debug";
 import { createHash } from "node:crypto";
+import debug from "debug";
 
 const logger = debug("server");
 

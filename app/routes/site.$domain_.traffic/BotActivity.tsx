@@ -76,7 +76,9 @@ export default function BotActivity({
                   <TableRow className="bg-muted/50">
                     <TableCell colSpan={3} className="py-2">
                       <div className="flex items-center gap-2">
-                        <Badge variant={cls === "retrieval" ? "default" : "neutral"}>
+                        <Badge
+                          variant={cls === "retrieval" ? "default" : "neutral"}
+                        >
                           {info.label}
                         </Badge>
                         <span className="text-muted-foreground text-xs">
@@ -93,7 +95,9 @@ export default function BotActivity({
                       <TableCell className="text-right">
                         {row.total.toLocaleString()}
                       </TableCell>
-                      <TableCell className="text-right">{row.uniquePaths}</TableCell>
+                      <TableCell className="text-right">
+                        {row.uniquePaths}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </Fragment>

@@ -1,9 +1,9 @@
-import { Logtail } from "@logtail/node";
-import { logger as sentry } from "@sentry/react-router";
-import debug from "debug";
 import { createWriteStream } from "node:fs";
 import { resolve } from "node:path";
 import { format, styleText } from "node:util";
+import { Logtail } from "@logtail/node";
+import { logger as sentry } from "@sentry/react-router";
+import debug from "debug";
 import envVars from "./envVars.server";
 
 const colors = {
@@ -63,4 +63,4 @@ for (const level of ["debug", "error", "info", "log", "trace", "warn"]) {
 }
 
 // Override debug.log to use console.log so we get the same general benefits
-debug.log = console.log;
+debug.log = console.info;

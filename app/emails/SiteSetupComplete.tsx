@@ -71,11 +71,11 @@ function SiteSetupComplete({
 }) {
   return (
     <Section>
-      <Text className="my-4 text-base text-text leading-relaxed">
+      <Text className="text-text my-4 text-base leading-relaxed">
         Your site <strong>{domain}</strong> has been set up on cite.me.in.
       </Text>
 
-      <Text className="my-4 text-base text-text leading-relaxed">
+      <Text className="text-text my-4 text-base leading-relaxed">
         We've crawled your site, generated search queries, and checked how
         ChatGPT, Claude, and Gemini cite you. Here's what we found.
       </Text>
@@ -90,7 +90,7 @@ function SiteSetupComplete({
       <TopCompetitors competitors={metrics.competitors} />
       <BrandReminderCard domain={domain} citations={metrics.totalCitations} />
 
-      <Text className="my-4 text-base text-text leading-relaxed">
+      <Text className="text-text my-4 text-base leading-relaxed">
         Best regards,
         <br />
         The Cite.me.in Team
@@ -113,7 +113,7 @@ function SetupTopQueries({
     >
       <table>
         <thead>
-          <tr className="text-center text-light text-xs uppercase tracking-wide">
+          <tr className="text-light text-center text-xs tracking-wide uppercase">
             <th className="p-4">Query</th>
             <th className="p-4">Citations</th>
           </tr>

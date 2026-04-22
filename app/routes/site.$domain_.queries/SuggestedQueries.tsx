@@ -81,7 +81,7 @@ function AllSuggestions({
     <Card variant="yellow">
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between">
-          <p className="font-semibold text-base">Suggested queries</p>
+          <p className="text-base font-semibold">Suggested queries</p>
           <Button
             variant="ghost"
             size="sm"
@@ -97,7 +97,7 @@ function AllSuggestions({
           if (items.length === 0) return null;
           return (
             <div key={group} className="space-y-1">
-              <p className="text-base text-foreground/50 uppercase tracking-wide">
+              <p className="text-foreground/50 text-base tracking-wide uppercase">
                 {group}
               </p>
               <ul className="space-y-2">
@@ -123,7 +123,7 @@ function SingleSuggestion({
 
   return (
     <li className="flex items-center gap-2 text-base">
-      <span className="flex-1 text-foreground/80">{suggestion.query}</span>
+      <span className="text-foreground/80 flex-1">{suggestion.query}</span>
       <Button
         variant="outline"
         size="sm"
@@ -144,7 +144,7 @@ function SingleSuggestion({
         {added ? (
           "Added"
         ) : addFetcher.state !== "idle" ? (
-          <div className="h-3 w-3 animate-spin rounded-full border border-foreground/20 border-t-foreground" />
+          <div className="border-foreground/20 border-t-foreground h-3 w-3 animate-spin rounded-full border" />
         ) : (
           <PlusIcon className="h-3 w-3" />
         )}

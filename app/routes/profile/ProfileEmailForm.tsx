@@ -37,7 +37,7 @@ export default function ProfileEmailForm({
           <FieldError className="text-lg">{data.error}</FieldError>
         )}
         {data?.success && (
-          <p className="text-lg text-success">{data.success}</p>
+          <p className="text-success text-lg">{data.success}</p>
         )}
         <Button type="submit" disabled={fetcher.state !== "idle"}>
           Update email

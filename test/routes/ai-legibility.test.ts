@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { beforeAll, describe, it } from "vitest";
+import { beforeAll, describe, it } from "vite-plus/test";
 import sendAiLegibilityReport from "~/emails/AiLegibilityReport";
 import { getLastEmailSent } from "~/emails/sendEmails";
 import { appendLog, startNewScan } from "~/lib/aiLegibility/progress.server";
@@ -78,14 +78,14 @@ const SCAN_RESULT: ScanResult = {
       description:
         "Create a plain-text file at https://example.com/sitemap.txt with one URL per line listing all important pages on your site.",
       fixExample:
-        "# 1. robots.txt — add a Sitemap line:\nSitemap: https://example.com/sitemap.txt\n\n# 2. HTML <head> — add a link tag:\n<link rel=\"sitemap\" type=\"text/plain\" title=\"Sitemap\" href=\"/sitemap.txt\">\n\n# sitemap.txt content:\nhttps://example.com/\nhttps://example.com/about\nhttps://example.com/products",
+        '# 1. robots.txt — add a Sitemap line:\nSitemap: https://example.com/sitemap.txt\n\n# 2. HTML <head> — add a link tag:\n<link rel="sitemap" type="text/plain" title="Sitemap" href="/sitemap.txt">\n\n# sitemap.txt content:\nhttps://example.com/\nhttps://example.com/about\nhttps://example.com/products',
     },
     {
       title: "Add JSON-LD structured data",
       category: "important",
       effort: "15 min",
       description:
-        "Add a <script type=\"application/ld+json\"> block to your pages with schema.org structured data to help AI agents understand your content.",
+        'Add a <script type="application/ld+json"> block to your pages with schema.org structured data to help AI agents understand your content.',
     },
     {
       title: "Fix meta description",
@@ -101,7 +101,9 @@ describe("unauthenticated access", () => {
   it("should redirect to /sign-in", async () => {
     const response = await fetch(
       `http://localhost:${port}/site/example.com/ai-legibility`,
-      { redirect: "manual" },
+      {
+        redirect: "manual",
+      },
     );
     expect(response.status).toBe(302);
     expect(response.headers.get("location")).toContain("/sign-in");
@@ -201,9 +203,15 @@ describe("ai-legibility page - with report", () => {
   });
 
   it("should show summary cards", async () => {
-    await expect(reportPage.getByText("Critical", { exact: true })).toBeVisible();
-    await expect(reportPage.getByText("Important", { exact: true })).toBeVisible();
-    await expect(reportPage.getByText("Optimization", { exact: true })).toBeVisible();
+    await expect(
+      reportPage.getByText("Critical", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      reportPage.getByText("Important", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      reportPage.getByText("Optimization", { exact: true }),
+    ).toBeVisible();
   });
 
   it("should show critical checks passed", async () => {
@@ -224,12 +232,8 @@ describe("ai-legibility page - with report", () => {
     await expect(
       reportPage.getByText("Add llms.txt for AI discoverability"),
     ).toBeVisible();
-    await expect(
-      reportPage.getByText("Add sitemap.txt"),
-    ).toBeVisible();
-    await expect(
-      reportPage.getByText("Fix meta description"),
-    ).toBeVisible();
+    await expect(reportPage.getByText("Add sitemap.txt")).toBeVisible();
+    await expect(reportPage.getByText("Fix meta description")).toBeVisible();
   });
 
   it("should show run new scan button", async () => {
@@ -269,11 +273,26 @@ describe("ai-legibility page - scanning", () => {
     });
 
     await startNewScan({ domain: "scanning-example.com" });
-    await appendLog({ domain: "scanning-example.com", line: "Checking homepage content..." });
-    await appendLog({ domain: "scanning-example.com", line: "✓ Homepage has meaningful content (150+ characters)" });
-    await appendLog({ domain: "scanning-example.com", line: "Checking sitemap.xml..." });
-    await appendLog({ domain: "scanning-example.com", line: "✓ sitemap.xml found with valid XML structure" });
-    await appendLog({ domain: "scanning-example.com", line: "Checking robots.txt..." });
+    await appendLog({
+      domain: "scanning-example.com",
+      line: "Checking homepage content...",
+    });
+    await appendLog({
+      domain: "scanning-example.com",
+      line: "✓ Homepage has meaningful content (150+ characters)",
+    });
+    await appendLog({
+      domain: "scanning-example.com",
+      line: "Checking sitemap.xml...",
+    });
+    await appendLog({
+      domain: "scanning-example.com",
+      line: "✓ sitemap.xml found with valid XML structure",
+    });
+    await appendLog({
+      domain: "scanning-example.com",
+      line: "Checking robots.txt...",
+    });
 
     await signIn(user.id);
     scanningPage = await goto("/site/scanning-example.com/ai-legibility");
@@ -284,8 +303,12 @@ describe("ai-legibility page - scanning", () => {
   });
 
   it("should show scan log", async () => {
-    await expect(scanningPage.getByText("Checking homepage content...")).toBeVisible();
-    await expect(scanningPage.getByText("✓ Homepage has meaningful content")).toBeVisible();
+    await expect(
+      scanningPage.getByText("Checking homepage content..."),
+    ).toBeVisible();
+    await expect(
+      scanningPage.getByText("✓ Homepage has meaningful content"),
+    ).toBeVisible();
   });
 
   it("should match visually - scanning", async () => {
@@ -344,7 +367,9 @@ describe("ai-legibility email", () => {
     const table = email.page.locator("table");
     await expect(table.getByText("Critical", { exact: true })).toBeVisible();
     await expect(table.getByText("Important", { exact: true })).toBeVisible();
-    await expect(table.getByText("Optimization", { exact: true })).toBeVisible();
+    await expect(
+      table.getByText("Optimization", { exact: true }),
+    ).toBeVisible();
   });
 
   it("should show top suggestions", async () => {
@@ -360,9 +385,7 @@ describe("ai-legibility email", () => {
   });
 
   it("should show link to view all suggestions", async () => {
-    await expect(
-      email.page.getByText("View all 4 suggestions"),
-    ).toBeVisible();
+    await expect(email.page.getByText("View all 4 suggestions")).toBeVisible();
   });
 
   it("should match visually", async () => {

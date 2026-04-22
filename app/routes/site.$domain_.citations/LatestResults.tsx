@@ -58,12 +58,12 @@ export default function LatestResults({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="font-bold text-foreground">Group</TableHead>
-              <TableHead className="font-bold text-foreground">Query</TableHead>
-              <TableHead className="text-right font-bold text-foreground">
+              <TableHead className="text-foreground font-bold">Group</TableHead>
+              <TableHead className="text-foreground font-bold">Query</TableHead>
+              <TableHead className="text-foreground text-right font-bold">
                 Citations
               </TableHead>
-              <TableHead className="text-right font-bold text-foreground">
+              <TableHead className="text-foreground text-right font-bold">
                 Date
               </TableHead>
               <TableHead />
@@ -101,7 +101,7 @@ export default function LatestResults({
                       indirectUrls,
                     )}
                   </TableCell>
-                  <TableCell className="text-right text-foreground/60 text-xs">
+                  <TableCell className="text-foreground/60 text-right text-xs">
                     {formatDateShort(new Date(query.onDate))}
                   </TableCell>
                   <TableCell className="text-right">

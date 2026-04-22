@@ -1,8 +1,8 @@
-import type { Route } from "./+types/api.me";
+import { data } from "react-router";
 import { verifyUserAccess } from "~/lib/api/apiAuth.server";
 import { UserSchema } from "~/lib/api/openapi";
-import { data } from "react-router";
 import prisma from "~/lib/prisma.server";
+import type { Route } from "./+types/api.me";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const { id } = await verifyUserAccess(request);

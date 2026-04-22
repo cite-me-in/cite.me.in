@@ -1,7 +1,6 @@
 import { convert } from "convert";
 import debug from "debug";
 import Redis from "ioredis";
-
 import envVars from "~/lib/envVars.server";
 import type { ScanProgress, ScanResult } from "./types";
 
@@ -70,7 +69,8 @@ export async function getProgress({
       return { lines, done: false, nextOffset: offset + lines.length };
     case "complete": {
       const resultJson = await redis.get(resultKey(domain));
-      if (!resultJson) return { lines, done: true, nextOffset: offset + lines.length };
+      if (!resultJson)
+        return { lines, done: true, nextOffset: offset + lines.length };
       const result = JSON.parse(resultJson) as ScanResult;
       return { lines, done: true, nextOffset: offset + lines.length, result };
     }

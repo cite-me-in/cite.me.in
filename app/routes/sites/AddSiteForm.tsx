@@ -31,20 +31,20 @@ export default function AddSiteForm({
               <Spinner />
               Verifying domain and generating queries…
             </div>
-            <p className="text-base text-foreground/60">
+            <p className="text-foreground/60 text-base">
               Be patient, nothing will happen for a few seconds. We're going to
               check the domain and generate queries to ask Claude, OpenAI, and
               Google to see if they return any citations.
             </p>
             {url && (
-              <p className="text-base text-foreground/60">
+              <p className="text-foreground/60 text-base">
                 The domain we're adding is <code>{url}</code>
               </p>
             )}
           </div>
         ) : (
           <fetcher.Form method="post" noValidate className="space-y-4">
-            <p className="text-base text-foreground/60">
+            <p className="text-foreground/60 text-base">
               Enter a full URL (https://yoursite.com) or just the domain name
               (yoursite.com).
             </p>

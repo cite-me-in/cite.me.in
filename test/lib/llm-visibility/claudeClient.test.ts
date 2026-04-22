@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
 const mockCreate = vi.hoisted(() => vi.fn());
 
@@ -36,9 +36,8 @@ describe("queryClaude", () => {
       usage: { input_tokens: 100, output_tokens: 50 },
     });
 
-    const { default: queryClaude } = await import(
-      "~/lib/llm-visibility/claudeClient.server"
-    );
+    const { default: queryClaude } =
+      await import("~/lib/llm-visibility/claudeClient.server");
 
     const result = await queryClaude({
       maxRetries: 0,
@@ -69,9 +68,8 @@ describe("queryClaude", () => {
       usage: { input_tokens: 100, output_tokens: 50 },
     });
 
-    const { default: queryClaude } = await import(
-      "~/lib/llm-visibility/claudeClient.server"
-    );
+    const { default: queryClaude } =
+      await import("~/lib/llm-visibility/claudeClient.server");
 
     const result = await queryClaude({
       maxRetries: 0,
@@ -97,9 +95,8 @@ describe("queryClaude", () => {
       usage: { input_tokens: 100, output_tokens: 50 },
     });
 
-    const { default: queryClaude } = await import(
-      "~/lib/llm-visibility/claudeClient.server"
-    );
+    const { default: queryClaude } =
+      await import("~/lib/llm-visibility/claudeClient.server");
 
     const result = await queryClaude({
       maxRetries: 0,

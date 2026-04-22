@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 import checkSitemapXml from "~/lib/aiLegibility/checks/sitemapXml";
 import { SITEMAP_XML, SITEMAP_XML_INVALID, mockFetch } from "../fixtures";
 

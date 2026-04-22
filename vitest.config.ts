@@ -1,14 +1,15 @@
-import tsconfigPaths from "vite-tsconfig-paths";
-import type { ParsedStack } from "vitest";
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "vite-plus";
+import type { ParsedStack } from "vite-plus/test";
 
 process.env.NODE_ENV = "test";
 
 export default defineConfig({
+  resolve: {
+    tsconfigPaths: true,
+  },
   build: {
     sourcemap: false, // Disable source maps in tests to save memory
   },
-  plugins: [tsconfigPaths()],
   logLevel: process.env.CI ? "error" : "warn", // Only show errors in CI
 
   test: {

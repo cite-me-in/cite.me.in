@@ -42,7 +42,7 @@ export default function KeyMetrics({ metrics }: { metrics: KeyMetric[] }) {
           <Section className="w-full overflow-hidden rounded-xl border border-indigo-100 bg-indigo-50">
             <Row>
               <Column className="px-4 text-center">
-                <Text className="mb-1.5 whitespace-nowrap text-light text-xs uppercase tracking-wide">
+                <Text className="text-light mb-1.5 text-xs tracking-wide whitespace-nowrap uppercase">
                   {metric.label}
                 </Text>
                 <Text

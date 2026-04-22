@@ -1,8 +1,8 @@
-import type { Route } from "./+types/api.site.$domain";
+import { data } from "react-router";
 import { verifySiteAccess } from "~/lib/api/apiAuth.server";
 import { SiteSchema } from "~/lib/api/openapi";
-import { data } from "react-router";
 import prisma from "~/lib/prisma.server";
+import type { Route } from "./+types/api.site.$domain";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { id } = await verifySiteAccess({ domain: params.domain, request });

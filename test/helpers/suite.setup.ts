@@ -3,7 +3,7 @@
  */
 
 import * as Sentry from "@sentry/react-router";
-import { afterAll, beforeAll, vi } from "vitest";
+import { afterAll, beforeAll, vi } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
 import "~/test/mocks/msw";
 import "./toMatchInnerHTML";

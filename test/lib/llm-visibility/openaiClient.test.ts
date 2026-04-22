@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
 const mockCreate = vi.hoisted(() => vi.fn());
 
@@ -39,9 +39,8 @@ describe("openaiClient", () => {
       usage: { input_tokens: 100, output_tokens: 50 },
     });
 
-    const { default: openaiClient } = await import(
-      "~/lib/llm-visibility/openaiClient.server"
-    );
+    const { default: openaiClient } =
+      await import("~/lib/llm-visibility/openaiClient.server");
 
     const result = await openaiClient({
       maxRetries: 0,
@@ -77,9 +76,8 @@ describe("openaiClient", () => {
       usage: { input_tokens: 100, output_tokens: 50 },
     });
 
-    const { default: openaiClient } = await import(
-      "~/lib/llm-visibility/openaiClient.server"
-    );
+    const { default: openaiClient } =
+      await import("~/lib/llm-visibility/openaiClient.server");
 
     const result = await openaiClient({
       maxRetries: 0,
@@ -110,9 +108,8 @@ describe("openaiClient", () => {
       usage: { input_tokens: 100, output_tokens: 50 },
     });
 
-    const { default: openaiClient } = await import(
-      "~/lib/llm-visibility/openaiClient.server"
-    );
+    const { default: openaiClient } =
+      await import("~/lib/llm-visibility/openaiClient.server");
 
     const result = await openaiClient({
       maxRetries: 0,
@@ -140,9 +137,8 @@ describe("openaiClient", () => {
       usage: { input_tokens: 100, output_tokens: 50 },
     });
 
-    const { default: openaiClient } = await import(
-      "~/lib/llm-visibility/openaiClient.server"
-    );
+    const { default: openaiClient } =
+      await import("~/lib/llm-visibility/openaiClient.server");
 
     const result = await openaiClient({
       maxRetries: 0,

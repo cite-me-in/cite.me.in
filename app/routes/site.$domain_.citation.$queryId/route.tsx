@@ -98,7 +98,7 @@ export default function SiteCitationsPage({
         </CardHeader>
 
         <CardContent>
-          <table className="block overflow-hidden text-base text-foreground/60">
+          <table className="text-foreground/60 block overflow-hidden text-base">
             <tbody>
               {citation.citations.map((c, index) => {
                 const normalized = normalizeURL(c.url);
@@ -131,7 +131,7 @@ export default function SiteCitationsPage({
         </CardContent>
 
         <CardContent>
-          <hr className="my-8 border border-border/40" />
+          <hr className="border-border/40 my-8 border" />
           <Streamdown
             mode="static"
             components={{

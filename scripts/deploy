@@ -16,7 +16,7 @@ echo -e "\033[32m  Installing Playwright …\033[0m"
 pnpm exec playwright install
 
 echo -e "\033[32m  Running tests …\033[0m"
-NODE_OPTIONS="--max-old-space-size=3096" vitest run
+NODE_OPTIONS="--max-old-space-size=3096" vp test run
 
 echo -e "\033[32m  Running Playwright tests …\033[0m"
 NODE_OPTIONS="--max-old-space-size=3096" playwright test

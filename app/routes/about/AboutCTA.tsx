@@ -11,10 +11,10 @@ export default function AboutCTA() {
             <TrendingUpIcon className="h-10 w-10 text-black" />
           </div>
         </div>
-        <h2 className="mb-6 font-bold text-4xl text-black leading-tight md:text-5xl">
+        <h2 className="mb-6 text-4xl leading-tight font-bold text-black md:text-5xl">
           Start monitoring your citations
         </h2>
-        <p className="mb-8 font-medium text-black text-xl leading-relaxed">
+        <p className="mb-8 text-xl leading-relaxed font-medium text-black">
           Find out if AI platforms are citing your domain — and track whether
           that's improving over time.
         </p>

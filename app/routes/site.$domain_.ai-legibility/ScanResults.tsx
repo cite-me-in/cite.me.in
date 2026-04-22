@@ -77,7 +77,7 @@ function Figure({ title, value }: { title: string; value: string }) {
     <Card>
       <CardContent className="space-y-2">
         <div className="text-center">{title}</div>
-        <div className="text-center font-bold text-3xl">{value}</div>
+        <div className="text-center text-3xl font-bold">{value}</div>
       </CardContent>
     </Card>
   );
@@ -130,15 +130,15 @@ function SuggestionItem({
   return (
     <div className="rounded-lg border p-4">
       <div className="mb-2 flex items-start justify-between">
-        <h4 className="font-medium text-lg">{suggestion.title}</h4>
+        <h4 className="text-lg font-medium">{suggestion.title}</h4>
         <div className="flex gap-2">
           <Badge variant="neutral">{suggestion.effort}</Badge>
           <Badge>{suggestion.category}</Badge>
         </div>
       </div>
-      <p className="text-base text-foreground/60">{suggestion.description}</p>
+      <p className="text-foreground/60 text-base">{suggestion.description}</p>
       {suggestion.fixExample && (
-        <pre className="mt-2 overflow-x-auto rounded bg-muted p-2 font-mono text-base">
+        <pre className="bg-muted mt-2 overflow-x-auto rounded p-2 font-mono text-base">
           {suggestion.fixExample}
         </pre>
       )}

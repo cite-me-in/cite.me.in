@@ -32,7 +32,7 @@ const links = [
 
 export default function PageFooter() {
   return (
-    <footer className="flex flex-col gap-8 border-black border-t-2 bg-[hsl(60,100%,99%)] px-6 py-12 text-base text-black sm:flex-row sm:justify-between print:hidden">
+    <footer className="flex flex-col gap-8 border-t-2 border-black bg-[hsl(60,100%,99%)] px-6 py-12 text-base text-black sm:flex-row sm:justify-between print:hidden">
       <aside className="flex flex-col gap-4">
         <a href="/">
           <img src="/pixel.png" alt="cite.me.in" height={32} width={139} />

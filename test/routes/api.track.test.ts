@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
 import { port } from "~/test/helpers/launchBrowser";
 
@@ -97,7 +97,6 @@ describe("api.track", () => {
         apiKey: "invalid-api-key",
         url: "https://apitrack.example.com/",
       });
-      console.log(await res.text(), res.status);
       expect(res.status).toBe(404);
     });
   });

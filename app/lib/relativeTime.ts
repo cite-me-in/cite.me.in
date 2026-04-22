@@ -156,7 +156,7 @@ export function parseDuration(input: string): number {
   const trimmed = input.trim();
 
   // Check for negative sign
-  if (trimmed.includes("-") && /^-/.test(trimmed))
+  if (trimmed.includes("-") && trimmed.startsWith("-"))
     throw new Error("Duration cannot be negative");
 
   // Try colon notation first (h:mm or h:mm:ss)

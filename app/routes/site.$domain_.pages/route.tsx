@@ -65,7 +65,7 @@ export default function SitePagesPage({ loaderData }: Route.ComponentProps) {
             )}
           </CardTitle>
 
-          <CardDescription className="text-base text-foreground/60">
+          <CardDescription className="text-foreground/60 text-base">
             <p>
               Citing pages are pages that cite your content according to LLMs.
               This list helps you understand what parts of your content is being
@@ -77,7 +77,7 @@ export default function SitePagesPage({ loaderData }: Route.ComponentProps) {
 
         <CardContent>
           {pages.length === 0 ? (
-            <p className="flex items-center justify-center py-8 text-center text-foreground/60 text-lg">
+            <p className="text-foreground/60 flex items-center justify-center py-8 text-center text-lg">
               No citing pages yet — run a citation check to populate this list.
             </p>
           ) : (
@@ -147,7 +147,7 @@ function PageUrl({ url, direct }: { url: string; direct: boolean }) {
         title={url}
         to={url}
       >
-        <span className="font-mono text-foreground/60 text-sm">
+        <span className="text-foreground/60 font-mono text-sm">
           {parsed.hostname}
         </span>
         <span className="font-mono text-sm">

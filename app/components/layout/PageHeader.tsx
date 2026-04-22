@@ -11,7 +11,7 @@ export default function PageHeader() {
   if (lastHandle?.hideHeader) return null;
 
   return (
-    <header className="z-10 flex min-h-16 w-full items-center border-black border-b-2 bg-[hsl(60,100%,99%)] p-2 print:hidden">
+    <header className="z-10 flex min-h-16 w-full items-center border-b-2 border-black bg-[hsl(60,100%,99%)] p-2 print:hidden">
       <CiteMeInLogo className="w-1/2" />
       <HeaderLinks />
       <AccountMenu className="w-1/2 justify-end" />

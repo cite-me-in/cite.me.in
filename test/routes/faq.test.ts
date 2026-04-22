@@ -1,5 +1,5 @@
 import { type Page, expect } from "playwright/test";
-import { afterAll, beforeAll, describe, it } from "vitest";
+import { afterAll, beforeAll, describe, it } from "vite-plus/test";
 import faq from "~/routes/faq/faq";
 import { goto } from "../helpers/launchBrowser";
 

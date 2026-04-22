@@ -7,14 +7,14 @@
  *   npx tsx scripts/promote.ts
  */
 
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { confirm } from "@inquirer/prompts";
 import { Vercel } from "@vercel/sdk";
 import type { GetDeploymentsResponseBody } from "@vercel/sdk/models/getdeploymentsop.js";
 import type { Deployment } from "@vercel/sdk/models/userevent.js";
 import dotenv from "dotenv";
 import envVars from "env-var";
-import { execFile } from "node:child_process";
-import { promisify } from "node:util";
 import { Octokit } from "octokit";
 import ora from "ora";
 import invariant from "tiny-invariant";

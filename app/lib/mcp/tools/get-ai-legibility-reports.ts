@@ -10,7 +10,11 @@ export default {
 
   inputSchema: z.object({
     reportId: z.string().optional().describe("Specific report ID to retrieve"),
-    limit: z.number().optional().default(10).describe("Maximum number of reports to return"),
+    limit: z
+      .number()
+      .optional()
+      .default(10)
+      .describe("Maximum number of reports to return"),
   }),
 
   outputSchema: z.object({
@@ -30,9 +34,9 @@ export default {
             category: z.string(),
             effort: z.string(),
             description: z.string(),
-          })
+          }),
         ),
-      })
+      }),
     ),
   }),
 

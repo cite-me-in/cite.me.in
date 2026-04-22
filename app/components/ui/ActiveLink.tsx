@@ -40,7 +40,8 @@ const activeLinkVariants = cva(
 );
 
 export interface ActiveLinkProps
-  extends React.AnchorHTMLAttributes<HTMLAnchorElement>,
+  extends
+    React.AnchorHTMLAttributes<HTMLAnchorElement>,
     VariantProps<typeof activeLinkVariants> {
   viewTransition?: boolean;
   to: string;

@@ -61,7 +61,7 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
                 <div className="flex items-center justify-between">
                   <ActiveLink
                     to={`/site/${site.domain}`}
-                    className="font-bold text-2xl"
+                    className="text-2xl font-bold"
                   >
                     {site.domain}
                   </ActiveLink>
@@ -76,7 +76,7 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
                     ({ platform }) => platform,
                   ).map((run) => (
                     <div key={run.platform}>
-                      <div className="text-center font-bold text-2xl">
+                      <div className="text-center text-2xl font-bold">
                         {calculateVisibilityScore({
                           domain: site.domain,
                           queries: run.queries.map((q) => ({
@@ -85,14 +85,14 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
                           })),
                         }).visibilityScore.toLocaleString()}
                       </div>
-                      <div className="text-center text-foreground/40">
+                      <div className="text-foreground/40 text-center">
                         {run.platform}
                       </div>
                     </div>
                   ))}
                 </div>
 
-                <p className="flex justify-between gap-8 text-right text-foreground/40">
+                <p className="text-foreground/40 flex justify-between gap-8 text-right">
                   <span>
                     Created: {site.createdAt.toISOString().split("T")[0]}
                   </span>

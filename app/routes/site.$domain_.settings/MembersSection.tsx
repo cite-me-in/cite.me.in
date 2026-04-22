@@ -29,7 +29,7 @@ export default function MembersSection({
           <ul className="divide-y-2 divide-black border-2 border-black">
             <li className="flex items-center justify-between px-4 py-3">
               <span className="font-mono text-sm">{site.owner.email}</span>
-              <span className="rounded-base border-2 border-black bg-[#F59E0B] px-2 py-0.5 font-bold text-xs">
+              <span className="rounded-base border-2 border-black bg-[#F59E0B] px-2 py-0.5 text-xs font-bold">
                 Owner
               </span>
             </li>
@@ -92,7 +92,7 @@ function InviteSection({
             name="email"
             placeholder="colleague@example.com"
             required
-            className="flex-1 rounded-base border-2 border-black bg-white px-4 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[#F59E0B]"
+            className="rounded-base flex-1 border-2 border-black bg-white px-4 py-2 font-mono text-sm focus:ring-2 focus:ring-[#F59E0B] focus:outline-none"
           />
           <Button
             type="submit"
@@ -105,7 +105,7 @@ function InviteSection({
 
         {invitations.length > 0 && (
           <div className="space-y-2">
-            <h3 className="font-bold text-sm">Pending Invitations</h3>
+            <h3 className="text-sm font-bold">Pending Invitations</h3>
             <ul className="divide-y-2 divide-black border-2 border-black">
               {invitations.map((invitation) => (
                 <li

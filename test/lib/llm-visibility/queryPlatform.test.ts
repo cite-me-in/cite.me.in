@@ -1,5 +1,5 @@
 import invariant from "tiny-invariant";
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vite-plus/test";
 import { isSameDomain } from "~/lib/isSameDomain";
 import type { QueryFn } from "~/lib/llm-visibility/queryFn";
 import { queryPlatform } from "~/lib/llm-visibility/queryPlatform";
@@ -83,115 +83,127 @@ describe("queryPlatform", () => {
     });
   });
 
-  it("should create a run and store citation queries for each query", {
-    timeout: 30_000,
-  }, async () => {
-    const run = await prisma.citationQueryRun.findFirst({
-      where: { siteId: site.id, platform: "claude" },
-      include: {
-        queries: {
-          orderBy: [{ group: "asc" }, { query: "asc" }],
-          include: { citations: true },
+  it(
+    "should create a run and store citation queries for each query",
+    {
+      timeout: 30_000,
+    },
+    async () => {
+      const run = await prisma.citationQueryRun.findFirst({
+        where: { siteId: site.id, platform: "claude" },
+        include: {
+          queries: {
+            orderBy: [{ group: "asc" }, { query: "asc" }],
+            include: { citations: true },
+          },
         },
-      },
-    });
+      });
 
-    invariant(run, "run is not null");
-    expect(run.model).toBe("claude-haiku-4-5-20251001");
-    expect(run.queries).toHaveLength(2);
+      invariant(run, "run is not null");
+      expect(run.model).toBe("claude-haiku-4-5-20251001");
+      expect(run.queries).toHaveLength(2);
 
-    const first = run.queries.find((q) => q.query === QUERIES[0].query);
-    invariant(first, "first is not null");
-    expect(first?.group).toBe("1. discovery");
-    expect(first.citations.length).toBe(3);
-    expect(
-      first.citations.findIndex((c) =>
-        isSameDomain({ domain: site.domain, url: c.url }),
-      ) + 1,
-    ).toBe(3);
+      const first = run.queries.find((q) => q.query === QUERIES[0].query);
+      invariant(first, "first is not null");
+      expect(first?.group).toBe("1. discovery");
+      expect(first.citations.length).toBe(3);
+      expect(
+        first.citations.findIndex((c) =>
+          isSameDomain({ domain: site.domain, url: c.url }),
+        ) + 1,
+      ).toBe(3);
 
-    const second = run.queries.find((q) => q.query === QUERIES[1].query);
-    invariant(second, "second is not null");
-    expect(second.group).toBe("2. active_search");
-    expect(second.citations.length).toBe(2);
-    expect(
-      second.citations.findIndex((c) =>
-        isSameDomain({ domain: site.domain, url: c.url }),
-      ) + 1,
-    ).toBe(1);
-  });
+      const second = run.queries.find((q) => q.query === QUERIES[1].query);
+      invariant(second, "second is not null");
+      expect(second.group).toBe("2. active_search");
+      expect(second.citations.length).toBe(2);
+      expect(
+        second.citations.findIndex((c) =>
+          isSameDomain({ domain: site.domain, url: c.url }),
+        ) + 1,
+      ).toBe(1);
+    },
+  );
 
-  it("should create Citation records for each cited URL", {
-    timeout: 30_000,
-  }, async () => {
-    const citations = await prisma.citation.findMany({
-      where: { siteId: site.id },
-      orderBy: { createdAt: "asc" },
-    });
+  it(
+    "should create Citation records for each cited URL",
+    {
+      timeout: 30_000,
+    },
+    async () => {
+      const citations = await prisma.citation.findMany({
+        where: { siteId: site.id },
+        orderBy: { createdAt: "asc" },
+      });
 
-    // 2 queries: query[0] has 2 URLs, query[1] has 3 URLs = 5 total
-    expect(citations.length).toBe(5);
+      // 2 queries: query[0] has 2 URLs, query[1] has 3 URLs = 5 total
+      expect(citations.length).toBe(5);
 
-    const domains = citations.map((c) => c.domain);
-    expect(domains).toContain("rentail.space");
-    expect(domains).toContain("other.com");
-    expect(domains).toContain("example.com");
+      const domains = citations.map((c) => c.domain);
+      expect(domains).toContain("rentail.space");
+      expect(domains).toContain("other.com");
+      expect(domains).toContain("example.com");
 
-    for (const c of citations) {
-      expect(c.queryId).toBeTruthy();
-      expect(c.runId).toBeTruthy();
-      expect(c.siteId).toBe(site.id);
-    }
-  });
+      for (const c of citations) {
+        expect(c.queryId).toBeTruthy();
+        expect(c.runId).toBeTruthy();
+        expect(c.siteId).toBe(site.id);
+      }
+    },
+  );
 
-  it("should persist CitationQuery shape correctly", {
-    timeout: 30_000,
-  }, async () => {
-    const runs = await prisma.citationQueryRun.findMany({
-      where: { siteId: site.id },
-      include: {
-        queries: {
-          orderBy: [{ group: "asc" }, { query: "asc" }],
-          include: { citations: true },
+  it(
+    "should persist CitationQuery shape correctly",
+    {
+      timeout: 30_000,
+    },
+    async () => {
+      const runs = await prisma.citationQueryRun.findMany({
+        where: { siteId: site.id },
+        include: {
+          queries: {
+            orderBy: [{ group: "asc" }, { query: "asc" }],
+            include: { citations: true },
+          },
         },
-      },
-    });
+      });
 
-    expect(runs).toHaveLength(1);
+      expect(runs).toHaveLength(1);
 
-    const [run] = runs;
-    expect(run.platform).toBe("claude");
-    expect(run.model).toBe("claude-haiku-4-5-20251001");
-    expect(run.siteId).toBe(site.id);
-    expect(run.queries).toHaveLength(2);
+      const [run] = runs;
+      expect(run.platform).toBe("claude");
+      expect(run.model).toBe("claude-haiku-4-5-20251001");
+      expect(run.siteId).toBe(site.id);
+      expect(run.queries).toHaveLength(2);
 
-    const first = run.queries.find((q) => q.query === QUERIES[0].query);
-    invariant(first, "first is not null");
-    expect(first.citations).toHaveLength(3);
-    expect(first.group).toBe("1. discovery");
-    expect(first.query).toBe(QUERIES[0].query);
-    expect(first.text).toBe(
-      "Platforms like rentail.space offer temporary retail options.",
-    );
-    expect(first.extraQueries).toEqual([]);
-    expect(first.citations.map((c) => c.url)).toEqual([
-      "https://other.com",
-      "https://example.com",
-      "https://rentail.space/faq",
-    ]);
+      const first = run.queries.find((q) => q.query === QUERIES[0].query);
+      invariant(first, "first is not null");
+      expect(first.citations).toHaveLength(3);
+      expect(first.group).toBe("1. discovery");
+      expect(first.query).toBe(QUERIES[0].query);
+      expect(first.text).toBe(
+        "Platforms like rentail.space offer temporary retail options.",
+      );
+      expect(first.extraQueries).toEqual([]);
+      expect(first.citations.map((c) => c.url)).toEqual([
+        "https://other.com",
+        "https://example.com",
+        "https://rentail.space/faq",
+      ]);
 
-    const second = run.queries.find((q) => q.query === QUERIES[1].query);
-    invariant(second, "second is not null");
-    expect(second.citations).toHaveLength(2);
-    expect(second.group).toBe("2. active_search");
-    expect(second.query).toBe(QUERIES[1].query);
-    expect(second.text).toBe(
-      "You can find short-term retail space on rentail.space.",
-    );
-    expect(second.extraQueries).toEqual([]);
-    expect(second.citations.map((c) => c.url)).toEqual([
-      "https://rentail.space/listings",
-      "https://other.com",
-    ]);
-  });
+      const second = run.queries.find((q) => q.query === QUERIES[1].query);
+      invariant(second, "second is not null");
+      expect(second.citations).toHaveLength(2);
+      expect(second.group).toBe("2. active_search");
+      expect(second.query).toBe(QUERIES[1].query);
+      expect(second.text).toBe(
+        "You can find short-term retail space on rentail.space.",
+      );
+      expect(second.extraQueries).toEqual([]);
+      expect(second.citations.map((c) => c.url)).toEqual([
+        "https://rentail.space/listings",
+        "https://other.com",
+      ]);
+    },
+  );
 });

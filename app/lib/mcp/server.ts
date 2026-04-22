@@ -16,7 +16,13 @@ const tools: {
   inputSchema: AnySchema;
   outputSchema?: AnySchema;
   handler: ToolCallback<AnySchema>;
-}[] = [listSites, createSite, getSite, getSiteCitations, getAiLegibilityReports];
+}[] = [
+  listSites,
+  createSite,
+  getSite,
+  getSiteCitations,
+  getAiLegibilityReports,
+];
 
 export function createMcpServer(): McpServer {
   const server = new McpServer({

@@ -23,7 +23,7 @@ export default function SiteEntry({
       <div className="flex flex-row items-center justify-between">
         <Link
           to={`/site/${site.domain}/citations`}
-          className="font-bold font-mono text-lg"
+          className="font-mono text-lg font-bold"
         >
           {site.domain}
         </Link>
@@ -68,7 +68,7 @@ export default function SiteEntry({
 
       <Streamdown
         mode="static"
-        className="prose prose-sm mt-4 mb-4 line-clamp-2 max-w-none text-foreground/60 italic"
+        className="prose prose-sm text-foreground/60 mt-4 mb-4 line-clamp-2 max-w-none italic"
       >
         {site.summary}
       </Streamdown>
@@ -92,7 +92,7 @@ function Metric({
   const scoreColor = highlightScore ? getScoreColor(value) : null;
   return (
     <div className={`metric-${label.toLowerCase().replace(" ", "-")}`}>
-      <div className="whitespace-nowrap font-light">{label}</div>
+      <div className="font-light whitespace-nowrap">{label}</div>
       <div
         className={twMerge(
           "font-bold text-3xl tabular-nums",
@@ -103,7 +103,7 @@ function Metric({
         {value.toLocaleString()}
         {suffix}
       </div>
-      <div className="flex items-center justify-center gap-1 text-muted-foreground text-sm">
+      <div className="text-muted-foreground flex items-center justify-center gap-1 text-sm">
         <Delta current={value} previous={previous} />
         {previous !== null && previous !== 0 && (
           <span className="tabular-nums">
@@ -132,7 +132,7 @@ function Delta({
   if (previous === null) return null;
   if (previous === 0 && current === 0) return null;
   if (previous === 0)
-    return <span className="font-medium text-green-700 text-sm">new</span>;
+    return <span className="text-sm font-medium text-green-700">new</span>;
 
   const pct = Math.round(((current - previous) / previous) * 100);
   const positive = pct >= 0;

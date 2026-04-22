@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 
 const mockComplete = vi.fn();
 
@@ -14,9 +14,8 @@ afterEach(() => {
 
 describe("analyzeSentiment", () => {
   it("should return neutral when no queries provided", async () => {
-    const { default: analyzeSentiment } = await import(
-      "~/lib/llm-visibility/analyzeSentiment"
-    );
+    const { default: analyzeSentiment } =
+      await import("~/lib/llm-visibility/analyzeSentiment");
 
     const result = await analyzeSentiment({
       domain: "example.com",
@@ -43,9 +42,8 @@ describe("analyzeSentiment", () => {
       ],
     });
 
-    const { default: analyzeSentiment } = await import(
-      "~/lib/llm-visibility/analyzeSentiment"
-    );
+    const { default: analyzeSentiment } =
+      await import("~/lib/llm-visibility/analyzeSentiment");
 
     const result = await analyzeSentiment({
       domain: "example.com",
@@ -73,9 +71,8 @@ describe("analyzeSentiment", () => {
         ],
       });
 
-      const { default: analyzeSentiment } = await import(
-        "~/lib/llm-visibility/analyzeSentiment"
-      );
+      const { default: analyzeSentiment } =
+        await import("~/lib/llm-visibility/analyzeSentiment");
 
       const result = await analyzeSentiment({
         domain: "example.com",
@@ -99,9 +96,8 @@ describe("analyzeSentiment", () => {
       },
     );
 
-    const { default: analyzeSentiment } = await import(
-      "~/lib/llm-visibility/analyzeSentiment"
-    );
+    const { default: analyzeSentiment } =
+      await import("~/lib/llm-visibility/analyzeSentiment");
 
     await analyzeSentiment({
       domain: "mysite.com",
@@ -133,9 +129,8 @@ describe("analyzeSentiment", () => {
       },
     );
 
-    const { default: analyzeSentiment } = await import(
-      "~/lib/llm-visibility/analyzeSentiment"
-    );
+    const { default: analyzeSentiment } =
+      await import("~/lib/llm-visibility/analyzeSentiment");
 
     await analyzeSentiment({
       domain: "mysite.com",
@@ -165,9 +160,8 @@ describe("analyzeSentiment", () => {
       },
     );
 
-    const { default: analyzeSentiment } = await import(
-      "~/lib/llm-visibility/analyzeSentiment"
-    );
+    const { default: analyzeSentiment } =
+      await import("~/lib/llm-visibility/analyzeSentiment");
 
     await analyzeSentiment({
       domain: "mysite.com",
@@ -196,9 +190,8 @@ describe("analyzeSentiment", () => {
       ],
     });
 
-    const { default: analyzeSentiment } = await import(
-      "~/lib/llm-visibility/analyzeSentiment"
-    );
+    const { default: analyzeSentiment } =
+      await import("~/lib/llm-visibility/analyzeSentiment");
 
     const result = await analyzeSentiment({
       domain: "example.com",
@@ -217,9 +210,8 @@ describe("analyzeSentiment", () => {
       choices: [{ message: { content: "not valid json" } }],
     });
 
-    const { default: analyzeSentiment } = await import(
-      "~/lib/llm-visibility/analyzeSentiment"
-    );
+    const { default: analyzeSentiment } =
+      await import("~/lib/llm-visibility/analyzeSentiment");
 
     const result = await analyzeSentiment({
       domain: "example.com",
@@ -240,9 +232,8 @@ describe("analyzeSentiment", () => {
       ],
     });
 
-    const { default: analyzeSentiment } = await import(
-      "~/lib/llm-visibility/analyzeSentiment"
-    );
+    const { default: analyzeSentiment } =
+      await import("~/lib/llm-visibility/analyzeSentiment");
 
     const result = await analyzeSentiment({
       domain: "example.com",
@@ -261,9 +252,8 @@ describe("analyzeSentiment", () => {
       choices: [{ message: { content: '{"label":"positive"}' } }],
     });
 
-    const { default: analyzeSentiment } = await import(
-      "~/lib/llm-visibility/analyzeSentiment"
-    );
+    const { default: analyzeSentiment } =
+      await import("~/lib/llm-visibility/analyzeSentiment");
 
     const result = await analyzeSentiment({
       domain: "example.com",
@@ -280,9 +270,8 @@ describe("analyzeSentiment", () => {
   it("should propagate API errors", async () => {
     mockComplete.mockRejectedValueOnce(new Error("API error"));
 
-    const { default: analyzeSentiment } = await import(
-      "~/lib/llm-visibility/analyzeSentiment"
-    );
+    const { default: analyzeSentiment } =
+      await import("~/lib/llm-visibility/analyzeSentiment");
 
     await expect(
       analyzeSentiment({
@@ -319,9 +308,8 @@ describe("analyzeSentiment", () => {
       ],
     });
 
-    const { default: analyzeSentiment } = await import(
-      "~/lib/llm-visibility/analyzeSentiment"
-    );
+    const { default: analyzeSentiment } =
+      await import("~/lib/llm-visibility/analyzeSentiment");
 
     const result = await analyzeSentiment({
       domain: "example.com",
@@ -369,9 +357,8 @@ describe("analyzeSentiment", () => {
       },
     );
 
-    const { default: analyzeSentiment } = await import(
-      "~/lib/llm-visibility/analyzeSentiment"
-    );
+    const { default: analyzeSentiment } =
+      await import("~/lib/llm-visibility/analyzeSentiment");
 
     await analyzeSentiment({
       domain: "example.com",

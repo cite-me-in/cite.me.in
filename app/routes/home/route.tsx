@@ -89,7 +89,7 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
 
 function LandingNav({ isSignedIn }: { isSignedIn: boolean }) {
   return (
-    <nav className="flex items-center justify-between border-black border-b-2 bg-[hsl(60,100%,99%)] px-6 py-3">
+    <nav className="flex items-center justify-between border-b-2 border-black bg-[hsl(60,100%,99%)] px-6 py-3">
       <CiteMeInLogo />
       <div className="flex items-center gap-6">
         <div className="flex items-center gap-3">
@@ -115,20 +115,20 @@ function LandingNav({ isSignedIn }: { isSignedIn: boolean }) {
 
 function HeroSection({ isSignedIn }: { isSignedIn: boolean }) {
   return (
-    <section className="border-black border-b-2 bg-[#F59E0B] px-6 py-20 md:py-32">
+    <section className="border-b-2 border-black bg-[#F59E0B] px-6 py-20 md:py-32">
       <div className="mx-auto max-w-4xl">
-        <blockquote className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border-2 bg-white px-4 py-1.5 font-bold text-base text-black shadow-md">
+        <blockquote className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border-2 bg-white px-4 py-1.5 text-base font-bold text-black shadow-md">
           <SparklesIcon className="h-4 w-4" />
           Squirrel-brain friendly 🐿️
         </blockquote>
 
-        <h1 className="mb-6 font-bold text-4xl text-black leading-tight md:text-6xl">
+        <h1 className="mb-6 text-4xl leading-tight font-bold text-black md:text-6xl">
           Does ChatGPT mention
           <br />
           your brand?
         </h1>
 
-        <p className="mb-10 max-w-2xl font-medium text-black text-xl leading-relaxed md:text-2xl">
+        <p className="mb-10 max-w-2xl text-xl leading-relaxed font-medium text-black md:text-2xl">
           Most founders are running blind on AI visibility. Cite.me.in runs your
           queries across ChatGPT, Claude, and Gemini and records every time they
           cite your website. See what's working. Fix what's not.
@@ -157,25 +157,25 @@ function HeroSection({ isSignedIn }: { isSignedIn: boolean }) {
 
 function HowItWorksSection() {
   return (
-    <section className="border-black border-b-2 px-6 py-20">
+    <section className="border-b-2 border-black px-6 py-20">
       <div className="mx-auto max-w-5xl">
-        <h2 className="mb-12 font-bold text-3xl text-black md:text-4xl">
+        <h2 className="mb-12 text-3xl font-bold text-black md:text-4xl">
           How it works
         </h2>
         <div className="grid gap-6 md:grid-cols-3">
           {STEPS.map(({ number, title, body, icon: Icon }) => (
             <div
               key={number}
-              className="flex flex-col gap-4 rounded-base border-2 border-black bg-white p-6 text-base text-black shadow-[4px_4px_0px_0px_black]"
+              className="rounded-base flex flex-col gap-4 border-2 border-black bg-white p-6 text-base text-black shadow-[4px_4px_0px_0px_black]"
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-base border-2 border-black bg-[#F59E0B] font-bold shadow-[2px_2px_0px_0px_black]">
+                <div className="rounded-base flex h-10 w-10 shrink-0 items-center justify-center border-2 border-black bg-[#F59E0B] font-bold shadow-[2px_2px_0px_0px_black]">
                   {number}
                 </div>
                 <Icon className="h-5 w-5" />
               </div>
-              <h3 className="font-bold text-xl">{title}</h3>
-              <p className="font-medium leading-relaxed">{body}</p>
+              <h3 className="text-xl font-bold">{title}</h3>
+              <p className="leading-relaxed font-medium">{body}</p>
             </div>
           ))}
         </div>
@@ -186,12 +186,12 @@ function HowItWorksSection() {
 
 function ForWhoSection() {
   return (
-    <section className="border-black border-b-2 bg-[hsl(47,100%,95%)] px-6 py-20">
+    <section className="border-b-2 border-black bg-[hsl(47,100%,95%)] px-6 py-20">
       <div className="mx-auto max-w-5xl">
-        <h2 className="mb-4 font-bold text-3xl text-black md:text-4xl">
+        <h2 className="mb-4 text-3xl font-bold text-black md:text-4xl">
           Built for anyone with an online presence
         </h2>
-        <p className="mb-12 font-medium text-black text-xl">
+        <p className="mb-12 text-xl font-medium text-black">
           If AI platforms could be sending you traffic, you should know whether
           they are.
         </p>
@@ -199,13 +199,13 @@ function ForWhoSection() {
           {PERSONAS.map(({ icon: Icon, title, body }) => (
             <div
               key={title}
-              className="flex flex-col gap-4 rounded-base border-2 border-black bg-white p-6 text-base text-black shadow-[4px_4px_0px_0px_black]"
+              className="rounded-base flex flex-col gap-4 border-2 border-black bg-white p-6 text-base text-black shadow-[4px_4px_0px_0px_black]"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-base border-2 border-black bg-[#F59E0B] shadow-[2px_2px_0px_0px_black]">
+              <div className="rounded-base flex h-12 w-12 items-center justify-center border-2 border-black bg-[#F59E0B] shadow-[2px_2px_0px_0px_black]">
                 <Icon className="h-6 w-6" />
               </div>
-              <h3 className="font-bold text-xl">{title}</h3>
-              <p className="font-medium leading-relaxed">{body}</p>
+              <h3 className="text-xl font-bold">{title}</h3>
+              <p className="leading-relaxed font-medium">{body}</p>
             </div>
           ))}
         </div>

@@ -284,7 +284,7 @@ export default function SiteCitationsPage({
           />
         </>
       ) : (
-        <p className="flex items-center justify-center py-8 text-center text-foreground/60 text-lg">
+        <p className="text-foreground/60 flex items-center justify-center py-8 text-center text-lg">
           <span aria-label="sad face" role="img" className="mr-2">
             😔
           </span>

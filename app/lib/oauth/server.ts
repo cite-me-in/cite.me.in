@@ -210,5 +210,6 @@ export async function isDeviceCodeApproved(code: string): Promise<boolean> {
     where: { code },
     select: { verifiedAt: true },
   });
+  // oxlint-disable-next-line eqeqeq
   return deviceCode?.verifiedAt != null;
 }

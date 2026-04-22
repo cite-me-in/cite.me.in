@@ -200,7 +200,7 @@ export default function CommandPalette() {
             "data-ending-style:-translate-y-2 data-ending-style:opacity-0",
           )}
         >
-          <div className="relative border-black border-b-2">
+          <div className="relative border-b-2 border-black">
             <SearchIcon className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-gray-400" />
             <input
               ref={inputRef}
@@ -208,7 +208,7 @@ export default function CommandPalette() {
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleInputKeyDown}
               placeholder="Search commands or ask anything…"
-              className="w-full bg-transparent py-3 pr-10 pl-10 font-base text-base placeholder:text-gray-400 focus:outline-none"
+              className="font-base w-full bg-transparent py-3 pr-10 pl-10 text-base placeholder:text-gray-400 focus:outline-none"
             />
             <button
               type="button"
@@ -227,7 +227,7 @@ export default function CommandPalette() {
           </div>
           <div className="max-h-[60vh] overflow-y-auto">
             {filteredGroups.length === 0 ? (
-              <p className="px-4 py-6 text-center text-gray-400 text-sm">
+              <p className="px-4 py-6 text-center text-sm text-gray-400">
                 No commands found.
               </p>
             ) : (
@@ -244,7 +244,7 @@ export default function CommandPalette() {
               ))
             )}
           </div>
-          <div className="flex gap-4 border-black border-t-2 px-4 py-2 text-gray-400 text-xs">
+          <div className="flex gap-4 border-t-2 border-black px-4 py-2 text-xs text-gray-400">
             <span>
               <kbd className="font-mono">↑↓</kbd> navigate
             </span>
@@ -278,7 +278,7 @@ function CommandGroup({
 }) {
   return (
     <div>
-      <p className="px-4 py-1.5 font-bold text-gray-400 text-xs uppercase tracking-wider">
+      <p className="px-4 py-1.5 text-xs font-bold tracking-wider text-gray-400 uppercase">
         {group.label}
       </p>
       {group.items.map((item) => {

@@ -165,8 +165,8 @@ export default function ProfilePage() {
 
           {user.plan === "paid" && (
             <section>
-              <h2 className="mb-4 font-heading text-xl">Subscription</h2>
-              <p className="mb-4 text-foreground/70 text-sm">
+              <h2 className="font-heading mb-4 text-xl">Subscription</h2>
+              <p className="text-foreground/70 mb-4 text-sm">
                 You're on Pro (
                 {account?.interval === "annual" ? "annual" : "monthly"}{" "}
                 billing).

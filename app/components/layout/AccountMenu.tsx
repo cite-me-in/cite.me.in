@@ -88,8 +88,8 @@ function DropdownMenu({
       </Button>
 
       {isOpen && (
-        <menu className="absolute top-10 right-0 z-50 mt-2 w-48 rounded-base border-2 border-black bg-white py-1 shadow-[4px_4px_0px_0px_black]">
-          <li className="border-black border-b-2 px-4 py-2 text-gray-600">
+        <menu className="rounded-base absolute top-10 right-0 z-50 mt-2 w-48 border-2 border-black bg-white py-1 shadow-[4px_4px_0px_0px_black]">
+          <li className="border-b-2 border-black px-4 py-2 text-gray-600">
             <p className="truncate font-bold">{user.email}</p>
           </li>
 

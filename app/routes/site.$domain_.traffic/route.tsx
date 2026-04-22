@@ -182,7 +182,12 @@ async function getBotTotals(
       referer: b.referer,
     }))
     .sort((a, b) => {
-      const classOrder = { retrieval: 0, search_indexing: 1, training: 2, other: 3 };
+      const classOrder = {
+        retrieval: 0,
+        search_indexing: 1,
+        training: 2,
+        other: 3,
+      };
       const aOrder = classOrder[a.botClass as keyof typeof classOrder] ?? 4;
       const bOrder = classOrder[b.botClass as keyof typeof classOrder] ?? 4;
       if (aOrder !== bOrder) return aOrder - bOrder;

@@ -56,12 +56,12 @@ export default function Scanning({ domain }: { domain: string }) {
       </CardHeader>
 
       <CardContent>
-        <p className="mb-4 text-foreground/60">
+        <p className="text-foreground/60 mb-4">
           Scanning: <code className="font-mono">{domain}</code>
         </p>
         <pre
           ref={logRef}
-          className="h-96 overflow-y-auto whitespace-break-spaces rounded border border-border bg-muted p-4 font-mono text-foreground/60 text-sm leading-relaxed"
+          className="border-border bg-muted text-foreground/60 h-96 overflow-y-auto rounded border p-4 font-mono text-sm leading-relaxed whitespace-break-spaces"
         >
           {lines.length === 0 && (
             <span className="text-foreground/40">Starting…</span>

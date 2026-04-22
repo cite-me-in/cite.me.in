@@ -1,7 +1,7 @@
 import { expect } from "@playwright/test";
-import { beforeAll, describe, it } from "vitest";
-import { sendTrialEndingEmail } from "~/emails/TrialEnding";
+import { beforeAll, describe, it } from "vite-plus/test";
 import { getLastEmailSent } from "~/emails/sendEmails";
+import { sendTrialEndingEmail } from "~/emails/TrialEnding";
 import prisma from "~/lib/prisma.server";
 
 describe("TrialEnding email", () => {

@@ -26,7 +26,7 @@ export default function Card({
         <Row>
           <Column className="px-5 pt-4">
             {title && (
-              <Heading as="h2" className="font-bold text-2xl text-dark">
+              <Heading as="h2" className="text-dark text-2xl font-bold">
                 {title}
               </Heading>
             )}

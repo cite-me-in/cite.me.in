@@ -25,7 +25,7 @@ export default function TrackingScript({ script }: { script: string }) {
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <h3 className="font-bold text-sm">Tracking Script</h3>
+            <h3 className="text-sm font-bold">Tracking Script</h3>
             <Button
               className={copiedScript ? "bg-green-500" : ""}
               onClick={copyScriptToClipboard}
@@ -41,7 +41,7 @@ export default function TrackingScript({ script }: { script: string }) {
               Copy script
             </Button>
           </div>
-          <pre className="overflow-x-auto rounded-base border-2 border-black bg-[hsl(60,100%,99%)] p-4 font-mono text-xs leading-relaxed">
+          <pre className="rounded-base overflow-x-auto border-2 border-black bg-[hsl(60,100%,99%)] p-4 font-mono text-xs leading-relaxed">
             {script}
           </pre>
         </div>

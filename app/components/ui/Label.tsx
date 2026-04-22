@@ -3,7 +3,6 @@ import { twMerge } from "tailwind-merge";
 
 function Label({ className, ...props }: React.ComponentProps<"label">) {
   return (
-    // biome-ignore lint/a11y/noLabelWithoutControl: generic label
     <label
       data-slot="label"
       className={twMerge(

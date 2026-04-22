@@ -83,7 +83,7 @@ export default function VisibilityCharts({
                 />
               </AreaChart>
             </ChartContainer>
-            <p className="text-center text-foreground/60 text-sm">
+            <p className="text-foreground/60 text-center text-sm">
               {chart.explainer}
               {chart.explainerLink && (
                 <>

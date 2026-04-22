@@ -70,7 +70,7 @@ function AiLegibilityReport({
 
   return (
     <Section>
-      <Text className="my-4 text-base text-text leading-relaxed">
+      <Text className="text-text my-4 text-base leading-relaxed">
         Your AI Legibility Report for <strong>{site.domain}</strong> is ready.
       </Text>
 
@@ -89,7 +89,6 @@ function AiLegibilityReport({
       {visibleSuggestions.length > 0 && (
         <Card title="Top Suggestions" withBorder>
           {visibleSuggestions.map((suggestion, i) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: suggestions are static for a report, index is stable
             <SuggestionItem key={i} suggestion={suggestion} />
           ))}
           {hasMoreSuggestions && (
@@ -107,7 +106,7 @@ function AiLegibilityReport({
 
       <BrandReminderCard domain={site.domain} citations={totalPassed} />
 
-      <Text className="my-4 text-base text-text leading-relaxed">
+      <Text className="text-text my-4 text-base leading-relaxed">
         Best regards,
         <br />
         The Cite.me.in Team
@@ -120,7 +119,7 @@ function SummaryTable({ result }: { result: ScanResult }) {
   return (
     <table>
       <thead>
-        <tr className="text-center text-light text-xs uppercase tracking-wide">
+        <tr className="text-light text-center text-xs tracking-wide uppercase">
           <th className="p-4 text-left">Category</th>
           <th className="p-4">Passed</th>
           <th className="p-4">Status</th>
@@ -177,7 +176,7 @@ function SuggestionItem({
 }) {
   return (
     <div className="border-border border-t p-4">
-      <div className="mb-1 font-bold text-sm">{suggestion.title}</div>
+      <div className="mb-1 text-sm font-bold">{suggestion.title}</div>
       <div className="text-light text-xs">{suggestion.effort}</div>
       <div className="mt-2 text-sm">{suggestion.description}</div>
       {suggestion.fixExample && (

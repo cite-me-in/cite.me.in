@@ -12,7 +12,7 @@ export function BrandReminderCard({
   const noun = citations === 1 ? "citation" : "citations";
   return (
     <Card withBorder>
-      <Text className="text-base text-text leading-relaxed">
+      <Text className="text-text text-base leading-relaxed">
         <Link href="https://cite.me.in">cite.me.in</Link> is your window into
         how AI talks about your brand. Every day it asks ChatGPT, Claude,
         Gemini, and Perplexity the questions your customers ask — and records

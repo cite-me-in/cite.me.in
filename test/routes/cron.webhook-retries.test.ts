@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { port } from "../helpers/launchBrowser";
+import { afterEach, beforeEach, describe, expect, it } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
+import { port } from "../helpers/launchBrowser";
 
 async function makeRequest() {
   return fetch(`http://localhost:${port}/cron/webhook-retries`, {

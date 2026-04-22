@@ -24,17 +24,14 @@ export default function FAQ() {
     >
       <script
         type="application/ld+json"
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: Server-generated structured data
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(schemaData()),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData()) }}
       />
 
       <section className="mx-auto max-w-4xl bg-[hsl(60,100%,99%)] py-20 text-center">
-        <h1 className="mb-6 font-bold text-5xl text-black leading-tight md:text-6xl">
+        <h1 className="mb-6 text-5xl leading-tight font-bold text-black md:text-6xl">
           Frequently Asked Questions
         </h1>
-        <p className="font-medium text-black text-xl leading-relaxed md:text-2xl">
+        <p className="text-xl leading-relaxed font-medium text-black md:text-2xl">
           Everything you need to know about monitoring your LLM citation
           visibility.
         </p>
@@ -43,10 +40,10 @@ export default function FAQ() {
       <FAQQuestions />
 
       <section className="bg-[hsl(47,100%,95%)] py-20 text-center">
-        <h2 className="mb-6 font-bold text-4xl text-black leading-tight md:text-5xl">
+        <h2 className="mb-6 text-4xl leading-tight font-bold text-black md:text-5xl">
           Still have questions?
         </h2>
-        <p className="mb-8 font-medium text-black text-xl leading-relaxed">
+        <p className="mb-8 text-xl leading-relaxed font-medium text-black">
           Our team is here to help. Reach out and we'll get back to you within
           24 hours.
         </p>
@@ -70,7 +67,7 @@ function FAQQuestions() {
       <div className="flex flex-col gap-12">
         {faq.map((category) => (
           <div key={category.category}>
-            <h2 className="mb-6 font-bold text-3xl text-black leading-tight">
+            <h2 className="mb-6 text-3xl leading-tight font-bold text-black">
               {category.category}
             </h2>
             <div className="flex flex-col gap-4">
@@ -99,7 +96,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
       open
     >
       <summary className="flex w-full cursor-pointer items-center justify-between gap-4 p-6 text-left">
-        <h3 className="font-bold text-black text-lg" itemProp="name">
+        <h3 className="text-lg font-bold text-black" itemProp="name">
           {question}
         </h3>
         <ChevronDownIcon
@@ -109,8 +106,8 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
           )}
         />
       </summary>
-      <div className="border-black border-t-2 px-6 pt-4 pb-6">
-        <p className="font-medium text-black leading-relaxed" itemProp="text">
+      <div className="border-t-2 border-black px-6 pt-4 pb-6">
+        <p className="leading-relaxed font-medium text-black" itemProp="text">
           {answer}
         </p>
       </div>

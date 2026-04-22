@@ -5,9 +5,9 @@ import { Alert, AlertTitle } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent, CardFooter } from "~/components/ui/Card";
 import { Input } from "~/components/ui/Input";
+import type { action } from "./route";
 import SingleQuery from "./SingleQuery";
 import TrashButton from "./TrashButton";
-import type { action } from "./route";
 
 /**
  * A component that displays a group of queries, including a form to rename the

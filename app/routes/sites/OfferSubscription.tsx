@@ -5,8 +5,8 @@ import platforms from "~/lib/llm-visibility/platforms";
 export default function OfferSubscription() {
   return (
     <div className="rounded-base border-2 border-black bg-white p-6 shadow-[4px_4px_0px_0px_black]">
-      <h2 className="mb-1 font-heading text-xl">Upgrade to Pro</h2>
-      <p className="mb-5 text-foreground/70 text-sm">
+      <h2 className="font-heading mb-1 text-xl">Upgrade to Pro</h2>
+      <p className="text-foreground/70 mb-5 text-sm">
         Monitor all {platforms.length} AI platforms. Full citation history. Up
         to {prices.sites} sites.
       </p>

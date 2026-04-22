@@ -1,5 +1,5 @@
 import { HttpResponse, http } from "msw";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vite-plus/test";
 import checkLlmsTxt from "~/lib/aiLegibility/checks/llmsTxt";
 import msw from "~/test/mocks/msw";
 import { LLMS_TXT } from "../fixtures";

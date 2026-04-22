@@ -56,7 +56,6 @@ export default wrapTraced(
       responseStatusCode: number,
       responseHeaders: Headers,
       routerContext: EntryContext,
-      // biome-ignore lint/suspicious/noExplicitAny: Sentry wrapper requires flexible type
       loadContext?: any,
     ) => {
       if (import.meta.env.PROD) trackVisits(request);

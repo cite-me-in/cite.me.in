@@ -31,8 +31,8 @@ export default function PricingPage({ loaderData }: Route.ComponentProps) {
   const { monthlyAmount, annualAmount, annualSavings } = loaderData;
   return (
     <Main className="mx-auto max-w-5xl px-4 py-16">
-      <h1 className="mb-4 text-center font-heading text-4xl">Pricing</h1>
-      <p className="mx-auto mb-12 max-w-xl text-center text-foreground/70">
+      <h1 className="font-heading mb-4 text-center text-4xl">Pricing</h1>
+      <p className="text-foreground/70 mx-auto mb-12 max-w-xl text-center">
         Monitor your brand's AI citation visibility. Start free — no credit card
         required.
       </p>
@@ -162,12 +162,12 @@ function TierSummary({
   return (
     <CardHeader>
       <div className="mb-1 flex items-center justify-between">
-        <p className="font-bold text-foreground/60 text-sm uppercase tracking-wide">
+        <p className="text-foreground/60 text-sm font-bold tracking-wide uppercase">
           {title}
         </p>
         {badge && <Badge variant="yellow">{badge}</Badge>}
       </div>
-      <p className="mb-1 font-heading text-3xl">{price}</p>
+      <p className="font-heading mb-1 text-3xl">{price}</p>
       <p className="text-foreground/60 text-sm">{description}</p>
     </CardHeader>
   );
@@ -184,7 +184,7 @@ function TierFeatures({
 }) {
   return (
     <CardContent>
-      <p className="mb-6 text-foreground/70 text-sm italic">{description}</p>
+      <p className="text-foreground/70 mb-6 text-sm italic">{description}</p>
 
       <ul className="mb-8 flex-1 space-y-2 text-sm">
         {features.map((feature) => (

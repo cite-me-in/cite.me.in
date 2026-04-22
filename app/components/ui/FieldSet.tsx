@@ -170,7 +170,7 @@ function FieldSeparator({
       <Separator className="absolute inset-0 top-1/2" />
       {children && (
         <span
-          className="relative mx-auto block w-fit bg-background px-2 text-muted-foreground"
+          className="bg-background text-muted-foreground relative mx-auto block w-fit px-2"
           data-slot="field-separator-content"
         >
           {children}
@@ -205,7 +205,6 @@ function FieldError({
       <ul className="ml-4 flex list-disc flex-col gap-1">
         {errors.map(
           (error, index) =>
-            // biome-ignore lint/suspicious/noArrayIndexKey: we need to use the index as the key because the error is an array
             error?.message && <li key={index}>{error.message}</li>,
         )}
       </ul>

@@ -7,7 +7,7 @@ import {
   expect,
   it,
   vi,
-} from "vitest";
+} from "vite-plus/test";
 import msw from "~/test/mocks/msw";
 
 describe("generateSuggestions", () => {
@@ -49,9 +49,8 @@ describe("generateSuggestions", () => {
     });
 
     it("should return empty array when all checks pass", async () => {
-      const { default: generateSuggestions } = await import(
-        "~/lib/aiLegibility/generateSuggestions"
-      );
+      const { default: generateSuggestions } =
+        await import("~/lib/aiLegibility/generateSuggestions");
 
       const result = await generateSuggestions({
         log,
@@ -76,9 +75,8 @@ describe("generateSuggestions", () => {
     });
 
     it("should generate suggestions from LLM for failed checks", async () => {
-      const { default: generateSuggestions } = await import(
-        "~/lib/aiLegibility/generateSuggestions"
-      );
+      const { default: generateSuggestions } =
+        await import("~/lib/aiLegibility/generateSuggestions");
 
       const result = await generateSuggestions({
         log,
@@ -106,9 +104,8 @@ describe("generateSuggestions", () => {
     });
 
     it("should handle multiple failed checks", async () => {
-      const { default: generateSuggestions } = await import(
-        "~/lib/aiLegibility/generateSuggestions"
-      );
+      const { default: generateSuggestions } =
+        await import("~/lib/aiLegibility/generateSuggestions");
 
       const result = await generateSuggestions({
         log,
@@ -149,9 +146,8 @@ describe("generateSuggestions", () => {
     });
 
     it("should use fallback suggestions when LLM response fails to parse", async () => {
-      const { default: generateSuggestions } = await import(
-        "~/lib/aiLegibility/generateSuggestions"
-      );
+      const { default: generateSuggestions } =
+        await import("~/lib/aiLegibility/generateSuggestions");
 
       const result = await generateSuggestions({
         log,
@@ -172,9 +168,8 @@ describe("generateSuggestions", () => {
     });
 
     it("should provide specific fallback for Homepage content failures", async () => {
-      const { default: generateSuggestions } = await import(
-        "~/lib/aiLegibility/generateSuggestions"
-      );
+      const { default: generateSuggestions } =
+        await import("~/lib/aiLegibility/generateSuggestions");
 
       const result = await generateSuggestions({
         log,
@@ -195,9 +190,8 @@ describe("generateSuggestions", () => {
     });
 
     it("should provide specific fallback for JSON-LD failures", async () => {
-      const { default: generateSuggestions } = await import(
-        "~/lib/aiLegibility/generateSuggestions"
-      );
+      const { default: generateSuggestions } =
+        await import("~/lib/aiLegibility/generateSuggestions");
 
       const result = await generateSuggestions({
         log,

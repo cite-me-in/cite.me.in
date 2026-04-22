@@ -28,7 +28,7 @@ export default function BotInsights({
       <CardContent>
         <Streamdown
           mode="static"
-          className="prose prose-sm mt-4 mb-4 line-clamp-2 max-w-none text-foreground/60 italic"
+          className="prose prose-sm text-foreground/60 mt-4 mb-4 line-clamp-2 max-w-none italic"
         >
           {insight.content}
         </Streamdown>

@@ -188,7 +188,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
 
         <ActiveLink
           to={`/site/${loaderData.site.domain}`}
-          className="text-base text-foreground/60 underline"
+          className="text-foreground/60 text-base underline"
         >
           Skip
         </ActiveLink>

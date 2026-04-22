@@ -35,16 +35,16 @@
       <table class="w-full caption-bottom text-base">
         <thead class="[&amp;_tr]:border-b">
           <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-            <th class="h-10 px-2 text-left align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] font-bold text-foreground">
+            <th class="h-10 px-2 text-left align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground font-bold">
               Group
             </th>
-            <th class="h-10 px-2 text-left align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] font-bold text-foreground">
+            <th class="h-10 px-2 text-left align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground font-bold">
               Query
             </th>
-            <th class="h-10 px-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right font-bold text-foreground">
+            <th class="h-10 px-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground text-right font-bold">
               Citations
             </th>
-            <th class="h-10 px-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right font-bold text-foreground">
+            <th class="h-10 px-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground text-right font-bold">
               Date
             </th>
             <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px]"></th>
@@ -61,7 +61,7 @@
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
               1 direct
             </td>
-            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-right text-xs">
               Feb 26
             </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
@@ -76,7 +76,7 @@
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
               1 direct
             </td>
-            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-right text-xs">
               Feb 26
             </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
@@ -91,7 +91,7 @@
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right">
               1 direct
             </td>
-            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right text-foreground/60 text-xs">
+            <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-foreground/60 text-right text-xs">
               Feb 26
             </td>
             <td class="p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 *:[[role=checkbox]]:translate-y-[2px] text-right"></td>
@@ -133,7 +133,7 @@
   <div class="px-6" data-slot="card-content">
     <div class="space-y-4">
       <div>
-        <h4 class="mb-2 flex items-center gap-2 font-medium text-foreground text-sm">
+        <h4 class="text-foreground mb-2 flex items-center gap-2 text-sm font-medium">
           Direct Citations
           <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden border-green-600 bg-green-500 text-white" data-slot="badge">
             1 pt each
@@ -170,7 +170,7 @@
     </div>
   </div>
   <div class="px-6" data-slot="card-content">
-    <div class="mb-4 border-border/20 border-t-2 border-b-2 py-3">
+    <div class="border-border/20 mb-4 border-t-2 border-b-2 py-3">
       <div class="flex items-center justify-between gap-4">
         <div class="flex flex-col gap-1">
           <span class="font-medium">
@@ -241,12 +241,12 @@
   </div>
   <div class="px-6 flex flex-col gap-6" data-slot="card-content">
     <div>
-      <p class="text-center text-foreground/60 text-sm">
+      <p class="text-foreground/60 text-center text-sm">
         Count of citations that reference this site.
       </p>
     </div>
     <div>
-      <p class="text-center text-foreground/60 text-sm">
+      <p class="text-foreground/60 text-center text-sm">
         Visibility score (0-100). See how it's calculated.
         <a class="underline" data-discover="true" href="/visibility-score">
           Learn more

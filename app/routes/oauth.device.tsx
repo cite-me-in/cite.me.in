@@ -74,7 +74,7 @@ export default function Device({ loaderData }: Route.ComponentProps) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="w-full max-w-md rounded-lg bg-white p-8 text-center shadow">
-          <h1 className="mb-4 font-bold text-2xl">Access Denied</h1>
+          <h1 className="mb-4 text-2xl font-bold">Access Denied</h1>
           <p className="text-gray-600">You denied access to the application.</p>
         </div>
       </div>
@@ -85,7 +85,7 @@ export default function Device({ loaderData }: Route.ComponentProps) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="w-full max-w-md rounded-lg bg-white p-8 text-center shadow">
-          <h1 className="mb-4 font-bold text-2xl">Approved!</h1>
+          <h1 className="mb-4 text-2xl font-bold">Approved!</h1>
           <p className="text-gray-600">
             You can close this window and return to the application.
           </p>
@@ -98,7 +98,7 @@ export default function Device({ loaderData }: Route.ComponentProps) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="w-full max-w-md rounded-lg bg-white p-8 shadow">
-          <h1 className="mb-4 font-bold text-2xl">Device Activation</h1>
+          <h1 className="mb-4 text-2xl font-bold">Device Activation</h1>
           <p className="mb-4 text-gray-600">
             Enter the code shown on your device:
           </p>
@@ -107,7 +107,7 @@ export default function Device({ loaderData }: Route.ComponentProps) {
               type="text"
               name="code"
               placeholder="XXXX"
-              className="flex-1 rounded border px-3 py-2 text-center text-2xl uppercase tracking-widest"
+              className="flex-1 rounded border px-3 py-2 text-center text-2xl tracking-widest uppercase"
               maxLength={8}
             />
             <button
@@ -126,7 +126,7 @@ export default function Device({ loaderData }: Route.ComponentProps) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="w-full max-w-md rounded-lg bg-white p-8 text-center shadow">
-          <h1 className="mb-4 font-bold text-2xl text-red-600">Error</h1>
+          <h1 className="mb-4 text-2xl font-bold text-red-600">Error</h1>
           <p className="text-gray-600">{error || "Invalid code"}</p>
           <a
             href="/oauth/device"
@@ -142,7 +142,7 @@ export default function Device({ loaderData }: Route.ComponentProps) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <div className="w-full max-w-md rounded-lg bg-white p-8 shadow">
-        <h1 className="mb-4 font-bold text-2xl">
+        <h1 className="mb-4 text-2xl font-bold">
           Authorize {deviceCode.clientName}
         </h1>
         <p className="mb-6 text-gray-600">

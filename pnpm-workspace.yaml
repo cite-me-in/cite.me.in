@@ -1,12 +1,17 @@
 ignoredBuiltDependencies:
-  - libpq
 
 minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
-  - "@biomejs/biome"
-  - "@biomejs/*"
   - "react-email"
   - "@react-email/render"
+  - vite-plus
+  - "@voidzero-dev/*"
+  - oxlint
+  - "@oxlint/*"
+  - oxlint-tsgolint
+  - "@oxlint-tsgolint/*"
+  - oxfmt
+  - "@oxfmt/*"
 
 onlyBuiltDependencies:
   - "@infisical/cli"
@@ -19,3 +24,13 @@ onlyBuiltDependencies:
   - prisma
   - protobufjs
   - sharp
+catalog:
+  vite: npm:@voidzero-dev/vite-plus-core@latest
+  vite-plus: latest
+overrides:
+  vite: "catalog:"
+peerDependencyRules:
+  allowAny:
+    - vite
+  allowedVersions:
+    vite: "*"

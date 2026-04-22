@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vite-plus/test";
 import generateUnsubscribeToken from "~/emails/generateUnsubscribeToken";
 import { hashPassword } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";

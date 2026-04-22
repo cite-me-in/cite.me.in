@@ -20,7 +20,7 @@ export default function SiteHeading({
       <div>
         <p>
           <Link
-            className="block max-w-md truncate font-mono text-foreground/60 hover:underline"
+            className="text-foreground/60 block max-w-md truncate font-mono hover:underline"
             to={`/site/${site.domain}`}
             title={site.domain}
           >
@@ -29,7 +29,7 @@ export default function SiteHeading({
         </p>
         <h1 className="font-heading text-3xl">{title}</h1>
         {subtitle && (
-          <p className="mt-1 text-base text-foreground/60">{subtitle}</p>
+          <p className="text-foreground/60 mt-1 text-base">{subtitle}</p>
         )}
       </div>
 
@@ -37,7 +37,7 @@ export default function SiteHeading({
 
       {backTo && (
         <ActiveLink
-          className="text-base text-foreground/60 hover:underline"
+          className="text-foreground/60 text-base hover:underline"
           to={backTo.path}
         >
           {backTo.label}

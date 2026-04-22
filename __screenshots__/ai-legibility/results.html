@@ -1,14 +1,14 @@
 <div class="flex items-center justify-between gap-4">
   <div>
     <p>
-      <a class="block max-w-md truncate font-mono text-foreground/60 hover:underline" data-discover="true" href="/site/report-example.com" title="report-example.com">
+      <a class="text-foreground/60 block max-w-md truncate font-mono hover:underline" data-discover="true" href="/site/report-example.com" title="report-example.com">
         report-example.com
       </a>
     </p>
     <h1 class="font-heading text-3xl">
       AI Legibility
     </h1>
-    <p class="mt-1 text-base text-foreground/60">
+    <p class="text-foreground/60 mt-1 text-base">
       Last scanned: Nov 14, 2023
     </p>
   </div>
@@ -29,7 +29,7 @@
         <div class="text-center">
           Overall Score
         </div>
-        <div class="text-center font-bold text-3xl">
+        <div class="text-center text-3xl font-bold">
           86%
         </div>
       </div>
@@ -39,7 +39,7 @@
         <div class="text-center">
           Critical
         </div>
-        <div class="text-center font-bold text-3xl">
+        <div class="text-center text-3xl font-bold">
           4/4
         </div>
       </div>
@@ -49,7 +49,7 @@
         <div class="text-center">
           Important
         </div>
-        <div class="text-center font-bold text-3xl">
+        <div class="text-center text-3xl font-bold">
           2/2
         </div>
       </div>
@@ -59,7 +59,7 @@
         <div class="text-center">
           Optimization
         </div>
-        <div class="text-center font-bold text-3xl">
+        <div class="text-center text-3xl font-bold">
           0/1
         </div>
       </div>
@@ -198,7 +198,7 @@
     <div class="px-6 space-y-4" data-slot="card-content">
       <div class="rounded-lg border p-4">
         <div class="mb-2 flex items-start justify-between">
-          <h4 class="font-medium text-lg">
+          <h4 class="text-lg font-medium">
             Add llms.txt for AI discoverability
           </h4>
           <div class="flex gap-2">
@@ -210,16 +210,16 @@
             </span>
           </div>
         </div>
-        <p class="text-base text-foreground/60">
+        <p class="text-foreground/60 text-base">
           Create an llms.txt file at the root of your site to provide structured context for LLMs. This helps AI agents understand your content better.
         </p>
-        <pre class="mt-2 overflow-x-auto rounded bg-muted p-2 font-mono text-base">
+        <pre class="bg-muted mt-2 overflow-x-auto rounded p-2 font-mono text-base">
           # Example Site Main description here. ## Sections - /about - /pricing
         </pre>
       </div>
       <div class="rounded-lg border p-4">
         <div class="mb-2 flex items-start justify-between">
-          <h4 class="font-medium text-lg">
+          <h4 class="text-lg font-medium">
             Add sitemap.txt
           </h4>
           <div class="flex gap-2">
@@ -231,16 +231,16 @@
             </span>
           </div>
         </div>
-        <p class="text-base text-foreground/60">
+        <p class="text-foreground/60 text-base">
           Create a plain-text file at https://example.com/sitemap.txt with one URL per line listing all important pages on your site.
         </p>
-        <pre class="mt-2 overflow-x-auto rounded bg-muted p-2 font-mono text-base">
+        <pre class="bg-muted mt-2 overflow-x-auto rounded p-2 font-mono text-base">
           # 1. robots.txt — add a Sitemap line: Sitemap: https://example.com/sitemap.txt # 2. HTML &amp;lt;head&amp;gt; — add a link tag: &amp;lt;link rel="sitemap" type="text/plain" title="Sitemap" href="/sitemap.txt"&amp;gt; # sitemap.txt content: https://example.com/ https://example.com/about https://example.com/products
         </pre>
       </div>
       <div class="rounded-lg border p-4">
         <div class="mb-2 flex items-start justify-between">
-          <h4 class="font-medium text-lg">
+          <h4 class="text-lg font-medium">
             Add JSON-LD structured data
           </h4>
           <div class="flex gap-2">
@@ -252,13 +252,13 @@
             </span>
           </div>
         </div>
-        <p class="text-base text-foreground/60">
+        <p class="text-foreground/60 text-base">
           Add a &amp;lt;script type="application/ld+json"&amp;gt; block to your pages with schema.org structured data to help AI agents understand your content.
         </p>
       </div>
       <div class="rounded-lg border p-4">
         <div class="mb-2 flex items-start justify-between">
-          <h4 class="font-medium text-lg">
+          <h4 class="text-lg font-medium">
             Fix meta description
           </h4>
           <div class="flex gap-2">
@@ -270,7 +270,7 @@
             </span>
           </div>
         </div>
-        <p class="text-base text-foreground/60">
+        <p class="text-foreground/60 text-base">
           Add a meta description tag to your homepage to help AI agents summarize your content.
         </p>
       </div>

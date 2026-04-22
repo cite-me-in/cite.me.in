@@ -147,7 +147,7 @@ export function HydrateFallback() {
         className="flex flex-col items-center justify-center gap-4"
       >
         <WaveLoading color="#111111" count={2} />
-        <p className="text-gray-500 text-lg">Loading, please wait...</p>
+        <p className="text-lg text-gray-500">Loading, please wait...</p>
       </Main>
     </Layout>
   );

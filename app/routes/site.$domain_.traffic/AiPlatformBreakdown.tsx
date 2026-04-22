@@ -32,7 +32,7 @@ export default function AiPlatformBreakdown({
               <TableRow>
                 <TableCell
                   colSpan={3}
-                  className="text-center text-foreground/60"
+                  className="text-foreground/60 text-center"
                 >
                   No AI referrals in this period
                 </TableCell>

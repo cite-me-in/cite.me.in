@@ -1,9 +1,9 @@
 // DO NOT add to setup.ts as vitest.config.js cannot upload file that imports vitest
 
-import { expect } from "@playwright/test";
 import { readdirSync, unlinkSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
+import { expect } from "@playwright/test";
 import type { Locator, Page } from "playwright";
 import { sleep } from "radashi";
 import invariant from "tiny-invariant";

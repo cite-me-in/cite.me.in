@@ -22,10 +22,7 @@ export default function About() {
     >
       <script
         type="application/ld+json"
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: Server-generated structured data
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(schemaData()),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData()) }}
       />
 
       <div className="container mx-auto my-10 space-y-8 p-5">

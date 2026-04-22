@@ -18,9 +18,9 @@ export default function ProgressIndicator({
     >
       <Progress.Track
         style={{ gridColumn: "1 / 3" }}
-        className="box-shadow var-color-gray-200 inset-0-0-0-1px h-full overflow-hidden border-radius-0-25rem bg-gray-200"
+        className="box-shadow var-color-gray-200 inset-0-0-0-1px border-radius-0-25rem h-full overflow-hidden bg-gray-200"
       >
-        <Progress.Indicator className="block bg-[#F59E0B] transition-width duration-500" />
+        <Progress.Indicator className="transition-width block bg-[#F59E0B] duration-500" />
       </Progress.Track>
     </Progress.Root>
   );

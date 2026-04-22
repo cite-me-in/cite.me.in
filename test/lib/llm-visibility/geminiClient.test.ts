@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
 const mockGenerateContent = vi.hoisted(() => vi.fn());
 
@@ -57,9 +57,8 @@ describe("queryGemini", () => {
         .mockResolvedValueOnce({ url: "https://example.com/final-2" }),
     );
 
-    const { default: queryGemini } = await import(
-      "~/lib/llm-visibility/geminiClient.server"
-    );
+    const { default: queryGemini } =
+      await import("~/lib/llm-visibility/geminiClient.server");
 
     const result = await queryGemini({
       maxRetries: 0,
@@ -96,9 +95,8 @@ describe("queryGemini", () => {
       usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5 },
     });
 
-    const { default: queryGemini } = await import(
-      "~/lib/llm-visibility/geminiClient.server"
-    );
+    const { default: queryGemini } =
+      await import("~/lib/llm-visibility/geminiClient.server");
 
     await queryGemini({
       maxRetries: 0,
@@ -121,9 +119,8 @@ describe("queryGemini", () => {
       usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5 },
     });
 
-    const { default: queryGemini } = await import(
-      "~/lib/llm-visibility/geminiClient.server"
-    );
+    const { default: queryGemini } =
+      await import("~/lib/llm-visibility/geminiClient.server");
 
     const result = await queryGemini({
       maxRetries: 0,
@@ -144,9 +141,8 @@ describe("queryGemini", () => {
       usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5 },
     });
 
-    const { default: queryGemini } = await import(
-      "~/lib/llm-visibility/geminiClient.server"
-    );
+    const { default: queryGemini } =
+      await import("~/lib/llm-visibility/geminiClient.server");
 
     const result = await queryGemini({
       maxRetries: 0,

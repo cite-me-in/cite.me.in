@@ -28,7 +28,7 @@ export function TopCompetitors({
                   {brandName}
                 </Link>
               </td>
-              <td className="w-30 whitespace-nowrap px-2 py-4 font-bold tabular-nums">
+              <td className="w-30 px-2 py-4 font-bold whitespace-nowrap tabular-nums">
                 {count.toLocaleString()}{" "}
                 {count === 1 ? "citation" : "citations"}
               </td>

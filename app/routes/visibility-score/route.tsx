@@ -17,18 +17,18 @@ export default function VisibilityScore() {
   return (
     <main className="mx-auto w-full max-w-4xl px-6 py-12">
       <article>
-        <h1 className="mb-4 font-bold text-4xl leading-tight">
+        <h1 className="mb-4 text-4xl leading-tight font-bold">
           Understanding Your Visibility Score
         </h1>
-        <p className="mb-8 text-lg text-muted-foreground">
+        <p className="text-muted-foreground mb-8 text-lg">
           A composite metric (0-100) that measures your brand's presence across
           AI-powered search and chat platforms.
         </p>
 
         <Card className="mb-8">
           <CardContent className="p-6">
-            <h2 className="mb-4 font-bold text-xl">The Formula</h2>
-            <div className="overflow-x-auto rounded-md bg-muted p-4 font-mono text-sm">
+            <h2 className="mb-4 text-xl font-bold">The Formula</h2>
+            <div className="bg-muted overflow-x-auto rounded-md p-4 font-mono text-sm">
               <code>
                 Visibility Score = (Query Coverage × 0.35) + (Position Score ×
                 0.30) + (Share of Voice × 0.20) + (Mention Rate × 0.15)
@@ -64,7 +64,7 @@ export default function VisibilityScore() {
             calculation={
               <>
                 <code>Σ(1 ÷ (position + 1)) ÷ Total queries × 100</code>
-                <p className="mt-2 text-muted-foreground text-sm">
+                <p className="text-muted-foreground mt-2 text-sm">
                   Position 1 contributes 0.50, position 2 contributes 0.33,
                   position 5 contributes 0.17, etc.
                 </p>
@@ -121,8 +121,8 @@ export default function VisibilityScore() {
           />
         </section>
 
-        <section className="mt-12 rounded-lg bg-muted p-6">
-          <h2 className="mb-4 font-bold text-xl">Putting It All Together</h2>
+        <section className="bg-muted mt-12 rounded-lg p-6">
+          <h2 className="mb-4 text-xl font-bold">Putting It All Together</h2>
           <p className="text-muted-foreground">
             Your visibility score provides a holistic view of how well your
             brand performs across AI platforms. A score of 50 means you're
@@ -130,7 +130,7 @@ export default function VisibilityScore() {
             positioning. Scores above 70 indicate strong visibility, while
             scores below 30 suggest significant room for improvement.
           </p>
-          <p className="mt-4 text-muted-foreground">
+          <p className="text-muted-foreground mt-4">
             Track your score over time in your{" "}
             <Link to="/sites" className="underline">
               dashboard
@@ -163,25 +163,25 @@ function MetricCard({
       <CardContent className="p-6">
         <div className="mb-4 flex items-start justify-between">
           <div>
-            <h3 className="font-bold text-lg">{name}</h3>
+            <h3 className="text-lg font-bold">{name}</h3>
             <p className="text-muted-foreground text-sm">{description}</p>
           </div>
           <div className="text-right">
-            <div className="font-bold text-2xl">{weight}%</div>
+            <div className="text-2xl font-bold">{weight}%</div>
             <div className="text-muted-foreground text-xs">weight</div>
           </div>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
           <div>
-            <h4 className="mb-2 font-medium text-sm">How It's Calculated</h4>
-            <div className="rounded-md bg-muted p-3 text-sm">{calculation}</div>
+            <h4 className="mb-2 text-sm font-medium">How It's Calculated</h4>
+            <div className="bg-muted rounded-md p-3 text-sm">{calculation}</div>
           </div>
 
           <div className="space-y-4">
             <div>
-              <h4 className="mb-2 font-medium text-sm">What Affects It</h4>
-              <ul className="space-y-1 text-muted-foreground text-sm">
+              <h4 className="mb-2 text-sm font-medium">What Affects It</h4>
+              <ul className="text-muted-foreground space-y-1 text-sm">
                 {affects.map((item) => (
                   <li key={item}>• {item}</li>
                 ))}
@@ -189,8 +189,8 @@ function MetricCard({
             </div>
 
             <div>
-              <h4 className="mb-2 font-medium text-sm">How to Improve</h4>
-              <ul className="space-y-1 text-muted-foreground text-sm">
+              <h4 className="mb-2 text-sm font-medium">How to Improve</h4>
+              <ul className="text-muted-foreground space-y-1 text-sm">
                 {improve.map((item) => (
                   <li key={item}>• {item}</li>
                 ))}

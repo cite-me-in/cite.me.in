@@ -1,9 +1,9 @@
-import { beforeAll, describe, expect, it } from "vitest";
 import { createHash, createHmac } from "node:crypto";
-import { port } from "~/test/helpers/launchBrowser";
-import envVars from "~/lib/envVars.server";
 import Stripe from "stripe";
+import { beforeAll, describe, expect, it } from "vite-plus/test";
+import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
+import { port } from "~/test/helpers/launchBrowser";
 
 const BASE_URL = `http://localhost:${port}/api/stripe/webhook`;
 const stripe = new Stripe(envVars.STRIPE_SECRET_KEY, {

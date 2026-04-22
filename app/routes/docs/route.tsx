@@ -10,8 +10,7 @@ export function meta(): Route.MetaDescriptors {
     { title: "API Documentation | Cite.me.in" },
     {
       name: "description",
-      content:
-        "Monitoring API reference for cite.me.in — endpoints, parameters, and examples.",
+      content: "Monitoring API reference for cite.me.in — endpoints, parameters, and examples.",
     },
   ];
 }
@@ -56,9 +55,7 @@ export default function ApiDocs({ loaderData }: Route.ComponentProps) {
               <thead className="border-b-2 border-b-gray-600">{children}</thead>
             ),
             code: ({ children }) => (
-              <code className="font-light font-mono before:hidden after:hidden">
-                {children}
-              </code>
+              <code className="font-light font-mono before:hidden after:hidden">{children}</code>
             ),
           }}
         >
