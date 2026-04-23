@@ -31,8 +31,7 @@ jobs:
         ports:
           - 5432:5432
         # needed because the postgres container does not provide a healthcheck
-        options:
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s
           --health-retries 5
 
       redis:
@@ -107,7 +106,7 @@ jobs:
           file-output-path: "/.env"
 
       - name: Run Tests
-        run: pnpm vp test --expose-gc --max-old-space-size=3096 run
+        run: pnpm vp test run
 
       - name: Run Playwright Tests
         if: github.ref == 'refs/heads/not-main'
