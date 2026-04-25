@@ -9,17 +9,10 @@ import { resolve } from "node:path";
 import { promisify } from "node:util";
 import prisma from "~/lib/prisma.server";
 import "~/test/mocks/msw";
-import { closeServer, launchServer, port } from "./launchServer";
+import { closeServer, launchServer } from "./launchServer";
 import { removeTemporaryFiles } from "./toMatchVisual";
 
 export default async function setup() {
-  // Kill any server processes running on the port
-  try {
-    const { stdout } = await promisify(execFile)("lsof", [`-ti:${port}`]);
-    const pid = stdout.trim().match(/^\s*(\d+)/m)?.[1];
-    if (pid) await promisify(execFile)("kill", ["-9", pid]);
-  } catch {}
-
   // Remove Vite dependency cache
   await rm("node_modules/.vite/deps", { recursive: true, force: true });
 
@@ -27,7 +20,7 @@ export default async function setup() {
   await removeTemporaryFiles();
 
   // Launch server and start test env MSW handlers
-  await launchServer(port);
+  const port = await launchServer();
 
   // Pre-warm Vite dep optimization: the first browser request is held until
   // Vite finishes crawling and bundling deps. By making an HTTP request here

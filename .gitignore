@@ -17,6 +17,7 @@ opencode.json
 deploy.log
 
 # Ignore test results
+.test-server.json
 __screenshots__/**/*.diff.png
 __screenshots__/**/*.new.png
 __screenshots__/**/*.new.html

@@ -78,13 +78,17 @@ async function startServer() {
     // Unref the server to allow process to exit cleanly
     devServer.httpServer?.unref();
 
+    async function shutdown() {
+      await devServer?.close();
+      process.exit(0);
+    }
+
     // Handle graceful shutdown on parent process termination
     process.on("message", async (msg) => {
-      if (msg === "shutdown") {
-        await devServer?.close();
-        process.exit(0);
-      }
+      if (msg === "shutdown") await shutdown();
     });
+    process.on("SIGINT", shutdown);
+    process.on("SIGTERM", shutdown);
 
     // Signal ready immediately. Vite's holdUntilCrawlEnd (default: true) will
     // hold the first browser request until dep optimization completes, so tests
