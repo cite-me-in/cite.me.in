@@ -144,11 +144,11 @@ export function getServerPort(): number {
 
 export function getServerBaseURL(): string {
   if (process.env.TEST_BASE_URL) return process.env.TEST_BASE_URL;
-  if (process.env.TEST_PORT) return `http://${serverHost}:${process.env.TEST_PORT}`;
+  if (process.env.TEST_PORT)
+    return `http://${serverHost}:${process.env.TEST_PORT}`;
 
   return (
-    readServerState()?.baseURL ??
-    `http://${serverHost}:${getServerPort()}`
+    readServerState()?.baseURL ?? `http://${serverHost}:${getServerPort()}`
   );
 }
 
@@ -168,10 +168,12 @@ async function canBindPort(port: number, host: string): Promise<boolean> {
   });
 }
 
-function waitForExit(worker: ChildProcess, timeoutMs: number): Promise<boolean> {
-  if (worker.exitCode != null || worker.signalCode != null) {
+function waitForExit(
+  worker: ChildProcess,
+  timeoutMs: number,
+): Promise<boolean> {
+  if (worker.exitCode !== null || worker.signalCode !== null)
     return Promise.resolve(true);
-  }
 
   return new Promise<boolean>((resolve) => {
     const timeout = setTimeout(() => {
@@ -199,7 +201,10 @@ async function terminateServerPid(): Promise<void> {
   }
 }
 
-async function waitForPidExit(pid: number, timeoutMs: number): Promise<boolean> {
+async function waitForPidExit(
+  pid: number,
+  timeoutMs: number,
+): Promise<boolean> {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     if (!isProcessRunning(pid)) return true;
@@ -245,9 +250,9 @@ function readServerState(): ServerState | undefined {
   if (!existsSync(serverStatePath)) return undefined;
 
   try {
-  const state = JSON.parse(readFileSync(serverStatePath, "utf8")) as Partial<
-    ServerState
-  >;
+    const state = JSON.parse(
+      readFileSync(serverStatePath, "utf8"),
+    ) as Partial<ServerState>;
     if (!state.pid || !state.port || !state.baseURL) return undefined;
     return {
       baseURL: state.baseURL,
