@@ -1,12 +1,12 @@
 import { ms } from "convert";
 import debug from "debug";
+import captureAndLogError from "~/lib/captureAndLogError.server";
 import type { HTMLNode } from "~/lib/html/HTMLNode";
 import parseHTMLTree, {
   getElementsByTagName,
   getMainContent,
   htmlToMarkdown,
 } from "~/lib/html/parseHTML";
-import captureAndLogError from "../captureAndLogError.server";
 
 const SUPPORTED_CONTENT_TYPES = ["text/html", "text/markdown"];
 

@@ -9,8 +9,7 @@ import { resolve } from "node:path";
 import { promisify } from "node:util";
 import prisma from "~/lib/prisma.server";
 import "~/test/mocks/msw";
-import { port } from "./launchBrowser";
-import { closeServer, launchServer } from "./launchServer";
+import { closeServer, launchServer, port } from "./launchServer";
 import { removeTemporaryFiles } from "./toMatchVisual";
 
 export default async function setup() {

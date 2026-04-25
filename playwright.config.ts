@@ -14,7 +14,6 @@ export default defineConfig({
   testDir: "test/e2e",
   testMatch: /.*\.test\.ts$/,
   use: {
-    baseURL: "http://localhost:9222",
     screenshot: "only-on-failure",
     viewport: { width: 1280, height: 720 },
   },

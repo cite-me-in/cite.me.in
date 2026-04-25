@@ -1,6 +1,6 @@
 import { expect } from "playwright/test";
 import { beforeAll, describe, it } from "vite-plus/test";
-import { port } from "../helpers/launchBrowser";
+import { port } from "~/test/helpers/launchServer";
 
 describe("robots.txt", () => {
   let lines: string[];
@@ -14,11 +14,15 @@ describe("robots.txt", () => {
   });
 
   it("should reference sitemap.xml", () => {
-    expect(statements).toContain("Sitemap: http://localhost:9222/sitemap.xml");
+    expect(statements).toContain(
+      `Sitemap: http://localhost:${port}/sitemap.xml`,
+    );
   });
 
   it("should reference sitemap.txt", () => {
-    expect(statements).toContain("Sitemap: http://localhost:9222/sitemap.txt");
+    expect(statements).toContain(
+      `Sitemap: http://localhost:${port}/sitemap.txt`,
+    );
   });
 
   it("should allow all user agents", () => {

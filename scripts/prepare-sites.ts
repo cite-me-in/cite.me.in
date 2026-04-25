@@ -9,7 +9,7 @@
  */
 
 import debug from "debug";
-import prepareSites from "../app/lib/prepareSites.server";
+import prepareSites from "~/lib/prepareSites.server";
 
 debug.enable("server");
 

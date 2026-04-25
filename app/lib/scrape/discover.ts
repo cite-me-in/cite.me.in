@@ -1,8 +1,8 @@
 import { ms } from "convert";
 import debug from "debug";
+import captureAndLogError from "~/lib/captureAndLogError.server";
 import parseHTMLTree, { getElementsByTagName } from "~/lib/html/parseHTML";
-import captureAndLogError from "../captureAndLogError.server";
-import { isSameDomain, normalizeDomain } from "../isSameDomain";
+import { isSameDomain, normalizeDomain } from "~/lib/isSameDomain";
 
 const MEDIA_EXTENSIONS = /\.(pdf|jpg|jpeg|png|gif|svg|webp|mp4|mp3|zip|exe)$/i;
 

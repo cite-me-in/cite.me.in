@@ -9,9 +9,8 @@ import {
   type Route,
   chromium,
 } from "playwright";
+import { port } from "./launchServer";
 import trimConsole from "./trimConsole";
-
-export const port = 9222;
 
 let context: BrowserContext | undefined;
 const logger = debug("browser");

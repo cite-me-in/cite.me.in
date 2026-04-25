@@ -7,7 +7,7 @@ import {
   ROBOTS_TXT_BLOCKS_AI,
   ROBOTS_TXT_PARTIAL_AI_BLOCK,
   mockFetch,
-} from "../fixtures";
+} from "~/test/lib/aiLegibility/fixtures";
 
 describe("checkRobotsTxt", () => {
   afterEach(() => {

@@ -5,6 +5,7 @@ import debug from "debug";
 import { sleep } from "radashi";
 
 let worker: ChildProcess | undefined;
+export let port: number;
 
 const logger = debug("server");
 
@@ -16,6 +17,7 @@ const logger = debug("server");
 export async function launchServer(port: number): Promise<void> {
   if (worker) return;
 
+  await findAvailablePort();
   logger("Launching server on port %s", port);
 
   // Start the server as forked process, that way we don't share the same node
@@ -76,5 +78,29 @@ export async function closeServer(): Promise<void> {
     // Check if process exited, only kill if it's still running
     if (!worker.killed) worker.kill("SIGKILL");
     worker.disconnect();
+  }
+}
+
+async function findAvailablePort() {
+  port = 9222;
+  // Check if the port is taken, increment by one and keep checking
+  const net = await import("net");
+  let found = false;
+  while (!found) {
+    await new Promise<void>((resolve) => {
+      const tester = net
+        .createServer()
+        .once("error", () => {
+          port++;
+          resolve();
+        })
+        .once("listening", function () {
+          tester.close(() => {
+            found = true;
+            resolve();
+          });
+        })
+        .listen(port, "127.0.0.1");
+    });
   }
 }

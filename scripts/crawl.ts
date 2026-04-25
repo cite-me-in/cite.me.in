@@ -8,10 +8,10 @@
  */
 
 import { execSync } from "node:child_process";
-import { normalizeDomain } from "../app/lib/isSameDomain";
-import prisma from "../app/lib/prisma.server";
-import { crawl } from "../app/lib/scrape/crawl";
-import { summarize } from "../app/lib/scrape/summarize";
+import { normalizeDomain } from "~/lib/isSameDomain";
+import prisma from "~/lib/prisma.server";
+import crawl from "~/lib/scrape/crawl";
+import summarize from "~/lib/scrape/summarize";
 
 const domain = normalizeDomain(process.argv[2]);
 if (!domain) {

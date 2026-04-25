@@ -1,6 +1,6 @@
 import { z } from "zod";
+import { verifyBearerToken } from "~/lib/mcp/auth";
 import prisma from "~/lib/prisma.server";
-import { verifyBearerToken } from "../auth";
 
 export default {
   name: "create_site",

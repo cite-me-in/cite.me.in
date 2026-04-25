@@ -1,4 +1,4 @@
-import type { CheckResult } from "../types";
+import type { CheckResult } from "~/lib/aiLegibility/types";
 
 const KNOWN_SCHEMAS = [
   "Article",

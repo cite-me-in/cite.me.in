@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vite-plus/test";
 import { daysAgo, hoursAgo } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
-import { port } from "../helpers/launchBrowser";
+import { port } from "~/test/helpers/launchServer";
 
 async function makeRequest(auth?: string) {
   const response = await fetch(`http://localhost:${port}/cron/process-sites`, {

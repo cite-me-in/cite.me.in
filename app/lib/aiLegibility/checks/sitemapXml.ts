@@ -1,5 +1,5 @@
 import { XMLParser } from "fast-xml-parser";
-import type { CheckResult } from "../types";
+import type { CheckResult } from "~/lib/aiLegibility/types";
 
 const parser = new XMLParser({ ignoreAttributes: false });
 

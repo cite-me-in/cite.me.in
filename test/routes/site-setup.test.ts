@@ -5,8 +5,8 @@ import { hashPassword } from "~/lib/auth.server";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
 import { appendLog, setStatus } from "~/lib/setupProgress.server";
-import { goto } from "../helpers/launchBrowser";
-import { signIn } from "../helpers/signIn";
+import { goto } from "~/test/helpers/launchBrowser";
+import { signIn } from "~/test/helpers/signIn";
 
 const USER_ID = "user-setup-test";
 const SITE_ID = "site-setup-test";

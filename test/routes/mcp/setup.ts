@@ -1,7 +1,7 @@
 import { beforeAll } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
 import { resetRateLimit } from "~/lib/rateLimit.server";
-import { port } from "~/test/helpers/launchBrowser";
+import { port } from "~/test/helpers/launchServer";
 
 export const accessToken = `test-access-token-${Date.now()}`;
 

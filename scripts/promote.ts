@@ -18,7 +18,7 @@ import envVars from "env-var";
 import { Octokit } from "octokit";
 import ora from "ora";
 import invariant from "tiny-invariant";
-import { timeago } from "../app/lib/relativeTime";
+import { timeago } from "~/lib/relativeTime";
 
 dotenv.config({ quiet: true });
 

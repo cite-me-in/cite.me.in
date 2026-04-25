@@ -1,7 +1,7 @@
 import { XMLParser } from "fast-xml-parser";
 import { expect } from "playwright/test";
 import { beforeAll, describe, it } from "vite-plus/test";
-import { port } from "../helpers/launchBrowser";
+import { port } from "~/test/helpers/launchServer";
 
 async function fetchSitemapMain() {
   const response = await fetch(`http://localhost:${port}/sitemap.xml`);
@@ -40,23 +40,23 @@ describe("sitemap.xml", () => {
   });
 
   it("should include homepage", () => {
-    expect(locs).toContain("http://localhost:9222/");
+    expect(locs).toContain(`http://localhost:${port}/`);
   });
 
   it("should include /faq", () => {
-    expect(locs).toContain("http://localhost:9222/faq");
+    expect(locs).toContain(`http://localhost:${port}/faq`);
   });
 
   it("should include /about", () => {
-    expect(locs).toContain("http://localhost:9222/about");
+    expect(locs).toContain(`http://localhost:${port}/about`);
   });
 
   it("should include /privacy", () => {
-    expect(locs).toContain("http://localhost:9222/privacy");
+    expect(locs).toContain(`http://localhost:${port}/privacy`);
   });
 
   it("should include /terms", () => {
-    expect(locs).toContain("http://localhost:9222/terms");
+    expect(locs).toContain(`http://localhost:${port}/terms`);
   });
 });
 
@@ -77,31 +77,31 @@ describe("sitemap.txt", () => {
   });
 
   it("should include homepage", () => {
-    expect(urls).toContain("http://localhost:9222/");
+    expect(urls).toContain(`http://localhost:${port}/`);
   });
 
   it("should include /faq", () => {
-    expect(urls).toContain("http://localhost:9222/faq");
+    expect(urls).toContain(`http://localhost:${port}/faq`);
   });
 
   it("should include /about", () => {
-    expect(urls).toContain("http://localhost:9222/about");
+    expect(urls).toContain(`http://localhost:${port}/about`);
   });
 
   it("should include /privacy", () => {
-    expect(urls).toContain("http://localhost:9222/privacy");
+    expect(urls).toContain(`http://localhost:${port}/privacy`);
   });
 
   it("should include /terms", () => {
-    expect(urls).toContain("http://localhost:9222/terms");
+    expect(urls).toContain(`http://localhost:${port}/terms`);
   });
 
   it("should include /docs", () => {
-    expect(urls).toContain("http://localhost:9222/docs");
+    expect(urls).toContain(`http://localhost:${port}/docs`);
   });
 
   it("should include /pricing", () => {
-    expect(urls).toContain("http://localhost:9222/pricing");
+    expect(urls).toContain(`http://localhost:${port}/pricing`);
   });
 
   it("should have URLs that are all present in sitemap-main.xml", async () => {

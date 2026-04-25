@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vite-plus/test";
 import checkMetaTags from "~/lib/aiLegibility/checks/metaTags";
-import { HOMEPAGE_WITH_CONTENT } from "../fixtures";
+import { HOMEPAGE_WITH_CONTENT } from "~/test/lib/aiLegibility/fixtures";
 
 describe("checkMetaTags", () => {
   it("should pass when all meta tags are present", async () => {

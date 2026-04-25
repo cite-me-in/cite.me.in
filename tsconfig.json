@@ -4,7 +4,8 @@
     "**/.client/**/*",
     "**/.server/**/*",
     "**/*",
-    "test/**/*.ts"
+    "test/**/*.ts",
+    "scripts/*.ts"
   ],
   "exclude": [
     "__screenshots__/**",
@@ -18,8 +19,7 @@
     "package.json",
     "prisma/backup.sql",
     "prisma/generated",
-    "public/**",
-    "scripts/**"
+    "public/**"
   ],
   "compilerOptions": {
     "esModuleInterop": true,

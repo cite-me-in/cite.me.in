@@ -1,4 +1,4 @@
-import type { CheckResult } from "../types";
+import type { CheckResult } from "~/lib/aiLegibility/types";
 
 const MIN_CONTENT_LENGTH = 100;
 const SPA_PATTERNS = [

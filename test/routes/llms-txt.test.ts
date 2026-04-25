@@ -1,6 +1,6 @@
 import { expect } from "playwright/test";
 import { beforeAll, describe, it } from "vite-plus/test";
-import { port } from "../helpers/launchBrowser";
+import { port } from "~/test/helpers/launchServer";
 
 describe("llms.txt", () => {
   let content: string;

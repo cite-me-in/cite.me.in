@@ -1,12 +1,12 @@
 import { HttpResponse, http } from "msw";
 import { afterEach, describe, expect, it } from "vite-plus/test";
 import checkHomepageContent from "~/lib/aiLegibility/checks/homepageContent";
-import msw from "~/test/mocks/msw";
 import {
   HOMEPAGE_EMPTY_BODY,
   HOMEPAGE_SPA_SHELL,
   HOMEPAGE_WITH_CONTENT,
-} from "../fixtures";
+} from "~/test/lib/aiLegibility/fixtures";
+import msw from "~/test/mocks/msw";
 
 describe("checkHomepageContent", () => {
   afterEach(() => {

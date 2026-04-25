@@ -1,6 +1,7 @@
 import { type Page, expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vite-plus/test";
-import { goto, port } from "../helpers/launchBrowser";
+import { goto } from "~/test/helpers/launchBrowser";
+import { port } from "~/test/helpers/launchServer";
 
 describe("home page HTTP headers", () => {
   let response: Response;

@@ -6,8 +6,8 @@ import {
   startNewScan,
 } from "~/lib/aiLegibility/progress.server";
 import captureAndLogError from "~/lib/captureAndLogError.server";
+import { normalizeURL } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
-import { normalizeURL } from "../isSameDomain";
 import checkHomepageContent from "./checks/homepageContent";
 import checkJsonLd from "./checks/jsonLd";
 import checkLlmsTxt from "./checks/llmsTxt";

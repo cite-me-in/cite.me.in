@@ -5,8 +5,8 @@ import type { HTMLNode } from "~/lib/html/HTMLNode";
 import { modifyElements, removeElements } from "~/lib/html/parseHTML";
 import prisma from "~/lib/prisma.server";
 import type { Site, User } from "~/prisma";
-import { goto } from "../helpers/launchBrowser";
-import { signIn } from "../helpers/signIn";
+import { goto } from "~/test/helpers/launchBrowser";
+import { signIn } from "~/test/helpers/signIn";
 
 describe("unauthenticated access", () => {
   it("should redirect to /sign-in", async () => {

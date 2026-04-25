@@ -3,8 +3,9 @@ import { beforeAll, describe, it } from "vite-plus/test";
 import { hashPassword, verifyPassword } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
 import type { User } from "~/prisma";
-import { goto, port } from "../helpers/launchBrowser";
-import { signIn } from "../helpers/signIn";
+import { goto } from "~/test/helpers/launchBrowser";
+import { port } from "~/test/helpers/launchServer";
+import { signIn } from "~/test/helpers/signIn";
 
 const EMAIL = "profile-test@example.com";
 const PASSWORD = "correct-password-123";

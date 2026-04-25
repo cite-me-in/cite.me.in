@@ -1,7 +1,7 @@
 import invariant from "tiny-invariant";
 import { beforeAll, describe, expect, it } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
-import { port } from "../helpers/launchBrowser";
+import { port } from "~/test/helpers/launchServer";
 
 const USER_ID = "user1";
 const ADMIN_API_KEY = `cite.me.in_${USER_ID}_adminroutekey123456789`;

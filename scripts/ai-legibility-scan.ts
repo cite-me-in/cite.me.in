@@ -1,8 +1,8 @@
-import sendAiLegibilityReport from "../app/emails/AiLegibilityReport";
-import { setStatus } from "../app/lib/aiLegibility/progress.server";
-import runAILegibilityScan from "../app/lib/aiLegibility/runAILegibilityScan";
-import { normalizeDomain } from "../app/lib/isSameDomain";
-import prisma from "../app/lib/prisma.server";
+import sendAiLegibilityReport from "~/emails/AiLegibilityReport";
+import { setStatus } from "~/lib/aiLegibility/progress.server";
+import runAILegibilityScan from "~/lib/aiLegibility/runAILegibilityScan";
+import { normalizeDomain } from "~/lib/isSameDomain";
+import prisma from "~/lib/prisma.server";
 
 const url = process.argv[2];
 
@@ -34,13 +34,18 @@ async function main() {
 
   await setStatus({ domain: site.domain, status: "running" });
 
-  const { result } = await runAILegibilityScan({
+  const progress = await runAILegibilityScan({
     log: console.info,
     site,
     user,
   });
+  const { result } = progress;
+  if (!result) {
+    console.error(`Scan for ${site.domain} did not complete successfully`);
+    process.exit(1);
+  }
 
-  const suggestions = result?.suggestions;
+  const suggestions = result.suggestions;
   if (suggestions && suggestions.length > 0) {
     console.info("\n--- SUGGESTIONS ---\n");
     for (const s of suggestions) {

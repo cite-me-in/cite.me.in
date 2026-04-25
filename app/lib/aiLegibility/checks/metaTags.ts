@@ -1,4 +1,4 @@
-import type { CheckResult } from "../types";
+import type { CheckResult } from "~/lib/aiLegibility/types";
 
 export default async function checkMetaTags({
   html,

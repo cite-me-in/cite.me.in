@@ -2,7 +2,7 @@ import { HttpResponse, http } from "msw";
 import { afterEach, beforeEach, describe, expect, it } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
 import { emitWebhookEvent } from "~/lib/webhooks.server";
-import msw from "../mocks/msw";
+import msw from "~/test/mocks/msw";
 
 const ADMIN_ID = "user-wh-admin-1";
 const USER_ID = "user-wh-user-1";

@@ -7,7 +7,7 @@ import {
   JSON_LD_INVALID,
   JSON_LD_MULTIPLE,
   JSON_LD_PARSE_ERROR,
-} from "../fixtures";
+} from "~/test/lib/aiLegibility/fixtures";
 
 describe("checkJsonLd", () => {
   it("should pass when JSON-LD Organization schema is valid", async () => {

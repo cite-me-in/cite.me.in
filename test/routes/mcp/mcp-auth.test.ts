@@ -4,7 +4,7 @@ import invariant from "tiny-invariant";
 import { afterAll, beforeAll, describe, expect, it } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
 import { resetRateLimit } from "~/lib/rateLimit.server";
-import { port } from "~/test/helpers/launchBrowser";
+import { port } from "~/test/helpers/launchServer";
 
 const baseUrl = `http://localhost:${port}`;
 

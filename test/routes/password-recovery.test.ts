@@ -2,7 +2,7 @@ import { expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vite-plus/test";
 import { hashPassword } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
-import { goto } from "../helpers/launchBrowser";
+import { goto } from "~/test/helpers/launchBrowser";
 
 const EMAIL = "recovery-test@example.com";
 const PASSWORD = "test-password-123";

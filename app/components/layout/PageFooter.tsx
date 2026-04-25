@@ -1,7 +1,7 @@
 import { NavLink } from "react-router";
+import { ActiveLink } from "~/components/ui/ActiveLink";
 import MailtoLink from "~/components/ui/MailtoLink";
 import socialLinks from "~/lib/socialLinks";
-import { ActiveLink } from "../ui/ActiveLink";
 
 const links = [
   {

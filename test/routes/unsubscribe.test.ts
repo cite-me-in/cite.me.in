@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vite-plus/test";
 import generateUnsubscribeToken from "~/emails/generateUnsubscribeToken";
 import prisma from "~/lib/prisma.server";
-import { port } from "../helpers/launchBrowser";
+import { port } from "~/test/helpers/launchServer";
 
 async function unsubscribe(params: Record<string, string>) {
   const url = new URL(`http://localhost:${port}/unsubscribe`);

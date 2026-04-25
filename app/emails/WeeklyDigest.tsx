@@ -8,10 +8,10 @@ import Card from "~/components/email/Card";
 import KeyMetrics from "~/components/email/KeyMetric";
 import PlatformBreakdown from "~/components/email/PlatformBreakdown";
 import SentimentBreakdown from "~/components/email/SentimentBreakdown";
+import { TopCompetitors } from "~/components/email/TopCompetitors";
 import { formatDateShort } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
 import type { SentimentLabel } from "~/prisma";
-import { TopCompetitors } from "../components/email/TopCompetitors";
 import { sendEmail } from "./sendEmails";
 
 export type WeeklyDigestEmailProps = {

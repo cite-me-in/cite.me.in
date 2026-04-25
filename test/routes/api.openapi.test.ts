@@ -1,7 +1,7 @@
 import invariant from "tiny-invariant";
 import { beforeAll, describe, expect, it } from "vite-plus/test";
 import type { createDocument } from "zod-openapi";
-import { port } from "~/test/helpers/launchBrowser";
+import { port } from "~/test/helpers/launchServer";
 
 const BASE = `http://localhost:${port}`;
 

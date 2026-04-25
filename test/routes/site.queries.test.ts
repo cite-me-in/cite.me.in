@@ -4,8 +4,9 @@ import { sessionCookie } from "~/lib/cookies.server";
 import { removeElements } from "~/lib/html/parseHTML";
 import prisma from "~/lib/prisma.server";
 import type { User } from "~/prisma";
-import { goto, port } from "../helpers/launchBrowser";
-import { signIn } from "../helpers/signIn";
+import { goto } from "~/test/helpers/launchBrowser";
+import { port } from "~/test/helpers/launchServer";
+import { signIn } from "~/test/helpers/signIn";
 
 describe("unauthenticated access", () => {
   it("should redirect to /sign-in", async () => {
