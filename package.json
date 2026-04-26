@@ -16,7 +16,7 @@
     "upgrade": "./scripts/upgrade.sh"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.91.0",
+    "@anthropic-ai/sdk": "^0.91.1",
     "@base-ui/react": "^1.4.1",
     "@google/genai": "^1.50.1",
     "@js-temporal/polyfill": "^0.5.1",
@@ -64,7 +64,7 @@
     "zod-openapi": "^5.4.6"
   },
   "devDependencies": {
-    "@infisical/cli": "^0.43.77",
+    "@infisical/cli": "^0.43.78",
     "@inquirer/prompts": "^8.4.2",
     "@playwright/test": "^1.59.1",
     "@react-router/dev": "^7.14.2",
@@ -79,8 +79,8 @@
     "@vercel/config": "^0.2.1",
     "@vercel/sdk": "^1.19.40",
     "diff": "^9.0.0",
-    "fast-xml-parser": "^5.7.1",
-    "knip": "^6.6.3",
+    "fast-xml-parser": "^5.7.2",
+    "knip": "^6.7.0",
     "looks-same": "^10.0.1",
     "msw": "^2.13.6",
     "octokit": "^5.0.5",
