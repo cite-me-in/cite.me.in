@@ -87,6 +87,7 @@ async function startServer() {
     process.on("message", async (msg) => {
       if (msg === "shutdown") await shutdown();
     });
+    process.on("disconnect", () => process.exit(0));
     process.on("SIGINT", shutdown);
     process.on("SIGTERM", shutdown);
 

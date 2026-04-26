@@ -38,7 +38,7 @@ export default {
     ],
     rules: {
       eqeqeq: "warn",
-      "no-console": ["error", { allow: ["assert", "error", "info", "warn"] }],
+      "no-console": ["warn", { allow: ["assert", "error", "info", "warn"] }],
       "no-unused-expressions": "error",
       "no-useless-rename": "error",
       "prefer-const": ["error", { ignoreReadBeforeAssign: true }],

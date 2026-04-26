@@ -19,7 +19,8 @@ export default async function setup() {
   // Remove regression testing diff images
   await removeTemporaryFiles();
 
-  // Launch server and start test env MSW handlers
+  // Remove stale server state, then launch the server
+  await rm(".test-server.json", { force: true });
   const port = await launchServer();
 
   // Pre-warm Vite dep optimization: the first browser request is held until
@@ -57,26 +58,27 @@ function hasNewScreenshots(): boolean {
 }
 
 export async function teardown() {
-  if (!process.env.CI && hasNewScreenshots()) {
+  await closeServer();
+  if (process.env.CI) return;
+
+  if (hasNewScreenshots()) {
     console.info(
       "\nVisual differences detected. Launching screenshot review...\n",
     );
-    spawn("tsx", ["scripts/screenshots.ts"], {
-      stdio: "inherit",
-      detached: true,
+    await new Promise<void>((resolve) => {
+      spawn("tsx", ["scripts/screenshots.ts"], {
+        stdio: "inherit",
+        detached: true,
+      }).once("spawn", resolve);
     });
   }
 
-  if (!process.env.CI) {
-    await promisify(execFile)("terminal-notifier", [
-      "-sound",
-      "default",
-      "-title",
-      "Test Suite",
-      "-message",
-      "Done!",
-    ]);
-  }
-
-  await closeServer();
+  await promisify(execFile)("terminal-notifier", [
+    "-sound",
+    "default",
+    "-title",
+    "Test Suite",
+    "-message",
+    "Done!",
+  ]);
 }

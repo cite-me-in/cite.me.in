@@ -9,10 +9,8 @@ import {
   type Route,
   chromium,
 } from "playwright";
-import { getServerBaseURL, getServerPort } from "./launchServer";
+import { port } from "./launchServer";
 import trimConsole from "./trimConsole";
-
-export const port = getServerPort();
 
 let context: BrowserContext | undefined;
 const logger = debug("browser");
@@ -59,9 +57,10 @@ export async function newContext(): Promise<BrowserContext> {
   });
 
   context = await browser.newContext({
-    baseURL: getServerBaseURL(),
+    baseURL: `http://localhost:${port}`,
     viewport: { width: 1024, height: 780 },
   });
+
   context.setGeolocation({ latitude: 33.74901, longitude: -118.1956 });
   context.route("**", blockOutgoingRequests);
   context

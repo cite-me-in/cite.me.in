@@ -7,34 +7,32 @@ import debug from "debug";
 import { sleep } from "radashi";
 
 let worker: ChildProcess | undefined;
-export let port: number;
-
 const logger = debug("server");
 const loopbackHosts = ["127.0.0.1", "::1"] as const;
-const serverHost = "localhost";
 const serverStatePath = resolve(".test-server.json");
 
-type ServerState = {
-  baseURL: string;
-  pid: number;
-  port: number;
-};
+export const port = await launchServer();
 
 /**
  * Launch a new server instance.
  *
- * @param port - The port to launch the server on.
+ * @returns The port the server was launched on.
  */
 export async function launchServer(): Promise<number> {
-  if (worker) return port;
+  const running = readServerState();
+  if (running && isProcessRunning(running.pid)) return running.port;
 
-  await findAvailablePort();
-  process.env.TEST_PORT = port.toString();
-  process.env.TEST_BASE_URL = getServerBaseURL();
-  logger("Launching server on port %s", port);
+  const availablePort = await findAvailablePort();
+  logger("Launching server on port %s", availablePort);
 
   // Start the server as forked process, that way we don't share the same node
   // instance, which could cause issues with some libraries (eg Prisma)
+  process.on("exit", () => {
+    try {
+      worker?.kill("SIGKILL");
+    } catch {}
+  });
+
   worker = fork(resolve("test/helpers/serverWorker.ts"), {
     execArgv: ["--import", "tsx/esm"],
     stdio: debug.enabled("server")
@@ -44,17 +42,15 @@ export async function launchServer(): Promise<number> {
       ...process.env,
       CHOKIDAR_USEPOLLING: "1",
       NODE_ENV: "test",
-      PORT: port.toString(),
+      PORT: availablePort.toString(),
       VITE_TEST_MODE: "1",
     },
   });
-  if (worker.pid) {
-    await persistServerState({
-      baseURL: getServerBaseURL(),
-      pid: worker.pid,
-      port,
-    });
-  }
+  if (worker.pid)
+    await writeFile(
+      serverStatePath,
+      JSON.stringify({ port: availablePort, pid: worker.pid }),
+    );
 
   // Wait for the server to send ready message
   logger("Waiting for server to start...");
@@ -85,19 +81,16 @@ export async function launchServer(): Promise<number> {
   // Additional sleep to ensure HTTP server is fully bound
   await sleep(500);
 
-  return port;
+  return availablePort;
 }
 
 /**
  * Close the server gracefully.
  */
 export async function closeServer(): Promise<void> {
+  await rm(serverStatePath, { force: true });
   const serverWorker = worker;
-  if (!serverWorker) {
-    await terminateServerPid();
-    await cleanupServerEnv();
-    return;
-  }
+  if (!serverWorker) return await terminateServerPid();
 
   worker = undefined;
 
@@ -114,18 +107,18 @@ export async function closeServer(): Promise<void> {
   }
 
   if (serverWorker.connected) serverWorker.disconnect();
-  await cleanupServerEnv();
 }
 
-async function findAvailablePort() {
-  port = 9222;
+async function findAvailablePort(): Promise<number> {
+  let availablePort = 9222;
   // Check if the port is taken, increment by one and keep checking
   let found = false;
   while (!found) {
-    console.info(`Checking port ${port}...`);
-    found = await isPortAvailable(port);
-    if (!found) port++;
+    console.info(`Checking port ${availablePort}...`);
+    found = await isPortAvailable(availablePort);
+    if (!found) availablePort++;
   }
+  return availablePort;
 }
 
 export async function isPortAvailable(port: number): Promise<boolean> {
@@ -133,23 +126,6 @@ export async function isPortAvailable(port: number): Promise<boolean> {
     loopbackHosts.map((host) => canBindPort(port, host)),
   );
   return results.every(Boolean);
-}
-
-export function getServerPort(): number {
-  const serverPort =
-    port || Number(process.env.TEST_PORT) || readServerState()?.port;
-  if (!serverPort) throw new Error("Test server port has not been set");
-  return serverPort;
-}
-
-export function getServerBaseURL(): string {
-  if (process.env.TEST_BASE_URL) return process.env.TEST_BASE_URL;
-  if (process.env.TEST_PORT)
-    return `http://${serverHost}:${process.env.TEST_PORT}`;
-
-  return (
-    readServerState()?.baseURL ?? `http://${serverHost}:${getServerPort()}`
-  );
 }
 
 async function canBindPort(port: number, host: string): Promise<boolean> {
@@ -191,13 +167,13 @@ function waitForExit(
 }
 
 async function terminateServerPid(): Promise<void> {
-  const pid = Number(process.env.TEST_SERVER_PID) || readServerState()?.pid;
-  if (!pid) return;
+  const running = readServerState();
+  if (!running) return;
 
-  signalProcess(pid, "SIGTERM");
-  if (!(await waitForPidExit(pid, ms("5s")))) {
-    signalProcess(pid, "SIGKILL");
-    await waitForPidExit(pid, ms("5s"));
+  signalProcess(running.pid, "SIGTERM");
+  if (!(await waitForPidExit(running.pid, ms("5s")))) {
+    signalProcess(running.pid, "SIGKILL");
+    await waitForPidExit(running.pid, ms("5s"));
   }
 }
 
@@ -232,34 +208,18 @@ function isProcessRunning(pid: number): boolean {
   }
 }
 
-async function cleanupServerEnv(): Promise<void> {
-  delete process.env.TEST_PORT;
-  delete process.env.TEST_BASE_URL;
-  delete process.env.TEST_SERVER_PID;
-  await rm(serverStatePath, { force: true });
-}
-
-async function persistServerState(state: ServerState): Promise<void> {
-  process.env.TEST_PORT = state.port.toString();
-  process.env.TEST_BASE_URL = state.baseURL;
-  process.env.TEST_SERVER_PID = state.pid.toString();
-  await writeFile(serverStatePath, `${JSON.stringify(state)}\n`);
-}
-
-function readServerState(): ServerState | undefined {
-  if (!existsSync(serverStatePath)) return undefined;
-
+function readServerState(): { port: number; pid: number } | null {
+  if (!existsSync(serverStatePath)) return null;
   try {
-    const state = JSON.parse(
-      readFileSync(serverStatePath, "utf8"),
-    ) as Partial<ServerState>;
-    if (!state.pid || !state.port || !state.baseURL) return undefined;
-    return {
-      baseURL: state.baseURL,
-      pid: state.pid,
-      port: state.port,
+    return JSON.parse(readFileSync(serverStatePath, "utf8")) as {
+      port: number;
+      pid: number;
     };
   } catch {
-    return undefined;
+    return null;
   }
 }
+
+process.on("beforeExit", async () => {
+  await closeServer();
+});
