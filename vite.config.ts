@@ -45,6 +45,12 @@ export default {
       "typescript/no-unsafe-declaration-merging": "error",
       "typescript/prefer-as-const": "error",
     },
+    options: {
+      denyWarnings: true,
+      reportUnusedDisableDirectives: "error",
+      typeAware: true,
+      typeCheck: true,
+    },
   },
   fmt: {
     ignorePatterns: [

@@ -89,8 +89,10 @@ function pathParamsTable(
   for (const param of pathParams) {
     if ("name" in param)
       lines.push(
-        `| \`${param.name}\` | \`${
-          param.schema && "type" in param.schema ? param.schema.type : "string"
+        `| \`${new String(param.name).toString()}\` | \`${
+          param.schema && "type" in param.schema
+            ? new String(param.schema.type).toString()
+            : "string"
         }\` | ${param.description ?? ""} |`,
       );
   }
@@ -119,7 +121,9 @@ function queryParamsTable(
     if ("name" in param)
       lines.push(
         `| \`${param.name}\` | \`${
-          param.schema && "type" in param.schema ? param.schema.type : "string"
+          param.schema && "type" in param.schema
+            ? param.schema.type?.toString()
+            : "string"
         }\` | ${param.required ? "Yes" : "No"} | ${param.description ?? ""} |`,
       );
   }

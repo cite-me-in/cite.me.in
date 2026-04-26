@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import type { ScanResult } from "~/lib/aiLegibility/types";
 
 export default function ScanResults({ result }: { result: ScanResult }) {
-  const { summary, checks = [], suggestions = [] } = result || {};
+  const { summary, checks, suggestions } = result || {};
 
   const criticalChecks = checks.filter((c) => c.category === "critical");
   const importantChecks = checks.filter((c) => c.category === "important");

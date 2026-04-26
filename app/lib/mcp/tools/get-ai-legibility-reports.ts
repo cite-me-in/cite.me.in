@@ -52,7 +52,6 @@ export default {
           where: { id: reportId, userId },
           select: {
             id: true,
-            url: true,
             scannedAt: true,
             result: true,
           },
@@ -86,7 +85,6 @@ export default {
 
         const formatted = {
           id: report.id,
-          url: report.url,
           scannedAt: report.scannedAt.toISOString(),
           summary: result.summary,
           suggestions: result.suggestions,
@@ -109,7 +107,6 @@ export default {
         take: limit,
         select: {
           id: true,
-          url: true,
           scannedAt: true,
           result: true,
         },
@@ -132,7 +129,6 @@ export default {
 
         return {
           id: report.id,
-          url: report.url,
           scannedAt: report.scannedAt.toISOString(),
           summary: result.summary,
           suggestions: result.suggestions,

@@ -11,11 +11,12 @@ import invariant from "tiny-invariant";
 import * as vite from "vite-plus";
 
 // Import and start the server
-async function startServer() {
+async function startServer(this: void) {
   // Initialize MSW for mocking HTTP requests during tests
   if (process.env.NODE_ENV === "test") await import("~/test/mocks/msw");
 
-  invariant(process.send, "process.send is not defined");
+  const send = process.send?.bind(process);
+  invariant(send, "process.send is not defined");
   const port = Number(process.env.PORT);
   invariant(port, "PORT is not defined");
   try {
@@ -94,9 +95,9 @@ async function startServer() {
     // Signal ready immediately. Vite's holdUntilCrawlEnd (default: true) will
     // hold the first browser request until dep optimization completes, so tests
     // won't receive partially-optimized bundles even though we don't await here.
-    process.send({ type: "ready" });
+    send({ type: "ready" });
   } catch (error) {
-    process.send({
+    send({
       type: "error",
       error: error instanceof Error ? error.message : String(error),
     });

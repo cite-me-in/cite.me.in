@@ -3,7 +3,8 @@ import test, { type Page, expect } from "@playwright/test";
 import Stripe from "stripe";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
-import { goto, port } from "~/test/helpers/launchBrowser";
+import { goto } from "~/test/helpers/launchBrowser";
+import { port } from "~/test/helpers/launchServer";
 import "~/test/helpers/toMatchVisual";
 
 const TEST_EMAIL = "stripe-e2e@example.com";

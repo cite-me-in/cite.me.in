@@ -47,7 +47,7 @@ export async function action({ params, request }: Route.ActionArgs) {
     switch (request.method) {
       case "PUT": {
         const formData = await request.formData();
-        const content = formData.get("content")?.toString() ?? "";
+        const content = new String(formData.get("content")).trim();
         const updatedSite = await prisma.site.update({
           where: { id: site.id },
           data: { content },
@@ -171,7 +171,7 @@ export default function Index({ loaderData }: Route.ComponentProps) {
       <div className="flex items-center justify-between gap-8">
         <Button
           onClick={() => {
-            fetcher.submit(
+            void fetcher.submit(
               nonEmpty.map(({ group, query }) => ({ group, query })),
               {
                 method: "post",

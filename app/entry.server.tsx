@@ -34,7 +34,7 @@ switch (process.env.NODE_ENV) {
   }
   case "test": {
     // NOTE: Make sure we don't accidentally load MSW in dev/production.
-    import("~/test/helpers/worker.setup").then(
+    void import("~/test/helpers/worker.setup").then(
       ({ default: setupTestServer }) => {
         setupTestServer();
       },
@@ -58,7 +58,7 @@ export default wrapTraced(
       routerContext: EntryContext,
       loadContext?: any,
     ) => {
-      if (import.meta.env.PROD) trackVisits(request);
+      if (import.meta.env.PROD) void trackVisits(request);
       const start = Date.now();
       logger("%s %s", request.method, request.url);
 
@@ -70,7 +70,7 @@ export default wrapTraced(
         loadContext,
         { nonce: crypto.randomUUID() },
       );
-      waitForResponse(response, start).then((duration) => {
+      void waitForResponse(response, start).then((duration) => {
         logger(
           "%s %s => %d (%dms)",
           request.method,
@@ -101,7 +101,7 @@ export function handleDataRequest(
 ) {
   const start = Date.now();
   logger("%s %s", request.method, request.url);
-  waitForResponse(response, start).then((duration) => {
+  void waitForResponse(response, start).then((duration) => {
     logger(
       "%s %s => %d (%dms)",
       request.method,

@@ -19,7 +19,7 @@ export default function AddQueriesGroup() {
   function submitNewGroup() {
     const name = newGroupName.trim();
     if (!name) return;
-    addGroupFetcher.submit(
+    void addGroupFetcher.submit(
       { _intent: "add-group", group: name },
       { method: "post" },
     );

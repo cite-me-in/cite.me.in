@@ -17,7 +17,7 @@ export default function AddSiteForm({
   const isProcessing = fetcher.state !== "idle";
   const result = fetcher.data ?? actionData;
   const error = result && "error" in result ? result.error : undefined;
-  const url = fetcher.formData?.get("url")?.toString();
+  const url = new String(fetcher.formData?.get("url")).trim();
 
   return (
     <Card variant="yellow" fadeIn={true}>

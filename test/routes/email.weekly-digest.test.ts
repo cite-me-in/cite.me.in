@@ -128,7 +128,7 @@ describe("WeeklyDigestEmail", () => {
   });
 
   it("should match visually", async () => {
-    email.page.setViewportSize({ width: 1024, height: 3000 });
+    await email.page.setViewportSize({ width: 1024, height: 3000 });
     await expect(email.page).toMatchVisual({
       name: "email/weekly-digest",
       modify: (html) =>

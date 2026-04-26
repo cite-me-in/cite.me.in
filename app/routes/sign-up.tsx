@@ -25,11 +25,11 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export async function action({ request }: Route.ActionArgs) {
   const form = await request.formData();
-  const email = (form.get("email") ?? "").toString().trim();
-  const password = (form.get("password") ?? "").toString();
-  const confirm = (form.get("confirm") ?? "").toString();
-  const inviteToken = (form.get("inviteToken") ?? "").toString().trim();
-  const next = (form.get("next") ?? "").toString().trim();
+  const email = new String(form.get("email")).trim().toLowerCase();
+  const password = new String(form.get("password")).toString();
+  const confirm = new String(form.get("confirm")).toString();
+  const inviteToken = new String(form.get("inviteToken")).trim();
+  const next = new String(form.get("next")).trim();
 
   const errors: Record<string, string> = {};
 

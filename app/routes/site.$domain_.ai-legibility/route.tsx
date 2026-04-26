@@ -62,7 +62,7 @@ export default function AiLegibilityPage({ loaderData }: Route.ComponentProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const startScan = () => {
-    fetch(`/site/${site.domain}/ai-legibility/scan`, {
+    void fetch(`/site/${site.domain}/ai-legibility/scan`, {
       method: "POST",
     }).finally(() => setIsLoading(false));
     setIsLoading(true);

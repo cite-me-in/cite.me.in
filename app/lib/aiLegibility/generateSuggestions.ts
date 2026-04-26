@@ -39,7 +39,7 @@ export default async function generateSuggestions({
 
   // Log messages to keep the user informed - in backgroung and terminated when we're done
   const abort = new AbortController();
-  logInBackground({ log, signal: abort.signal });
+  void logInBackground({ log, signal: abort.signal });
 
   const checkSummaries = failedChecks.map((c) => ({
     name: c.name,

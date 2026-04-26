@@ -8,7 +8,7 @@ export default function TrackingScript({ script }: { script: string }) {
   const [copiedScript, setCopiedScript] = useState(false);
 
   function copyScriptToClipboard() {
-    navigator.clipboard.writeText(script);
+    void navigator.clipboard.writeText(script);
     setCopiedScript(true);
     setTimeout(() => setCopiedScript(false), ms("3s"));
   }

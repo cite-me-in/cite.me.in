@@ -17,7 +17,7 @@ import type { Route } from "./+types/password-recovery";
 
 export async function action({ request }: Route.ActionArgs) {
   const form = await request.formData();
-  const email = (form.get("email") ?? "").toString().trim();
+  const email = new String(form.get("email")).trim().toLowerCase();
 
   const user = await prisma.user.findUnique({ where: { email } });
 

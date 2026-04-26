@@ -61,8 +61,8 @@ export async function newContext(): Promise<BrowserContext> {
     viewport: { width: 1024, height: 780 },
   });
 
-  context.setGeolocation({ latitude: 33.74901, longitude: -118.1956 });
-  context.route("**", blockOutgoingRequests);
+  await context.setGeolocation({ latitude: 33.74901, longitude: -118.1956 });
+  await context.route("**", blockOutgoingRequests);
   context
     .on("console", (msg) => trimConsole(msg.text()))
     .on("weberror", (error) => logger("error: %s", error.error()));
@@ -90,7 +90,7 @@ async function blockOutgoingRequests(route: Route): Promise<void> {
 }
 
 function cleanup() {
-  context?.browser()?.close();
+  void context?.browser()?.close();
 }
 
 process.on("exit", cleanup);

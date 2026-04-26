@@ -12,7 +12,7 @@ export async function action({ request, params }: Route.ActionArgs) {
   });
 
   const formData = await request.formData();
-  const email = formData.get("email")?.toString().trim().toLowerCase() ?? "";
+  const email = new String(formData.get("email")).trim().toLowerCase();
   if (!email) return redirect(`/site/${site.domain}/settings`);
 
   // Check if already a member

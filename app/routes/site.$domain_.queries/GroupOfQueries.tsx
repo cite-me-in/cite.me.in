@@ -71,7 +71,7 @@ export default function GroupOfQueries({
             className="font-bold"
             onBlur={() => {
               if (!groupName.trim() || groupName === group) return;
-              renameFetcher.submit(
+              void renameFetcher.submit(
                 {
                   _intent: "rename-group",
                   oldGroup: group,
@@ -91,7 +91,7 @@ export default function GroupOfQueries({
                   `Delete group "${group}" and all its queries? This cannot be undone.`,
                 )
               )
-                deleteFetcher.submit(
+                void deleteFetcher.submit(
                   { _intent: "delete-group", group },
                   { method: "post" },
                 );
@@ -113,8 +113,8 @@ export default function GroupOfQueries({
           size="sm"
           type="button"
           onClick={() => {
-            addFetcher.submit(
-              { _intent: "add-query", group },
+            void addFetcher.submit(
+              { _intent: "add-query", group: group.trim() },
               { method: "post" },
             );
           }}

@@ -62,7 +62,7 @@ export default function SuggestedQueries() {
           isLoading={isLoading}
           suggestQueries={() => {
             setDismissed(false);
-            fetcher.submit({ _intent: "suggest" }, { method: "post" });
+            void fetcher.submit({ _intent: "suggest" }, { method: "post" });
           }}
         />
       )}

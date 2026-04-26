@@ -1,7 +1,8 @@
 import { expect } from "@playwright/test";
 import { describe, it } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
-import { goto, port } from "~/test/helpers/launchBrowser";
+import { goto } from "~/test/helpers/launchBrowser";
+import { port } from "~/test/helpers/launchServer";
 import { signIn } from "~/test/helpers/signIn";
 
 const EMAIL_A = "pricing-flow-a@example.com";

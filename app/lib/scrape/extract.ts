@@ -61,7 +61,10 @@ export default async function fetchAndExtract({
       ? extractFromMarkdown(body, url)
       : extractFromHtml(body, url);
   } catch (error) {
-    captureAndLogError(`Error fetching ${url}: ${error}`, { extra: { url } });
+    captureAndLogError(
+      `Error fetching ${url}: ${error instanceof Error ? error.message : String(error)}`,
+      { extra: { url } },
+    );
     return null;
   }
 }

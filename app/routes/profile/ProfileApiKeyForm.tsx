@@ -23,7 +23,7 @@ export default function ProfileApiKeyForm({
           {currentKey && (
             <Input
               onClick={() => {
-                navigator.clipboard.writeText(currentKey);
+                void navigator.clipboard.writeText(currentKey);
                 setIsCopied(true);
               }}
               readOnly

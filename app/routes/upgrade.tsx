@@ -21,7 +21,9 @@ export async function loader({ request }: Route.LoaderArgs) {
 export async function action({ request }: Route.ActionArgs) {
   const { user } = await requireUserAccess(request);
   const form = await request.formData();
-  const interval = form.get("interval")?.toString() ?? "monthly";
+  const intervalValue = form.get("interval");
+  const interval =
+    typeof intervalValue === "string" ? intervalValue : "monthly";
 
   const priceId =
     interval === "annual"

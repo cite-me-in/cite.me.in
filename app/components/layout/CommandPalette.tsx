@@ -174,14 +174,14 @@ export default function CommandPalette() {
       e.preventDefault();
       const item = flatItems[activeIndex];
       if (item) {
-        navigate(item.to);
+        void navigate(item.to);
         setOpen(false);
       }
     }
   }
 
   function handleSelect(to: string) {
-    navigate(to);
+    void navigate(to);
     setOpen(false);
   }
 

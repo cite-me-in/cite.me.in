@@ -134,7 +134,7 @@ function initRedis() {
           ? (JSON.parse(message as string) as typeof lastEmailSent)
           : null;
     });
-    subscriber.subscribe("email:last");
+    void subscriber.subscribe("email:last");
   } catch (error) {
     logger("Failed to initialize Redis: %O", error);
   }

@@ -37,7 +37,10 @@ export default function captureAndLogError(
   } else {
     logger(error);
     console.error(error);
-    if (logFile) logFile.write(`${error}\n`);
+    if (logFile)
+      logFile.write(
+        `${error instanceof Error ? error.message : String(error)}\n`,
+      );
     if (logtail) logtail.error(String(error), hints).catch(() => {});
   }
 }

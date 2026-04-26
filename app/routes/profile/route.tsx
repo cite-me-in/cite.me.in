@@ -33,7 +33,7 @@ export async function action({ request }: Route.ActionArgs) {
   const { user } = await requireUserAccess(request);
   const form = await request.formData();
 
-  const intent = form.get("intent")?.toString();
+  const intent = new String(form.get("intent")).toString();
 
   if (intent === "billingPortal") {
     const account = await prisma.account.findUnique({
@@ -52,12 +52,12 @@ export async function action({ request }: Route.ActionArgs) {
   if (intent === "regenerateApiKey")
     return regenerateApiKey({ userId: user.id });
 
-  const email = form.get("email")?.toString().trim().toLowerCase();
+  const email = new String(form.get("email")).trim().toLowerCase();
   if (email) return updateEmail({ userId: user.id, email });
 
-  const currentPassword = form.get("currentPassword")?.toString();
-  const newPassword = form.get("newPassword")?.toString();
-  const confirmPassword = form.get("confirmPassword")?.toString();
+  const currentPassword = new String(form.get("currentPassword")).toString();
+  const newPassword = new String(form.get("newPassword")).toString();
+  const confirmPassword = new String(form.get("confirmPassword")).toString();
   if (currentPassword && newPassword && confirmPassword)
     return updatePassword({
       user,

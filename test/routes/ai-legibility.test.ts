@@ -5,7 +5,8 @@ import { getLastEmailSent } from "~/emails/sendEmails";
 import { appendLog, startNewScan } from "~/lib/aiLegibility/progress.server";
 import type { ScanResult } from "~/lib/aiLegibility/types";
 import prisma from "~/lib/prisma.server";
-import { goto, port } from "~/test/helpers/launchBrowser";
+import { goto } from "~/test/helpers/launchBrowser";
+import { port } from "~/test/helpers/launchServer";
 import { signIn } from "~/test/helpers/signIn";
 import "~/test/helpers/toMatchVisual";
 
@@ -389,7 +390,7 @@ describe("ai-legibility email", () => {
   });
 
   it("should match visually", async () => {
-    email.page.setViewportSize({ width: 1024, height: 1200 });
+    await email.page.setViewportSize({ width: 1024, height: 1200 });
     await expect(email.page).toMatchVisual({
       name: "email/ai-legibility-report",
     });

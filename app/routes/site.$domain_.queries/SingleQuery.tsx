@@ -28,7 +28,7 @@ export default function SingleQuery({
           placeholder="Enter query…"
           onBlur={() => {
             if (value === query) return;
-            updateFetcher.submit(
+            void updateFetcher.submit(
               { _intent: "update-query", id, query: value },
               { method: "post" },
             );
@@ -44,7 +44,7 @@ export default function SingleQuery({
                 ) as HTMLElement | null;
                 if (input) input.focus();
               } else {
-                updateFetcher.submit(
+                void updateFetcher.submit(
                   { _intent: "add-query", group },
                   { method: "post" },
                 );
@@ -77,7 +77,7 @@ export default function SingleQuery({
                 `Delete query "${query}" from group "${group}"? This cannot be undone.`,
               )
             )
-              deleteFetcher.submit(
+              void deleteFetcher.submit(
                 { _intent: "delete-query", id },
                 { method: "post" },
               );
