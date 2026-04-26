@@ -52,29 +52,29 @@ export async function action({ request, params }: Route.ActionArgs) {
   const { site } = await requireSiteAccess({ domain: params.domain, request });
 
   const data = await request.formData();
-  const intent = new String(data.get("_intent")).trim();
+  const intent = data.get("_intent") as string;
 
   switch (intent) {
     case "add-group": {
-      const group = new String(data.get("group")).trim();
+      const group = data.get("group") as string;
       if (!group) return { ok: false, error: "Group name is required" };
       await addSiteQueryGroup(site, group);
       return { ok: true };
     }
     case "rename-group": {
-      const oldGroup = new String(data.get("oldGroup")).trim();
-      const newGroup = new String(data.get("newGroup")).trim();
+      const oldGroup = data.get("oldGroup") as string;
+      const newGroup = data.get("newGroup") as string;
       await renameSiteQueryGroup({ site, oldGroup, newGroup });
       return { ok: true };
     }
     case "delete-group": {
-      const group = new String(data.get("group")).trim();
+      const group = data.get("group") as string;
       await prisma.siteQuery.deleteMany({ where: { siteId: site.id, group } });
       return { ok: true };
     }
     case "add-query": {
-      const group = new String(data.get("group")).trim();
-      const query = new String(data.get("query")).trim();
+      const group = data.get("group") as string;
+      const query = data.get("query") as string;
       await addSiteQueries(site, [{ group, query }]);
       if (isMeaningfulSentence(query))
         try {
@@ -85,8 +85,8 @@ export async function action({ request, params }: Route.ActionArgs) {
       return { ok: true as const };
     }
     case "update-query": {
-      const id = new String(data.get("id")).trim();
-      const query = new String(data.get("query")).trim();
+      const id = data.get("id") as string;
+      const query = data.get("query") as string;
       const existing = await prisma.siteQuery.findFirst({
         where: { id, siteId: site.id },
       });
@@ -106,7 +106,7 @@ export async function action({ request, params }: Route.ActionArgs) {
       return { ok: true as const };
     }
     case "delete-query": {
-      const id = new String(data.get("id")).trim();
+      const id = data.get("id") as string;
       const existing = await prisma.siteQuery.findFirst({
         where: { id, siteId: site.id },
       });

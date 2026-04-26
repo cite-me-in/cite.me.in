@@ -44,10 +44,9 @@ export async function action({ request, params }: Route.ActionArgs) {
   });
 
   const formData = await request.formData();
-  const intent = new String(formData.get("intent")).trim();
-
+  const intent = (formData.get("intent") as string).trim();
   if (intent === "remove-member") {
-    const userId = new String(formData.get("userId")).trim();
+    const userId = (formData.get("userId") as string).trim();
     if (!userId) return { ok: false as const, error: "User ID required" };
     await prisma.siteUser.deleteMany({ where: { siteId: site.id, userId } });
     return { ok: true as const };

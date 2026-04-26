@@ -47,7 +47,7 @@ export async function action({ params, request }: Route.ActionArgs) {
     switch (request.method) {
       case "PUT": {
         const formData = await request.formData();
-        const content = new String(formData.get("content")).trim();
+        const content = (formData.get("content") as string).trim();
         const updatedSite = await prisma.site.update({
           where: { id: site.id },
           data: { content },

@@ -91,7 +91,7 @@ function pathParamsTable(
       lines.push(
         `| \`${new String(param.name).toString()}\` | \`${
           param.schema && "type" in param.schema
-            ? new String(param.schema.type).toString()
+            ? (param.schema.type as string)
             : "string"
         }\` | ${param.description ?? ""} |`,
       );

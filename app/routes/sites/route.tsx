@@ -48,7 +48,7 @@ export async function action({ request }: Route.ActionArgs) {
     throw new Response("Method not allowed", { status: 405 });
 
   // Add a new site to the account
-  const url = new String(formData.get("url")).trim();
+  const url = (formData.get("url") as string).trim();
   try {
     const domain = extractDomain(url);
     if (!domain) throw new Error("Enter a valid website URL or domain name");
