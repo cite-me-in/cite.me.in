@@ -79,7 +79,9 @@ describe("runScan", () => {
     setupMswHandlers(passingSite());
 
     const { result } = await runAILegibilityScan({
-      log: (line: string) => logs.push(line),
+      log: (line: string) => {
+        logs.push(line);
+      },
       site: { id: "1", domain: "https://acme.com" },
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
@@ -101,7 +103,9 @@ describe("runScan", () => {
     setupMswHandlers(passingSite());
 
     const { result } = await runAILegibilityScan({
-      log: (line: string) => logs.push(line),
+      log: (line: string) => {
+        logs.push(line);
+      },
       site: { id: "1", domain: "https://acme.com" },
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
@@ -116,7 +120,9 @@ describe("runScan", () => {
     setupMswHandlers(failingSite());
 
     const { result } = await runAILegibilityScan({
-      log: (line: string) => logs.push(line),
+      log: (line: string) => {
+        logs.push(line);
+      },
       site: { id: "1", domain: "https://acme.com" },
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
@@ -131,7 +137,9 @@ describe("runScan", () => {
     setupMswHandlers(partialSite());
 
     const { result } = await runAILegibilityScan({
-      log: (line: string) => logs.push(line),
+      log: (line: string) => {
+        logs.push(line);
+      },
       site: { id: "1", domain: "https://acme.com" },
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
@@ -145,7 +153,9 @@ describe("runScan", () => {
     setupMswHandlers(passingSite());
 
     const { result } = await runAILegibilityScan({
-      log: (line: string) => logs.push(line),
+      log: (line: string) => {
+        logs.push(line);
+      },
       site: { id: "1", domain: "https://acme.com" },
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
@@ -165,7 +175,9 @@ describe("runScan", () => {
     setupMswHandlers(responses);
 
     const { result } = await runAILegibilityScan({
-      log: (line: string) => logs.push(line),
+      log: (line: string) => {
+        logs.push(line);
+      },
       site: { id: "1", domain: "https://www.acme.com" },
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
@@ -177,7 +189,9 @@ describe("runScan", () => {
     setupMswHandlers(passingSite());
 
     const { result } = await runAILegibilityScan({
-      log: (line: string) => logs.push(line),
+      log: (line: string) => {
+        logs.push(line);
+      },
       site: { id: "1", domain: "https://ACME.COM" },
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
@@ -189,7 +203,9 @@ describe("runScan", () => {
     setupMswHandlers(passingSite());
 
     const { result } = await runAILegibilityScan({
-      log: (line: string) => logs.push(line),
+      log: (line: string) => {
+        logs.push(line);
+      },
       site: { id: "1", domain: "https://acme.com" },
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
@@ -201,7 +217,9 @@ describe("runScan", () => {
     setupMswHandlers(passingSite());
 
     await runAILegibilityScan({
-      log: (line: string) => logs.push(line),
+      log: (line: string) => {
+        logs.push(line);
+      },
       site: { id: "1", domain: "https://acme.com" },
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
@@ -219,7 +237,9 @@ describe("runScan", () => {
     setupMswHandlers(passingSite());
 
     const { result } = await runAILegibilityScan({
-      log: (line: string) => logs.push(line),
+      log: (line: string) => {
+        logs.push(line);
+      },
       site: { id: "1", domain: "https://acme.com" },
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
@@ -234,7 +254,9 @@ describe("runScan", () => {
     setupMswHandlers(failingSite());
 
     const { result } = await runAILegibilityScan({
-      log: (line: string) => logs.push(line),
+      log: (line: string) => {
+        logs.push(line);
+      },
       site: { id: "1", domain: "https://acme.com" },
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
@@ -249,7 +271,9 @@ describe("runScan", () => {
     setupMswHandlers(passingSite());
 
     const { result } = await runAILegibilityScan({
-      log: (line: string) => logs.push(line),
+      log: (line: string) => {
+        logs.push(line);
+      },
       site: { id: "1", domain: "https://acme.com" },
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
@@ -261,7 +285,9 @@ describe("runScan", () => {
     setupMswHandlers(failingSite());
 
     const { result } = await runAILegibilityScan({
-      log: (line: string) => logs.push(line),
+      log: (line: string) => {
+        logs.push(line);
+      },
       site: { id: "1", domain: "https://acme.com" },
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
@@ -276,7 +302,9 @@ describe("runScan", () => {
     setupMswHandlers(passingSite());
 
     const { result } = await runAILegibilityScan({
-      log: (line: string) => logs.push(line),
+      log: (line: string) => {
+        logs.push(line);
+      },
       site: { id: "1", domain: "https://acme.com" },
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
@@ -400,7 +428,9 @@ describe("runScan with LLM suggestions", () => {
     );
 
     const { result } = await runAILegibilityScan({
-      log: (line: string) => logs.push(line),
+      log: (line: string) => {
+        logs.push(line);
+      },
       site: { id: "1", domain: "https://test-site.com" },
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });

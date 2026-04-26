@@ -13,7 +13,7 @@ export default async function updateRunSentiment({
   log,
   run,
 }: {
-  log: (line: string) => Promise<unknown> | unknown;
+  log: (line: string) => Promise<void> | void;
   run: Prisma.CitationQueryRunGetPayload<{
     select: {
       id: true;

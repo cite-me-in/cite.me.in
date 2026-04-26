@@ -93,7 +93,7 @@ export async function runQueryOnAllPlatforms({
   site: { id: string; domain: string; summary: string };
   query: string;
   group: string;
-  log: (line: string) => Promise<unknown> | unknown;
+  log: (line: string) => Promise<void> | void;
 }) {
   await map(PLATFORMS, async ({ name: platform, model, queryFn }) => {
     const onDate = new Date().toISOString().split("T")[0];

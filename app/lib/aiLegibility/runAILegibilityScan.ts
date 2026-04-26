@@ -36,7 +36,7 @@ export default async function runAILegibilityScan({
   user,
   site,
 }: {
-  log: (line: string) => Promise<unknown> | unknown;
+  log: (line: string) => Promise<void> | void;
   site: { id: string; domain: string };
   user: { email: string; id: string; unsubscribed: boolean };
 }): Promise<ScanProgress> {
@@ -75,7 +75,7 @@ async function runScanSteps({
   log,
   domain,
 }: {
-  log: (line: string) => Promise<unknown> | unknown;
+  log: (line: string) => Promise<void> | void;
   domain: string;
 }): Promise<ScanResult> {
   const url = normalizeURL(domain);
@@ -150,7 +150,7 @@ async function summarize({
   log,
 }: {
   checks: CheckResult[];
-  log: (line: string) => Promise<unknown> | unknown;
+  log: (line: string) => Promise<void> | void;
 }): Promise<{
   critical: { passed: number; total: number };
   important: { passed: number; total: number };

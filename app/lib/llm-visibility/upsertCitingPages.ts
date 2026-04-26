@@ -16,7 +16,7 @@ export default async function upsertCitingPages({
   log,
   site,
 }: {
-  log: (line: string) => Promise<unknown> | unknown;
+  log: (line: string) => Promise<void> | void;
   site: { id: string; domain: string };
 }) {
   const { domain, id: siteId } = site;

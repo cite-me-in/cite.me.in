@@ -28,7 +28,7 @@ export default async function generateSuggestions({
   checks,
   url,
 }: {
-  log: (line: string) => Promise<unknown> | unknown;
+  log: (line: string) => Promise<void> | void;
   checks: CheckResult[];
   url: string;
 }): Promise<Suggestion[]> {
@@ -207,7 +207,7 @@ async function logInBackground({
   log,
   signal,
 }: {
-  log: (line: string) => Promise<unknown> | unknown;
+  log: (line: string) => Promise<void> | void;
   signal: AbortSignal;
 }) {
   const messages = [

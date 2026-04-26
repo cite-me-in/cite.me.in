@@ -35,7 +35,7 @@ export default async function prepareSites({
 }: {
   domain?: string;
   maxSites?: number;
-  log: (line: string) => Promise<unknown> | unknown;
+  log: (line: string) => Promise<void> | void;
 }): Promise<{ id: string; domain: string; digestSentAt: Date | null }[]> {
   const candidates = await prisma.site.findMany({
     select: {
@@ -74,7 +74,7 @@ async function nextCitationRun({
   log,
   site,
 }: {
-  log: (line: string) => Promise<unknown> | unknown;
+  log: (line: string) => Promise<void> | void;
   site: {
     id: string;
     domain: string;
@@ -125,7 +125,7 @@ async function updateBotInsight({
   log,
   site,
 }: {
-  log: (line: string) => Promise<unknown> | unknown;
+  log: (line: string) => Promise<void> | void;
   site: {
     id: string;
     domain: string;

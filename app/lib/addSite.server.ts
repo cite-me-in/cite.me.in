@@ -117,7 +117,7 @@ async function runPlatformWithProgress({
   queryFn: QueryFn;
   label: string;
   queries: { query: string; group: string }[];
-  log: (line: string) => Promise<unknown>;
+  log: (line: string) => Promise<void> | void;
 }) {
   invariant(platform, "Platform is required");
   invariant(model, "Model is required");
