@@ -19,8 +19,8 @@ export default async function setup() {
   // Remove regression testing diff images
   await removeTemporaryFiles();
 
-  // Remove stale server state, then launch the server
-  await rm(".test-server.json", { force: true });
+  // Shut down any server started by module-level launchServer(), then start fresh
+  await closeServer();
   const port = await launchServer();
 
   // Pre-warm Vite dep optimization: the first browser request is held until

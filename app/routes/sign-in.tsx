@@ -23,7 +23,7 @@ export async function action({ request }: Route.ActionArgs) {
   const form = await request.formData();
   const email = (form.get("email") as string).trim().toLowerCase();
   const password = form.get("password") as string;
-  const inviteToken = (form.get("inviteToken") as string).trim();
+  const inviteToken = ((form.get("inviteToken") as string | null) ?? "").trim();
 
   const user = await prisma.user.findUnique({ where: { email } });
 

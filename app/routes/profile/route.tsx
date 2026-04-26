@@ -52,7 +52,9 @@ export async function action({ request }: Route.ActionArgs) {
   if (intent === "regenerateApiKey")
     return regenerateApiKey({ userId: user.id });
 
-  const email = (form.get("email") as string).trim().toLowerCase();
+  const email = ((form.get("email") as string | null) ?? "")
+    .trim()
+    .toLowerCase();
   if (email) return updateEmail({ userId: user.id, email });
 
   const currentPassword = form.get("currentPassword") as string;

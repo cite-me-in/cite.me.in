@@ -43,6 +43,7 @@ export async function launchServer(): Promise<number> {
       CHOKIDAR_USEPOLLING: "1",
       NODE_ENV: "test",
       PORT: availablePort.toString(),
+      VITE_APP_URL: `http://localhost:${availablePort}`,
       VITE_TEST_MODE: "1",
     },
   });
@@ -114,7 +115,6 @@ async function findAvailablePort(): Promise<number> {
   // Check if the port is taken, increment by one and keep checking
   let found = false;
   while (!found) {
-    console.info(`Checking port ${availablePort}...`);
     found = await isPortAvailable(availablePort);
     if (!found) availablePort++;
   }
