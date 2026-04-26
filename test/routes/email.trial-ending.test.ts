@@ -1,8 +1,8 @@
 import { expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vite-plus/test";
-import { getLastEmailSent } from "~/emails/sendEmails";
 import { sendTrialEndingEmail } from "~/emails/TrialEnding";
 import prisma from "~/lib/prisma.server";
+import getLastEmailSent from "~/test/helpers/getLastEmailSent";
 
 describe("TrialEnding email", () => {
   let email: NonNullable<Awaited<ReturnType<typeof getLastEmailSent>>>;

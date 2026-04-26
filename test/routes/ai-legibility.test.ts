@@ -1,10 +1,10 @@
 import { expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vite-plus/test";
 import sendAiLegibilityReport from "~/emails/AiLegibilityReport";
-import { getLastEmailSent } from "~/emails/sendEmails";
 import { appendLog, startNewScan } from "~/lib/aiLegibility/progress.server";
 import type { ScanResult } from "~/lib/aiLegibility/types";
 import prisma from "~/lib/prisma.server";
+import getLastEmailSent from "~/test/helpers/getLastEmailSent";
 import { goto } from "~/test/helpers/launchBrowser";
 import { port } from "~/test/helpers/launchServer";
 import { signIn } from "~/test/helpers/signIn";
