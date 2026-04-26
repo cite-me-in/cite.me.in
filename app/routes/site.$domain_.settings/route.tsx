@@ -64,7 +64,7 @@ export default function SiteSettingsPage({ loaderData }: Route.ComponentProps) {
   const { apiKey, content, site, isOwner } = loaderData;
   const trackingScript = `
 <script defer crossorigin="anonymous"
-        src="${import.meta.env.VITE_APP_URL}/pixel.js?key=${apiKey}" />`.trim();
+        src="/pixel.js?key=${apiKey}" />`.trim();
 
   return (
     <Main variant="wide">

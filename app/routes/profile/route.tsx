@@ -82,6 +82,10 @@ async function updateEmail({
     const { error } = zod.email().safeParse(email);
     if (error) return { error: "Enter a valid email address" };
 
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing && existing.id !== userId)
+      return { error: "That email address is already in use" };
+
     await prisma.user.update({ where: { id: userId }, data: { email } });
     return { success: "Email updated successfully" };
   } catch {
