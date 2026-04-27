@@ -2,11 +2,20 @@ import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 
 const mockComplete = vi.fn();
 
-class MockOpenAI {
-  chat = { completions: { create: mockComplete } };
+class RateLimitError extends Error {
+  status = 429;
+  constructor(message: string) {
+    super(message);
+    this.name = "RateLimitError";
+  }
 }
 
-vi.mock("openai", () => ({ default: MockOpenAI }));
+class MockOpenAI {
+  chat = { completions: { create: mockComplete } };
+  static RateLimitError = RateLimitError;
+}
+
+vi.mock("openai", () => ({ default: MockOpenAI, RateLimitError }));
 
 afterEach(() => {
   mockComplete.mockReset();
@@ -267,7 +276,28 @@ describe("analyzeSentiment", () => {
     });
   });
 
-  it("should propagate API errors", async () => {
+  it("should return neutral fallback on rate limit errors", async () => {
+    mockComplete.mockRejectedValueOnce(
+      new RateLimitError("Rate limit reached"),
+    );
+
+    const { default: analyzeSentiment } =
+      await import("~/lib/llm-visibility/analyzeSentiment");
+
+    const result = await analyzeSentiment({
+      domain: "example.com",
+      queries: [{ query: "test", citations: [], text: "response" }],
+    });
+
+    expect(result).toEqual({
+      label: "neutral",
+      summary:
+        "Sentiment analysis temporarily unavailable due to rate limiting.",
+      citations: [],
+    });
+  });
+
+  it("should propagate non-rate-limit API errors", async () => {
     mockComplete.mockRejectedValueOnce(new Error("API error"));
 
     const { default: analyzeSentiment } =
