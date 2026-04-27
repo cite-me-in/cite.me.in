@@ -14,6 +14,8 @@ if (import.meta.env.PROD) {
       Sentry.browserProfilingIntegration(),
     ],
     ignoreErrors: [
+      // Safari browser extension timeouts (content scripts timing out)
+      /Request timeout for contentScriptVisibilityChanged/,
       // Browser password manager extensions (LastPass, Bitwarden, Chrome autofill)
       /Object Not Found Matching Id:\d+, MethodName:\w+, ParamCount:\d+/,
       // Safari WebKit internal map lookups (unhandled rejection from onMessage/onResponse)

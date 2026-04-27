@@ -22,6 +22,7 @@ const schema = z.object({
 const client = new OpenAI({
   apiKey: envVars.ZHIPU_API_KEY,
   baseURL: "https://api.z.ai/api/paas/v4/",
+  maxRetries: 3,
   fetch: process.env.NODE_ENV === "test" ? global.fetch : undefined,
 });
 
@@ -61,12 +62,14 @@ export default async function analyzeSentiment({
     })
     .join("\n\n---\n\n");
 
-  const completion = await client.chat.completions.create({
-    model: "glm-4.7",
-    messages: [
-      {
-        role: "system" as const,
-        content: `You are a brand visibility analyst. Analyze AI platform responses for ${domain}.
+  let completion;
+  try {
+    completion = await client.chat.completions.create({
+      model: "glm-4.7",
+      messages: [
+        {
+          role: "system" as const,
+          content: `You are a brand visibility analyst. Analyze AI platform responses for ${domain}.
 
 ${siteSummary ? `Site context: ${siteSummary}` : ""}
 
@@ -87,14 +90,30 @@ Respond with JSON only, no markdown fences:
   "summary": "2-3 sentence assessment",
   "citations": [{"url": "...", "relationship": "direct"|"indirect"|"unrelated", "reason": "brief explanation"}]
 }`,
-      },
-      {
-        role: "user" as const,
-        content: `Domain: ${domain}\nUnique citations to classify:\n${allCitations.map((c) => `- ${c}`).join("\n")}\n\nResponses:\n\n${queryLines}`,
-      },
-    ],
-    response_format: { type: "json_object" },
-  });
+        },
+        {
+          role: "user" as const,
+          content: `Domain: ${domain}\nUnique citations to classify:\n${allCitations.map((c) => `- ${c}`).join("\n")}\n\nResponses:\n\n${queryLines}`,
+        },
+      ],
+      response_format: { type: "json_object" },
+    });
+  } catch (error) {
+    if (error instanceof OpenAI.RateLimitError) {
+      logger(
+        "Sentiment analysis rate limited for %s: %s",
+        domain,
+        error.message,
+      );
+      return {
+        label: "neutral" as SentimentLabel,
+        summary:
+          "Sentiment analysis temporarily unavailable due to rate limiting.",
+        citations: [],
+      };
+    }
+    throw error;
+  }
 
   try {
     const raw = completion.choices[0].message.content ?? "{}";
