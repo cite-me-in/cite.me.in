@@ -163,10 +163,14 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   const url = new URL(request.url);
   const platform =
-    activePlatforms.find((p) => p.name === url.searchParams.get("platform")) ??
-    activePlatforms[0];
-
-  const recentRuns = runs.filter((r) => r.platform === platform.name);
+    activePlatforms.length > 0
+      ? (activePlatforms.find(
+          (p) => p.name === url.searchParams.get("platform"),
+        ) ?? activePlatforms[0])
+      : null;
+  const recentRuns = platform
+    ? runs.filter((r) => r.platform === platform.name)
+    : [];
   const recentRunIds = new Set(recentRuns.map((r) => r.id));
   const recentCitations = citationRows.filter((c) => recentRunIds.has(c.runId));
 
