@@ -198,7 +198,7 @@ describe("generateSuggestions", () => {
         checks: [
           {
             name: "JSON-LD",
-            category: "important",
+            category: "optimization",
             passed: false,
             message: "No JSON-LD found",
           },

@@ -129,8 +129,8 @@ describe("runScan", () => {
 
     expect(result?.summary.critical.passed).toBe(0);
     expect(result?.summary.critical.total).toBe(3);
-    expect(result?.summary.important.passed).toBe(0);
-    expect(result?.summary.optimization.passed).toBe(0);
+    expect(result?.summary.important.total).toBe(3);
+    expect(result?.summary.optimization.total).toBe(2);
   });
 
   it("should produce correct summary for partial site", async () => {
@@ -144,9 +144,10 @@ describe("runScan", () => {
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
 
-    expect(result?.summary.critical.passed).toBe(2);
+    expect(result?.summary.critical.passed).toBe(3);
     expect(result?.summary.critical.total).toBe(3);
-    expect(result?.summary.important.passed).toBe(3);
+    expect(result?.summary.important.passed).toBe(1);
+    expect(result?.summary.optimization.passed).toBe(2);
   });
 
   it("should normalize URL without protocol", async () => {
@@ -322,15 +323,15 @@ describe("runScan", () => {
     expect(criticalChecks?.map((c) => c.name)).toEqual(
       expect.arrayContaining([
         "Homepage content",
-        "sitemap.txt",
+        "robots.txt",
         "sitemap.xml",
       ]),
     );
     expect(importantChecks?.map((c) => c.name)).toEqual(
-      expect.arrayContaining(["robots.txt", "JSON-LD"]),
+      expect.arrayContaining(["sitemap.txt", "llms.txt"]),
     );
     expect(optimizationChecks?.map((c) => c.name)).toEqual(
-      expect.arrayContaining(["Meta tags", "llms.txt"]),
+      expect.arrayContaining(["Meta tags", "JSON-LD"]),
     );
   });
 });
@@ -408,13 +409,13 @@ describe("runScan with LLM suggestions", () => {
                     },
                     {
                       title: "Add JSON-LD structured data",
-                      category: "important",
+                      category: "optimization",
                       effort: "15 min",
                       description: "Add schema.org structured data",
                     },
                     {
                       title: "Add llms.txt for AI context",
-                      category: "optimization",
+                      category: "important",
                       effort: "5 min",
                       description: "Create an llms.txt file",
                     },
@@ -452,7 +453,7 @@ describe("runScan with LLM suggestions", () => {
     expect(optimizationSuggestions?.length).toBeGreaterThan(0);
 
     expect(criticalSuggestions?.[0]?.title).toContain("sitemap.txt");
-    expect(importantSuggestions?.[0]?.title).toContain("JSON-LD");
-    expect(optimizationSuggestions?.[0]?.title).toContain("llms.txt");
+    expect(importantSuggestions?.[0]?.title).toContain("llms.txt");
+    expect(optimizationSuggestions?.[0]?.title).toContain("JSON-LD");
   });
 });

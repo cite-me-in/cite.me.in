@@ -22,7 +22,7 @@ const SCAN_RESULT: ScanResult = {
     },
     {
       name: "sitemap.txt",
-      category: "critical",
+      category: "important",
       passed: true,
       message: "sitemap.txt found with 10 valid URLs",
     },
@@ -40,7 +40,7 @@ const SCAN_RESULT: ScanResult = {
     },
     {
       name: "JSON-LD Structured Data",
-      category: "important",
+      category: "optimization",
       passed: true,
       message: "Found 2 valid JSON-LD schemas: Organization, WebSite",
     },
@@ -52,20 +52,20 @@ const SCAN_RESULT: ScanResult = {
     },
     {
       name: "llms.txt",
-      category: "optimization",
+      category: "important",
       passed: false,
       message: "llms.txt not found (optional but recommended)",
     },
   ],
   summary: {
-    critical: { passed: 4, total: 4 },
-    important: { passed: 2, total: 2 },
-    optimization: { passed: 0, total: 1 },
+    critical: { passed: 3, total: 3 },
+    important: { passed: 2, total: 3 },
+    optimization: { passed: 1, total: 1 },
   },
   suggestions: [
     {
       title: "Add llms.txt for AI discoverability",
-      category: "optimization",
+      category: "important",
       effort: "5 min",
       description:
         "Create an llms.txt file at the root of your site to provide structured context for LLMs. This helps AI agents understand your content better.",
@@ -74,7 +74,7 @@ const SCAN_RESULT: ScanResult = {
     },
     {
       title: "Add sitemap.txt",
-      category: "critical",
+      category: "important",
       effort: "5 min",
       description:
         "Create a plain-text file at https://example.com/sitemap.txt with one URL per line listing all important pages on your site.",
@@ -83,7 +83,7 @@ const SCAN_RESULT: ScanResult = {
     },
     {
       title: "Add JSON-LD structured data",
-      category: "important",
+      category: "optimization",
       effort: "15 min",
       description:
         'Add a <script type="application/ld+json"> block to your pages with schema.org structured data to help AI agents understand your content.',
