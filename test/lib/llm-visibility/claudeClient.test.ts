@@ -2,15 +2,21 @@ import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
 const mockCreate = vi.hoisted(() => vi.fn());
 
-vi.mock("@anthropic-ai/sdk", () => ({
-  default: class {
-    beta = {
-      messages: {
-        create: mockCreate,
-      },
-    };
-  },
-}));
+vi.mock("@anthropic-ai/sdk", async (importOriginal) => {
+  const { APIError } =
+    await importOriginal<typeof import("@anthropic-ai/sdk")>();
+  return {
+    APIError,
+    default: class {
+      static APIError = APIError;
+      beta = {
+        messages: {
+          create: mockCreate,
+        },
+      };
+    },
+  };
+});
 
 vi.mock("~/lib/envVars.server", () => ({
   default: { ANTHROPIC_API_KEY: "test-key" },
@@ -78,6 +84,68 @@ describe("queryClaude", () => {
     });
 
     expect(result.citations).toEqual(["https://example.com"]);
+  });
+
+  it("should throw InsufficientCreditError on 402 response", async () => {
+    const { APIError: AnthropicAPIError } = await import("@anthropic-ai/sdk");
+    const headers = new Headers();
+    mockCreate.mockRejectedValue(
+      AnthropicAPIError.generate(402, {}, "Payment required", headers),
+    );
+
+    const { default: queryClaude } =
+      await import("~/lib/llm-visibility/claudeClient.server");
+
+    const { isInsufficientCreditError } =
+      await import("~/lib/llm-visibility/insufficientCreditError");
+    try {
+      await queryClaude({ maxRetries: 0, timeout: 0, query: "query" });
+      expect.unreachable("Should have thrown");
+    } catch (error) {
+      expect(isInsufficientCreditError(error)).toBe(true);
+      expect(error).toMatchObject({ platform: "claude", statusCode: 402 });
+    }
+  });
+
+  it("should throw InsufficientCreditError on 429 response", async () => {
+    const { APIError: AnthropicAPIError } = await import("@anthropic-ai/sdk");
+    const headers = new Headers();
+    mockCreate.mockRejectedValue(
+      AnthropicAPIError.generate(429, {}, "Rate limit exceeded", headers),
+    );
+
+    const { default: queryClaude } =
+      await import("~/lib/llm-visibility/claudeClient.server");
+
+    const { isInsufficientCreditError } =
+      await import("~/lib/llm-visibility/insufficientCreditError");
+    try {
+      await queryClaude({ maxRetries: 0, timeout: 0, query: "query" });
+      expect.unreachable("Should have thrown");
+    } catch (error) {
+      expect(isInsufficientCreditError(error)).toBe(true);
+      expect(error).toMatchObject({ platform: "claude", statusCode: 429 });
+    }
+  });
+
+  it("should not throw InsufficientCreditError on other errors", async () => {
+    const { APIError: AnthropicAPIError } = await import("@anthropic-ai/sdk");
+    const headers = new Headers();
+    mockCreate.mockRejectedValue(
+      AnthropicAPIError.generate(500, {}, "Internal Server Error", headers),
+    );
+
+    const { default: queryClaude } =
+      await import("~/lib/llm-visibility/claudeClient.server");
+
+    const { isInsufficientCreditError } =
+      await import("~/lib/llm-visibility/insufficientCreditError");
+    try {
+      await queryClaude({ maxRetries: 0, timeout: 0, query: "query" });
+      expect.unreachable("Should have thrown");
+    } catch (error) {
+      expect(isInsufficientCreditError(error)).toBe(false);
+    }
   });
 
   it("should deduplicate citations", async () => {

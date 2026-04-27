@@ -1,15 +1,11 @@
 import invariant from "tiny-invariant";
 import envVars from "~/lib/envVars.server";
+import { InsufficientCreditError } from "./insufficientCreditError";
 
 export const SERPAPI_PRICING = 25.0 / 1000;
 
 /**
  * Uses the SerpAPI to fetch organic results for a given query and engine.
- *
- * @param query - The query to search for.
- * @param engine - The engine to use for the search.
- * @param timeout - The timeout for the search.
- * @returns The organic results for the query. Includes citations, extra queries, text, and usage.
  *
  * @see https://serpapi.com/bing-copilot-api
  * @see https://serpapi.com/bing-search-api
@@ -37,6 +33,11 @@ export default async function fetchSERPResults({
   url.searchParams.set("api_key", envVars.SERPAPI_API_KEY);
 
   const response = await fetch(url, { signal: AbortSignal.timeout(timeout) });
+  if (response.status === 402 || response.status === 429)
+    throw new InsufficientCreditError(
+      engine === "bing_copilot" ? "copilot" : engine,
+      response.status,
+    );
   if (!response.ok) {
     const text = await response.text();
     throw new Error(`SerpApi error ${response.status}: ${text}`);

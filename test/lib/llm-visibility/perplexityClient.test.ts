@@ -2,13 +2,19 @@ import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
 const mockCreate = vi.hoisted(() => vi.fn());
 
-vi.mock("@perplexity-ai/perplexity_ai", () => ({
-  default: class {
-    search = {
-      create: mockCreate,
-    };
-  },
-}));
+vi.mock("@perplexity-ai/perplexity_ai", async (importOriginal) => {
+  const { APIError: PerplexityAPIError } =
+    await importOriginal<typeof import("@perplexity-ai/perplexity_ai")>();
+  return {
+    default: class {
+      static APIError = PerplexityAPIError;
+      search = {
+        create: mockCreate,
+      };
+    },
+    APIError: PerplexityAPIError,
+  };
+});
 
 vi.mock("~/lib/envVars.server", () => ({
   default: { PERPLEXITY_API_KEY: "test-key" },
@@ -111,5 +117,46 @@ describe("queryPerplexity", () => {
     });
 
     expect(result.citations).toEqual(["https://example.com"]);
+  });
+
+  it("should throw InsufficientCreditError on 429 response", async () => {
+    const { APIError: PerplexityAPIError } =
+      await import("@perplexity-ai/perplexity_ai");
+    mockCreate.mockRejectedValue(
+      new PerplexityAPIError(429, {}, "Rate limit exceeded", new Headers()),
+    );
+
+    const { default: queryPerplexity } =
+      await import("~/lib/llm-visibility/perplexityClient.server");
+
+    const { isInsufficientCreditError } =
+      await import("~/lib/llm-visibility/insufficientCreditError");
+    try {
+      await queryPerplexity({ maxRetries: 0, timeout: 0, query: "query" });
+      expect.unreachable("Should have thrown");
+    } catch (error) {
+      expect(isInsufficientCreditError(error)).toBe(true);
+      expect(error).toMatchObject({ platform: "perplexity", statusCode: 429 });
+    }
+  });
+
+  it("should not throw InsufficientCreditError on other errors", async () => {
+    const { APIError: PerplexityAPIError } =
+      await import("@perplexity-ai/perplexity_ai");
+    mockCreate.mockRejectedValue(
+      new PerplexityAPIError(500, {}, "Internal Server Error", new Headers()),
+    );
+
+    const { default: queryPerplexity } =
+      await import("~/lib/llm-visibility/perplexityClient.server");
+
+    const { isInsufficientCreditError } =
+      await import("~/lib/llm-visibility/insufficientCreditError");
+    try {
+      await queryPerplexity({ maxRetries: 0, timeout: 0, query: "query" });
+      expect.unreachable("Should have thrown");
+    } catch (error) {
+      expect(isInsufficientCreditError(error)).toBe(false);
+    }
   });
 });

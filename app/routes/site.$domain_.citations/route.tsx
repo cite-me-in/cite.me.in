@@ -104,6 +104,10 @@ function buildRelatedCitations(
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { site } = await requireSiteAccess({ domain: params.domain, request });
 
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .split("T")[0];
+
   const [runs, siteQueries, citationRows] = await Promise.all([
     prisma.citationQueryRun.findMany({
       select: {
@@ -128,7 +132,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
         },
       },
       orderBy: [{ platform: "asc" }, { onDate: "desc" }],
-      where: { siteId: site.id },
+      where: { siteId: site.id, onDate: { gte: thirtyDaysAgo } },
     }),
     prisma.siteQuery.findMany({
       where: { siteId: site.id },
@@ -148,10 +152,19 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     }),
   ]);
 
+  const activePlatforms = alphabetical(
+    unique(
+      runs
+        .map((r) => PLATFORMS.find((p) => p.name === r.platform)!)
+        .filter(Boolean),
+    ),
+    ({ label }) => label,
+  );
+
   const url = new URL(request.url);
   const platform =
-    PLATFORMS.find((p) => p.name === url.searchParams.get("platform")) ??
-    PLATFORMS[0];
+    activePlatforms.find((p) => p.name === url.searchParams.get("platform")) ??
+    activePlatforms[0];
 
   const recentRuns = runs.filter((r) => r.platform === platform.name);
   const recentRunIds = new Set(recentRuns.map((r) => r.id));
@@ -189,6 +202,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   return {
     site,
+    activePlatforms,
     runs,
     siteQueries,
     competitors,
@@ -203,6 +217,7 @@ export default function SiteCitationsPage({
 }: Route.ComponentProps) {
   const {
     site,
+    activePlatforms,
     runs,
     siteQueries,
     competitors,
@@ -212,9 +227,13 @@ export default function SiteCitationsPage({
   } = loaderData;
   const [searchParams, setSearchParams] = useSearchParams();
   const platform =
-    PLATFORMS.find((p) => p.name === searchParams.get("platform")) ??
-    PLATFORMS[0];
-  const recentRuns = runs.filter((r) => r.platform === platform.name);
+    activePlatforms.length > 0
+      ? (activePlatforms.find((p) => p.name === searchParams.get("platform")) ??
+        activePlatforms[0])
+      : null;
+  const recentRuns = platform
+    ? runs.filter((r) => r.platform === platform.name)
+    : [];
   const run = recentRuns[0];
 
   const mergedQueries = unique(
@@ -247,11 +266,11 @@ export default function SiteCitationsPage({
       <div className="flex justify-center">
         <Tabs
           className="mx-auto"
-          defaultValue={platform.name}
+          defaultValue={platform?.name ?? ""}
           onValueChange={(platform) => setSearchParams({ platform })}
         >
           <TabsList>
-            {alphabetical(PLATFORMS, ({ label }) => label).map((platform) => (
+            {activePlatforms.map((platform) => (
               <TabsTrigger key={platform.name} value={platform.name}>
                 {platform.label}
               </TabsTrigger>
@@ -260,7 +279,11 @@ export default function SiteCitationsPage({
         </Tabs>
       </div>
 
-      {run ? (
+      {activePlatforms.length === 0 ? (
+        <p className="text-foreground/60 flex items-center justify-center py-8 text-center text-lg">
+          No citation runs in the last 30 days.
+        </p>
+      ) : run ? (
         <>
           <LatestResults
             queries={mergedQueries}
@@ -270,7 +293,7 @@ export default function SiteCitationsPage({
           />
           <BrandSentiment
             sentiment={sentiment}
-            platformLabel={platform.label}
+            platformLabel={platform!.label}
           />
           <RelatedCitations relatedCitations={relatedCitations} />
           <TopCompetitors
@@ -288,7 +311,7 @@ export default function SiteCitationsPage({
           <span aria-label="sad face" role="img" className="mr-2">
             😔
           </span>
-          No runs yet for {platform.label}.
+          No runs yet for {platform!.label}.
         </p>
       )}
     </Main>

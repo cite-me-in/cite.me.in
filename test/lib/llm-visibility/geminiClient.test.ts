@@ -2,13 +2,18 @@ import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
 const mockGenerateContent = vi.hoisted(() => vi.fn());
 
-vi.mock("@google/genai", () => ({
-  GoogleGenAI: class {
-    models = {
-      generateContent: mockGenerateContent,
-    };
-  },
-}));
+vi.mock("@google/genai", async (importOriginal) => {
+  const { ApiError } = await importOriginal<typeof import("@google/genai")>();
+  return {
+    GoogleGenAI: class {
+      static ApiError = ApiError;
+      models = {
+        generateContent: mockGenerateContent,
+      };
+    },
+    ApiError,
+  };
+});
 
 vi.mock("~/lib/envVars.server", () => ({
   default: { GOOGLE_GENERATIVE_AI_API_KEY: "test-key" },
@@ -152,5 +157,46 @@ describe("queryGemini", () => {
 
     expect(result.citations).toEqual([]);
     expect(result.extraQueries).toEqual([]);
+  });
+
+  it("should throw InsufficientCreditError on 429 response", async () => {
+    vi.stubGlobal("fetch", vi.fn());
+    const { ApiError: GoogleApiError } = await import("@google/genai");
+    mockGenerateContent.mockRejectedValue(
+      new GoogleApiError({ status: 429, message: "Rate limit exceeded" }),
+    );
+
+    const { default: queryGemini } =
+      await import("~/lib/llm-visibility/geminiClient.server");
+
+    const { isInsufficientCreditError } =
+      await import("~/lib/llm-visibility/insufficientCreditError");
+    try {
+      await queryGemini({ maxRetries: 0, timeout: 0, query: "query" });
+      expect.unreachable("Should have thrown");
+    } catch (error) {
+      expect(isInsufficientCreditError(error)).toBe(true);
+      expect(error).toMatchObject({ platform: "gemini", statusCode: 429 });
+    }
+  });
+
+  it("should not throw InsufficientCreditError on other errors", async () => {
+    vi.stubGlobal("fetch", vi.fn());
+    const { ApiError: GoogleApiError } = await import("@google/genai");
+    mockGenerateContent.mockRejectedValue(
+      new GoogleApiError({ status: 500, message: "Internal Server Error" }),
+    );
+
+    const { default: queryGemini } =
+      await import("~/lib/llm-visibility/geminiClient.server");
+
+    const { isInsufficientCreditError } =
+      await import("~/lib/llm-visibility/insufficientCreditError");
+    try {
+      await queryGemini({ maxRetries: 0, timeout: 0, query: "query" });
+      expect.unreachable("Should have thrown");
+    } catch (error) {
+      expect(isInsufficientCreditError(error)).toBe(false);
+    }
   });
 });

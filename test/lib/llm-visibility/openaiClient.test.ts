@@ -2,13 +2,18 @@ import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
 const mockCreate = vi.hoisted(() => vi.fn());
 
-vi.mock("openai", () => ({
-  default: class {
-    responses = {
-      create: mockCreate,
-    };
-  },
-}));
+vi.mock("openai", async (importOriginal) => {
+  const { APIError } = await importOriginal<typeof import("openai")>();
+  return {
+    APIError,
+    default: class {
+      static APIError = APIError;
+      responses = {
+        create: mockCreate,
+      };
+    },
+  };
+});
 
 vi.mock("~/lib/envVars.server", () => ({
   default: { OPENAI_API_KEY: "test-key" },
@@ -118,6 +123,67 @@ describe("openaiClient", () => {
     });
 
     expect(result.citations).toEqual(["https://example.com"]);
+  });
+
+  it("should throw InsufficientCreditError on 402 response", async () => {
+    const { APIError } = await import("openai");
+    mockCreate.mockRejectedValue(
+      new APIError(402, {}, "Payment required", new Headers()),
+    );
+
+    const { default: openaiClient } =
+      await import("~/lib/llm-visibility/openaiClient.server");
+
+    await expect(
+      openaiClient({ maxRetries: 0, timeout: 0, query: "query" }),
+    ).rejects.toThrow("chatgpt: insufficient credit (HTTP 402)");
+  });
+
+  it("should throw InsufficientCreditError on 429 response", async () => {
+    const { APIError } = await import("openai");
+    mockCreate.mockRejectedValue(
+      new APIError(429, {}, "Rate limit exceeded", new Headers()),
+    );
+
+    const { default: openaiClient } =
+      await import("~/lib/llm-visibility/openaiClient.server");
+
+    await expect(
+      openaiClient({ maxRetries: 0, timeout: 0, query: "query" }),
+    ).rejects.toThrow("chatgpt: insufficient credit (HTTP 429)");
+  });
+
+  it("should throw InsufficientCreditError on insufficient_quota error code", async () => {
+    const { APIError } = await import("openai");
+    const error = new APIError(
+      429,
+      { code: "insufficient_quota" },
+      "insufficient_quota",
+      new Headers(),
+    );
+
+    mockCreate.mockRejectedValue(error);
+
+    const { default: openaiClient } =
+      await import("~/lib/llm-visibility/openaiClient.server");
+
+    await expect(
+      openaiClient({ maxRetries: 0, timeout: 0, query: "query" }),
+    ).rejects.toThrow("chatgpt: insufficient credit (HTTP 429)");
+  });
+
+  it("should not throw InsufficientCreditError on other errors", async () => {
+    const { APIError } = await import("openai");
+    mockCreate.mockRejectedValue(
+      new APIError(500, {}, "Internal Server Error", new Headers()),
+    );
+
+    const { default: openaiClient } =
+      await import("~/lib/llm-visibility/openaiClient.server");
+
+    await expect(
+      openaiClient({ maxRetries: 0, timeout: 0, query: "query" }),
+    ).rejects.toThrow("500");
   });
 
   it("should return empty citations when there are no annotations", async () => {

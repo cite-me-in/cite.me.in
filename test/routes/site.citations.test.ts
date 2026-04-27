@@ -95,12 +95,11 @@ const CITATION_SETS: Array<{ citations: string[] }> = [
   },
 ];
 
-// Fixed base date so createdAt values — and the date shown in the UI — never drift.
-const BASE_DATE = new Date("2026-02-26T10:00:00.000Z");
-function daysAgo(n: number): Date {
-  const d = new Date(BASE_DATE);
+// Dates relative to today so the 30-day filter includes all runs.
+function daysAgo(n: number): string {
+  const d = new Date();
   d.setDate(d.getDate() - n);
-  return d;
+  return d.toISOString().split("T")[0];
 }
 
 // ---------------------------------------------------------------------------
@@ -158,7 +157,7 @@ describe("site page", () => {
             siteId: site.id,
             platform: name,
             model,
-            onDate: daysAgo(runDays[runIdx]).toISOString().split("T")[0],
+            onDate: daysAgo(runDays[runIdx]),
             queries: {
               createMany: {
                 data: QUERIES.map(({ query, group }) => ({
