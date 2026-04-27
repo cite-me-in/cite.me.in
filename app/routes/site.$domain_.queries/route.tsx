@@ -14,6 +14,7 @@ import {
   hasWordChanges,
   isMeaningfulSentence,
 } from "~/lib/llm-visibility/queryValidation";
+import upsertCitingPages from "~/lib/llm-visibility/upsertCitingPages";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 import AddQueriesGroup from "./AddQueriesGroup";
@@ -79,6 +80,7 @@ export async function action({ request, params }: Route.ActionArgs) {
       if (isMeaningfulSentence(query))
         try {
           await runQueryOnAllPlatforms({ site, query, group, log: logger });
+          await upsertCitingPages({ log: logger, site });
         } catch (error) {
           captureAndLogError(error, { extra: { siteId: site.id } });
         }
@@ -100,6 +102,7 @@ export async function action({ request, params }: Route.ActionArgs) {
             group: existing.group,
             log: logger,
           });
+          await upsertCitingPages({ log: logger, site });
         } catch (error) {
           captureAndLogError(error, { extra: { siteId: site.id } });
         }
