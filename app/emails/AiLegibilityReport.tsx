@@ -3,7 +3,7 @@ import { BrandReminderCard } from "~/components/email/BrandReminder";
 import Button from "~/components/email/Button";
 import Card from "~/components/email/Card";
 import Link from "~/components/email/Link";
-import { TIERS } from "~/lib/aiLegibility/criteria";
+import TIERS from "~/lib/aiLegibility/criteria";
 import type { ScanResult } from "~/lib/aiLegibility/types";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";

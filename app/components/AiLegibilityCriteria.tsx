@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
-import { TIERS } from "~/lib/aiLegibility/criteria";
+import TIERS from "~/lib/aiLegibility/criteria";
 
 export default function AiLegibilityCriteria() {
   return (

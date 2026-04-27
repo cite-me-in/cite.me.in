@@ -1,6 +1,6 @@
 import { Badge } from "~/components/ui/Badge";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
-import { TIERS } from "~/lib/aiLegibility/criteria";
+import TIERS from "~/lib/aiLegibility/criteria";
 import type { ScanResult } from "~/lib/aiLegibility/types";
 
 export default function ScanResults({ result }: { result: ScanResult }) {

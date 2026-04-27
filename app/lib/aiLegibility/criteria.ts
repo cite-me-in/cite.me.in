@@ -1,4 +1,4 @@
-export type Tier = {
+type Tier = {
   key: "critical" | "important" | "optimization";
   title: string;
   color: string;
@@ -7,7 +7,7 @@ export type Tier = {
   checks: { name: string; desc: string }[];
 };
 
-export const TIERS: Tier[] = [
+const TIERS: Tier[] = [
   {
     key: "critical",
     title: "Critical — Gates AI Discovery",
@@ -65,3 +65,4 @@ export const TIERS: Tier[] = [
     ],
   },
 ];
+export default TIERS;

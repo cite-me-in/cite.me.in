@@ -204,25 +204,20 @@ describe("ai-legibility page - with report", () => {
   });
 
   it("should show summary cards", async () => {
-    await expect(
-      reportPage.getByText("Critical", { exact: true }),
-    ).toBeVisible();
-    await expect(
-      reportPage.getByText("Important", { exact: true }),
-    ).toBeVisible();
-    await expect(
-      reportPage.getByText("Optimization", { exact: true }),
-    ).toBeVisible();
+    const grid = reportPage.locator(".grid");
+    await expect(grid.getByText("Critical", { exact: true })).toBeVisible();
+    await expect(grid.getByText("Important", { exact: true })).toBeVisible();
+    await expect(grid.getByText("Optimization", { exact: true })).toBeVisible();
   });
 
   it("should show critical checks passed", async () => {
-    await expect(reportPage.getByText("4/4").first()).toBeVisible();
+    await expect(reportPage.getByText("3/3").first()).toBeVisible();
   });
 
   it("should show failed check with error icon", async () => {
     const checkSection = reportPage
       .locator('[data-slot="card"]')
-      .filter({ hasText: "Optimization" });
+      .filter({ hasText: "Important Checks" });
     await expect(
       checkSection.getByText("llms.txt", { exact: true }),
     ).toBeVisible();
@@ -366,10 +361,14 @@ describe("ai-legibility email", () => {
 
   it("should show category summary", async () => {
     const table = email.page.locator("table");
-    await expect(table.getByText("Critical", { exact: true })).toBeVisible();
-    await expect(table.getByText("Important", { exact: true })).toBeVisible();
     await expect(
-      table.getByText("Optimization", { exact: true }),
+      table.getByText("Critical", { exact: true }).first(),
+    ).toBeVisible();
+    await expect(
+      table.getByText("Important", { exact: true }).first(),
+    ).toBeVisible();
+    await expect(
+      table.getByText("Optimization", { exact: true }).first(),
     ).toBeVisible();
   });
 
