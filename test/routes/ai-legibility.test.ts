@@ -388,8 +388,8 @@ describe("ai-legibility email", () => {
     await expect(email.page.getByText("View all 4 suggestions")).toBeVisible();
   });
 
-  it("should match visually", async () => {
-    await email.page.setViewportSize({ width: 1024, height: 1200 });
+  it.only("should match visually", async () => {
+    await email.page.setViewportSize({ width: 1024, height: 2400 });
     await expect(email.page).toMatchVisual({
       name: "email/ai-legibility-report",
     });

@@ -203,18 +203,16 @@ function Explainer() {
       title="About the tier system"
       subtitle="Checks are grouped by impact"
     >
-      {TIERS.map((tier) => (
-        <Text
-          key={tier.key}
-          className="text-text my-2 text-base leading-relaxed"
-          style={{ margin: 0 }}
-        >
-          <strong style={{ color: tier.emailColor }}>
-            {tier.title.split(" — ")[0]}
-          </strong>{" "}
-          — {tier.description}
-        </Text>
-      ))}
+      <div className="mb-6">
+        {TIERS.map((tier) => (
+          <Text className="text-text text-base leading-relaxed">
+            <strong style={{ color: tier.emailColor }}>
+              {tier.title.split(" — ")[0]}
+            </strong>{" "}
+            — {tier.description}
+          </Text>
+        ))}
+      </div>
     </Card>
   );
 }
