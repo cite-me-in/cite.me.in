@@ -107,23 +107,7 @@ function AiLegibilityReport({
 
       <BrandReminderCard domain={site.domain} citations={totalPassed} />
 
-      <Card withBorder>
-        <Text className="text-text text-base leading-relaxed">
-          <strong>About the tier system:</strong> Checks are grouped by impact.
-        </Text>
-        {TIERS.map((tier) => (
-          <Text
-            key={tier.key}
-            className="text-text text-base leading-relaxed"
-            style={{ margin: 0 }}
-          >
-            <strong style={{ color: tier.emailColor }}>
-              {tier.title.split(" — ")[0]}
-            </strong>{" "}
-            — {tier.description}
-          </Text>
-        ))}
-      </Card>
+      <Explainer />
 
       <Text className="text-text my-4 text-base leading-relaxed">
         Best regards,
@@ -209,5 +193,28 @@ function SuggestionItem({
         </pre>
       )}
     </div>
+  );
+}
+
+function Explainer() {
+  return (
+    <Card
+      withBorder
+      title="About the tier system"
+      subtitle="Checks are grouped by impact"
+    >
+      {TIERS.map((tier) => (
+        <Text
+          key={tier.key}
+          className="text-text my-2 text-base leading-relaxed"
+          style={{ margin: 0 }}
+        >
+          <strong style={{ color: tier.emailColor }}>
+            {tier.title.split(" — ")[0]}
+          </strong>{" "}
+          — {tier.description}
+        </Text>
+      ))}
+    </Card>
   );
 }
