@@ -1,15 +1,12 @@
 import { Badge } from "~/components/ui/Badge";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
+import { TIERS } from "~/lib/aiLegibility/criteria";
 import type { ScanResult } from "~/lib/aiLegibility/types";
 
 export default function ScanResults({ result }: { result: ScanResult }) {
   const { summary, checks, suggestions } = result || {};
 
-  const criticalChecks = checks.filter((c) => c.category === "critical");
-  const importantChecks = checks.filter((c) => c.category === "important");
-  const optimizationChecks = checks.filter(
-    (c) => c.category === "optimization",
-  );
+  const groupChecks = (key: string) => checks.filter((c) => c.category === key);
 
   const totalPassed =
     (summary?.critical?.passed ?? 0) +
@@ -26,35 +23,23 @@ export default function ScanResults({ result }: { result: ScanResult }) {
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-4">
         <Figure title="Overall Score" value={`${score}%`} />
-        <Figure
-          title="Critical"
-          value={`${summary?.critical?.passed ?? 0}/${summary?.critical?.total ?? 0}`}
-        />
-        <Figure
-          title="Important"
-          value={`${summary?.important?.passed ?? 0}/${summary?.important?.total ?? 0}`}
-        />
-        <Figure
-          title="Optimization"
-          value={`${summary?.optimization?.passed ?? 0}/${summary?.optimization?.total ?? 0}`}
-        />
+        {TIERS.map((tier) => (
+          <Figure
+            key={tier.key}
+            title={tier.title.split(" — ")[0]}
+            value={`${summary?.[tier.key]?.passed ?? 0}/${summary?.[tier.key]?.total ?? 0}`}
+          />
+        ))}
       </div>
 
-      <CheckList
-        title="Critical Checks"
-        checks={criticalChecks}
-        color="text-red-600"
-      />
-      <CheckList
-        title="Important Checks"
-        checks={importantChecks}
-        color="text-yellow-600"
-      />
-      <CheckList
-        title="Optimization Checks"
-        checks={optimizationChecks}
-        color="text-green-600"
-      />
+      {TIERS.map((tier) => (
+        <CheckList
+          key={tier.key}
+          title={`${tier.title.split(" — ")[0]} Checks`}
+          checks={groupChecks(tier.key)}
+          color={tier.color}
+        />
+      ))}
 
       {suggestions.length > 0 && (
         <Card id="suggestions">

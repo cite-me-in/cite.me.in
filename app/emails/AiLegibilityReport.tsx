@@ -3,6 +3,7 @@ import { BrandReminderCard } from "~/components/email/BrandReminder";
 import Button from "~/components/email/Button";
 import Card from "~/components/email/Card";
 import Link from "~/components/email/Link";
+import { TIERS } from "~/lib/aiLegibility/criteria";
 import type { ScanResult } from "~/lib/aiLegibility/types";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
@@ -106,6 +107,24 @@ function AiLegibilityReport({
 
       <BrandReminderCard domain={site.domain} citations={totalPassed} />
 
+      <Card withBorder>
+        <Text className="text-text text-base leading-relaxed">
+          <strong>About the tier system:</strong> Checks are grouped by impact.
+        </Text>
+        {TIERS.map((tier) => (
+          <Text
+            key={tier.key}
+            className="text-text text-base leading-relaxed"
+            style={{ margin: 0 }}
+          >
+            <strong style={{ color: tier.emailColor }}>
+              {tier.title.split(" — ")[0]}
+            </strong>{" "}
+            — {tier.description}
+          </Text>
+        ))}
+      </Card>
+
       <Text className="text-text my-4 text-base leading-relaxed">
         Best regards,
         <br />
@@ -126,21 +145,14 @@ function SummaryTable({ result }: { result: ScanResult }) {
         </tr>
       </thead>
       <tbody>
-        <SummaryRow
-          category="Critical"
-          passed={result.summary.critical.passed}
-          total={result.summary.critical.total}
-        />
-        <SummaryRow
-          category="Important"
-          passed={result.summary.important.passed}
-          total={result.summary.important.total}
-        />
-        <SummaryRow
-          category="Optimization"
-          passed={result.summary.optimization.passed}
-          total={result.summary.optimization.total}
-        />
+        {TIERS.map((tier) => (
+          <SummaryRow
+            key={tier.key}
+            category={tier.title.split(" — ")[0]}
+            passed={result.summary[tier.key].passed}
+            total={result.summary[tier.key].total}
+          />
+        ))}
       </tbody>
     </table>
   );

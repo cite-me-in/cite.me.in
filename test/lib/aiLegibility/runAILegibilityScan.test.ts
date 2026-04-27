@@ -321,11 +321,7 @@ describe("runScan", () => {
     );
 
     expect(criticalChecks?.map((c) => c.name)).toEqual(
-      expect.arrayContaining([
-        "Homepage content",
-        "robots.txt",
-        "sitemap.xml",
-      ]),
+      expect.arrayContaining(["Homepage content", "robots.txt", "sitemap.xml"]),
     );
     expect(importantChecks?.map((c) => c.name)).toEqual(
       expect.arrayContaining(["sitemap.txt", "llms.txt"]),

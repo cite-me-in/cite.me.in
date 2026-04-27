@@ -2,6 +2,8 @@
 
 A free tool that validates whether a website is readable by AI agents and suggests improvements.
 
+See [ai-legibility-criteria.md](./ai-legibility-criteria.md) for the reasoning behind check categories.
+
 ## User Flow
 
 1. User visits `/ai-legibility` (public, rate-limited)
@@ -18,30 +20,29 @@ A free tool that validates whether a website is readable by AI agents and sugges
 
 ## What Gets Tested
 
-### Critical (blocks AI discovery entirely)
+### Critical — Gates AI Discovery
 
 | Test | What it checks |
 |------|----------------|
+| robots.txt | Robots file present, parseable, and not blocking AI crawlers |
+| sitemap.xml | XML sitemap is accessible and parseable |
 | Homepage content | Homepage returns actual content (not empty SPA shell) |
-| sitemap.txt exists | Plain-text sitemap is accessible at `/sitemap.txt` |
-| sitemap.txt valid | File contains valid URLs, one per line |
-| sitemap.xml readable | XML sitemap served with `text/xml` or `application/xml` is parseable |
 
-### Important (improves AI understanding)
+### Important — Improves Discovery Quality
 
 | Test | What it checks |
 |------|----------------|
+| sitemap.txt | Plain-text sitemap is accessible at `/sitemap.txt` |
+| llms.txt | AI-specific content index at `/llms.txt` |
 | Sample pages have content | 5-10 URLs from sitemap return actual content (10s per-page timeout, 2m total timeout) |
 | Sample pages timeout | Any pages that timeout are flagged as issues |
-| JSON-LD structured data | Pages include valid JSON-LD with schema validation (Article, Organization, etc.) |
-| robots.txt exists | Robots file present and parseable |
-| Meta description | Homepage has meta description tag |
+| Meta tags | Homepage has title, description, and relevant meta tags |
 
-### Optimization (nice to have)
+### Optimization — Enhances Presentation
 
 | Test | What it checks |
 |------|----------------|
-| llms.txt exists | AI-specific content index at `/llms.txt` |
+| JSON-LD structured data | Pages include valid JSON-LD with schema validation (Article, Organization, etc.) |
 | Open Graph tags | Pages have OG tags for social sharing |
 | Canonical URLs | Pages have self-referencing canonical link |
 
