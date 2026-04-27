@@ -131,6 +131,19 @@ const handlers = [
     }),
   ),
 
+  http.post("https://api.perplexity.ai/search", () =>
+    HttpResponse.json({
+      id: "search_test",
+      results: [
+        {
+          snippet: "Mocked Perplexity search result.",
+          title: "Example Source",
+          url: "https://example.com",
+        },
+      ],
+    }),
+  ),
+
   http.post("https://api.stripe.com/v1/checkout/sessions", () =>
     HttpResponse.json({
       id: "cs_test_mock",
