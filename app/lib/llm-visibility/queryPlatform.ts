@@ -12,19 +12,10 @@ import {
   checkUsageLimits,
   recordUsageEvent,
 } from "~/lib/usage/usageLimit.server";
+import { isInsufficientCreditError } from "./insufficientCreditError";
 import type { QueryFn } from "./queryFn";
 import updateRunSentiment from "./updateRunSentiment";
 
-/**
- * Query a given platform for a given account and queries.
- *
- * @param model - The model to use for the queries.
- * @param platform - The platform to query.
- * @param queries - The queries to query.
- * @param queryFn - The function to use to query the LLM.
- * @param site - The site to query.
- * @param log - The log function to use.
- */
 export async function queryPlatform({
   model,
   platform,
@@ -43,29 +34,61 @@ export async function queryPlatform({
   invariant(platform, "Platform is required");
   invariant(model, "Model is required");
 
+  const onDate = new Date().toISOString().split("T")[0];
+  const run = await prisma.citationQueryRun.upsert({
+    where: { siteId_platform_onDate: { onDate, platform, siteId: site.id } },
+    update: { model },
+    create: { onDate, model, platform, siteId: site.id },
+    select: {
+      id: true,
+      queries: { select: { query: true } },
+      site: true,
+      platform: true,
+    },
+  });
+
+  const notEmptyQueries = queries.filter((q) => q.query.trim());
+  const existingQueries = run.queries.map(({ query }) => query);
+  const newQueries = notEmptyQueries.filter(
+    ({ query }) => !existingQueries.includes(query),
+  );
+  if (newQueries.length === 0) return;
+
+  const [firstQuery, ...restQueries] = newQueries;
+
+  await log(`${platform}: Probing with first query: ${firstQuery.query}`);
   try {
-    const onDate = new Date().toISOString().split("T")[0];
-    const run = await prisma.citationQueryRun.upsert({
-      where: { siteId_platform_onDate: { onDate, platform, siteId: site.id } },
-      update: { model: model },
-      create: { onDate, model: model, platform, siteId: site.id },
-      select: {
-        id: true,
-        queries: { select: { query: true } },
-        site: true,
-        platform: true,
-      },
+    await singleQueryRepetition({
+      group: firstQuery.group,
+      model,
+      platform,
+      query: firstQuery.query,
+      queryFn,
+      runId: run.id,
+      site,
+      log,
     });
+  } catch (error) {
+    if (isInsufficientCreditError(error)) {
+      await log(`${platform}: No credit remaining, skipping platform`);
+      if (existingQueries.length === 0)
+        await prisma.citationQueryRun.delete({ where: { id: run.id } });
+      return;
+    }
+    captureAndLogError(error, { extra: { siteId: site.id, platform } });
+    return;
+  }
 
-    const notEmptyQueries = queries.filter((q) => q.query.trim());
-    const existingQueries = run.queries.map(({ query }) => query);
-    const newQueries = notEmptyQueries.filter(
-      ({ query }) => !existingQueries.includes(query),
-    );
-    if (newQueries.length === 0) return;
+  if (restQueries.length === 0) {
+    await updateRunSentiment({ log, run });
+    return;
+  }
 
-    await parallel({ limit: 5 }, newQueries, async (query) => {
-      await log(`${platform}: Querying ${query.query} (${query.group})`);
+  let creditExhausted = false;
+  await parallel({ limit: 5 }, restQueries, async (query) => {
+    if (creditExhausted) return;
+    await log(`${platform}: Querying ${query.query} (${query.group})`);
+    try {
       await singleQueryRepetition({
         group: query.group,
         model,
@@ -76,14 +99,19 @@ export async function queryPlatform({
         site,
         log,
       });
-    });
+    } catch (error) {
+      if (isInsufficientCreditError(error)) {
+        creditExhausted = true;
+        await log(
+          `${platform}: Credit exhausted mid-run, keeping partial results`,
+        );
+        return;
+      }
+      captureAndLogError(error, { extra: { siteId: site.id, platform } });
+    }
+  });
 
-    await updateRunSentiment({ log, run });
-  } catch (error) {
-    captureAndLogError(error, {
-      extra: { siteId: site.id, platform },
-    });
-  }
+  await updateRunSentiment({ log, run });
 }
 
 export async function singleQueryRepetition({
@@ -110,57 +138,45 @@ export async function singleQueryRepetition({
   });
   if (existing) return;
 
-  try {
-    await checkUsageLimits(site.id);
-    const { citations, extraQueries, text, usage } = await queryFn({
-      maxRetries: 3,
-      timeout: ms("60s"),
+  await checkUsageLimits(site.id);
+  const { citations, extraQueries, text, usage } = await queryFn({
+    maxRetries: 3,
+    timeout: ms("60s"),
+    query,
+  });
+  await recordUsageEvent({
+    siteId: site.id,
+    model,
+    inputTokens: usage.inputTokens ?? 0,
+    outputTokens: usage.outputTokens ?? 0,
+  });
+  await log(`${platform}: Query complete for ${query} (${group})`);
+  const citationRecord = await prisma.citationQuery.create({
+    data: {
+      group,
+      extraQueries,
       query,
-    });
-    await recordUsageEvent({
-      siteId: site.id,
-      model,
-      inputTokens: usage.inputTokens ?? 0,
-      outputTokens: usage.outputTokens ?? 0,
-    });
-    await log(`${platform}: Query complete for ${query} (${group})`);
-    const citationRecord = await prisma.citationQuery.create({
-      data: {
-        group,
-        extraQueries,
-        query,
-        runId,
-        text,
-      },
-    });
+      runId,
+      text,
+    },
+  });
 
-    if (citations.length > 0) {
-      await prisma.citation.createMany({
-        data: citations.map((rawUrl) => {
-          const url = normalizeURL(rawUrl);
-          return {
-            url,
-            domain: normalizeDomain(url),
-            queryId: citationRecord.id,
-            runId,
-            siteId: site.id,
-            relationship: isSameDomain({ domain: site.domain, url })
-              ? "direct"
-              : null,
-          };
-        }),
-        skipDuplicates: true,
-      });
-    }
-  } catch (error) {
-    captureAndLogError(error, {
-      extra: {
-        siteId: site.id,
-        platform,
-        runId,
-        query,
-        group,
-      },
+  if (citations.length > 0) {
+    await prisma.citation.createMany({
+      data: citations.map((rawUrl) => {
+        const url = normalizeURL(rawUrl);
+        return {
+          url,
+          domain: normalizeDomain(url),
+          queryId: citationRecord.id,
+          runId,
+          siteId: site.id,
+          relationship: isSameDomain({ domain: site.domain, url })
+            ? "direct"
+            : null,
+        };
+      }),
+      skipDuplicates: true,
     });
   }
 }

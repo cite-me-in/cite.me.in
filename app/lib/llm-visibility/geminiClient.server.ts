@@ -1,7 +1,8 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, ApiError as GoogleApiError } from "@google/genai";
 import { ms } from "convert";
 import { map } from "radashi";
 import envVars from "~/lib/envVars.server";
+import { InsufficientCreditError } from "./insufficientCreditError";
 import type { QueryFn } from "./queryFn";
 
 // https://ai.google.dev/gemini-api/docs/pricing
@@ -29,24 +30,34 @@ export default async function queryGemini({
   timeout: number;
   query: string;
 }): ReturnType<QueryFn> {
-  const response = await client.models.generateContent({
-    model: MODEL_ID,
-    contents: [
-      {
-        role: "user",
-        parts: [{ text: query }],
-      },
-    ],
-    config: {
-      systemInstruction: `You are Gemini with web search capabilities. When answering questions, search
+  let response;
+  try {
+    response = await client.models.generateContent({
+      model: MODEL_ID,
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: query }],
+        },
+      ],
+      config: {
+        systemInstruction: `You are Gemini with web search capabilities. When answering questions, search
 the web for current information and cite your sources using numbered citations
 like [1], [2], etc. Always include a 'Sources:' section at the end with numbered
 references, with a link to each source URL.`,
-      tools: [{ googleSearch: {} }],
-      maxOutputTokens: 5000,
-      httpOptions: { timeout },
-    },
-  });
+        tools: [{ googleSearch: {} }],
+        maxOutputTokens: 5000,
+        httpOptions: { timeout },
+      },
+    });
+  } catch (error) {
+    if (
+      error instanceof GoogleApiError &&
+      (error.status === 402 || error.status === 429)
+    )
+      throw new InsufficientCreditError("gemini", error.status);
+    throw error;
+  }
 
   const text = response.text ?? "";
   const metadata = response.candidates?.[0]?.groundingMetadata as

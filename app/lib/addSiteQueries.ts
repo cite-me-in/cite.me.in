@@ -1,4 +1,5 @@
 import { diff, map, unique } from "radashi";
+import { isInsufficientCreditError } from "./llm-visibility/insufficientCreditError";
 import PLATFORMS from "./llm-visibility/platformQueries.server";
 import { singleQueryRepetition } from "./llm-visibility/queryPlatform";
 import prisma from "./prisma.server";
@@ -95,6 +96,8 @@ export async function runQueryOnAllPlatforms({
   group: string;
   log: (line: string) => Promise<void> | void;
 }) {
+  const trimmedQuery = query.trim().replace(/\s+/g, " ");
+
   await map(PLATFORMS, async ({ name: platform, model, queryFn }) => {
     const onDate = new Date().toISOString().split("T")[0];
     const run = await prisma.citationQueryRun.upsert({
@@ -105,16 +108,25 @@ export async function runQueryOnAllPlatforms({
       create: { onDate, model, platform, siteId: site.id },
     });
 
-    await singleQueryRepetition({
-      group,
-      model,
-      platform,
-      query: query.trim().replace(/\s+/g, " "),
-      queryFn,
-      runId: run.id,
-      site,
-      log,
-    });
+    try {
+      await singleQueryRepetition({
+        group,
+        model,
+        platform,
+        query: trimmedQuery,
+        queryFn,
+        runId: run.id,
+        site,
+        log,
+      });
+    } catch (error) {
+      if (isInsufficientCreditError(error)) {
+        await log(`${platform}: No credit remaining, skipping`);
+        await prisma.citationQueryRun.delete({ where: { id: run.id } });
+        return;
+      }
+      throw error;
+    }
   });
 }
 

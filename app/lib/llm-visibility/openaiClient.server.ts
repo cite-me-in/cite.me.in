@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import envVars from "~/lib/envVars.server";
+import { InsufficientCreditError } from "./insufficientCreditError";
 import type { QueryFn } from "./queryFn";
 
 // https://developers.openai.com/api/docs/pricing
@@ -19,17 +20,29 @@ export default async function openaiClient({
   query: string;
   timeout: number;
 }): ReturnType<QueryFn> {
-  const { output, usage } = await client.responses.create(
-    {
-      input: query,
-      model: MODEL_ID,
-      tools: [{ type: "web_search" }],
-    },
-    {
-      maxRetries,
-      timeout,
-    },
-  );
+  let output, usage;
+  try {
+    ({ output, usage } = await client.responses.create(
+      {
+        input: query,
+        model: MODEL_ID,
+        tools: [{ type: "web_search" }],
+      },
+      {
+        maxRetries,
+        timeout,
+      },
+    ));
+  } catch (error) {
+    if (
+      error instanceof OpenAI.APIError &&
+      (error.status === 402 ||
+        error.status === 429 ||
+        error.code === "insufficient_quota")
+    )
+      throw new InsufficientCreditError("chatgpt", error.status);
+    throw error;
+  }
 
   const message = output.find((item) => item.type === "message");
   const text =
