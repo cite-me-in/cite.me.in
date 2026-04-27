@@ -72,11 +72,14 @@ export default function TopCompetitors({
                 className="flex items-center justify-between gap-4"
               >
                 <Link
-                  className="truncate font-medium"
+                  className="flex items-center gap-2 truncate font-medium"
                   to={externalLink(url)}
                   target="_blank"
                 >
-                  {brandName}
+                  <span>{brandName}</span>
+                  <code className="text-foreground/60 text-xs">
+                    {new URL(url).hostname}
+                  </code>
                 </Link>
                 <div className="flex shrink-0 items-center gap-2">
                   <span className="text-foreground/60">
