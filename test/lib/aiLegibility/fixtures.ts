@@ -218,10 +218,22 @@ const SAMPLE_PAGE_CONTENT = `<!DOCTYPE html>
 
 export function passingSite(): Record<
   string,
-  { body: string; contentType?: string; status?: number }
+  {
+    body: string;
+    contentType?: string;
+    status?: number;
+    headers?: Record<string, string>;
+  }
 > {
   return {
-    "https://acme.com": text(HOMEPAGE_WITH_CONTENT),
+    "https://acme.com": {
+      body: HOMEPAGE_WITH_CONTENT,
+      contentType: "text/plain",
+      headers: {
+        "Content-Signature": "sig123",
+        Link: '</sitemap.xml>; rel="sitemap"',
+      },
+    },
     "https://acme.com/robots.txt": text(ROBOTS_TXT, "text/plain"),
     "https://acme.com/sitemap.txt": text(SITEMAP_TXT, "text/plain"),
     "https://acme.com/sitemap.xml": text(SITEMAP_XML, "application/xml"),

@@ -75,19 +75,22 @@ const SCAN_RESULT: ScanResult = {
     {
       title: "Add sitemap.txt",
       category: "discovered",
+      effort: "5 min",
+      description:
+        "Create a plain-text file at https://example.com/sitemap.txt with one URL per line listing all important pages on your site.",
       fixExample:
         '# 1. robots.txt — add a Sitemap line:\nSitemap: https://example.com/sitemap.txt\n\n# 2. HTML <head> — add a link tag:\n<link rel="sitemap" type="text/plain" title="Sitemap" href="/sitemap.txt">\n\n# sitemap.txt content:\nhttps://example.com/\nhttps://example.com/about\nhttps://example.com/products',
     },
     {
       title: "Add JSON-LD structured data",
-      category: "informative",
+      category: "trusted",
       effort: "15 min",
       description:
         'Add a <script type="application/ld+json"> block to your pages with schema.org structured data to help AI agents understand your content.',
     },
     {
       title: "Fix meta description",
-      category: "informative",
+      category: "trusted",
       effort: "2 min",
       description:
         "Add a meta description tag to your homepage to help AI agents summarize your content.",

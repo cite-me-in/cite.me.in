@@ -38,20 +38,45 @@ vi.mock("~/lib/captureAndLogError.server", () => ({
 function setupMswHandlers(
   responses: Record<
     string,
-    { body: string; contentType?: string; status?: number }
+    {
+      body: string;
+      contentType?: string;
+      status?: number;
+      headers?: Record<string, string>;
+    }
   >,
 ) {
-  const handlers = Object.entries(responses).map(([url, response]) => {
+  const handlers = Object.entries(responses).flatMap(([url, response]) => {
     const status = response.status ?? 200;
+    const extra = response.headers ?? {};
     if (status === 404) {
-      return http.get(url, () => new HttpResponse(null, { status: 404 }));
+      return [
+        http.get(url, () => new HttpResponse(null, { status: 404 })),
+        http.head(url, () => new HttpResponse(null, { status: 404 })),
+      ];
     }
-    return http.get(url, () =>
-      HttpResponse.text(response.body, {
-        status,
-        headers: { "Content-Type": response.contentType ?? "text/html" },
+    return [
+      http.get(url, ({ request }) => {
+        return HttpResponse.text(response.body, {
+          status,
+          headers: {
+            "Content-Type": response.contentType ?? "text/html",
+            ...extra,
+          },
+        });
       }),
-    );
+      http.head(
+        url,
+        () =>
+          new HttpResponse(null, {
+            status,
+            headers: {
+              "Content-Type": response.contentType ?? "text/html",
+              ...extra,
+            },
+          }),
+      ),
+    ];
   });
   msw.use(...handlers);
 }
@@ -149,7 +174,7 @@ describe("runScan", () => {
 
     expect(result?.summary.discovered.passed).toBe(1);
     expect(result?.summary.discovered.total).toBe(4);
-    expect(result?.summary.trusted.passed).toBe(5);
+    expect(result?.summary.trusted.passed).toBe(4);
     expect(result?.summary.welcomed.passed).toBe(1);
   });
 
@@ -232,9 +257,14 @@ describe("runScan", () => {
       true,
     );
     expect(logs.some((l) => l.includes("Checking sitemap.txt"))).toBe(true);
-    expect(logs.some((l) => l.includes("Discoverability:"))).toBe(true);
-    expect(logs.some((l) => l.includes("Informative:"))).toBe(true);
-    expect(logs.some((l) => l.includes("Bot Access:"))).toBe(true);
+    expect(logs.some((l) => l.includes("Checking Link headers"))).toBe(true);
+    expect(
+      logs.some((l) => l.includes("Checking markdown content negotiation")),
+    ).toBe(true);
+    expect(logs.some((l) => l.includes("Checking Content Signals"))).toBe(true);
+    expect(logs.some((l) => l.includes("Discovered:"))).toBe(true);
+    expect(logs.some((l) => l.includes("Trusted:"))).toBe(true);
+    expect(logs.some((l) => l.includes("Welcomed:"))).toBe(true);
   });
 
   it("should include scannedAt timestamp", async () => {
@@ -266,9 +296,9 @@ describe("runScan", () => {
     });
 
     expect(result?.suggestions.length).toBeGreaterThan(0);
-    expect(
-      result?.suggestions.some((s) => s.category === "discovered"),
-    ).toBe(true);
+    expect(result?.suggestions.some((s) => s.category === "discovered")).toBe(
+      true,
+    );
   });
 
   it("should return empty suggestions when all checks pass", async () => {
@@ -324,7 +354,12 @@ describe("runScan", () => {
     );
 
     expect(discoveredChecks?.map((c) => c.name)).toEqual(
-      expect.arrayContaining(["sitemap.xml", "sitemap.txt", "llms.txt", "Link headers"]),
+      expect.arrayContaining([
+        "sitemap.xml",
+        "sitemap.txt",
+        "llms.txt",
+        "Link headers",
+      ]),
     );
     expect(trustedChecks?.map((c) => c.name)).toEqual(
       expect.arrayContaining([

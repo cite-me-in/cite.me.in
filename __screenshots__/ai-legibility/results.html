@@ -27,61 +27,57 @@
     <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
       AI Legibility Score
     </div>
-    <div class="text-foreground/60 text-center font-mono text-base" data-slot="card-description">
+    <p class="text-foreground/60 text-center font-mono text-base">
       report-example.com
-    </div>
+    </p>
   </div>
-  <div class="px-6 mb-8 flex flex-row justify-center gap-8" data-slot="card-content">
+  <div class="px-6 mb-8 flex flex-col items-center gap-8" data-slot="card-content">
     <div class="relative inline-flex items-center justify-center">
       <svg height="125" width="200">
-        <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#e5e7eb" stroke-linecap="round" stroke-width="14"></path>
-        <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="rgb(54,156,67)" stroke-dasharray="267.0353755551324" stroke-dashoffset="38.147910793590356" stroke-linecap="round" stroke-width="14"></path>
+        <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#e5e7eb" stroke-linecap="butt" stroke-width="14"></path>
+        <g>
+          <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#3b82f6" stroke-dasharray="65.39641850329772 201.6389570518347" stroke-dashoffset="267.0353755551324" stroke-linecap="butt" stroke-width="14"></path>
+        </g>
+        <g>
+          <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#9333ea" stroke-dasharray="98.09462775494659 168.94074780018582" stroke-dashoffset="152.5916431743614" stroke-linecap="butt" stroke-width="14"></path>
+        </g>
+        <g>
+          <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#059669" stroke-dasharray="32.69820925164886 234.33716630348357" stroke-dashoffset="38.14791079359037" stroke-linecap="butt" stroke-width="14"></path>
+        </g>
       </svg>
-      <span class="absolute text-5xl font-bold" style="color: rgb(54, 156, 67); top: 77.5px;">
+      <span class="absolute text-5xl font-bold" style="color: rgb(249, 115, 22); top: 77.5px;">
         86
       </span>
     </div>
-    <div class="grid justify-center gap-6 pt-12 grid-cols-3">
-      <button class="flex cursor-pointer flex-col items-center gap-2 transition-all hover:scale-105">
-        <div class="flex gap-1.5">
-          <div class="size-4 rounded-full bg-green-500"></div>
-          <div class="size-4 rounded-full bg-green-500"></div>
-          <div class="size-4 rounded-full bg-green-500"></div>
-        </div>
-        <span class="text-foreground/70 text-xs font-semibold tracking-wide uppercase">
-          critical
-        </span>
-        <span class="text-foreground/50 text-xs">
-          3/3
-        </span>
-      </button>
-      <button class="flex cursor-pointer flex-col items-center gap-2 transition-all hover:scale-105">
-        <div class="flex gap-1.5">
-          <div class="size-4 rounded-full bg-green-500"></div>
-          <div class="size-4 rounded-full bg-green-500"></div>
-          <div class="size-4 rounded-full bg-gray-300"></div>
-        </div>
-        <span class="text-foreground/70 text-xs font-semibold tracking-wide uppercase">
-          important
+    <div class="flex justify-center gap-4">
+      <button class="flex cursor-pointer flex-col items-center gap-1 transition-all hover:scale-105">
+        <span class="text-sm font-bold text-blue-600">
+          Discovered
         </span>
         <span class="text-foreground/50 text-xs">
           2/3
         </span>
       </button>
-      <button class="flex cursor-pointer flex-col items-center gap-2 transition-all hover:scale-105">
-        <div class="flex gap-1.5">
-          <div class="size-4 rounded-full bg-green-500"></div>
-          <div class="size-4 rounded-full bg-gray-300"></div>
-          <div class="size-4 rounded-full bg-gray-300"></div>
-        </div>
-        <span class="text-foreground/70 text-xs font-semibold tracking-wide uppercase">
-          optimization
+      <button class="flex cursor-pointer flex-col items-center gap-1 transition-all hover:scale-105">
+        <span class="text-sm font-bold text-purple-600">
+          Trusted
+        </span>
+        <span class="text-foreground/50 text-xs">
+          3/3
+        </span>
+      </button>
+      <button class="flex cursor-pointer flex-col items-center gap-1 transition-all hover:scale-105">
+        <span class="text-sm font-bold text-emerald-600">
+          Welcomed
         </span>
         <span class="text-foreground/50 text-xs">
           1/1
         </span>
       </button>
     </div>
+    <p class="text-foreground/50 text-xs">
+      6/7 checks passed
+    </p>
   </div>
   <div class="flex items-center justify-between px-6 [.border-t]:pt-6" data-slot="card-footer">
     <div class="col-start-2 row-span-2 row-start-1 self-start justify-self-end" data-slot="card-action">
@@ -109,79 +105,9 @@
     </div>
   </div>
 </div>
-<div class="scroll-mt-20 space-y-2" id="section-critical">
-  <h3 class="text-lg font-bold text-red-600">
-    Critical
-  </h3>
-  <div class="flex w-full flex-col space-y-2" data-orientation="vertical" data-slot="accordion" dir="ltr" role="region">
-    <div class="not-last:border-b rounded-base border-border bg-secondary-background overflow-hidden border-2" data-index="0" data-orientation="vertical" data-slot="accordion-item">
-      <h3 class="flex" data-index="0" data-orientation="vertical">
-        <button aria-disabled="false" aria-expanded="false" class="group/accordion-trigger relative flex-1 justify-between rounded-lg border border-transparent text-left text-sm font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground flex items-center gap-3 px-4 py-3 hover:no-underline bg-green-50" data-orientation="vertical" data-slot="accordion-trigger" tabindex="0" type="button">
-          <span class="text-lg text-green-600">
-            ✓
-          </span>
-          <span class="font-bold">
-            Pass
-            <span class="font-normal">
-              Homepage Content
-            </span>
-          </span>
-          <svg aria-hidden="true" class="lucide lucide-chevron-down pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-            <path d="m6 9 6 6 6-6"></path>
-          </svg>
-          <svg aria-hidden="true" class="lucide lucide-chevron-up pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-            <path d="m18 15-6-6-6 6"></path>
-          </svg>
-        </button>
-      </h3>
-    </div>
-    <div class="not-last:border-b rounded-base border-border bg-secondary-background overflow-hidden border-2" data-index="1" data-orientation="vertical" data-slot="accordion-item">
-      <h3 class="flex" data-index="1" data-orientation="vertical">
-        <button aria-disabled="false" aria-expanded="false" class="group/accordion-trigger relative flex-1 justify-between rounded-lg border border-transparent text-left text-sm font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground flex items-center gap-3 px-4 py-3 hover:no-underline bg-green-50" data-index="1" data-orientation="vertical" data-slot="accordion-trigger" tabindex="0" type="button">
-          <span class="text-lg text-green-600">
-            ✓
-          </span>
-          <span class="font-bold">
-            Pass
-            <span class="font-normal">
-              sitemap.xml
-            </span>
-          </span>
-          <svg aria-hidden="true" class="lucide lucide-chevron-down pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-            <path d="m6 9 6 6 6-6"></path>
-          </svg>
-          <svg aria-hidden="true" class="lucide lucide-chevron-up pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-            <path d="m18 15-6-6-6 6"></path>
-          </svg>
-        </button>
-      </h3>
-    </div>
-    <div class="not-last:border-b rounded-base border-border bg-secondary-background overflow-hidden border-2" data-index="2" data-orientation="vertical" data-slot="accordion-item">
-      <h3 class="flex" data-index="2" data-orientation="vertical">
-        <button aria-disabled="false" aria-expanded="false" class="group/accordion-trigger relative flex-1 justify-between rounded-lg border border-transparent text-left text-sm font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground flex items-center gap-3 px-4 py-3 hover:no-underline bg-green-50" data-index="2" data-orientation="vertical" data-slot="accordion-trigger" tabindex="0" type="button">
-          <span class="text-lg text-green-600">
-            ✓
-          </span>
-          <span class="font-bold">
-            Pass
-            <span class="font-normal">
-              robots.txt
-            </span>
-          </span>
-          <svg aria-hidden="true" class="lucide lucide-chevron-down pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-            <path d="m6 9 6 6 6-6"></path>
-          </svg>
-          <svg aria-hidden="true" class="lucide lucide-chevron-up pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-            <path d="m18 15-6-6-6 6"></path>
-          </svg>
-        </button>
-      </h3>
-    </div>
-  </div>
-</div>
-<div class="scroll-mt-20 space-y-2" id="section-important">
-  <h3 class="text-lg font-bold text-yellow-600">
-    Important
+<div class="scroll-mt-20 space-y-2" id="section-discovered">
+  <h3 class="text-lg font-bold text-blue-600">
+    Discovered
   </h3>
   <div class="flex w-full flex-col space-y-2" data-orientation="vertical" data-slot="accordion" dir="ltr" role="region">
     <div class="not-last:border-b rounded-base border-border bg-secondary-background overflow-hidden border-2" data-index="0" data-orientation="vertical" data-slot="accordion-item">
@@ -214,7 +140,7 @@
           <span class="font-bold">
             Pass
             <span class="font-normal">
-              Meta Tags
+              sitemap.xml
             </span>
           </span>
           <svg aria-hidden="true" class="lucide lucide-chevron-down pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -228,7 +154,7 @@
     </div>
     <div class="not-last:border-b rounded-base border-border bg-secondary-background overflow-hidden border-2" data-index="2" data-orientation="vertical" data-slot="accordion-item">
       <h3 class="flex" data-index="2" data-orientation="vertical">
-        <button aria-controls="base-ui-_r_l_" aria-disabled="false" aria-expanded="true" class="group/accordion-trigger relative flex-1 justify-between rounded-lg border border-transparent text-left text-sm font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground flex items-center gap-3 px-4 py-3 hover:no-underline bg-red-50" data-index="2" data-orientation="vertical" data-slot="accordion-trigger" data-value="llms.txt" tabindex="0" type="button">
+        <button aria-controls="base-ui-_r_c_" aria-disabled="false" aria-expanded="true" class="group/accordion-trigger relative flex-1 justify-between rounded-lg border border-transparent text-left text-sm font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground flex items-center gap-3 px-4 py-3 hover:no-underline bg-red-50" data-index="2" data-orientation="vertical" data-slot="accordion-trigger" data-value="llms.txt" tabindex="0" type="button">
           <span class="text-lg text-red-600">
             ✗
           </span>
@@ -249,9 +175,9 @@
     </div>
   </div>
 </div>
-<div class="scroll-mt-20 space-y-2" id="section-optimization">
-  <h3 class="text-lg font-bold text-green-600">
-    Optimization
+<div class="scroll-mt-20 space-y-2" id="section-trusted">
+  <h3 class="text-lg font-bold text-purple-600">
+    Trusted
   </h3>
   <div class="flex w-full flex-col space-y-2" data-orientation="vertical" data-slot="accordion" dir="ltr" role="region">
     <div class="not-last:border-b rounded-base border-border bg-secondary-background overflow-hidden border-2" data-index="0" data-orientation="vertical" data-slot="accordion-item">
@@ -263,7 +189,77 @@
           <span class="font-bold">
             Pass
             <span class="font-normal">
+              Homepage Content
+            </span>
+          </span>
+          <svg aria-hidden="true" class="lucide lucide-chevron-down pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <path d="m6 9 6 6 6-6"></path>
+          </svg>
+          <svg aria-hidden="true" class="lucide lucide-chevron-up pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <path d="m18 15-6-6-6 6"></path>
+          </svg>
+        </button>
+      </h3>
+    </div>
+    <div class="not-last:border-b rounded-base border-border bg-secondary-background overflow-hidden border-2" data-index="1" data-orientation="vertical" data-slot="accordion-item">
+      <h3 class="flex" data-index="1" data-orientation="vertical">
+        <button aria-disabled="false" aria-expanded="false" class="group/accordion-trigger relative flex-1 justify-between rounded-lg border border-transparent text-left text-sm font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground flex items-center gap-3 px-4 py-3 hover:no-underline bg-green-50" data-index="1" data-orientation="vertical" data-slot="accordion-trigger" tabindex="0" type="button">
+          <span class="text-lg text-green-600">
+            ✓
+          </span>
+          <span class="font-bold">
+            Pass
+            <span class="font-normal">
               JSON-LD Structured Data
+            </span>
+          </span>
+          <svg aria-hidden="true" class="lucide lucide-chevron-down pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <path d="m6 9 6 6 6-6"></path>
+          </svg>
+          <svg aria-hidden="true" class="lucide lucide-chevron-up pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <path d="m18 15-6-6-6 6"></path>
+          </svg>
+        </button>
+      </h3>
+    </div>
+    <div class="not-last:border-b rounded-base border-border bg-secondary-background overflow-hidden border-2" data-index="2" data-orientation="vertical" data-slot="accordion-item">
+      <h3 class="flex" data-index="2" data-orientation="vertical">
+        <button aria-disabled="false" aria-expanded="false" class="group/accordion-trigger relative flex-1 justify-between rounded-lg border border-transparent text-left text-sm font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground flex items-center gap-3 px-4 py-3 hover:no-underline bg-green-50" data-index="2" data-orientation="vertical" data-slot="accordion-trigger" tabindex="0" type="button">
+          <span class="text-lg text-green-600">
+            ✓
+          </span>
+          <span class="font-bold">
+            Pass
+            <span class="font-normal">
+              Meta Tags
+            </span>
+          </span>
+          <svg aria-hidden="true" class="lucide lucide-chevron-down pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <path d="m6 9 6 6 6-6"></path>
+          </svg>
+          <svg aria-hidden="true" class="lucide lucide-chevron-up pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <path d="m18 15-6-6-6 6"></path>
+          </svg>
+        </button>
+      </h3>
+    </div>
+  </div>
+</div>
+<div class="scroll-mt-20 space-y-2" id="section-welcomed">
+  <h3 class="text-lg font-bold text-emerald-600">
+    Welcomed
+  </h3>
+  <div class="flex w-full flex-col space-y-2" data-orientation="vertical" data-slot="accordion" dir="ltr" role="region">
+    <div class="not-last:border-b rounded-base border-border bg-secondary-background overflow-hidden border-2" data-index="0" data-orientation="vertical" data-slot="accordion-item">
+      <h3 class="flex" data-index="0" data-orientation="vertical">
+        <button aria-disabled="false" aria-expanded="false" class="group/accordion-trigger relative flex-1 justify-between rounded-lg border border-transparent text-left text-sm font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground flex items-center gap-3 px-4 py-3 hover:no-underline bg-green-50" data-orientation="vertical" data-slot="accordion-trigger" tabindex="0" type="button">
+          <span class="text-lg text-green-600">
+            ✓
+          </span>
+          <span class="font-bold">
+            Pass
+            <span class="font-normal">
+              robots.txt
             </span>
           </span>
           <svg aria-hidden="true" class="lucide lucide-chevron-down pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -293,8 +289,8 @@
           <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
             5 min
           </span>
-          <span class="inline-flex items-center justify-center rounded-base border-2 border-border px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden bg-amber-400 text-black" data-slot="badge">
-            important
+          <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
+            discovered
           </span>
         </div>
       </div>
@@ -314,8 +310,8 @@
           <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
             5 min
           </span>
-          <span class="inline-flex items-center justify-center rounded-base border-2 border-border px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden bg-amber-400 text-black" data-slot="badge">
-            important
+          <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
+            discovered
           </span>
         </div>
       </div>
@@ -335,8 +331,8 @@
           <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
             15 min
           </span>
-          <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden border-green-600 bg-green-500 text-white" data-slot="badge">
-            optimization
+          <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
+            trusted
           </span>
         </div>
       </div>
@@ -353,129 +349,14 @@
           <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
             2 min
           </span>
-          <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden border-green-600 bg-green-500 text-white" data-slot="badge">
-            optimization
+          <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
+            trusted
           </span>
         </div>
       </div>
       <p class="text-foreground/60 text-base">
         Add a meta description tag to your homepage to help AI agents summarize your content.
       </p>
-    </div>
-  </div>
-</div>
-<div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow text-foreground bg-muted/50" data-slot="card">
-  <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
-    <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
-      About These Checks
-    </div>
-  </div>
-  <div class="px-6 space-y-6 text-base" data-slot="card-content">
-    <p class="text-foreground/70 leading-relaxed">
-      These checks measure how easily AI agents (ChatGPT, Claude, Gemini, Perplexity) can discover, read, and understand your content. Each tier represents a dependency layer:
-    </p>
-    <div class="space-y-2">
-      <p>
-        <strong class="text-red-600">
-          Critical
-        </strong>
-        — Can AI agents reach and read my content?
-      </p>
-      <p>
-        <strong class="text-yellow-600">
-          Important
-        </strong>
-        — Can AI agents find all my content and understand what it's about?
-      </p>
-      <p>
-        <strong class="text-green-600">
-          Optimization
-        </strong>
-        — Does my content present well when cited?
-      </p>
-    </div>
-    <div class="grid gap-4 md:grid-cols-3">
-      <div class="rounded-lg border p-4">
-        <h4 class="mb-2 font-bold text-red-600">
-          Critical — Gates AI Discovery
-        </h4>
-        <ul class="space-y-1">
-          <li class="text-foreground/70">
-            <strong>
-              robots.txt
-            </strong>
-            — Controls whether AI crawlers are allowed on your site
-          </li>
-          <li class="text-foreground/70">
-            <strong>
-              sitemap.xml
-            </strong>
-            — The canonical sitemap format most crawlers use
-          </li>
-          <li class="text-foreground/70">
-            <strong>
-              Homepage content
-            </strong>
-            — Homepage returns real content, not an empty SPA shell
-          </li>
-        </ul>
-      </div>
-      <div class="rounded-lg border p-4">
-        <h4 class="mb-2 font-bold text-yellow-600">
-          Important — Improves Discovery Quality
-        </h4>
-        <ul class="space-y-1">
-          <li class="text-foreground/70">
-            <strong>
-              llms.txt
-            </strong>
-            — Direct signal to LLMs about what content to index
-          </li>
-          <li class="text-foreground/70">
-            <strong>
-              sitemap.txt
-            </strong>
-            — Plain-text supplement to XML sitemaps
-          </li>
-          <li class="text-foreground/70">
-            <strong>
-              Sample pages
-            </strong>
-            — Pages in your sitemap return real content
-          </li>
-          <li class="text-foreground/70">
-            <strong>
-              Meta tags
-            </strong>
-            — Title and description for summaries
-          </li>
-        </ul>
-      </div>
-      <div class="rounded-lg border p-4">
-        <h4 class="mb-2 font-bold text-green-600">
-          Optimization — Enhances Presentation
-        </h4>
-        <ul class="space-y-1">
-          <li class="text-foreground/70">
-            <strong>
-              JSON-LD
-            </strong>
-            — Structured data for entity understanding
-          </li>
-          <li class="text-foreground/70">
-            <strong>
-              Open Graph tags
-            </strong>
-            — Social preview and citation formatting
-          </li>
-          <li class="text-foreground/70">
-            <strong>
-              Canonical URLs
-            </strong>
-            — Prevents duplicate content confusion
-          </li>
-        </ul>
-      </div>
     </div>
   </div>
 </div>

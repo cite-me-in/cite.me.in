@@ -59,7 +59,7 @@ export default function ScanSummary({
       </CardHeader>
       <CardContent className="mb-8 flex flex-col items-center gap-8">
         <RadialGauge summary={summary} />
-        <div className="flex justify-center gap-4">
+        <div className="flex justify-center gap-6">
           {CATEGORIES.map((category) => {
             const s = summary[category.key];
             return (

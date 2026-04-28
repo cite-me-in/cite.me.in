@@ -99,7 +99,7 @@ describe("generateSuggestions", () => {
 
       expect(result).toHaveLength(1);
       expect(result[0].title).toBe("Add sitemap.txt");
-      expect(result[0].category).toBe("discoverability");
+      expect(result[0].category).toBe("discovered");
       expect(log).toHaveBeenCalledWith(expect.stringContaining("✓"));
     });
 
@@ -164,7 +164,7 @@ describe("generateSuggestions", () => {
 
       expect(result).toHaveLength(1);
       expect(result[0].title).toBe("Add sitemap.txt");
-      expect(result[0].category).toBe("discoverability");
+      expect(result[0].category).toBe("discovered");
     });
 
     it("should provide specific fallback for Homepage content failures", async () => {
