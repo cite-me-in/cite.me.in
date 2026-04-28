@@ -75,8 +75,8 @@ export default function RadialGauge({
 
   const x1 = cx - radius;
   const x2 = cx + radius;
-  const overallColor =
-    overallPct === 1 ? "#16a34a" : overallPct > 0.5 ? "#f97316" : "#dc2626";
+  const pct = overallPct * 100;
+  const overallColor = pct >= 66 ? "#16a34a" : pct >= 36 ? "#eab308" : "#dc2626";
   const numTop = cy - radius / 2 - 18 + 18;
   const arcPath = `M ${x1} ${cy} A ${radius} ${radius} 0 0 1 ${x2} ${cy}`;
 

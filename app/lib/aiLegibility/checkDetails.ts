@@ -285,6 +285,7 @@ const checkDetails: Record<string, CheckDetail> = {
       "Add a Link header to your HTTP response: Link: </sitemap.xml>; rel=sitemap. Also add <link rel='sitemap' type='application/xml' href='/sitemap.xml'> to your HTML <head>. These provide redundant discovery paths for different AI agents.",
     fixExample:
       '# HTTP response header:\nLink: </sitemap.xml>; rel=sitemap; type=application/xml\nLink: </sitemap.txt>; rel=sitemap; type=text/plain\n\n# HTML <head>:\n<link rel="sitemap" type="application/xml" title="XML Sitemap" href="/sitemap.xml">\n<link rel="sitemap" type="text/plain" title="Text Sitemap" href="/sitemap.txt">',
+    effort: "5 min",
     resourceLinks: [
       {
         label: "Link header (MDN)",
