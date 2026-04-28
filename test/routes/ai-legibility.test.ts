@@ -204,10 +204,9 @@ describe("ai-legibility page - with report", () => {
   });
 
   it("should show summary cards", async () => {
-    const grid = reportPage.locator(".grid");
-    await expect(grid.getByText("Critical", { exact: true })).toBeVisible();
-    await expect(grid.getByText("Important", { exact: true })).toBeVisible();
-    await expect(grid.getByText("Optimization", { exact: true })).toBeVisible();
+    await expect(reportPage.getByText("3/3").first()).toBeVisible();
+    await expect(reportPage.getByText("2/3").first()).toBeVisible();
+    await expect(reportPage.getByText("1/1").first()).toBeVisible();
   });
 
   it("should show critical checks passed", async () => {
@@ -215,13 +214,8 @@ describe("ai-legibility page - with report", () => {
   });
 
   it("should show failed check with error icon", async () => {
-    const checkSection = reportPage
-      .locator('[data-slot="card"]')
-      .filter({ hasText: "Important Checks" });
-    await expect(
-      checkSection.getByText("llms.txt", { exact: true }),
-    ).toBeVisible();
-    await expect(checkSection.getByText("✗")).toBeVisible();
+    await expect(reportPage.getByText("✗").first()).toBeVisible();
+    await expect(reportPage.getByText("llms.txt").first()).toBeVisible();
   });
 
   it("should show suggestions", async () => {
@@ -388,7 +382,7 @@ describe("ai-legibility email", () => {
     await expect(email.page.getByText("View all 4 suggestions")).toBeVisible();
   });
 
-  it.only("should match visually", async () => {
+  it("should match visually", async () => {
     await email.page.setViewportSize({ width: 1024, height: 2400 });
     await expect(email.page).toMatchVisual({
       name: "email/ai-legibility-report",

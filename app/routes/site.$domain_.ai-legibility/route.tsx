@@ -89,7 +89,7 @@ export default function AiLegibilityPage({ loaderData }: Route.ComponentProps) {
       {isRunning || isLoading ? (
         <Scanning domain={site.domain} />
       ) : report ? (
-        <ScanResults result={report.result} />
+        <ScanResults result={report.result} domain={site.domain} />
       ) : (
         <Fallback handleStartScan={startScan} />
       )}

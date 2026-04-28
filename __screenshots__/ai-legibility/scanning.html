@@ -1,0 +1,169 @@
+<div class="flex items-center justify-between gap-4">
+  <div>
+    <p>
+      <a class="text-foreground/60 block max-w-md truncate font-mono hover:underline" data-discover="true" href="/site/scanning-example.com" title="scanning-example.com">
+        scanning-example.com
+      </a>
+    </p>
+    <h1 class="font-heading text-3xl">
+      AI Legibility
+    </h1>
+  </div>
+  <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold text-base transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-black bg-white text-black shadow-[3px_3px_0px_0px_black] hover:bg-[hsl(60,100%,99%)] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] h-12 px-6 py-3" type="button">
+    <svg aria-hidden="true" class="lucide lucide-refresh-ccw size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+      <path d="M3 3v5h5"></path>
+      <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+      <path d="M16 16h5v5"></path>
+    </svg>
+    Run New Scan
+  </button>
+</div>
+<div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
+  <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
+    <div class="justify-center font-heading text-2xl leading-none flex items-center gap-2" data-slot="card-title">
+      <div class="border-foreground/20 border-t-foreground size-6 animate-spin rounded-full border-2"></div>
+      Scanning…
+    </div>
+  </div>
+  <div class="px-6" data-slot="card-content">
+    <p class="text-foreground/60 mb-4">
+      Scanning:
+      <code class="font-mono">
+        scanning-example.com
+      </code>
+    </p>
+    <pre class="border-border bg-muted text-foreground/60 h-96 overflow-y-auto rounded border p-4 font-mono text-sm leading-relaxed whitespace-break-spaces">
+      <div>
+        Checking homepage content...
+      </div>
+      <div>
+        ✓ Homepage has meaningful content (150+ characters)
+      </div>
+      <div>
+        Checking sitemap.xml...
+      </div>
+      <div>
+        ✓ sitemap.xml found with valid XML structure
+      </div>
+      <div>
+        Checking robots.txt...
+      </div>
+    </pre>
+  </div>
+</div>
+<div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow text-foreground bg-muted/50" data-slot="card">
+  <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
+    <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
+      About These Checks
+    </div>
+  </div>
+  <div class="px-6 space-y-6 text-base" data-slot="card-content">
+    <p class="text-foreground/70 leading-relaxed">
+      These checks measure how easily AI agents (ChatGPT, Claude, Gemini, Perplexity) can discover, read, and understand your content. Each tier represents a dependency layer:
+    </p>
+    <div class="space-y-2">
+      <p>
+        <strong class="text-red-600">
+          Critical
+        </strong>
+        — Can AI agents reach and read my content?
+      </p>
+      <p>
+        <strong class="text-yellow-600">
+          Important
+        </strong>
+        — Can AI agents find all my content and understand what it's about?
+      </p>
+      <p>
+        <strong class="text-green-600">
+          Optimization
+        </strong>
+        — Does my content present well when cited?
+      </p>
+    </div>
+    <div class="grid gap-4 md:grid-cols-3">
+      <div class="rounded-lg border p-4">
+        <h4 class="mb-2 font-bold text-red-600">
+          Critical — Gates AI Discovery
+        </h4>
+        <ul class="space-y-1">
+          <li class="text-foreground/70">
+            <strong>
+              robots.txt
+            </strong>
+            — Controls whether AI crawlers are allowed on your site
+          </li>
+          <li class="text-foreground/70">
+            <strong>
+              sitemap.xml
+            </strong>
+            — The canonical sitemap format most crawlers use
+          </li>
+          <li class="text-foreground/70">
+            <strong>
+              Homepage content
+            </strong>
+            — Homepage returns real content, not an empty SPA shell
+          </li>
+        </ul>
+      </div>
+      <div class="rounded-lg border p-4">
+        <h4 class="mb-2 font-bold text-yellow-600">
+          Important — Improves Discovery Quality
+        </h4>
+        <ul class="space-y-1">
+          <li class="text-foreground/70">
+            <strong>
+              llms.txt
+            </strong>
+            — Direct signal to LLMs about what content to index
+          </li>
+          <li class="text-foreground/70">
+            <strong>
+              sitemap.txt
+            </strong>
+            — Plain-text supplement to XML sitemaps
+          </li>
+          <li class="text-foreground/70">
+            <strong>
+              Sample pages
+            </strong>
+            — Pages in your sitemap return real content
+          </li>
+          <li class="text-foreground/70">
+            <strong>
+              Meta tags
+            </strong>
+            — Title and description for summaries
+          </li>
+        </ul>
+      </div>
+      <div class="rounded-lg border p-4">
+        <h4 class="mb-2 font-bold text-green-600">
+          Optimization — Enhances Presentation
+        </h4>
+        <ul class="space-y-1">
+          <li class="text-foreground/70">
+            <strong>
+              JSON-LD
+            </strong>
+            — Structured data for entity understanding
+          </li>
+          <li class="text-foreground/70">
+            <strong>
+              Open Graph tags
+            </strong>
+            — Social preview and citation formatting
+          </li>
+          <li class="text-foreground/70">
+            <strong>
+              Canonical URLs
+            </strong>
+            — Prevents duplicate content confusion
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

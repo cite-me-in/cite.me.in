@@ -1,5 +1,14 @@
 type CheckCategory = "critical" | "important" | "optimization";
 
+export type CheckDetail = {
+  goal: string;
+  issue: string;
+  howToImplement: string;
+  resourceLinks: { label: string; url: string }[];
+  skillUrl?: string;
+  auditSteps: { label: string; value: string }[];
+};
+
 export type CheckResult = {
   name: string;
   category: CheckCategory;
@@ -7,6 +16,7 @@ export type CheckResult = {
   message: string;
   details?: Record<string, unknown>;
   timedOut?: boolean;
+  detail?: CheckDetail;
 };
 
 export type Suggestion = {

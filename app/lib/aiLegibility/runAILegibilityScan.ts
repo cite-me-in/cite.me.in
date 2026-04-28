@@ -16,6 +16,7 @@ import checkRobotsTxt from "./checks/robotsTxt";
 import checkSamplePages from "./checks/samplePages";
 import checkSitemapTxt from "./checks/sitemapTxt";
 import checkSitemapXml from "./checks/sitemapXml";
+import checkDetails from "./checkDetails";
 import generateSuggestions from "./generateSuggestions";
 import type { CheckResult, ScanProgress, ScanResult } from "./types";
 
@@ -133,6 +134,9 @@ async function runScanSteps({
     `${samplePagesResult.passed ? "✓" : "✗"} ${samplePagesResult.message}`,
   );
 
+  for (const check of checks) {
+    check.detail = checkDetails[check.name] ?? undefined;
+  }
   const summary = await summarize({ checks, log });
   const suggestions = await generateSuggestions({ log, checks, url });
 

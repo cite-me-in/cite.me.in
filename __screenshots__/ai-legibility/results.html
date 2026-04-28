@@ -1,0 +1,440 @@
+<div class="flex items-center justify-between gap-4">
+  <div>
+    <p>
+      <a class="text-foreground/60 block max-w-md truncate font-mono hover:underline" data-discover="true" href="/site/report-example.com" title="report-example.com">
+        report-example.com
+      </a>
+    </p>
+    <h1 class="font-heading text-3xl">
+      AI Legibility
+    </h1>
+    <p class="text-foreground/60 mt-1 text-base">
+      Last scanned: Nov 14, 2023
+    </p>
+  </div>
+  <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold text-base transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-black bg-white text-black shadow-[3px_3px_0px_0px_black] hover:bg-[hsl(60,100%,99%)] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] h-12 px-6 py-3" type="button">
+    <svg aria-hidden="true" class="lucide lucide-refresh-ccw size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+      <path d="M3 3v5h5"></path>
+      <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+      <path d="M16 16h5v5"></path>
+    </svg>
+    Run New Scan
+  </button>
+</div>
+<div class="space-y-6">
+  <div class="flex flex-col items-center gap-6 md:flex-row md:items-start">
+    <div class="relative inline-flex items-center justify-center">
+      <svg class="-rotate-90" height="180" width="180">
+        <circle cx="90" cy="90" fill="none" r="83" stroke="#e5e7eb" stroke-width="14"></circle>
+        <circle class="transition-all duration-700" cx="90" cy="90" fill="none" r="83" stroke="#16a34a" stroke-dasharray="521.5043804959057" stroke-dashoffset="73.01061326942681" stroke-linecap="round" stroke-width="14"></circle>
+      </svg>
+      <div class="absolute flex flex-col items-center">
+        <span class="text-4xl font-bold" style="color: rgb(22, 163, 74);">
+          86%
+        </span>
+        <span class="text-foreground/60 text-sm">
+          Overall Score
+        </span>
+      </div>
+    </div>
+    <div class="flex flex-wrap gap-3">
+      <a class="rounded-base border-2 px-5 py-3 text-left transition-all hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] border-green-600 bg-green-50" href="#section-critical">
+        <div class="text-lg font-bold">
+          3/3
+        </div>
+        <div class="text-sm font-medium text-foreground/70">
+          Critical
+        </div>
+      </a>
+      <a class="rounded-base border-2 px-5 py-3 text-left transition-all hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] border-yellow-600 bg-yellow-50" href="#section-important">
+        <div class="text-lg font-bold">
+          2/3
+        </div>
+        <div class="text-sm font-medium text-foreground/70">
+          Important
+        </div>
+      </a>
+      <a class="rounded-base border-2 px-5 py-3 text-left transition-all hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] border-green-600 bg-green-50" href="#section-optimization">
+        <div class="text-lg font-bold">
+          1/1
+        </div>
+        <div class="text-sm font-medium text-foreground/70">
+          Optimization
+        </div>
+      </a>
+    </div>
+  </div>
+  <div class="flex flex-wrap items-center gap-3">
+    <button aria-expanded="false" aria-haspopup="dialog" data-slot="dialog-trigger" id="base-ui-_r_4_" tabindex="0" type="button">
+      <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold text-base transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 cursor-pointer rounded-base border-2 border-black bg-[#F59E0B] text-black shadow-[3px_3px_0px_0px_black] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] active:shadow-[1px_1px_0px_0px_black] active:translate-x-[2px] active:translate-y-[2px] h-12 px-6 py-3" type="button">
+        Improve the score
+        <span class="ml-1 flex size-5 items-center justify-center rounded-full bg-black/20 text-xs font-bold">
+          1
+        </span>
+      </button>
+    </button>
+    <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold text-base transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-black bg-white text-black shadow-[3px_3px_0px_0px_black] hover:bg-[hsl(60,100%,99%)] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] h-12 px-6 py-3" type="button">
+      <svg aria-hidden="true" class="lucide lucide-share2 lucide-share-2 size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="18" cy="5" r="3"></circle>
+        <circle cx="6" cy="12" r="3"></circle>
+        <circle cx="18" cy="19" r="3"></circle>
+        <line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line>
+        <line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line>
+      </svg>
+      Share
+    </button>
+  </div>
+  <div class="space-y-4">
+    <div class="space-y-2 scroll-mt-20" id="section-critical">
+      <h3 class="text-lg font-bold text-red-600">
+        Critical
+      </h3>
+      <div class="rounded-base border-2 border-border overflow-hidden">
+        <button class="flex w-full items-center gap-3 px-4 py-3 text-left bg-green-50">
+          <span class="text-lg text-green-600">
+            ✓
+          </span>
+          <span class="font-bold">
+            Pass
+            <span class="font-normal">
+              Homepage Content
+            </span>
+          </span>
+          <span class="ml-auto mr-2 text-sm text-foreground/60">
+            Homepage has meaningful content (150+ characters)
+          </span>
+          <svg aria-hidden="true" class="lucide lucide-chevron-down size-4 shrink-0" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <path d="m6 9 6 6 6-6"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="rounded-base border-2 border-border overflow-hidden">
+        <button class="flex w-full items-center gap-3 px-4 py-3 text-left bg-green-50">
+          <span class="text-lg text-green-600">
+            ✓
+          </span>
+          <span class="font-bold">
+            Pass
+            <span class="font-normal">
+              sitemap.xml
+            </span>
+          </span>
+          <span class="ml-auto mr-2 text-sm text-foreground/60">
+            sitemap.xml found with valid XML structure
+          </span>
+          <svg aria-hidden="true" class="lucide lucide-chevron-down size-4 shrink-0" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <path d="m6 9 6 6 6-6"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="rounded-base border-2 border-border overflow-hidden">
+        <button class="flex w-full items-center gap-3 px-4 py-3 text-left bg-green-50">
+          <span class="text-lg text-green-600">
+            ✓
+          </span>
+          <span class="font-bold">
+            Pass
+            <span class="font-normal">
+              robots.txt
+            </span>
+          </span>
+          <span class="ml-auto mr-2 text-sm text-foreground/60">
+            robots.txt found and references sitemap
+          </span>
+          <svg aria-hidden="true" class="lucide lucide-chevron-down size-4 shrink-0" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <path d="m6 9 6 6 6-6"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="space-y-2 scroll-mt-20" id="section-important">
+      <h3 class="text-lg font-bold text-yellow-600">
+        Important
+      </h3>
+      <div class="rounded-base border-2 border-border overflow-hidden">
+        <button class="flex w-full items-center gap-3 px-4 py-3 text-left bg-green-50">
+          <span class="text-lg text-green-600">
+            ✓
+          </span>
+          <span class="font-bold">
+            Pass
+            <span class="font-normal">
+              sitemap.txt
+            </span>
+          </span>
+          <span class="ml-auto mr-2 text-sm text-foreground/60">
+            sitemap.txt found with 10 valid URLs
+          </span>
+          <svg aria-hidden="true" class="lucide lucide-chevron-down size-4 shrink-0" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <path d="m6 9 6 6 6-6"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="rounded-base border-2 border-border overflow-hidden">
+        <button class="flex w-full items-center gap-3 px-4 py-3 text-left bg-green-50">
+          <span class="text-lg text-green-600">
+            ✓
+          </span>
+          <span class="font-bold">
+            Pass
+            <span class="font-normal">
+              Meta Tags
+            </span>
+          </span>
+          <span class="ml-auto mr-2 text-sm text-foreground/60">
+            Found title, description, and Open Graph tags
+          </span>
+          <svg aria-hidden="true" class="lucide lucide-chevron-down size-4 shrink-0" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <path d="m6 9 6 6 6-6"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="rounded-base border-2 border-border overflow-hidden">
+        <button class="flex w-full items-center gap-3 px-4 py-3 text-left bg-red-50">
+          <span class="text-lg text-red-600">
+            ✗
+          </span>
+          <span class="font-bold">
+            Fail
+            <span class="font-normal">
+              llms.txt
+            </span>
+          </span>
+          <span class="ml-auto mr-2 text-sm text-foreground/60">
+            llms.txt not found (optional but recommended)
+          </span>
+          <svg aria-hidden="true" class="lucide lucide-chevron-up size-4 shrink-0" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <path d="m18 15-6-6-6 6"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="space-y-2 scroll-mt-20" id="section-optimization">
+      <h3 class="text-lg font-bold text-green-600">
+        Optimization
+      </h3>
+      <div class="rounded-base border-2 border-border overflow-hidden">
+        <button class="flex w-full items-center gap-3 px-4 py-3 text-left bg-green-50">
+          <span class="text-lg text-green-600">
+            ✓
+          </span>
+          <span class="font-bold">
+            Pass
+            <span class="font-normal">
+              JSON-LD Structured Data
+            </span>
+          </span>
+          <span class="ml-auto mr-2 text-sm text-foreground/60">
+            Found 2 valid JSON-LD schemas: Organization, WebSite
+          </span>
+          <svg aria-hidden="true" class="lucide lucide-chevron-down size-4 shrink-0" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <path d="m6 9 6 6 6-6"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card" id="suggestions">
+    <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
+      <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
+        Suggestions
+      </div>
+    </div>
+    <div class="px-6 space-y-4" data-slot="card-content">
+      <div class="rounded-lg border p-4">
+        <div class="mb-2 flex items-start justify-between">
+          <h4 class="text-lg font-medium">
+            Add llms.txt for AI discoverability
+          </h4>
+          <div class="flex gap-2">
+            <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
+              5 min
+            </span>
+            <span class="inline-flex items-center justify-center rounded-base border-2 border-border px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden bg-amber-400 text-black" data-slot="badge">
+              important
+            </span>
+          </div>
+        </div>
+        <p class="text-foreground/60 text-base">
+          Create an llms.txt file at the root of your site to provide structured context for LLMs. This helps AI agents understand your content better.
+        </p>
+        <pre class="bg-muted mt-2 overflow-x-auto rounded p-2 font-mono text-base">
+          # Example Site Main description here. ## Sections - /about - /pricing
+        </pre>
+      </div>
+      <div class="rounded-lg border p-4">
+        <div class="mb-2 flex items-start justify-between">
+          <h4 class="text-lg font-medium">
+            Add sitemap.txt
+          </h4>
+          <div class="flex gap-2">
+            <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
+              5 min
+            </span>
+            <span class="inline-flex items-center justify-center rounded-base border-2 border-border px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden bg-amber-400 text-black" data-slot="badge">
+              important
+            </span>
+          </div>
+        </div>
+        <p class="text-foreground/60 text-base">
+          Create a plain-text file at https://example.com/sitemap.txt with one URL per line listing all important pages on your site.
+        </p>
+        <pre class="bg-muted mt-2 overflow-x-auto rounded p-2 font-mono text-base">
+          # 1. robots.txt — add a Sitemap line: Sitemap: https://example.com/sitemap.txt # 2. HTML &amp;lt;head&amp;gt; — add a link tag: &amp;lt;link rel="sitemap" type="text/plain" title="Sitemap" href="/sitemap.txt"&amp;gt; # sitemap.txt content: https://example.com/ https://example.com/about https://example.com/products
+        </pre>
+      </div>
+      <div class="rounded-lg border p-4">
+        <div class="mb-2 flex items-start justify-between">
+          <h4 class="text-lg font-medium">
+            Add JSON-LD structured data
+          </h4>
+          <div class="flex gap-2">
+            <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
+              15 min
+            </span>
+            <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden border-green-600 bg-green-500 text-white" data-slot="badge">
+              optimization
+            </span>
+          </div>
+        </div>
+        <p class="text-foreground/60 text-base">
+          Add a &amp;lt;script type="application/ld+json"&amp;gt; block to your pages with schema.org structured data to help AI agents understand your content.
+        </p>
+      </div>
+      <div class="rounded-lg border p-4">
+        <div class="mb-2 flex items-start justify-between">
+          <h4 class="text-lg font-medium">
+            Fix meta description
+          </h4>
+          <div class="flex gap-2">
+            <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
+              2 min
+            </span>
+            <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden border-green-600 bg-green-500 text-white" data-slot="badge">
+              optimization
+            </span>
+          </div>
+        </div>
+        <p class="text-foreground/60 text-base">
+          Add a meta description tag to your homepage to help AI agents summarize your content.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow text-foreground bg-muted/50" data-slot="card">
+  <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
+    <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
+      About These Checks
+    </div>
+  </div>
+  <div class="px-6 space-y-6 text-base" data-slot="card-content">
+    <p class="text-foreground/70 leading-relaxed">
+      These checks measure how easily AI agents (ChatGPT, Claude, Gemini, Perplexity) can discover, read, and understand your content. Each tier represents a dependency layer:
+    </p>
+    <div class="space-y-2">
+      <p>
+        <strong class="text-red-600">
+          Critical
+        </strong>
+        — Can AI agents reach and read my content?
+      </p>
+      <p>
+        <strong class="text-yellow-600">
+          Important
+        </strong>
+        — Can AI agents find all my content and understand what it's about?
+      </p>
+      <p>
+        <strong class="text-green-600">
+          Optimization
+        </strong>
+        — Does my content present well when cited?
+      </p>
+    </div>
+    <div class="grid gap-4 md:grid-cols-3">
+      <div class="rounded-lg border p-4">
+        <h4 class="mb-2 font-bold text-red-600">
+          Critical — Gates AI Discovery
+        </h4>
+        <ul class="space-y-1">
+          <li class="text-foreground/70">
+            <strong>
+              robots.txt
+            </strong>
+            — Controls whether AI crawlers are allowed on your site
+          </li>
+          <li class="text-foreground/70">
+            <strong>
+              sitemap.xml
+            </strong>
+            — The canonical sitemap format most crawlers use
+          </li>
+          <li class="text-foreground/70">
+            <strong>
+              Homepage content
+            </strong>
+            — Homepage returns real content, not an empty SPA shell
+          </li>
+        </ul>
+      </div>
+      <div class="rounded-lg border p-4">
+        <h4 class="mb-2 font-bold text-yellow-600">
+          Important — Improves Discovery Quality
+        </h4>
+        <ul class="space-y-1">
+          <li class="text-foreground/70">
+            <strong>
+              llms.txt
+            </strong>
+            — Direct signal to LLMs about what content to index
+          </li>
+          <li class="text-foreground/70">
+            <strong>
+              sitemap.txt
+            </strong>
+            — Plain-text supplement to XML sitemaps
+          </li>
+          <li class="text-foreground/70">
+            <strong>
+              Sample pages
+            </strong>
+            — Pages in your sitemap return real content
+          </li>
+          <li class="text-foreground/70">
+            <strong>
+              Meta tags
+            </strong>
+            — Title and description for summaries
+          </li>
+        </ul>
+      </div>
+      <div class="rounded-lg border p-4">
+        <h4 class="mb-2 font-bold text-green-600">
+          Optimization — Enhances Presentation
+        </h4>
+        <ul class="space-y-1">
+          <li class="text-foreground/70">
+            <strong>
+              JSON-LD
+            </strong>
+            — Structured data for entity understanding
+          </li>
+          <li class="text-foreground/70">
+            <strong>
+              Open Graph tags
+            </strong>
+            — Social preview and citation formatting
+          </li>
+          <li class="text-foreground/70">
+            <strong>
+              Canonical URLs
+            </strong>
+            — Prevents duplicate content confusion
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
