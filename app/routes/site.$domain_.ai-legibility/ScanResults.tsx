@@ -1,4 +1,9 @@
-import { ArrowLeftIcon, CheckIcon, CopyIcon } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  CheckIcon,
+  CopyIcon,
+} from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
 import {
@@ -74,12 +79,42 @@ function ExpandableCheckCard({ check }: { check: CheckResult }) {
 
       {check.detail && (
         <AccordionContent>
-          <div className="border-border space-y-4 border-t px-4 py-4">
-            {showAudit ? (
-              <CheckAuditDetails check={check} setShowAudit={setShowAudit} />
-            ) : (
-              <CheckSummary check={check} setShowAudit={setShowAudit} />
-            )}
+          <div className="border-border border-t px-4 py-4">
+            <div
+              className="check-card-container"
+              style={{ perspective: "1000px", position: "relative" }}
+            >
+              <div
+                className="check-card-inner"
+                style={{
+                  transition: "transform 0.5s ease",
+                  transformStyle: "preserve-3d",
+                  transform: showAudit ? "rotateY(180deg)" : "rotateY(0deg)",
+                  minHeight: "100%",
+                }}
+              >
+                <div
+                  className="check-card-front"
+                  style={{ backfaceVisibility: "hidden" }}
+                >
+                  <CheckSummary check={check} setShowAudit={setShowAudit} />
+                </div>
+                <div
+                  className="check-card-back"
+                  style={{
+                    backfaceVisibility: "hidden",
+                    transform: "rotateY(180deg)",
+                    position: "absolute",
+                    inset: 0,
+                  }}
+                >
+                  <CheckAuditDetails
+                    check={check}
+                    setShowAudit={setShowAudit}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </AccordionContent>
       )}
@@ -103,7 +138,7 @@ function CheckSummary({
   };
 
   return (
-    <>
+    <div className="space-y-4">
       {check.detail && (
         <DetailBlock term="Goal">{check.detail.goal}</DetailBlock>
       )}
@@ -166,7 +201,7 @@ function CheckSummary({
         </div>
       )}
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex justify-end gap-2">
         <Button
           size="sm"
           variant={copied ? "default" : "outline"}
@@ -184,11 +219,12 @@ function CheckSummary({
             </>
           )}
         </Button>
-        <Button size="sm" variant="ghost" onClick={() => setShowAudit(true)}>
-          View audit details
+        <Button size="sm" variant="outline" onClick={() => setShowAudit(true)}>
+          Audit details
+          <ArrowRightIcon className="size-3" />
         </Button>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -211,7 +247,7 @@ function CheckAuditDetails({
   setShowAudit: (show: boolean) => void;
 }) {
   return (
-    <>
+    <div className="space-y-4">
       <div className="space-y-3">
         {check.detail?.auditSteps.map((step, i) => (
           <div
@@ -228,11 +264,14 @@ function CheckAuditDetails({
           </div>
         ))}
       </div>
-      <Button size="sm" variant="outline" onClick={() => setShowAudit(false)}>
-        <ArrowLeftIcon className="size-3" />
-        Back to results
-      </Button>
-    </>
+
+      <div className="flex justify-end gap-2">
+        <Button size="sm" variant="outline" onClick={() => setShowAudit(false)}>
+          <ArrowLeftIcon className="size-3" />
+          Back
+        </Button>
+      </div>
+    </div>
   );
 }
 
