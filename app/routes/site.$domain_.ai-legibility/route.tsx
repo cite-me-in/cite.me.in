@@ -1,7 +1,6 @@
 import { RefreshCcwIcon } from "lucide-react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
-import AiLegibilityCriteria from "~/components/AiLegibilityCriteria";
 import { Button } from "~/components/ui/Button";
 import {
   Card,
@@ -105,8 +104,6 @@ export default function AiLegibilityPage({ loaderData }: Route.ComponentProps) {
       ) : (
         <Fallback handleStartScan={startScan} />
       )}
-
-      <AiLegibilityCriteria />
     </Main>
   );
 }
