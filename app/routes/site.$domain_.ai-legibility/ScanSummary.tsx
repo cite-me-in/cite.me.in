@@ -57,7 +57,7 @@ export default function ScanSummary({
           {domain}
         </p>
       </CardHeader>
-      <CardContent className="mb-8 flex flex-col items-center gap-8">
+      <CardContent className="mb-0 flex flex-col items-center gap-8">
         <RadialGauge summary={summary} />
         <div className="flex justify-center gap-6">
           {CATEGORIES.map((category) => {
@@ -69,20 +69,20 @@ export default function ScanSummary({
                   onClick={() => handleCategoryClick(category.key)}
                   className="flex cursor-pointer flex-col items-center gap-1 transition-all hover:scale-105"
                 >
-                  <span
-                    className={twMerge("text-sm font-bold", category.color)}
+                  <div
+                    className={twMerge("text-base font-bold", category.color)}
                   >
                     {category.title}
-                  </span>
-                  <span className="text-foreground/50 text-xs">
+                  </div>
+                  <div className="text-foreground/50 text-xl">
                     {s.passed}/{s.total}
-                  </span>
+                  </div>
                 </button>
               )
             );
           })}
         </div>
-        <p className="text-foreground/50 text-xs">
+        <p className="text-foreground/50 text-base">
           {totalPassed}/{totalChecks} checks passed
         </p>
       </CardContent>

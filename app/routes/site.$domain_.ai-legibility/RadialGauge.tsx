@@ -76,7 +76,8 @@ export default function RadialGauge({
   const x1 = cx - radius;
   const x2 = cx + radius;
   const pct = overallPct * 100;
-  const overallColor = pct >= 66 ? "#16a34a" : pct >= 36 ? "#eab308" : "#dc2626";
+  const overallColor =
+    pct >= 66 ? "#16a34a" : pct >= 36 ? "#eab308" : "#dc2626";
   const numTop = cy - radius / 2 - 18 + 18;
   const arcPath = `M ${x1} ${cy} A ${radius} ${radius} 0 0 1 ${x2} ${cy}`;
 
@@ -107,7 +108,7 @@ export default function RadialGauge({
         ))}
       </svg>
       <span
-        className="absolute text-5xl font-bold"
+        className="absolute text-6xl font-bold tabular-nums"
         style={{ color: overallColor, top: numTop }}
       >
         {Math.round(overallPct * animT * 100)}
