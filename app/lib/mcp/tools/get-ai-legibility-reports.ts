@@ -28,12 +28,12 @@ export default {
           important: z.object({ passed: z.number(), total: z.number() }),
           optimization: z.object({ passed: z.number(), total: z.number() }),
         }),
-        suggestions: z.array(
+        checks: z.array(
           z.object({
-            title: z.string(),
+            name: z.string(),
             category: z.string(),
-            effort: z.string(),
-            description: z.string(),
+            passed: z.boolean(),
+            message: z.string(),
           }),
         ),
       }),
@@ -70,24 +70,20 @@ export default {
         }
 
         const result = report.result as {
-          summary: {
-            critical: { passed: number; total: number };
-            important: { passed: number; total: number };
-            optimization: { passed: number; total: number };
-          };
-          suggestions: Array<{
-            title: string;
+          checks: Array<{
+            name: string;
             category: string;
-            effort: string;
-            description: string;
+            passed: boolean;
+            message: string;
           }>;
+          summary: Record<string, { passed: number; total: number }>;
         };
 
         const formatted = {
           id: report.id,
           scannedAt: report.scannedAt.toISOString(),
           summary: result.summary,
-          suggestions: result.suggestions,
+          checks: result.checks,
         };
 
         return {
@@ -114,24 +110,20 @@ export default {
 
       const formattedReports = reports.map((report) => {
         const result = report.result as {
-          summary: {
-            critical: { passed: number; total: number };
-            important: { passed: number; total: number };
-            optimization: { passed: number; total: number };
-          };
-          suggestions: Array<{
-            title: string;
+          checks: Array<{
+            name: string;
             category: string;
-            effort: string;
-            description: string;
+            passed: boolean;
+            message: string;
           }>;
+          summary: Record<string, { passed: number; total: number }>;
         };
 
         return {
           id: report.id,
           scannedAt: report.scannedAt.toISOString(),
           summary: result.summary,
-          suggestions: result.suggestions,
+          checks: result.checks,
         };
       });
 

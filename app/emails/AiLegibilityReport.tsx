@@ -2,7 +2,6 @@ import { Section, Text } from "react-email";
 import { BrandReminderCard } from "~/components/email/BrandReminder";
 import Button from "~/components/email/Button";
 import Card from "~/components/email/Card";
-import Link from "~/components/email/Link";
 import CATEGORIES from "~/lib/aiLegibility/criteria";
 import type { ScanResult } from "~/lib/aiLegibility/types";
 import envVars from "~/lib/envVars.server";
@@ -66,8 +65,6 @@ function AiLegibilityReport({
   totalChecks: number;
 }) {
   const score = Math.round((totalPassed / totalChecks) * 100);
-  const visibleSuggestions = result.suggestions.slice(0, 3);
-  const hasMoreSuggestions = result.suggestions.length > 3;
 
   return (
     <Section>
@@ -86,24 +83,6 @@ function AiLegibilityReport({
       <Section className="my-8 text-center">
         <Button href={reportUrl}>View Full Report</Button>
       </Section>
-
-      {visibleSuggestions.length > 0 && (
-        <Card title="Top Suggestions" withBorder>
-          {visibleSuggestions.map((suggestion, i) => (
-            <SuggestionItem key={i} suggestion={suggestion} />
-          ))}
-          {hasMoreSuggestions && (
-            <div className="border-border border-t p-4 text-center">
-              <Link
-                href={`${reportUrl}#suggestions`}
-                style={{ color: "#6366f1", textDecoration: "underline" }}
-              >
-                View all {result.suggestions.length} suggestions →
-              </Link>
-            </div>
-          )}
-        </Card>
-      )}
 
       <BrandReminderCard domain={site.domain} citations={totalPassed} />
 
@@ -162,37 +141,6 @@ function SummaryRow({
       </td>
       <td className={`p-4 text-center font-bold ${statusColor}`}>{status}</td>
     </tr>
-  );
-}
-
-function SuggestionItem({
-  suggestion,
-}: {
-  suggestion: ScanResult["suggestions"][0];
-}) {
-  return (
-    <div className="border-border border-t p-4">
-      <div className="mb-1 text-sm font-bold">{suggestion.title}</div>
-      <div className="text-light text-xs">{suggestion.effort}</div>
-      <div className="mt-2 text-sm">{suggestion.description}</div>
-      {suggestion.fixExample && (
-        <pre
-          className="mt-2 overflow-x-auto rounded text-sm"
-          style={{
-            backgroundColor: "#f5f5f5",
-            border: "1px solid #e5e5e5",
-            fontFamily: "monospace",
-            lineHeight: "1.5",
-            margin: 0,
-            padding: "12px 16px",
-            whiteSpace: "pre-wrap",
-            wordBreak: "break-word",
-          }}
-        >
-          {suggestion.fixExample}
-        </pre>
-      )}
-    </div>
   );
 }
 

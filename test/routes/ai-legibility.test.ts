@@ -62,40 +62,6 @@ const SCAN_RESULT: ScanResult = {
     trusted: { passed: 3, total: 3 },
     welcomed: { passed: 1, total: 1 },
   },
-  suggestions: [
-    {
-      title: "Add llms.txt for AI discoverability",
-      category: "discovered",
-      effort: "5 min",
-      description:
-        "Create an llms.txt file at the root of your site to provide structured context for LLMs. This helps AI agents understand your content better.",
-      fixExample:
-        "# Example Site\n\nMain description here.\n\n## Sections\n- /about\n- /pricing",
-    },
-    {
-      title: "Add sitemap.txt",
-      category: "discovered",
-      effort: "5 min",
-      description:
-        "Create a plain-text file at https://example.com/sitemap.txt with one URL per line listing all important pages on your site.",
-      fixExample:
-        '# 1. robots.txt — add a Sitemap line:\nSitemap: https://example.com/sitemap.txt\n\n# 2. HTML <head> — add a link tag:\n<link rel="sitemap" type="text/plain" title="Sitemap" href="/sitemap.txt">\n\n# sitemap.txt content:\nhttps://example.com/\nhttps://example.com/about\nhttps://example.com/products',
-    },
-    {
-      title: "Add JSON-LD structured data",
-      category: "trusted",
-      effort: "15 min",
-      description:
-        'Add a <script type="application/ld+json"> block to your pages with schema.org structured data to help AI agents understand your content.',
-    },
-    {
-      title: "Fix meta description",
-      category: "trusted",
-      effort: "2 min",
-      description:
-        "Add a meta description tag to your homepage to help AI agents summarize your content.",
-    },
-  ],
 };
 
 describe("unauthenticated access", () => {
@@ -216,14 +182,6 @@ describe("ai-legibility page - with report", () => {
   it("should show failed check with error icon", async () => {
     await expect(reportPage.getByText("✗").first()).toBeVisible();
     await expect(reportPage.getByText("llms.txt").first()).toBeVisible();
-  });
-
-  it("should show suggestions", async () => {
-    await expect(
-      reportPage.getByText("Add llms.txt for AI discoverability"),
-    ).toBeVisible();
-    await expect(reportPage.getByText("Add sitemap.txt")).toBeVisible();
-    await expect(reportPage.getByText("Fix meta description")).toBeVisible();
   });
 
   it("should show run new scan button", async () => {
@@ -364,12 +322,6 @@ describe("ai-legibility email", () => {
     ).toBeVisible();
     await expect(
       table.getByText("Bot Access", { exact: true }).first(),
-    ).toBeVisible();
-  });
-
-  it("should show top suggestions", async () => {
-    await expect(
-      email.page.getByText("Add llms.txt for AI discoverability"),
     ).toBeVisible();
   });
 

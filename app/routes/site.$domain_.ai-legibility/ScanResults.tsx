@@ -116,6 +116,17 @@ function CheckSummary({
         </DetailBlock>
       )}
 
+      {check.detail?.fixExample && (
+        <div>
+          <h4 className="text-foreground/70 mb-1 text-sm font-semibold">
+            Example
+          </h4>
+          <pre className="bg-muted overflow-x-auto rounded p-3 font-mono text-sm leading-relaxed whitespace-pre-wrap">
+            {check.detail.fixExample}
+          </pre>
+        </div>
+      )}
+
       {check.detail && check.detail.resourceLinks.length > 0 && (
         <div>
           <h4 className="text-foreground/70 mb-1 text-sm font-semibold">
@@ -231,6 +242,9 @@ function buildPrompt(check: CheckResult) {
     `Issue: ${check.message}`,
     `Fix: ${check.detail.howToImplement}`,
   ];
+  if (check.detail.fixExample) {
+    parts.push(`Example:\n${check.detail.fixExample}`);
+  }
   if (check.detail.skillUrl) {
     parts.push(`Skill: ${check.detail.skillUrl}`);
   }

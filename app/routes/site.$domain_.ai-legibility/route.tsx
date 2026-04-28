@@ -19,7 +19,6 @@ import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/route";
 import Scanning from "./Scanning";
 import ScanResults from "./ScanResults";
-import ScanSuggestions from "./ScanSuggestions";
 import ScanSummary from "./ScanSummary";
 
 export const handle = { siteNav: true };
@@ -97,9 +96,6 @@ export default function AiLegibilityPage({ loaderData }: Route.ComponentProps) {
             domain={site.domain}
           />
           <ScanResults checks={report.result.checks} />
-          {report.result.suggestions.length > 0 && (
-            <ScanSuggestions suggestions={report.result.suggestions} />
-          )}
         </>
       ) : (
         <Fallback handleStartScan={startScan} />

@@ -45,15 +45,6 @@ async function main() {
     process.exit(1);
   }
 
-  const suggestions = result.suggestions;
-  if (suggestions && suggestions.length > 0) {
-    console.info("\n--- SUGGESTIONS ---\n");
-    for (const s of suggestions) {
-      console.info(`[${s.category}] ${s.title} (${s.effort})`);
-      console.info(`  ${s.description}`);
-      console.info("");
-    }
-  }
   await sendAiLegibilityReport({ site, result, sendTo: user });
 
   console.info("\n--- FULL JSON ---\n");

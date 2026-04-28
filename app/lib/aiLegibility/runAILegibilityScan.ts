@@ -20,7 +20,6 @@ import checkRobotsTxt from "./checks/robotsTxt";
 import checkSamplePages from "./checks/samplePages";
 import checkSitemapTxt from "./checks/sitemapTxt";
 import checkSitemapXml from "./checks/sitemapXml";
-import generateSuggestions from "./generateSuggestions";
 import type { CheckResult, ScanProgress, ScanResult } from "./types";
 
 /**
@@ -163,14 +162,12 @@ async function runScanSteps({
     check.detail = checkDetails[check.name] ?? undefined;
   }
   const summary = await summarize({ checks, log });
-  const suggestions = await generateSuggestions({ log, checks, url });
 
   return {
     url,
     scannedAt: new Date().toISOString(),
     checks,
     summary,
-    suggestions,
   };
 }
 

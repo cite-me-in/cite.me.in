@@ -4,6 +4,8 @@ export type CheckDetail = {
   goal: string;
   issue: string;
   howToImplement: string;
+  fixExample?: string;
+  effort: "2 min" | "5 min" | "15 min" | "1 hour";
   resourceLinks: { label: string; url: string }[];
   skillUrl?: string;
   auditSteps: { label: string; value: string }[];
@@ -19,14 +21,6 @@ export type CheckResult = {
   detail?: CheckDetail;
 };
 
-export type Suggestion = {
-  title: string;
-  category: CheckCategory;
-  effort: "2 min" | "5 min" | "15 min" | "1 hour";
-  description: string;
-  fixExample?: string;
-};
-
 export type ScanResult = {
   url: string;
   scannedAt: string;
@@ -36,7 +30,6 @@ export type ScanResult = {
     trusted: { passed: number; total: number };
     welcomed: { passed: number; total: number };
   };
-  suggestions: Suggestion[];
 };
 
 export type ScanProgress = {
