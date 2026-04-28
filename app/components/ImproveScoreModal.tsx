@@ -1,5 +1,5 @@
-import { CopyIcon } from "lucide-react";
-import { Button } from "~/components/ui/Button";
+import { ArrowBigUpDashIcon, CopyIcon } from "lucide-react";
+import { Button, type ButtonProps } from "~/components/ui/Button";
 import {
   Dialog,
   DialogContent,
@@ -12,9 +12,7 @@ import type { CheckResult } from "~/lib/aiLegibility/types";
 
 function buildPrompt(check: CheckResult) {
   if (!check.detail) return "";
-  const docs = check.detail.resourceLinks
-    .map((l) => l.url)
-    .join(", ");
+  const docs = check.detail.resourceLinks.map((l) => l.url).join(", ");
   const parts = [
     `Goal: ${check.detail.goal}`,
     `Issue: ${check.message}`,
@@ -31,7 +29,9 @@ function buildPrompt(check: CheckResult) {
 
 export default function ImproveScoreModal({
   failedChecks,
+  size,
 }: {
+  size?: ButtonProps["size"];
   failedChecks: CheckResult[];
 }) {
   const allPrompts = failedChecks.map(buildPrompt).join("\n\n---\n\n");
@@ -40,7 +40,8 @@ export default function ImproveScoreModal({
   return (
     <Dialog>
       <DialogTrigger>
-        <Button variant="default">
+        <Button variant="default" size={size}>
+          <ArrowBigUpDashIcon className="size-4" />
           Improve the score{" "}
           <span className="ml-1 flex size-5 items-center justify-center rounded-full bg-black/20 text-xs font-bold">
             {count}
@@ -65,7 +66,7 @@ export default function ImproveScoreModal({
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <h3 className="font-bold">{check.name}</h3>
-                  <p className="mt-1 text-sm text-foreground/60">
+                  <p className="text-foreground/60 mt-1 text-sm">
                     {check.message}
                   </p>
                 </div>
@@ -86,7 +87,7 @@ export default function ImproveScoreModal({
           ))}
         </div>
 
-        <div className="flex justify-end border-t border-border pt-4">
+        <div className="border-border flex justify-end border-t pt-4">
           <Button
             variant="outline"
             onClick={() => navigator.clipboard.writeText(allPrompts)}

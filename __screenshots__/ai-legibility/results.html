@@ -23,70 +23,85 @@
   </button>
 </div>
 <div class="space-y-6">
-  <div class="flex flex-col items-center gap-6 md:flex-row md:items-start">
-    <div class="relative inline-flex items-center justify-center">
-      <svg class="-rotate-90" height="180" width="180">
-        <circle cx="90" cy="90" fill="none" r="83" stroke="#e5e7eb" stroke-width="14"></circle>
-        <circle class="transition-all duration-700" cx="90" cy="90" fill="none" r="83" stroke="#16a34a" stroke-dasharray="521.5043804959057" stroke-dashoffset="73.01061326942681" stroke-linecap="round" stroke-width="14"></circle>
-      </svg>
-      <div class="absolute flex flex-col items-center">
-        <span class="text-4xl font-bold" style="color: rgb(22, 163, 74);">
-          86%
-        </span>
-        <span class="text-foreground/60 text-sm">
-          Overall Score
-        </span>
+  <div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
+    <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 relative" data-slot="card-header">
+      <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
+        AI Legibility Score
+      </div>
+      <div class="absolute right-6 top-0 pt-6">
+        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-black bg-white text-black shadow-[3px_3px_0px_0px_black] hover:bg-[hsl(60,100%,99%)] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] h-10 rounded-sm px-4 text-xs" type="button">
+          <svg aria-hidden="true" class="lucide lucide-share2 lucide-share-2 size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="18" cy="5" r="3"></circle>
+            <circle cx="6" cy="12" r="3"></circle>
+            <circle cx="18" cy="19" r="3"></circle>
+            <line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line>
+            <line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line>
+          </svg>
+          Share
+        </button>
       </div>
     </div>
-    <div class="flex flex-wrap gap-3">
-      <a class="rounded-base border-2 px-5 py-3 text-left transition-all hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] border-green-600 bg-green-50" href="#section-critical">
-        <div class="text-lg font-bold">
-          3/3
+    <div class="px-6" data-slot="card-content">
+      <div class="flex flex-col items-center gap-8">
+        <div class="relative inline-flex items-center justify-center">
+          <svg height="125" width="200">
+            <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#e5e7eb" stroke-linecap="round" stroke-width="14"></path>
+            <path class="transition-all duration-700" d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#16a34a" stroke-dasharray="267.0353755551324" stroke-dashoffset="38.147910793590356" stroke-linecap="round" stroke-width="14"></path>
+          </svg>
+          <span class="absolute text-4xl font-bold" style="color: rgb(22, 163, 74); margin-top: -10px;">
+            86
+          </span>
         </div>
-        <div class="text-sm font-medium text-foreground/70">
-          Critical
+        <div class="flex flex-wrap justify-center gap-6">
+          <button class="flex cursor-pointer flex-col items-center gap-1 transition-all hover:scale-105">
+            <div class="flex size-14 items-center justify-center rounded-full border-2 text-xl font-bold border-green-500 text-green-600">
+              100
+            </div>
+            <span class="text-xs font-semibold text-foreground/70 uppercase tracking-wide">
+              critical
+            </span>
+            <span class="text-xs text-foreground/50">
+              3/3
+            </span>
+          </button>
+          <button class="flex cursor-pointer flex-col items-center gap-1 transition-all hover:scale-105">
+            <div class="flex size-14 items-center justify-center rounded-full border-2 text-xl font-bold border-yellow-500 text-yellow-600">
+              67
+            </div>
+            <span class="text-xs font-semibold text-foreground/70 uppercase tracking-wide">
+              important
+            </span>
+            <span class="text-xs text-foreground/50">
+              2/3
+            </span>
+          </button>
+          <button class="flex cursor-pointer flex-col items-center gap-1 transition-all hover:scale-105">
+            <div class="flex size-14 items-center justify-center rounded-full border-2 text-xl font-bold border-green-500 text-green-600">
+              100
+            </div>
+            <span class="text-xs font-semibold text-foreground/70 uppercase tracking-wide">
+              optimization
+            </span>
+            <span class="text-xs text-foreground/50">
+              1/1
+            </span>
+          </button>
         </div>
-      </a>
-      <a class="rounded-base border-2 px-5 py-3 text-left transition-all hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] border-yellow-600 bg-yellow-50" href="#section-important">
-        <div class="text-lg font-bold">
-          2/3
-        </div>
-        <div class="text-sm font-medium text-foreground/70">
-          Important
-        </div>
-      </a>
-      <a class="rounded-base border-2 px-5 py-3 text-left transition-all hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] border-green-600 bg-green-50" href="#section-optimization">
-        <div class="text-lg font-bold">
-          1/1
-        </div>
-        <div class="text-sm font-medium text-foreground/70">
-          Optimization
-        </div>
-      </a>
+      </div>
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <button aria-expanded="false" aria-haspopup="dialog" data-slot="dialog-trigger" id="base-ui-_r_4_" tabindex="0" type="button">
+          <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold text-base transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 cursor-pointer rounded-base border-2 border-black bg-[#F59E0B] text-black shadow-[3px_3px_0px_0px_black] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] active:shadow-[1px_1px_0px_0px_black] active:translate-x-[2px] active:translate-y-[2px] h-12 px-6 py-3" type="button">
+            Improve the score
+            <span class="ml-1 flex size-5 items-center justify-center rounded-full bg-black/20 text-xs font-bold">
+              1
+            </span>
+          </button>
+        </button>
+      </div>
     </div>
   </div>
-  <div class="flex flex-wrap items-center gap-3">
-    <button aria-expanded="false" aria-haspopup="dialog" data-slot="dialog-trigger" id="base-ui-_r_4_" tabindex="0" type="button">
-      <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold text-base transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 cursor-pointer rounded-base border-2 border-black bg-[#F59E0B] text-black shadow-[3px_3px_0px_0px_black] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] active:shadow-[1px_1px_0px_0px_black] active:translate-x-[2px] active:translate-y-[2px] h-12 px-6 py-3" type="button">
-        Improve the score
-        <span class="ml-1 flex size-5 items-center justify-center rounded-full bg-black/20 text-xs font-bold">
-          1
-        </span>
-      </button>
-    </button>
-    <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold text-base transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-black bg-white text-black shadow-[3px_3px_0px_0px_black] hover:bg-[hsl(60,100%,99%)] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] h-12 px-6 py-3" type="button">
-      <svg aria-hidden="true" class="lucide lucide-share2 lucide-share-2 size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="18" cy="5" r="3"></circle>
-        <circle cx="6" cy="12" r="3"></circle>
-        <circle cx="18" cy="19" r="3"></circle>
-        <line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line>
-        <line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line>
-      </svg>
-      Share
-    </button>
-  </div>
   <div class="space-y-4">
-    <div class="space-y-2 scroll-mt-20" id="section-critical">
+    <div class="scroll-mt-20 space-y-2" id="section-critical">
       <h3 class="text-lg font-bold text-red-600">
         Critical
       </h3>
@@ -148,7 +163,7 @@
         </button>
       </div>
     </div>
-    <div class="space-y-2 scroll-mt-20" id="section-important">
+    <div class="scroll-mt-20 space-y-2" id="section-important">
       <h3 class="text-lg font-bold text-yellow-600">
         Important
       </h3>
@@ -210,7 +225,7 @@
         </button>
       </div>
     </div>
-    <div class="space-y-2 scroll-mt-20" id="section-optimization">
+    <div class="scroll-mt-20 space-y-2" id="section-optimization">
       <h3 class="text-lg font-bold text-green-600">
         Optimization
       </h3>

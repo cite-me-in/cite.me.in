@@ -1,19 +1,21 @@
 import { toPng } from "html-to-image";
 import { Loader2Icon, Share2Icon } from "lucide-react";
 import { useState } from "react";
-import { Button } from "~/components/ui/Button";
+import { Button, type ButtonProps } from "~/components/ui/Button";
 
 export default function ShareButton({
   scoreCardRef,
+  size,
 }: {
   scoreCardRef: React.RefObject<HTMLDivElement | null>;
+  size?: ButtonProps["size"];
 }) {
   const [loading, setLoading] = useState(false);
 
   return (
     <Button
       variant="outline"
-      size="sm"
+      size={size}
       disabled={loading}
       onClick={async () => {
         const el = scoreCardRef.current;
