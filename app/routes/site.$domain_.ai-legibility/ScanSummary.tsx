@@ -69,24 +69,21 @@ export default function ScanSummary({
         >
           {TIERS.map((tier) => {
             const s = summary[tier.key];
-            const pct =
-              s.total > 0 ? Math.round((s.passed / s.total) * 100) : 0;
-            const colorClass =
-              pct >= 80
-                ? "border-green-500 text-green-600"
-                : pct >= 50
-                  ? "border-yellow-500 text-yellow-600"
-                  : "border-orange-500 text-orange-600";
             return (
               <button
                 key={tier.key}
                 onClick={() => handleTierClick(tier.key)}
                 className="flex cursor-pointer flex-col items-center gap-2 transition-all hover:scale-105"
               >
-                <div
-                  className={`flex size-14 items-center justify-center rounded-full border-2 text-xl font-bold ${colorClass}`}
-                >
-                  {pct}
+                <div className="flex gap-1.5">
+                  {[0, 1, 2].map((i) => (
+                    <TierDot
+                      key={i}
+                      index={i}
+                      passed={s.passed}
+                      total={s.total}
+                    />
+                  ))}
                 </div>
                 <span className="text-foreground/70 text-xs font-semibold tracking-wide uppercase">
                   {tier.key}
@@ -116,4 +113,34 @@ export default function ScanSummary({
       </CardFooter>
     </Card>
   );
+}
+
+function TierDot({
+  index,
+  passed,
+  total,
+}: {
+  index: number;
+  passed: number;
+  total: number;
+}) {
+  const groupSize = Math.ceil(total / 3);
+  const start = index * groupSize;
+  const end = Math.min(start + groupSize, total);
+  const inGroup = end - start;
+
+  if (inGroup === 0) return <div className="size-4 rounded-full bg-gray-300" />;
+
+  const passedInGroup = Math.max(0, Math.min(inGroup, passed - start));
+  const pct = passedInGroup / inGroup;
+
+  if (pct === 0) return <div className="size-4 rounded-full bg-gray-300" />;
+
+  const bg =
+    pct === 1
+      ? "bg-green-500"
+      : pct > 0.5
+        ? "bg-yellow-500"
+        : "bg-red-500";
+  return <div className={`size-4 rounded-full ${bg}`} />;
 }
