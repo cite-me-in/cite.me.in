@@ -8,6 +8,7 @@ import {
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import { normalizeURL } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
+import checkDetails from "./checkDetails";
 import checkHomepageContent from "./checks/homepageContent";
 import checkJsonLd from "./checks/jsonLd";
 import checkLlmsTxt from "./checks/llmsTxt";
@@ -16,7 +17,6 @@ import checkRobotsTxt from "./checks/robotsTxt";
 import checkSamplePages from "./checks/samplePages";
 import checkSitemapTxt from "./checks/sitemapTxt";
 import checkSitemapXml from "./checks/sitemapXml";
-import checkDetails from "./checkDetails";
 import generateSuggestions from "./generateSuggestions";
 import type { CheckResult, ScanProgress, ScanResult } from "./types";
 
