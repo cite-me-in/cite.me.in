@@ -3,7 +3,7 @@ import { BrandReminderCard } from "~/components/email/BrandReminder";
 import Button from "~/components/email/Button";
 import Card from "~/components/email/Card";
 import Link from "~/components/email/Link";
-import TIERS from "~/lib/aiLegibility/criteria";
+import CATEGORIES from "~/lib/aiLegibility/criteria";
 import type { ScanResult } from "~/lib/aiLegibility/types";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
@@ -24,13 +24,13 @@ export default async function sendAiLegibilityReport({
   ).toString();
 
   const totalPassed =
-    result.summary.critical.passed +
-    result.summary.important.passed +
-    result.summary.optimization.passed;
+    result.summary.discoverability.passed +
+    result.summary.informative.passed +
+    result.summary["bot-access"].passed;
   const totalChecks =
-    result.summary.critical.total +
-    result.summary.important.total +
-    result.summary.optimization.total;
+    result.summary.discoverability.total +
+    result.summary.informative.total +
+    result.summary["bot-access"].total;
 
   await sendEmail({
     domain: site.domain,
@@ -129,12 +129,12 @@ function SummaryTable({ result }: { result: ScanResult }) {
         </tr>
       </thead>
       <tbody>
-        {TIERS.map((tier) => (
+        {CATEGORIES.map((category) => (
           <SummaryRow
-            key={tier.key}
-            category={tier.title.split(" — ")[0]}
-            passed={result.summary[tier.key].passed}
-            total={result.summary[tier.key].total}
+            key={category.key}
+            category={category.title}
+            passed={result.summary[category.key].passed}
+            total={result.summary[category.key].total}
           />
         ))}
       </tbody>
@@ -200,16 +200,16 @@ function Explainer() {
   return (
     <Card
       withBorder
-      title="About the tier system"
-      subtitle="Checks are grouped by impact"
+      title="About the categories"
+      subtitle="Checks are grouped by type"
     >
       <div className="mb-6">
-        {TIERS.map((tier) => (
+        {CATEGORIES.map((category) => (
           <Text className="text-text text-base leading-relaxed">
-            <strong style={{ color: tier.emailColor }}>
-              {tier.title.split(" — ")[0]}
+            <strong style={{ color: category.emailColor }}>
+              {category.title}
             </strong>{" "}
-            — {tier.description}
+            — {category.description}
           </Text>
         ))}
       </div>

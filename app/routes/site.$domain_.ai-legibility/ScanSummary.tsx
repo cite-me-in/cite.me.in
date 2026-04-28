@@ -7,12 +7,11 @@ import {
   Card,
   CardAction,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "~/components/ui/Card";
-import TIERS from "~/lib/aiLegibility/criteria";
+import CATEGORIES from "~/lib/aiLegibility/criteria";
 import type { CheckResult } from "~/lib/aiLegibility/types";
 import RadialGauge from "~/routes/site.$domain_.ai-legibility/RadialGauge";
 
@@ -24,25 +23,25 @@ export default function ScanSummary({
   checks: CheckResult[];
   domain: string;
   summary: {
-    critical: { passed: number; total: number };
-    important: { passed: number; total: number };
-    optimization: { passed: number; total: number };
+    discovered: { passed: number; total: number };
+    trusted: { passed: number; total: number };
+    welcomed: { passed: number; total: number };
   };
 }) {
   const scoreCardRef = useRef<HTMLDivElement>(null);
 
   const totalPassed =
-    (summary?.critical?.passed ?? 0) +
-    (summary?.important?.passed ?? 0) +
-    (summary?.optimization?.passed ?? 0);
+    (summary?.discovered?.passed ?? 0) +
+    (summary?.trusted?.passed ?? 0) +
+    (summary?.welcomed?.passed ?? 0);
   const totalChecks =
-    (summary?.critical?.total ?? 0) +
-    (summary?.important?.total ?? 0) +
-    (summary?.optimization?.total ?? 0);
+    (summary?.discovered?.total ?? 0) +
+    (summary?.trusted?.total ?? 0) +
+    (summary?.welcomed?.total ?? 0);
 
   const failedChecks = checks.filter((c) => !c.passed);
 
-  const handleTierClick = (key: string) => {
+  const handleCategoryClick = (key: string) => {
     const el = document.getElementById(`section-${key}`);
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -54,39 +53,23 @@ export default function ScanSummary({
     <Card ref={scoreCardRef}>
       <CardHeader>
         <CardTitle>AI Legibility Score</CardTitle>
-        <CardDescription className="text-foreground/60 text-center font-mono text-base">
+        <p className="text-foreground/60 text-center font-mono text-base">
           {domain}
-        </CardDescription>
+        </p>
       </CardHeader>
-      <CardContent className="mb-8 flex flex-row justify-center gap-8">
-        <RadialGauge passed={totalPassed} total={totalChecks} />
-
-        <div
-          className={twMerge(
-            "grid justify-center gap-6 pt-12",
-            `grid-cols-${TIERS.length}`,
-          )}
-        >
-          {TIERS.map((tier) => {
-            const s = summary[tier.key];
+      <CardContent className="mb-8 flex flex-col items-center gap-8">
+        <RadialGauge summary={summary} />
+        <div className="flex justify-center gap-4">
+          {CATEGORIES.map((category) => {
+            const s = summary[category.key];
             return (
               <button
-                key={tier.key}
-                onClick={() => handleTierClick(tier.key)}
-                className="flex cursor-pointer flex-col items-center gap-2 transition-all hover:scale-105"
+                key={category.key}
+                onClick={() => handleCategoryClick(category.key)}
+                className="flex cursor-pointer flex-col items-center gap-1 transition-all hover:scale-105"
               >
-                <div className="flex gap-1.5">
-                  {[0, 1, 2].map((i) => (
-                    <TierDot
-                      key={i}
-                      index={i}
-                      passed={s.passed}
-                      total={s.total}
-                    />
-                  ))}
-                </div>
-                <span className="text-foreground/70 text-xs font-semibold tracking-wide uppercase">
-                  {tier.key}
+                <span className={twMerge("text-sm font-bold", category.color)}>
+                  {category.title}
                 </span>
                 <span className="text-foreground/50 text-xs">
                   {s.passed}/{s.total}
@@ -95,8 +78,10 @@ export default function ScanSummary({
             );
           })}
         </div>
+        <p className="text-foreground/50 text-xs">
+          {totalPassed}/{totalChecks} checks passed
+        </p>
       </CardContent>
-
       <CardFooter>
         <CardAction>
           {failedChecks.length === 0 ? (
@@ -113,34 +98,4 @@ export default function ScanSummary({
       </CardFooter>
     </Card>
   );
-}
-
-function TierDot({
-  index,
-  passed,
-  total,
-}: {
-  index: number;
-  passed: number;
-  total: number;
-}) {
-  const groupSize = Math.ceil(total / 3);
-  const start = index * groupSize;
-  const end = Math.min(start + groupSize, total);
-  const inGroup = end - start;
-
-  if (inGroup === 0) return <div className="size-4 rounded-full bg-gray-300" />;
-
-  const passedInGroup = Math.max(0, Math.min(inGroup, passed - start));
-  const pct = passedInGroup / inGroup;
-
-  if (pct === 0) return <div className="size-4 rounded-full bg-gray-300" />;
-
-  const bg =
-    pct === 1
-      ? "bg-green-500"
-      : pct > 0.5
-        ? "bg-yellow-500"
-        : "bg-red-500";
-  return <div className={`size-4 rounded-full ${bg}`} />;
 }

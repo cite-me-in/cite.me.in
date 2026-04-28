@@ -9,13 +9,13 @@ import {
 } from "~/components/ui/Accordion";
 import { Badge } from "~/components/ui/Badge";
 import { Button } from "~/components/ui/Button";
-import TIERS from "~/lib/aiLegibility/criteria";
+import CATEGORIES from "~/lib/aiLegibility/criteria";
 import type { CheckResult } from "~/lib/aiLegibility/types";
 
 export default function ScanResults({ checks }: { checks: CheckResult[] }) {
-  const groupedChecks = TIERS.map((tier) => ({
-    ...tier,
-    checks: checks.filter((c) => c.category === tier.key),
+  const groupedChecks = CATEGORIES.map((category) => ({
+    ...category,
+    checks: checks.filter((c) => c.category === category.key),
   }));
 
   return (
@@ -28,7 +28,7 @@ export default function ScanResults({ checks }: { checks: CheckResult[] }) {
             className="scroll-mt-20 space-y-2"
           >
             <h3 className={`text-lg font-bold ${group.color}`}>
-              {group.title.split(" — ")[0]}
+              {group.title}
             </h3>
             <Accordion
               defaultValue={group.checks
@@ -156,7 +156,11 @@ function CheckSummary({
       )}
 
       <div className="flex flex-wrap gap-2">
-        <Button size="sm" variant={copied ? "default" : "outline"} onClick={handleCopy}>
+        <Button
+          size="sm"
+          variant={copied ? "default" : "outline"}
+          onClick={handleCopy}
+        >
           {copied ? (
             <>
               <CheckIcon className="size-3" />

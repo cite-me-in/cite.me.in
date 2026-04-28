@@ -1,4 +1,4 @@
-type CheckCategory = "critical" | "important" | "optimization";
+type CheckCategory = "discovered" | "trusted" | "welcomed";
 
 export type CheckDetail = {
   goal: string;
@@ -32,9 +32,9 @@ export type ScanResult = {
   scannedAt: string;
   checks: CheckResult[];
   summary: {
-    critical: { passed: number; total: number };
-    important: { passed: number; total: number };
-    optimization: { passed: number; total: number };
+    discovered: { passed: number; total: number };
+    trusted: { passed: number; total: number };
+    welcomed: { passed: number; total: number };
   };
   suggestions: Suggestion[];
 };

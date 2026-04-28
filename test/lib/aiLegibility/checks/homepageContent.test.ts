@@ -28,7 +28,7 @@ describe("checkHomepageContent", () => {
 
     expect(result.passed).toBe(true);
     expect(result.name).toBe("Homepage content");
-    expect(result.category).toBe("critical");
+    expect(result.category).toBe("informative");
     expect(result.message).toContain("characters of text content");
     expect(result.html).toBe(HOMEPAGE_WITH_CONTENT);
   });

@@ -16,56 +16,56 @@ const SCAN_RESULT: ScanResult = {
   checks: [
     {
       name: "Homepage Content",
-      category: "critical",
+      category: "informative",
       passed: true,
       message: "Homepage has meaningful content (150+ characters)",
     },
     {
       name: "sitemap.txt",
-      category: "important",
+      category: "discoverability",
       passed: true,
       message: "sitemap.txt found with 10 valid URLs",
     },
     {
       name: "sitemap.xml",
-      category: "critical",
+      category: "discoverability",
       passed: true,
       message: "sitemap.xml found with valid XML structure",
     },
     {
       name: "robots.txt",
-      category: "critical",
+      category: "bot-access",
       passed: true,
       message: "robots.txt found and references sitemap",
     },
     {
       name: "JSON-LD Structured Data",
-      category: "optimization",
+      category: "informative",
       passed: true,
       message: "Found 2 valid JSON-LD schemas: Organization, WebSite",
     },
     {
       name: "Meta Tags",
-      category: "important",
+      category: "informative",
       passed: true,
       message: "Found title, description, and Open Graph tags",
     },
     {
       name: "llms.txt",
-      category: "important",
+      category: "discoverability",
       passed: false,
       message: "llms.txt not found (optional but recommended)",
     },
   ],
   summary: {
-    critical: { passed: 3, total: 3 },
-    important: { passed: 2, total: 3 },
-    optimization: { passed: 1, total: 1 },
+    discoverability: { passed: 2, total: 3 },
+    informative: { passed: 3, total: 3 },
+    "bot-access": { passed: 1, total: 1 },
   },
   suggestions: [
     {
       title: "Add llms.txt for AI discoverability",
-      category: "important",
+      category: "discoverability",
       effort: "5 min",
       description:
         "Create an llms.txt file at the root of your site to provide structured context for LLMs. This helps AI agents understand your content better.",
@@ -74,7 +74,7 @@ const SCAN_RESULT: ScanResult = {
     },
     {
       title: "Add sitemap.txt",
-      category: "important",
+      category: "discoverability",
       effort: "5 min",
       description:
         "Create a plain-text file at https://example.com/sitemap.txt with one URL per line listing all important pages on your site.",
@@ -83,14 +83,14 @@ const SCAN_RESULT: ScanResult = {
     },
     {
       title: "Add JSON-LD structured data",
-      category: "optimization",
+      category: "informative",
       effort: "15 min",
       description:
         'Add a <script type="application/ld+json"> block to your pages with schema.org structured data to help AI agents understand your content.',
     },
     {
       title: "Fix meta description",
-      category: "optimization",
+      category: "informative",
       effort: "2 min",
       description:
         "Add a meta description tag to your homepage to help AI agents summarize your content.",
@@ -357,13 +357,13 @@ describe("ai-legibility email", () => {
   it("should show category summary", async () => {
     const table = email.page.locator("table");
     await expect(
-      table.getByText("Critical", { exact: true }).first(),
+      table.getByText("Discoverability", { exact: true }).first(),
     ).toBeVisible();
     await expect(
-      table.getByText("Important", { exact: true }).first(),
+      table.getByText("Informative", { exact: true }).first(),
     ).toBeVisible();
     await expect(
-      table.getByText("Optimization", { exact: true }).first(),
+      table.getByText("Bot Access", { exact: true }).first(),
     ).toBeVisible();
   });
 

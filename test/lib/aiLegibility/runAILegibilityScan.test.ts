@@ -110,10 +110,10 @@ describe("runScan", () => {
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
 
-    expect(result?.summary.critical.passed).toBeGreaterThan(0);
-    expect(result?.summary.critical.total).toBe(3);
-    expect(result?.summary.important.total).toBe(3);
-    expect(result?.summary.optimization.total).toBe(2);
+    expect(result?.summary.discoverability.passed).toBeGreaterThan(0);
+    expect(result?.summary.discoverability.total).toBe(3);
+    expect(result?.summary.informative.total).toBe(4);
+    expect(result?.summary["bot-access"].total).toBe(1);
   });
 
   it("should produce correct summary for failing site", async () => {
@@ -127,10 +127,10 @@ describe("runScan", () => {
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
 
-    expect(result?.summary.critical.passed).toBe(0);
-    expect(result?.summary.critical.total).toBe(3);
-    expect(result?.summary.important.total).toBe(3);
-    expect(result?.summary.optimization.total).toBe(2);
+    expect(result?.summary.discoverability.passed).toBe(0);
+    expect(result?.summary.discoverability.total).toBe(3);
+    expect(result?.summary.informative.total).toBe(4);
+    expect(result?.summary["bot-access"].total).toBe(1);
   });
 
   it("should produce correct summary for partial site", async () => {
@@ -144,10 +144,10 @@ describe("runScan", () => {
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
 
-    expect(result?.summary.critical.passed).toBe(3);
-    expect(result?.summary.critical.total).toBe(3);
-    expect(result?.summary.important.passed).toBe(1);
-    expect(result?.summary.optimization.passed).toBe(2);
+    expect(result?.summary.discoverability.passed).toBe(1);
+    expect(result?.summary.discoverability.total).toBe(3);
+    expect(result?.summary.informative.passed).toBe(4);
+    expect(result?.summary["bot-access"].passed).toBe(1);
   });
 
   it("should normalize URL without protocol", async () => {
@@ -229,9 +229,9 @@ describe("runScan", () => {
       true,
     );
     expect(logs.some((l) => l.includes("Checking sitemap.txt"))).toBe(true);
-    expect(logs.some((l) => l.includes("Critical:"))).toBe(true);
-    expect(logs.some((l) => l.includes("Important:"))).toBe(true);
-    expect(logs.some((l) => l.includes("Optimization:"))).toBe(true);
+    expect(logs.some((l) => l.includes("Discoverability:"))).toBe(true);
+    expect(logs.some((l) => l.includes("Informative:"))).toBe(true);
+    expect(logs.some((l) => l.includes("Bot Access:"))).toBe(true);
   });
 
   it("should include scannedAt timestamp", async () => {
@@ -263,9 +263,9 @@ describe("runScan", () => {
     });
 
     expect(result?.suggestions.length).toBeGreaterThan(0);
-    expect(result?.suggestions.some((s) => s.category === "critical")).toBe(
-      true,
-    );
+    expect(
+      result?.suggestions.some((s) => s.category === "discoverability"),
+    ).toBe(true);
   });
 
   it("should return empty suggestions when all checks pass", async () => {
@@ -310,24 +310,29 @@ describe("runScan", () => {
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
 
-    const criticalChecks = result?.checks.filter(
-      (c) => c.category === "critical",
+    const discoverabilityChecks = result?.checks.filter(
+      (c) => c.category === "discoverability",
     );
-    const importantChecks = result?.checks.filter(
-      (c) => c.category === "important",
+    const informativeChecks = result?.checks.filter(
+      (c) => c.category === "informative",
     );
-    const optimizationChecks = result?.checks.filter(
-      (c) => c.category === "optimization",
+    const botAccessChecks = result?.checks.filter(
+      (c) => c.category === "bot-access",
     );
 
-    expect(criticalChecks?.map((c) => c.name)).toEqual(
-      expect.arrayContaining(["Homepage content", "robots.txt", "sitemap.xml"]),
+    expect(discoverabilityChecks?.map((c) => c.name)).toEqual(
+      expect.arrayContaining(["sitemap.xml", "sitemap.txt", "llms.txt"]),
     );
-    expect(importantChecks?.map((c) => c.name)).toEqual(
-      expect.arrayContaining(["sitemap.txt", "llms.txt"]),
+    expect(informativeChecks?.map((c) => c.name)).toEqual(
+      expect.arrayContaining([
+        "Homepage content",
+        "Sample pages",
+        "Meta tags",
+        "JSON-LD",
+      ]),
     );
-    expect(optimizationChecks?.map((c) => c.name)).toEqual(
-      expect.arrayContaining(["Meta tags", "JSON-LD"]),
+    expect(botAccessChecks?.map((c) => c.name)).toEqual(
+      expect.arrayContaining(["robots.txt"]),
     );
   });
 });
@@ -399,19 +404,19 @@ describe("runScan with LLM suggestions", () => {
                   suggestions: [
                     {
                       title: "Add sitemap.txt for AI discoverability",
-                      category: "critical",
+                      category: "discoverability",
                       effort: "5 min",
                       description: "Create a sitemap.txt",
                     },
                     {
                       title: "Add JSON-LD structured data",
-                      category: "optimization",
+                      category: "informative",
                       effort: "15 min",
                       description: "Add schema.org structured data",
                     },
                     {
                       title: "Add llms.txt for AI context",
-                      category: "important",
+                      category: "discoverability",
                       effort: "5 min",
                       description: "Create an llms.txt file",
                     },
@@ -434,22 +439,17 @@ describe("runScan with LLM suggestions", () => {
 
     expect(result?.suggestions.length).toBeGreaterThanOrEqual(3);
 
-    const criticalSuggestions = result?.suggestions.filter(
-      (s) => s.category === "critical",
+    const discoverabilitySuggestions = result?.suggestions.filter(
+      (s) => s.category === "discoverability",
     );
-    const importantSuggestions = result?.suggestions.filter(
-      (s) => s.category === "important",
-    );
-    const optimizationSuggestions = result?.suggestions.filter(
-      (s) => s.category === "optimization",
+    const informativeSuggestions = result?.suggestions.filter(
+      (s) => s.category === "informative",
     );
 
-    expect(criticalSuggestions?.length).toBeGreaterThan(0);
-    expect(importantSuggestions?.length).toBeGreaterThan(0);
-    expect(optimizationSuggestions?.length).toBeGreaterThan(0);
+    expect(discoverabilitySuggestions?.length).toBeGreaterThan(0);
+    expect(informativeSuggestions?.length).toBeGreaterThan(0);
 
-    expect(criticalSuggestions?.[0]?.title).toContain("sitemap.txt");
-    expect(importantSuggestions?.[0]?.title).toContain("llms.txt");
-    expect(optimizationSuggestions?.[0]?.title).toContain("JSON-LD");
+    expect(discoverabilitySuggestions?.[0]?.title).toContain("sitemap.txt");
+    expect(informativeSuggestions?.[0]?.title).toContain("JSON-LD");
   });
 });

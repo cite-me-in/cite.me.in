@@ -1,68 +1,76 @@
-type Tier = {
-  key: "critical" | "important" | "optimization";
+type Category = {
+  key: "discovered" | "trusted" | "welcomed";
   title: string;
   color: string;
+  gaugeColor: string;
   emailColor: string;
   description: string;
   checks: { name: string; desc: string }[];
 };
 
-const TIERS: Tier[] = [
+const CATEGORIES: Category[] = [
   {
-    key: "critical",
-    title: "Critical — Gates AI Discovery",
-    color: "text-red-600",
-    emailColor: "#dc2626",
-    description: "Can AI agents reach and read my content?",
+    key: "discovered",
+    title: "Discovered",
+    color: "text-blue-600",
+    gaugeColor: "#3b82f6",
+    emailColor: "#2563eb",
+    description: "Can AI agents find all my content?",
     checks: [
-      {
-        name: "robots.txt",
-        desc: "Controls whether AI crawlers are allowed on your site",
-      },
       {
         name: "sitemap.xml",
         desc: "The canonical sitemap format most crawlers use",
       },
       {
-        name: "Homepage content",
-        desc: "Homepage returns real content, not an empty SPA shell",
+        name: "sitemap.txt",
+        desc: "Plain-text supplement to XML sitemaps",
       },
-    ],
-  },
-  {
-    key: "important",
-    title: "Important — Improves Discovery Quality",
-    color: "text-yellow-600",
-    emailColor: "#ca8a04",
-    description:
-      "Can AI agents find all my content and understand what it's about?",
-    checks: [
       {
         name: "llms.txt",
         desc: "Direct signal to LLMs about what content to index",
       },
-      { name: "sitemap.txt", desc: "Plain-text supplement to XML sitemaps" },
+    ],
+  },
+  {
+    key: "trusted",
+    title: "Trusted",
+    color: "text-purple-600",
+    gaugeColor: "#9333ea",
+    emailColor: "#9333ea",
+    description: "Does my content present well when cited?",
+    checks: [
+      {
+        name: "Homepage content",
+        desc: "Homepage returns real content, not an empty SPA shell",
+      },
       {
         name: "Sample pages",
         desc: "Pages in your sitemap return real content",
       },
-      { name: "Meta tags", desc: "Title and description for summaries" },
+      {
+        name: "Meta tags",
+        desc: "Title and description for summaries",
+      },
+      {
+        name: "JSON-LD",
+        desc: "Structured data for entity understanding",
+      },
     ],
   },
   {
-    key: "optimization",
-    title: "Optimization — Enhances Presentation",
-    color: "text-green-600",
-    emailColor: "#16a34a",
-    description: "Does my content present well when cited?",
+    key: "welcomed",
+    title: "Welcomed",
+    color: "text-emerald-600",
+    gaugeColor: "#059669",
+    emailColor: "#059669",
+    description: "Are AI crawlers allowed on my site?",
     checks: [
-      { name: "JSON-LD", desc: "Structured data for entity understanding" },
       {
-        name: "Open Graph tags",
-        desc: "Social preview and citation formatting",
+        name: "robots.txt",
+        desc: "Controls whether AI crawlers are allowed on your site",
       },
-      { name: "Canonical URLs", desc: "Prevents duplicate content confusion" },
     ],
   },
 ];
-export default TIERS;
+
+export default CATEGORIES;

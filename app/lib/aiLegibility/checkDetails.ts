@@ -7,8 +7,7 @@ const checkDetails: Record<string, CheckDetail> = {
       "AI agents like GPTBot, ClaudeBot, and PerplexityBot respect robots.txt directives. If they find a Disallow: / rule for their user-agent, they will not crawl your site, and your content won't appear in AI-generated answers.",
     howToImplement:
       "Add Allow: / rules for known AI bot user-agents above any Disallow rules, or remove Disallow: / lines that target these bots. Place the rules before any catch-all Disallow to ensure they take effect.",
-    skillUrl:
-      "https://skills.sh/kostja94/marketing-skills/robots-txt",
+    skillUrl: "https://skills.sh/kostja94/marketing-skills/robots-txt",
     resourceLinks: [
       {
         label: "About robots.txt",
@@ -112,8 +111,7 @@ const checkDetails: Record<string, CheckDetail> = {
       "Without an llms.txt file at /llms.txt, LLMs lack structured context about what content to index, how to prioritize pages, and how to understand your site's structure.",
     howToImplement:
       "Create /llms.txt at your site root following the llms.txt standard. Include a brief site description at the top, followed by sections with links to key pages. Mark optional content with # if you want LLMs to prefer more important pages.",
-    skillUrl:
-      "https://skills.sh/github/awesome-copilot/create-llms",
+    skillUrl: "https://skills.sh/github/awesome-copilot/create-llms",
     resourceLinks: [
       {
         label: "llms.txt spec",

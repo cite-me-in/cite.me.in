@@ -156,39 +156,39 @@ async function summarize({
   checks: CheckResult[];
   log: (line: string) => Promise<void> | void;
 }): Promise<{
-  critical: { passed: number; total: number };
-  important: { passed: number; total: number };
-  optimization: { passed: number; total: number };
+  discovered: { passed: number; total: number };
+  trusted: { passed: number; total: number };
+  welcomed: { passed: number; total: number };
 }> {
-  const criticalChecks = checks.filter((c) => c.category === "critical");
-  const importantChecks = checks.filter((c) => c.category === "important");
-  const optimizationChecks = checks.filter(
-    (c) => c.category === "optimization",
+  const discoveredChecks = checks.filter(
+    (c) => c.category === "discovered",
   );
+  const trustedChecks = checks.filter((c) => c.category === "trusted");
+  const welcomedChecks = checks.filter((c) => c.category === "welcomed");
 
   const summary = {
-    critical: {
-      passed: criticalChecks.filter((c) => c.passed).length,
-      total: criticalChecks.length,
+    discovered: {
+      passed: discoveredChecks.filter((c) => c.passed).length,
+      total: discoveredChecks.length,
     },
-    important: {
-      passed: importantChecks.filter((c) => c.passed).length,
-      total: importantChecks.length,
+    trusted: {
+      passed: trustedChecks.filter((c) => c.passed).length,
+      total: trustedChecks.length,
     },
-    optimization: {
-      passed: optimizationChecks.filter((c) => c.passed).length,
-      total: optimizationChecks.length,
+    welcomed: {
+      passed: welcomedChecks.filter((c) => c.passed).length,
+      total: welcomedChecks.length,
     },
   };
 
   await log(
-    `Critical: ${summary.critical.passed}/${summary.critical.total} passed`,
+    `Discovered: ${summary.discovered.passed}/${summary.discovered.total} passed`,
   );
   await log(
-    `Important: ${summary.important.passed}/${summary.important.total} passed`,
+    `Trusted: ${summary.trusted.passed}/${summary.trusted.total} passed`,
   );
   await log(
-    `Optimization: ${summary.optimization.passed}/${summary.optimization.total} passed`,
+    `Welcomed: ${summary.welcomed.passed}/${summary.welcomed.total} passed`,
   );
 
   return summary;

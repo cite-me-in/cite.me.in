@@ -29,7 +29,7 @@ describe("generateSuggestions", () => {
                     suggestions: [
                       {
                         title: "Add sitemap.txt",
-                        category: "critical",
+                        category: "discoverability",
                         effort: "5 min",
                         description: "Create a sitemap.txt file",
                         fixExample: "https://acme.com/",
@@ -57,13 +57,13 @@ describe("generateSuggestions", () => {
         checks: [
           {
             name: "Homepage content",
-            category: "critical",
+            category: "discoverability",
             passed: true,
             message: "OK",
           },
           {
             name: "sitemap.txt",
-            category: "critical",
+            category: "discoverability",
             passed: true,
             message: "OK",
           },
@@ -83,13 +83,13 @@ describe("generateSuggestions", () => {
         checks: [
           {
             name: "Homepage content",
-            category: "critical",
+            category: "discoverability",
             passed: true,
             message: "OK",
           },
           {
             name: "sitemap.txt",
-            category: "critical",
+            category: "discoverability",
             passed: false,
             message: "not found",
           },
@@ -99,7 +99,7 @@ describe("generateSuggestions", () => {
 
       expect(result).toHaveLength(1);
       expect(result[0].title).toBe("Add sitemap.txt");
-      expect(result[0].category).toBe("critical");
+      expect(result[0].category).toBe("discoverability");
       expect(log).toHaveBeenCalledWith(expect.stringContaining("✓"));
     });
 
@@ -112,13 +112,13 @@ describe("generateSuggestions", () => {
         checks: [
           {
             name: "Check A",
-            category: "critical",
+            category: "discoverability",
             passed: false,
             message: "fail",
           },
           {
             name: "Check B",
-            category: "important",
+            category: "informative",
             passed: false,
             message: "fail",
           },
@@ -154,7 +154,7 @@ describe("generateSuggestions", () => {
         checks: [
           {
             name: "sitemap.txt",
-            category: "critical",
+            category: "discoverability",
             passed: false,
             message: "not found",
           },
@@ -164,7 +164,7 @@ describe("generateSuggestions", () => {
 
       expect(result).toHaveLength(1);
       expect(result[0].title).toBe("Add sitemap.txt");
-      expect(result[0].category).toBe("critical");
+      expect(result[0].category).toBe("discoverability");
     });
 
     it("should provide specific fallback for Homepage content failures", async () => {
@@ -176,7 +176,7 @@ describe("generateSuggestions", () => {
         checks: [
           {
             name: "Homepage content",
-            category: "critical",
+            category: "discoverability",
             passed: false,
             message: "empty SPA shell",
           },
@@ -198,7 +198,7 @@ describe("generateSuggestions", () => {
         checks: [
           {
             name: "JSON-LD",
-            category: "optimization",
+            category: "informative",
             passed: false,
             message: "No JSON-LD found",
           },

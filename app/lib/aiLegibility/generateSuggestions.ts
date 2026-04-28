@@ -7,7 +7,7 @@ import type { CheckResult, Suggestion } from "./types";
 
 const suggestionSchema = z.object({
   title: z.string(),
-  category: z.enum(["critical", "important", "optimization"]),
+  category: z.enum(["discovered", "trusted", "welcomed"]),
   effort: z.enum(["2 min", "5 min", "15 min", "1 hour"]),
   description: z.string(),
   fixExample: z.string().optional(),
@@ -77,7 +77,7 @@ Respond with JSON only:
   "suggestions": [
     {
       "title": "...",
-      "category": "critical"|"important"|"optimization",
+      "category": "discovered"|"trusted"|"welcomed",
       "effort": "2 min"|"5 min"|"15 min"|"1 hour",
       "description": "...",
       "fixExample": "..."
@@ -132,7 +132,7 @@ function generateFallbackSuggestions(
     const base: Suggestion = {
       title: `Fix: ${check.name}`,
       category: check.category,
-      effort: check.category === "critical" ? "15 min" : "5 min",
+      effort: check.category === "welcomed" ? "15 min" : "5 min",
       description: check.message,
     };
 

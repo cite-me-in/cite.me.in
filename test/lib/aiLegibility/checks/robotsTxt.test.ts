@@ -31,7 +31,7 @@ describe("checkRobotsTxt", () => {
 
     expect(result.passed).toBe(true);
     expect(result.name).toBe("robots.txt");
-    expect(result.category).toBe("critical");
+    expect(result.category).toBe("bot-access");
     expect(result.message).toContain("sitemap reference");
     expect(result.details?.hasSitemap).toBe(true);
   });
