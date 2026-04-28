@@ -29,6 +29,10 @@ const CATEGORIES: Category[] = [
         name: "llms.txt",
         desc: "Direct signal to LLMs about what content to index",
       },
+      {
+        name: "Link headers",
+        desc: "HTTP Link headers and HTML link tags pointing to sitemaps",
+      },
     ],
   },
   {
@@ -55,6 +59,10 @@ const CATEGORIES: Category[] = [
         name: "JSON-LD",
         desc: "Structured data for entity understanding",
       },
+      {
+        name: "Markdown content negotiation",
+        desc: "Serves markdown when AI agents request it",
+      },
     ],
   },
   {
@@ -68,6 +76,10 @@ const CATEGORIES: Category[] = [
       {
         name: "robots.txt",
         desc: "Controls whether AI crawlers are allowed on your site",
+      },
+      {
+        name: "Content Signals",
+        desc: "Content-Signature header for content provenance verification",
       },
     ],
   },

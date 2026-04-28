@@ -28,7 +28,7 @@ describe("checkSitemapTxt", () => {
 
     expect(result.passed).toBe(true);
     expect(result.name).toBe("sitemap.txt");
-    expect(result.category).toBe("discoverability");
+    expect(result.category).toBe("discovered");
     expect(result.message).toContain("4 valid URLs");
     expect(result.urls).toHaveLength(4);
   });

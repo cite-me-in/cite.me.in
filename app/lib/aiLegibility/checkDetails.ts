@@ -253,6 +253,79 @@ const checkDetails: Record<string, CheckDetail> = {
       },
     ],
   },
+  "Link headers": {
+    goal: "Provide sitemap references via Link response headers and HTML link tags so AI agents can discover all your content",
+    issue:
+      "AI agents need direct signals to find your sitemaps. Without Link headers or HTML <link rel='sitemap'> tags, agents may miss your sitemaps entirely, even if referenced in robots.txt.",
+    howToImplement:
+      "Add a Link header to your HTTP response: Link: </sitemap.xml>; rel=sitemap. Also add <link rel='sitemap' type='application/xml' href='/sitemap.xml'> to your HTML <head>. These provide redundant discovery paths for different AI agents.",
+    resourceLinks: [
+      {
+        label: "Link header (MDN)",
+        url: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Link",
+      },
+      {
+        label: "Sitemap discovery",
+        url: "https://developers.google.com/search/docs/crawling-indexing/sitemaps/overview#other",
+      },
+    ],
+    auditSteps: [
+      {
+        label: "Check HTTP Link header",
+        value: "HEAD / — look for Link header containing 'sitemap'",
+      },
+      {
+        label: "Check HTML link tag",
+        value: "Scan <head> for <link rel='sitemap'> tag",
+      },
+    ],
+  },
+  "Markdown content negotiation": {
+    goal: "Support markdown content negotiation so AI agents can consume your content in their preferred format",
+    issue:
+      "AI agents strongly prefer markdown over HTML. Without supporting Accept: text/markdown, agents must parse your HTML and extract content, which can lead to lower-quality citations or missed content.",
+    howToImplement:
+      "Configure your server to detect Accept: text/markdown headers and respond with a markdown version of your pages. Cloudflare, Vercel, and other platforms support this via middleware. Return Content-Type: text/markdown with the markdown body on successful negotiation.",
+    resourceLinks: [
+      {
+        label: "Cloudflare Markdown for Agents",
+        url: "https://developers.cloudflare.com/fundamentals/reference/markdown-for-agents/",
+      },
+    ],
+    auditSteps: [
+      {
+        label: "Request with Accept: text/markdown",
+        value: "GET / with Accept: text/markdown header",
+      },
+      {
+        label: "Check response",
+        value: "Verify Content-Type starts with text/markdown or text/plain",
+      },
+      {
+        label: "Validate content",
+        value: "Ensure response body has at least 50 characters of content",
+      },
+    ],
+  },
+  "Content Signals": {
+    goal: "Provide a Content-Signature header so AI agents can verify your content is authentic and unmodified",
+    issue:
+      "Without a Content-Signature header, AI agents have no cryptographic proof that your content is authentic. This can reduce trust in your citations compared to sites that provide content provenance signals.",
+    howToImplement:
+      "Generate a Content-Signature header using the emerging standard (see Cloudflare Content Signals). This provides cryptographic verification that your content hasn't been tampered with, increasing trust with AI agents that check for it.",
+    resourceLinks: [
+      {
+        label: "Cloudflare Content Signals",
+        url: "https://blog.cloudflare.com/content-signals/",
+      },
+    ],
+    auditSteps: [
+      {
+        label: "Check Content-Signature header",
+        value: "HEAD / — look for Content-Signature response header",
+      },
+    ],
+  },
 };
 
 export default checkDetails;

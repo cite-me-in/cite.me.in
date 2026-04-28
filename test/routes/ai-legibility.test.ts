@@ -16,56 +16,56 @@ const SCAN_RESULT: ScanResult = {
   checks: [
     {
       name: "Homepage Content",
-      category: "informative",
+      category: "trusted",
       passed: true,
       message: "Homepage has meaningful content (150+ characters)",
     },
     {
       name: "sitemap.txt",
-      category: "discoverability",
+      category: "discovered",
       passed: true,
       message: "sitemap.txt found with 10 valid URLs",
     },
     {
       name: "sitemap.xml",
-      category: "discoverability",
+      category: "discovered",
       passed: true,
       message: "sitemap.xml found with valid XML structure",
     },
     {
       name: "robots.txt",
-      category: "bot-access",
+      category: "welcomed",
       passed: true,
       message: "robots.txt found and references sitemap",
     },
     {
       name: "JSON-LD Structured Data",
-      category: "informative",
+      category: "trusted",
       passed: true,
       message: "Found 2 valid JSON-LD schemas: Organization, WebSite",
     },
     {
       name: "Meta Tags",
-      category: "informative",
+      category: "trusted",
       passed: true,
       message: "Found title, description, and Open Graph tags",
     },
     {
       name: "llms.txt",
-      category: "discoverability",
+      category: "discovered",
       passed: false,
       message: "llms.txt not found (optional but recommended)",
     },
   ],
   summary: {
-    discoverability: { passed: 2, total: 3 },
-    informative: { passed: 3, total: 3 },
-    "bot-access": { passed: 1, total: 1 },
+    discovered: { passed: 2, total: 3 },
+    trusted: { passed: 3, total: 3 },
+    welcomed: { passed: 1, total: 1 },
   },
   suggestions: [
     {
       title: "Add llms.txt for AI discoverability",
-      category: "discoverability",
+      category: "discovered",
       effort: "5 min",
       description:
         "Create an llms.txt file at the root of your site to provide structured context for LLMs. This helps AI agents understand your content better.",
@@ -74,10 +74,7 @@ const SCAN_RESULT: ScanResult = {
     },
     {
       title: "Add sitemap.txt",
-      category: "discoverability",
-      effort: "5 min",
-      description:
-        "Create a plain-text file at https://example.com/sitemap.txt with one URL per line listing all important pages on your site.",
+      category: "discovered",
       fixExample:
         '# 1. robots.txt — add a Sitemap line:\nSitemap: https://example.com/sitemap.txt\n\n# 2. HTML <head> — add a link tag:\n<link rel="sitemap" type="text/plain" title="Sitemap" href="/sitemap.txt">\n\n# sitemap.txt content:\nhttps://example.com/\nhttps://example.com/about\nhttps://example.com/products',
     },

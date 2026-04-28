@@ -24,13 +24,13 @@ export default async function sendAiLegibilityReport({
   ).toString();
 
   const totalPassed =
-    result.summary.discoverability.passed +
-    result.summary.informative.passed +
-    result.summary["bot-access"].passed;
+    result.summary.discovered.passed +
+    result.summary.trusted.passed +
+    result.summary.welcomed.passed;
   const totalChecks =
-    result.summary.discoverability.total +
-    result.summary.informative.total +
-    result.summary["bot-access"].total;
+    result.summary.discovered.total +
+    result.summary.trusted.total +
+    result.summary.welcomed.total;
 
   await sendEmail({
     domain: site.domain,

@@ -63,18 +63,22 @@ export default function ScanSummary({
           {CATEGORIES.map((category) => {
             const s = summary[category.key];
             return (
-              <button
-                key={category.key}
-                onClick={() => handleCategoryClick(category.key)}
-                className="flex cursor-pointer flex-col items-center gap-1 transition-all hover:scale-105"
-              >
-                <span className={twMerge("text-sm font-bold", category.color)}>
-                  {category.title}
-                </span>
-                <span className="text-foreground/50 text-xs">
-                  {s.passed}/{s.total}
-                </span>
-              </button>
+              s && (
+                <button
+                  key={category.key}
+                  onClick={() => handleCategoryClick(category.key)}
+                  className="flex cursor-pointer flex-col items-center gap-1 transition-all hover:scale-105"
+                >
+                  <span
+                    className={twMerge("text-sm font-bold", category.color)}
+                  >
+                    {category.title}
+                  </span>
+                  <span className="text-foreground/50 text-xs">
+                    {s.passed}/{s.total}
+                  </span>
+                </button>
+              )
             );
           })}
         </div>

@@ -9,9 +9,12 @@ import captureAndLogError from "~/lib/captureAndLogError.server";
 import { normalizeURL } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
 import checkDetails from "./checkDetails";
+import checkContentSignals from "./checks/contentSignals";
 import checkHomepageContent from "./checks/homepageContent";
 import checkJsonLd from "./checks/jsonLd";
+import checkLinkHeaders from "./checks/linkHeaders";
 import checkLlmsTxt from "./checks/llmsTxt";
+import checkMarkdownNegotiation from "./checks/markdownNegotiation";
 import checkMetaTags from "./checks/metaTags";
 import checkRobotsTxt from "./checks/robotsTxt";
 import checkSamplePages from "./checks/samplePages";
@@ -134,6 +137,28 @@ async function runScanSteps({
     `${samplePagesResult.passed ? "✓" : "✗"} ${samplePagesResult.message}`,
   );
 
+  await log("Checking Link headers...");
+  const linkHeadersResult = await checkLinkHeaders({
+    url,
+    html: homepageResult.html,
+  });
+  checks.push(linkHeadersResult);
+  await log(
+    `${linkHeadersResult.passed ? "✓" : "✗"} ${linkHeadersResult.message}`,
+  );
+
+  await log("Checking markdown content negotiation...");
+  const markdownResult = await checkMarkdownNegotiation({ url });
+  checks.push(markdownResult);
+  await log(`${markdownResult.passed ? "✓" : "✗"} ${markdownResult.message}`);
+
+  await log("Checking Content Signals...");
+  const contentSignalsResult = await checkContentSignals({ url });
+  checks.push(contentSignalsResult);
+  await log(
+    `${contentSignalsResult.passed ? "✓" : "✗"} ${contentSignalsResult.message}`,
+  );
+
   for (const check of checks) {
     check.detail = checkDetails[check.name] ?? undefined;
   }
@@ -160,9 +185,7 @@ async function summarize({
   trusted: { passed: number; total: number };
   welcomed: { passed: number; total: number };
 }> {
-  const discoveredChecks = checks.filter(
-    (c) => c.category === "discovered",
-  );
+  const discoveredChecks = checks.filter((c) => c.category === "discovered");
   const trustedChecks = checks.filter((c) => c.category === "trusted");
   const welcomedChecks = checks.filter((c) => c.category === "welcomed");
 

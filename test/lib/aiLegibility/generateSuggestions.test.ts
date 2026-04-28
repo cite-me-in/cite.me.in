@@ -29,7 +29,7 @@ describe("generateSuggestions", () => {
                     suggestions: [
                       {
                         title: "Add sitemap.txt",
-                        category: "discoverability",
+                        category: "discovered",
                         effort: "5 min",
                         description: "Create a sitemap.txt file",
                         fixExample: "https://acme.com/",
@@ -57,13 +57,13 @@ describe("generateSuggestions", () => {
         checks: [
           {
             name: "Homepage content",
-            category: "discoverability",
+            category: "discovered",
             passed: true,
             message: "OK",
           },
           {
             name: "sitemap.txt",
-            category: "discoverability",
+            category: "discovered",
             passed: true,
             message: "OK",
           },
@@ -83,13 +83,13 @@ describe("generateSuggestions", () => {
         checks: [
           {
             name: "Homepage content",
-            category: "discoverability",
+            category: "discovered",
             passed: true,
             message: "OK",
           },
           {
             name: "sitemap.txt",
-            category: "discoverability",
+            category: "discovered",
             passed: false,
             message: "not found",
           },
@@ -112,13 +112,13 @@ describe("generateSuggestions", () => {
         checks: [
           {
             name: "Check A",
-            category: "discoverability",
+            category: "discovered",
             passed: false,
             message: "fail",
           },
           {
             name: "Check B",
-            category: "informative",
+            category: "trusted",
             passed: false,
             message: "fail",
           },
@@ -154,7 +154,7 @@ describe("generateSuggestions", () => {
         checks: [
           {
             name: "sitemap.txt",
-            category: "discoverability",
+            category: "discovered",
             passed: false,
             message: "not found",
           },
@@ -176,7 +176,7 @@ describe("generateSuggestions", () => {
         checks: [
           {
             name: "Homepage content",
-            category: "discoverability",
+            category: "discovered",
             passed: false,
             message: "empty SPA shell",
           },
@@ -198,7 +198,7 @@ describe("generateSuggestions", () => {
         checks: [
           {
             name: "JSON-LD",
-            category: "informative",
+            category: "trusted",
             passed: false,
             message: "No JSON-LD found",
           },

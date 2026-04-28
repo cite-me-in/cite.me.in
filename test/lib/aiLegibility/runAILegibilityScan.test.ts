@@ -96,6 +96,9 @@ describe("runScan", () => {
       "Meta tags",
       "llms.txt",
       "Sample pages",
+      "Link headers",
+      "Markdown content negotiation",
+      "Content Signals",
     ]);
   });
 
@@ -110,10 +113,10 @@ describe("runScan", () => {
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
 
-    expect(result?.summary.discoverability.passed).toBeGreaterThan(0);
-    expect(result?.summary.discoverability.total).toBe(3);
-    expect(result?.summary.informative.total).toBe(4);
-    expect(result?.summary["bot-access"].total).toBe(1);
+    expect(result?.summary.discovered.passed).toBeGreaterThan(0);
+    expect(result?.summary.discovered.total).toBe(4);
+    expect(result?.summary.trusted.total).toBe(5);
+    expect(result?.summary.welcomed.total).toBe(2);
   });
 
   it("should produce correct summary for failing site", async () => {
@@ -127,10 +130,10 @@ describe("runScan", () => {
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
 
-    expect(result?.summary.discoverability.passed).toBe(0);
-    expect(result?.summary.discoverability.total).toBe(3);
-    expect(result?.summary.informative.total).toBe(4);
-    expect(result?.summary["bot-access"].total).toBe(1);
+    expect(result?.summary.discovered.passed).toBe(0);
+    expect(result?.summary.discovered.total).toBe(4);
+    expect(result?.summary.trusted.total).toBe(5);
+    expect(result?.summary.welcomed.total).toBe(2);
   });
 
   it("should produce correct summary for partial site", async () => {
@@ -144,10 +147,10 @@ describe("runScan", () => {
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
 
-    expect(result?.summary.discoverability.passed).toBe(1);
-    expect(result?.summary.discoverability.total).toBe(3);
-    expect(result?.summary.informative.passed).toBe(4);
-    expect(result?.summary["bot-access"].passed).toBe(1);
+    expect(result?.summary.discovered.passed).toBe(1);
+    expect(result?.summary.discovered.total).toBe(4);
+    expect(result?.summary.trusted.passed).toBe(5);
+    expect(result?.summary.welcomed.passed).toBe(1);
   });
 
   it("should normalize URL without protocol", async () => {
@@ -264,7 +267,7 @@ describe("runScan", () => {
 
     expect(result?.suggestions.length).toBeGreaterThan(0);
     expect(
-      result?.suggestions.some((s) => s.category === "discoverability"),
+      result?.suggestions.some((s) => s.category === "discovered"),
     ).toBe(true);
   });
 
@@ -293,7 +296,7 @@ describe("runScan", () => {
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
 
-    expect(result?.checks.length).toBe(8);
+    expect(result?.checks.length).toBe(11);
     expect(result?.checks.every((c) => c.name && c.category && c.message)).toBe(
       true,
     );
@@ -310,29 +313,30 @@ describe("runScan", () => {
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
 
-    const discoverabilityChecks = result?.checks.filter(
-      (c) => c.category === "discoverability",
+    const discoveredChecks = result?.checks.filter(
+      (c) => c.category === "discovered",
     );
-    const informativeChecks = result?.checks.filter(
-      (c) => c.category === "informative",
+    const trustedChecks = result?.checks.filter(
+      (c) => c.category === "trusted",
     );
-    const botAccessChecks = result?.checks.filter(
-      (c) => c.category === "bot-access",
+    const welcomedChecks = result?.checks.filter(
+      (c) => c.category === "welcomed",
     );
 
-    expect(discoverabilityChecks?.map((c) => c.name)).toEqual(
-      expect.arrayContaining(["sitemap.xml", "sitemap.txt", "llms.txt"]),
+    expect(discoveredChecks?.map((c) => c.name)).toEqual(
+      expect.arrayContaining(["sitemap.xml", "sitemap.txt", "llms.txt", "Link headers"]),
     );
-    expect(informativeChecks?.map((c) => c.name)).toEqual(
+    expect(trustedChecks?.map((c) => c.name)).toEqual(
       expect.arrayContaining([
         "Homepage content",
         "Sample pages",
         "Meta tags",
         "JSON-LD",
+        "Markdown content negotiation",
       ]),
     );
-    expect(botAccessChecks?.map((c) => c.name)).toEqual(
-      expect.arrayContaining(["robots.txt"]),
+    expect(welcomedChecks?.map((c) => c.name)).toEqual(
+      expect.arrayContaining(["robots.txt", "Content Signals"]),
     );
   });
 });
@@ -439,17 +443,17 @@ describe("runScan with LLM suggestions", () => {
 
     expect(result?.suggestions.length).toBeGreaterThanOrEqual(3);
 
-    const discoverabilitySuggestions = result?.suggestions.filter(
-      (s) => s.category === "discoverability",
+    const discoveredSuggestions = result?.suggestions.filter(
+      (s) => s.category === "discovered",
     );
-    const informativeSuggestions = result?.suggestions.filter(
-      (s) => s.category === "informative",
+    const trustedSuggestions = result?.suggestions.filter(
+      (s) => s.category === "trusted",
     );
 
-    expect(discoverabilitySuggestions?.length).toBeGreaterThan(0);
-    expect(informativeSuggestions?.length).toBeGreaterThan(0);
+    expect(discoveredSuggestions?.length).toBeGreaterThan(0);
+    expect(trustedSuggestions?.length).toBeGreaterThan(0);
 
-    expect(discoverabilitySuggestions?.[0]?.title).toContain("sitemap.txt");
-    expect(informativeSuggestions?.[0]?.title).toContain("JSON-LD");
+    expect(discoveredSuggestions?.[0]?.title).toContain("sitemap.txt");
+    expect(trustedSuggestions?.[0]?.title).toContain("JSON-LD");
   });
 });

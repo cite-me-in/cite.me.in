@@ -11,7 +11,7 @@ describe("checkMetaTags", () => {
 
     expect(result.passed).toBe(true);
     expect(result.name).toBe("Meta tags");
-    expect(result.category).toBe("informative");
+    expect(result.category).toBe("trusted");
     expect(result.message).toContain("description");
     expect(result.message).toContain("Open Graph");
     expect(result.message).toContain("canonical");

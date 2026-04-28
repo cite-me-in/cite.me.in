@@ -43,17 +43,15 @@ export default function RadialGauge({
   const segments = CATEGORIES.map((cat) => {
     const s = summary[cat.key];
     const segmentArcLength = (s.total / totalChecks) * arcLength;
-    const filledArcLength = s.total > 0 ? (s.passed / s.total) * segmentArcLength : 0;
+    const filledArcLength =
+      s.total > 0 ? (s.passed / s.total) * segmentArcLength : 0;
     return { cat, segmentArcLength, filledArcLength };
   });
 
   const numTop = cy - radius / 2 - 18 + 18;
 
-  const overallColor = overallPct === 1
-    ? "#16a34a"
-    : overallPct > 0.5
-      ? "#f97316"
-      : "#dc2626";
+  const overallColor =
+    overallPct === 1 ? "#16a34a" : overallPct > 0.5 ? "#f97316" : "#dc2626";
 
   return (
     <div className="relative inline-flex items-center justify-center">
@@ -70,8 +68,8 @@ export default function RadialGauge({
         {(() => {
           let offset = 0;
           return segments.map((seg, i) => {
-            const startOffset = arcLength - offset - seg.segmentArcLength;
-            const filledOffset = arcLength - offset - seg.filledArcLength * animPct;
+            const filledOffset =
+              arcLength - offset - seg.filledArcLength * animPct;
             offset += seg.segmentArcLength;
             return (
               <g key={i}>
