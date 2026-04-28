@@ -1,3 +1,5 @@
+import { useEffect, useMemo, useState } from "react";
+
 export default function RadialGauge({
   passed,
   total,
@@ -8,13 +10,32 @@ export default function RadialGauge({
   size?: number;
 }) {
   const pct = total > 0 ? passed / total : 0;
-  const score = Math.round(pct * 100);
+  const [animPct, setAnimPct] = useState(0);
+
+  useEffect(() => {
+    const start = performance.now();
+    const dur = 500;
+    let raf: number;
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      const t = Math.min(elapsed / dur, 1);
+      setAnimPct(t * pct);
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [pct]);
+
   const strokeWidth = 14;
   const radius = (size - 30) / 2;
   const arcLength = Math.PI * radius;
-  const offset = arcLength * (1 - pct);
+  const offset = arcLength * (1 - animPct);
+  const displayScore = Math.round(animPct * 100);
 
-  const color = pct >= 0.8 ? "#16a34a" : pct >= 0.5 ? "#ca8a04" : "#f97316";
+  const color = useMemo(
+    () => lerpColor("#f97316", "#16a34a", animPct),
+    [animPct],
+  );
 
   const svgWidth = size;
   const svgHeight = radius + 40;
@@ -22,6 +43,8 @@ export default function RadialGauge({
   const cy = svgHeight - 5;
   const x1 = cx - radius;
   const x2 = cx + radius;
+
+  const numTop = cy - radius / 2 - 18 + 30;
 
   return (
     <div className="relative inline-flex items-center justify-center">
@@ -41,12 +64,28 @@ export default function RadialGauge({
           strokeDasharray={arcLength}
           strokeDashoffset={offset}
           strokeLinecap="round"
-          className="transition-all duration-700"
         />
       </svg>
-      <span className="absolute top-20 text-6xl font-bold" style={{ color }}>
-        {score}
+      <span
+        className="absolute text-5xl font-bold"
+        style={{ color, top: numTop }}
+      >
+        {displayScore}
       </span>
     </div>
   );
+}
+
+function lerpColor(from: string, to: string, t: number): string {
+  const a = hexToRgb(from);
+  const b = hexToRgb(to);
+  const r = Math.round(a.r + (b.r - a.r) * t);
+  const g = Math.round(a.g + (b.g - a.g) * t);
+  const bv = Math.round(a.b + (b.b - a.b) * t);
+  return `rgb(${r},${g},${bv})`;
+}
+
+function hexToRgb(hex: string) {
+  const v = parseInt(hex.replace("#", ""), 16);
+  return { r: (v >> 16) & 255, g: (v >> 8) & 255, b: v & 255 };
 }

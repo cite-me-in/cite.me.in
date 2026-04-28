@@ -233,6 +233,7 @@ describe("ai-legibility page - with report", () => {
   });
 
   it("should match visually - results", async () => {
+    await reportPage.waitForTimeout(600);
     await expect(reportPage.locator("main")).toMatchVisual({
       name: "ai-legibility/results",
     });
