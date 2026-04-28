@@ -118,7 +118,7 @@ function CheckSummary({
 
       {check.detail?.fixExample && (
         <div>
-          <h4 className="text-foreground/70 mb-1 text-sm font-semibold">
+          <h4 className="text-foreground/70 mb-1 text-base font-semibold">
             Example
           </h4>
           <pre className="bg-muted overflow-x-auto rounded p-3 font-mono text-sm leading-relaxed whitespace-pre-wrap">
@@ -129,7 +129,7 @@ function CheckSummary({
 
       {check.detail && check.detail.resourceLinks.length > 0 && (
         <div>
-          <h4 className="text-foreground/70 mb-1 text-sm font-semibold">
+          <h4 className="text-foreground/70 mb-1 text-base font-semibold">
             Resources
           </h4>
           <div className="flex flex-wrap gap-2">
@@ -195,8 +195,10 @@ function CheckSummary({
 function DetailBlock({ term, children }: { term: string; children: string }) {
   return (
     <div>
-      <h4 className="text-foreground/70 mb-1 text-sm font-semibold">{term}</h4>
-      <p className="text-foreground/80 text-">{children}</p>
+      <h4 className="text-foreground/70 mb-1 text-base font-semibold">
+        {term}
+      </h4>
+      <p className="text-foreground/80 text-base">{children}</p>
     </div>
   );
 }
@@ -242,14 +244,9 @@ function buildPrompt(check: CheckResult) {
     `Issue: ${check.message}`,
     `Fix: ${check.detail.howToImplement}`,
   ];
-  if (check.detail.fixExample) {
-    parts.push(`Example:\n${check.detail.fixExample}`);
-  }
-  if (check.detail.skillUrl) {
-    parts.push(`Skill: ${check.detail.skillUrl}`);
-  }
-  if (docs) {
-    parts.push(`Docs: ${docs}`);
-  }
+  if (check.detail.fixExample)
+    parts.push(`Example:\n\`\`\`\n${check.detail.fixExample}\n\`\`\``);
+  if (check.detail.skillUrl) parts.push(`Skill: ${check.detail.skillUrl}`);
+  if (docs) parts.push(`Docs: ${docs}`);
   return parts.join("\n\n");
 }
