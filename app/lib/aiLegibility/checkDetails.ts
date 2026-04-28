@@ -8,7 +8,7 @@ const checkDetails: Record<string, CheckDetail> = {
     howToImplement:
       "Add Allow: / rules for known AI bot user-agents above any Disallow rules, or remove Disallow: / lines that target these bots. Place the rules before any catch-all Disallow to ensure they take effect.",
     skillUrl:
-      "https://isitagentready.com/.well-known/agent-skills/robots-txt/SKILL.md",
+      "https://skills.sh/kostja94/marketing-skills/robots-txt",
     resourceLinks: [
       {
         label: "About robots.txt",
@@ -113,7 +113,7 @@ const checkDetails: Record<string, CheckDetail> = {
     howToImplement:
       "Create /llms.txt at your site root following the llms.txt standard. Include a brief site description at the top, followed by sections with links to key pages. Mark optional content with # if you want LLMs to prefer more important pages.",
     skillUrl:
-      "https://isitagentready.com/.well-known/agent-skills/llms-txt/SKILL.md",
+      "https://skills.sh/github/awesome-copilot/create-llms",
     resourceLinks: [
       {
         label: "llms.txt spec",
