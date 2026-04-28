@@ -1,48 +1,52 @@
 export default function RadialGauge({
-  score,
-  size = 180,
+  passed,
+  total,
+  size = 200,
 }: {
-  score: number;
+  passed: number;
+  total: number;
   size?: number;
 }) {
+  const pct = total > 0 ? passed / total : 0;
+  const score = Math.round(pct * 100);
   const strokeWidth = 14;
-  const radius = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference * (1 - score / 100);
+  const radius = (size - 30) / 2;
+  const arcLength = Math.PI * radius;
+  const offset = arcLength * (1 - pct);
 
-  const color =
-    score >= 80 ? "#16a34a" : score >= 50 ? "#ca8a04" : "#dc2626";
+  const color = pct >= 0.8 ? "#16a34a" : pct >= 0.5 ? "#ca8a04" : "#f97316";
+
+  const svgWidth = size;
+  const svgHeight = radius + 40;
+  const cx = svgWidth / 2;
+  const cy = svgHeight - 5;
+  const x1 = cx - radius;
+  const x2 = cx + radius;
 
   return (
     <div className="relative inline-flex items-center justify-center">
-      <svg width={size} height={size} className="-rotate-90">
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
+      <svg width={svgWidth} height={svgHeight}>
+        <path
+          d={`M ${x1} ${cy} A ${radius} ${radius} 0 0 1 ${x2} ${cy}`}
           fill="none"
           stroke="#e5e7eb"
           strokeWidth={strokeWidth}
+          strokeLinecap="round"
         />
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
+        <path
+          d={`M ${x1} ${cy} A ${radius} ${radius} 0 0 1 ${x2} ${cy}`}
           fill="none"
           stroke={color}
           strokeWidth={strokeWidth}
-          strokeDasharray={circumference}
+          strokeDasharray={arcLength}
           strokeDashoffset={offset}
           strokeLinecap="round"
           className="transition-all duration-700"
         />
       </svg>
-      <div className="absolute flex flex-col items-center">
-        <span className="text-4xl font-bold" style={{ color }}>
-          {score}%
-        </span>
-        <span className="text-foreground/60 text-sm">Overall Score</span>
-      </div>
+      <span className="absolute top-20 text-6xl font-bold" style={{ color }}>
+        {score}
+      </span>
     </div>
   );
 }

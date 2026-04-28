@@ -196,11 +196,11 @@ describe("ai-legibility page - with report", () => {
   });
 
   it("should show overall score", async () => {
-    await expect(reportPage.getByText("Overall Score")).toBeVisible();
+    await expect(reportPage.getByText("AI Legibility Score")).toBeVisible();
   });
 
-  it("should show score percentage", async () => {
-    await expect(reportPage.getByText("86%")).toBeVisible();
+  it("should show score number", async () => {
+    await expect(reportPage.getByText("86").first()).toBeVisible();
   });
 
   it("should show summary cards", async () => {

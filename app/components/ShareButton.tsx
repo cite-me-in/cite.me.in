@@ -1,33 +1,53 @@
-import { Share2Icon } from "lucide-react";
+import { toPng } from "html-to-image";
+import { Loader2Icon, Share2Icon } from "lucide-react";
+import { useState } from "react";
 import { Button } from "~/components/ui/Button";
 
 export default function ShareButton({
-  score,
-  domain,
+  scoreCardRef,
 }: {
-  score: number;
-  domain: string;
+  scoreCardRef: React.RefObject<HTMLDivElement | null>;
 }) {
-  const shareData = {
-    title: `AI Legibility Score: ${score}% for ${domain}`,
-    text: `My site ${domain} scored ${score}% on AI Legibility. Check yours at`,
-    url: `https://cite.me.in/site/${domain}/ai-legibility`,
-  };
+  const [loading, setLoading] = useState(false);
 
   return (
     <Button
       variant="outline"
-      onClick={() => {
-        if (navigator.share) {
-          navigator.share(shareData);
-        } else {
-          navigator.clipboard.writeText(
-            `${shareData.title}\n${shareData.url}`,
-          );
+      size="sm"
+      disabled={loading}
+      onClick={async () => {
+        const el = scoreCardRef.current;
+        if (!el) return;
+        setLoading(true);
+        try {
+          const dataUrl = await toPng(el, { quality: 1, pixelRatio: 2 });
+          const blob = await (await fetch(dataUrl)).blob();
+          const file = new File([blob], "ai-legibility-score.png", {
+            type: "image/png",
+          });
+          if (navigator.share && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              title: "AI Legibility Score",
+              files: [file],
+            });
+          } else {
+            const a = document.createElement("a");
+            a.href = dataUrl;
+            a.download = "ai-legibility-score.png";
+            a.click();
+          }
+        } catch {
+          // user cancelled share or fallback
+        } finally {
+          setLoading(false);
         }
       }}
     >
-      <Share2Icon className="size-4" />
+      {loading ? (
+        <Loader2Icon className="size-4 animate-spin" />
+      ) : (
+        <Share2Icon className="size-4" />
+      )}
       Share
     </Button>
   );
