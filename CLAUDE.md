@@ -52,3 +52,4 @@ I ask clarifying questions when requirements are ambiguous.
 
 See @package.json for available scripts.
 See @docs/coding-conventions.md for coding style, project structure, and testing conventions.
+See @docs/ux-design-guidelines.md for UI patterns, animations, responsive design, and component conventions.
