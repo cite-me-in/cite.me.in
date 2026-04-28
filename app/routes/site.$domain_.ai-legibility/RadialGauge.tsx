@@ -44,7 +44,7 @@ export default function RadialGauge({
   const x1 = cx - radius;
   const x2 = cx + radius;
 
-  const numTop = cy - radius / 2 - 18 + 30;
+  const numTop = cy - radius / 2 - 18 + 18;
 
   return (
     <div className="relative inline-flex items-center justify-center">

@@ -1,4 +1,5 @@
-import { ArrowBigUpDashIcon, CopyIcon } from "lucide-react";
+import { ArrowBigUpDashIcon, CheckIcon, CopyIcon } from "lucide-react";
+import { useState } from "react";
 import { Button, type ButtonProps } from "~/components/ui/Button";
 import {
   Dialog,
@@ -35,65 +36,61 @@ export default function ImproveScoreModal({
   failedChecks: CheckResult[];
 }) {
   const allPrompts = failedChecks.map(buildPrompt).join("\n\n---\n\n");
-  const count = failedChecks.length;
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyAll = async () => {
+    await navigator.clipboard.writeText(allPrompts);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <Button variant="default" size={size}>
           <ArrowBigUpDashIcon className="size-4" />
-          Improve the score{" "}
-          <span className="ml-1 flex size-5 items-center justify-center rounded-full bg-black/20 text-xs font-bold">
-            {count}
-          </span>
+          Improve your score
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-2xl">
+      <DialogContent
+        className="max-h-[80vh] overflow-y-auto sm:max-w-2xl"
+        data-state={open ? "open" : "closed"}
+      >
         <DialogHeader>
           <DialogTitle>Improve your AI Legibility Score</DialogTitle>
           <DialogDescription>
-            Fix these {count} issue{count > 1 ? "s" : ""} to improve your score.
-            Each issue includes a prompt you can paste into your coding agent.
+            Use the prompt below with your coding agent to fix the issues found
+            during the scan.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6">
-          {failedChecks.map((check, i) => (
-            <div
-              key={i}
-              className="rounded-base border-2 border-red-300 bg-red-50 p-4"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <h3 className="font-bold">{check.name}</h3>
-                  <p className="text-foreground/60 mt-1 text-sm">
-                    {check.message}
-                  </p>
-                </div>
-                {check.detail && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() =>
-                      navigator.clipboard.writeText(buildPrompt(check))
-                    }
-                  >
-                    <CopyIcon className="size-3" />
-                    Copy prompt
-                  </Button>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+        <textarea
+          className="border-border bg-secondary-background min-h-[300px] w-full rounded-base border-2 p-4 font-mono text-sm"
+          value={allPrompts}
+          readOnly
+        />
 
-        <div className="border-border flex justify-end border-t pt-4">
+        <div className="border-border flex items-center justify-between border-t pt-4">
+          <span className="text-foreground/60 text-sm">
+            {failedChecks.length} issue{failedChecks.length > 1 ? "s" : ""} to
+            fix
+          </span>
           <Button
-            variant="outline"
-            onClick={() => navigator.clipboard.writeText(allPrompts)}
+            variant={copied ? "default" : "outline"}
+            onClick={handleCopyAll}
           >
-            <CopyIcon className="size-4" />
-            Copy all instructions
+            {copied ? (
+              <>
+                <CheckIcon className="size-4" />
+                Copied!
+              </>
+            ) : (
+              <>
+                <CopyIcon className="size-4" />
+                Copy all instructions
+              </>
+            )}
           </Button>
         </div>
       </DialogContent>
