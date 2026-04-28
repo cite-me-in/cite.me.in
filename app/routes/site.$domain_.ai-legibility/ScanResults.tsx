@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, CopyIcon } from "lucide-react";
+import { ArrowLeftIcon, CheckIcon, CopyIcon } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
 import {
@@ -94,6 +94,14 @@ function CheckSummary({
   check: CheckResult;
   setShowAudit: (show: boolean) => void;
 }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(buildPrompt(check));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <>
       {check.detail && (
@@ -148,13 +156,18 @@ function CheckSummary({
       )}
 
       <div className="flex flex-wrap gap-2">
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => navigator.clipboard.writeText(buildPrompt(check))}
-        >
-          <CopyIcon className="size-3" />
-          Copy prompt
+        <Button size="sm" variant={copied ? "default" : "outline"} onClick={handleCopy}>
+          {copied ? (
+            <>
+              <CheckIcon className="size-3" />
+              Copied!
+            </>
+          ) : (
+            <>
+              <CopyIcon className="size-3" />
+              Copy prompt
+            </>
+          )}
         </Button>
         <Button size="sm" variant="ghost" onClick={() => setShowAudit(true)}>
           View audit details
