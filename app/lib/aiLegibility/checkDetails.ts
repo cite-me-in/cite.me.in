@@ -315,6 +315,7 @@ const checkDetails: Record<string, CheckDetail> = {
       "Configure your server to detect Accept: text/markdown headers and respond with a markdown version of your pages. Cloudflare, Vercel, and other platforms support this via middleware. Return Content-Type: text/markdown with the markdown body on successful negotiation.",
     fixExample:
       "# Example: Cloudflare Workers middleware\naddEventListener('fetch', event => {\n  event.respondWith(handleRequest(event.request))\n})\n\nasync function handleRequest(request) {\n  const accept = request.headers.get('Accept')\n  if (accept && accept.includes('text/markdown')) {\n    const html = await fetch(request)\n    const markdown = convertHtmlToMarkdown(await html.text())\n    return new Response(markdown, {\n      headers: { 'Content-Type': 'text/markdown' }\n    })\n  }\n  return fetch(request)\n}",
+    effort: "1 hour",
     resourceLinks: [
       {
         label: "Cloudflare Markdown for Agents",
@@ -342,6 +343,7 @@ const checkDetails: Record<string, CheckDetail> = {
       "Without a Content-Signature header, AI agents have no cryptographic proof that your content is authentic. This can reduce trust in your citations compared to sites that provide content provenance signals.",
     howToImplement:
       "Generate a Content-Signature header using the emerging standard (see Cloudflare Content Signals). This provides cryptographic verification that your content hasn't been tampered with, increasing trust with AI agents that check for it.",
+    effort: "1 hour",
     resourceLinks: [
       {
         label: "Cloudflare Content Signals",
