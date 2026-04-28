@@ -267,6 +267,251 @@ describe("ai-legibility page - scanning", () => {
   });
 });
 
+describe("ai-legibility page - accordion and flip card", () => {
+  let page: import("playwright").Page;
+
+  const CHECK_WITH_DETAIL: ScanResult = {
+    url: "https://detail-example.com",
+    scannedAt: "2026-04-19T10:00:00.000Z",
+    checks: [
+      {
+        name: "llms.txt",
+        category: "discovered",
+        passed: true,
+        message: "llms.txt found with valid content",
+      },
+      {
+        name: "robots.txt",
+        category: "discovered",
+        passed: false,
+        message: "robots.txt blocks AI crawlers",
+        detail: {
+          goal: "Allow AI crawlers to access your site",
+          issue: "AI agents respect robots.txt directives",
+          howToImplement: "Add Allow rules for known AI bot user-agents",
+          fixExample:
+            "User-agent: GPTBot\nAllow: /\nUser-agent: *\nDisallow: /private/",
+          effort: "2 min",
+          resourceLinks: [
+            {
+              label: "About robots.txt",
+              url: "https://developers.google.com/search/docs/crawling-indexing/robots/intro",
+            },
+          ],
+          auditSteps: [
+            { label: "Fetch /robots.txt", value: "GET /robots.txt" },
+            {
+              label: "Parse user-agent groups",
+              value: "Identify each User-agent block",
+            },
+            { label: "Check AI bot rules", value: "Look for Disallow: /" },
+          ],
+        },
+      },
+    ],
+    summary: {
+      discovered: { passed: 1, total: 2 },
+      trusted: { passed: 0, total: 0 },
+      welcomed: { passed: 0, total: 0 },
+    },
+  };
+
+  beforeAll(async () => {
+    const user = await prisma.user.create({
+      data: {
+        id: "ai-legibility-detail-user",
+        email: "detail-test@example.com",
+        passwordHash: "test",
+      },
+    });
+
+    const site = await prisma.site.create({
+      data: {
+        apiKey: "test-api-key-ai-legibility-detail",
+        content: "",
+        domain: "detail-example.com",
+        id: "site-detail",
+        ownerId: user.id,
+        summary: "",
+      },
+    });
+
+    await prisma.aiLegibilityReport.create({
+      data: {
+        id: "test-report-detail-id",
+        siteId: site.id,
+        userId: user.id,
+        result: JSON.parse(JSON.stringify(CHECK_WITH_DETAIL)),
+      },
+    });
+
+    await signIn(user.id);
+    page = await goto("/site/detail-example.com/ai-legibility");
+  });
+
+  it("should show accordion open for failed check", async () => {
+    // The robots.txt check failed, so its accordion should be expanded
+    await expect(
+      page.getByText("Allow AI crawlers to access your site"),
+    ).toBeVisible();
+  });
+
+  it("should show Audit details button in expanded check", async () => {
+    await expect(
+      page.getByRole("button", { name: /audit details/i }),
+    ).toBeVisible();
+  });
+
+  it("should flip to audit details when clicked", async () => {
+    await page.getByRole("button", { name: /audit details/i }).click();
+    await expect(
+      page.getByText("Fetch /robots.txt", { exact: true }),
+    ).toBeVisible();
+  });
+
+  it("should show numbered audit steps", async () => {
+    await expect(
+      page.getByText("Parse user-agent groups"),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Check AI bot rules"),
+    ).toBeVisible();
+  });
+
+  it("should flip back when Back is clicked", async () => {
+    await page.getByRole("button", { name: /back/i }).click();
+    await expect(
+      page.getByRole("button", { name: /audit details/i }),
+    ).toBeVisible();
+  });
+
+  it("should match visually - accordion open on failed check", async () => {
+    await page.waitForTimeout(600);
+    await expect(page.locator("main")).toMatchVisual({
+      name: "ai-legibility/detail-accordion-open",
+    });
+  });
+});
+
+describe("ai-legibility page - improve score modal", () => {
+  let page: import("playwright").Page;
+
+  beforeAll(async () => {
+    const user = await prisma.user.create({
+      data: {
+        id: "ai-legibility-modal-user",
+        email: "modal-test@example.com",
+        passwordHash: "test",
+      },
+    });
+
+    const site = await prisma.site.create({
+      data: {
+        apiKey: "test-api-key-ai-legibility-modal",
+        content: "",
+        domain: "modal-example.com",
+        id: "site-modal",
+        ownerId: user.id,
+        summary: "",
+      },
+    });
+
+    await prisma.aiLegibilityReport.create({
+      data: {
+        id: "test-report-modal-id",
+        siteId: site.id,
+        userId: user.id,
+        result: JSON.parse(
+          JSON.stringify({
+            url: "https://modal-example.com",
+            scannedAt: "2026-04-19T10:00:00.000Z",
+            checks: [
+              {
+                name: "robots.txt",
+                category: "discovered",
+                passed: false,
+                message: "robots.txt blocks AI crawlers",
+                detail: {
+                  goal: "Allow AI crawlers to access your site",
+                  issue: "AI agents respect robots.txt directives",
+                  howToImplement:
+                    "Add Allow rules for known AI bot user-agents",
+                  effort: "2 min",
+                  resourceLinks: [],
+                  auditSteps: [
+                    { label: "Fetch /robots.txt", value: "GET /robots.txt" },
+                  ],
+                },
+              },
+            ],
+            summary: {
+              discovered: { passed: 0, total: 1 },
+              trusted: { passed: 0, total: 0 },
+              welcomed: { passed: 0, total: 0 },
+            },
+          }),
+        ),
+      },
+    });
+
+    await signIn(user.id);
+    page = await goto("/site/modal-example.com/ai-legibility");
+  });
+
+  it("should show Improve your score button", async () => {
+    const button = page.getByRole("button", { name: /improve your score/i });
+    await expect(button.first()).toBeVisible();
+  });
+
+  it("should open modal when clicked", async () => {
+    await page
+      .getByRole("button", { name: /improve your score/i })
+      .first()
+      .click();
+    await expect(
+      page.getByText("Improve your AI Legibility Score"),
+    ).toBeVisible();
+  });
+
+  it("should show prompt textarea with content", async () => {
+    const textarea = page.locator("textarea");
+    await expect(textarea).toBeVisible();
+    const text = await textarea.inputValue();
+    expect(text.length).toBeGreaterThan(50);
+    expect(text).toContain("Goal:");
+  });
+
+  it("should show Copy all instructions button", async () => {
+    await expect(
+      page.getByRole("button", { name: /copy all instructions/i }),
+    ).toBeVisible();
+  });
+
+  it("should show issue count", async () => {
+    await expect(page.getByText("1 issue to fix")).toBeVisible();
+  });
+
+  it("should close modal on Escape", async () => {
+    await page.keyboard.press("Escape");
+    await expect(
+      page.getByText("Improve your AI Legibility Score"),
+    ).not.toBeVisible();
+  });
+
+  it("should match visually - modal open", async () => {
+    // Re-open modal for screenshot
+    await page
+      .getByRole("button", { name: /improve your score/i })
+      .first()
+      .click();
+    await page.waitForTimeout(400);
+    // Screenshot the full page to capture the backdrop + modal
+    await expect(page).toMatchVisual({
+      name: "ai-legibility/improve-score-modal",
+    });
+  });
+});
+
 describe("ai-legibility email", () => {
   let email: NonNullable<Awaited<ReturnType<typeof getLastEmailSent>>>;
 

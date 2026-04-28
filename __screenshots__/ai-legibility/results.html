@@ -31,51 +31,53 @@
       report-example.com
     </p>
   </div>
-  <div class="px-6 mb-8 flex flex-col items-center gap-8" data-slot="card-content">
+  <div class="px-6 mb-0 flex flex-col items-center gap-8" data-slot="card-content">
     <div class="relative inline-flex items-center justify-center">
       <svg height="125" width="200">
-        <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#e5e7eb" stroke-linecap="butt" stroke-width="14"></path>
         <g>
-          <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#3b82f6" stroke-dasharray="65.39641850329772 201.6389570518347" stroke-dashoffset="267.0353755551324" stroke-linecap="butt" stroke-width="14"></path>
+          <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#e5e7eb" stroke-dasharray="107.58658952362818 159.44878603150426" stroke-dashoffset="267.0353755551324" stroke-linecap="butt" stroke-width="14"></path>
+          <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#3b82f6" stroke-dasharray="71.72439301575211 195.3109825393803" stroke-dashoffset="267.0353755551324" stroke-linecap="butt" stroke-width="14"></path>
         </g>
         <g>
-          <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#9333ea" stroke-dasharray="98.09462775494659 168.94074780018582" stroke-dashoffset="152.5916431743614" stroke-linecap="butt" stroke-width="14"></path>
+          <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#e5e7eb" stroke-dasharray="107.58658952362818 159.44878603150426" stroke-dashoffset="151.44878603150426" stroke-linecap="butt" stroke-width="14"></path>
+          <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#9333ea" stroke-dasharray="107.58658952362818 159.44878603150426" stroke-dashoffset="151.44878603150426" stroke-linecap="butt" stroke-width="14"></path>
         </g>
         <g>
-          <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#059669" stroke-dasharray="32.69820925164886 234.33716630348357" stroke-dashoffset="38.14791079359037" stroke-linecap="butt" stroke-width="14"></path>
+          <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#e5e7eb" stroke-dasharray="35.86219650787606 231.17317904725635" stroke-dashoffset="35.862196507876064" stroke-linecap="butt" stroke-width="14"></path>
+          <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#059669" stroke-dasharray="35.86219650787606 231.17317904725635" stroke-dashoffset="35.862196507876064" stroke-linecap="butt" stroke-width="14"></path>
         </g>
       </svg>
-      <span class="absolute text-5xl font-bold" style="color: rgb(249, 115, 22); top: 77.5px;">
+      <span class="absolute text-6xl font-bold tabular-nums" style="color: rgb(22, 163, 74); top: 77.5px;">
         86
       </span>
     </div>
-    <div class="flex justify-center gap-4">
+    <div class="flex justify-center gap-6">
       <button class="flex cursor-pointer flex-col items-center gap-1 transition-all hover:scale-105">
-        <span class="text-sm font-bold text-blue-600">
+        <div class="text-base font-bold text-blue-600">
           Discovered
-        </span>
-        <span class="text-foreground/50 text-xs">
+        </div>
+        <div class="text-foreground/50 text-xl">
           2/3
-        </span>
+        </div>
       </button>
       <button class="flex cursor-pointer flex-col items-center gap-1 transition-all hover:scale-105">
-        <span class="text-sm font-bold text-purple-600">
+        <div class="text-base font-bold text-purple-600">
           Trusted
-        </span>
-        <span class="text-foreground/50 text-xs">
+        </div>
+        <div class="text-foreground/50 text-xl">
           3/3
-        </span>
+        </div>
       </button>
       <button class="flex cursor-pointer flex-col items-center gap-1 transition-all hover:scale-105">
-        <span class="text-sm font-bold text-emerald-600">
+        <div class="text-base font-bold text-emerald-600">
           Welcomed
-        </span>
-        <span class="text-foreground/50 text-xs">
+        </div>
+        <div class="text-foreground/50 text-xl">
           1/1
-        </span>
+        </div>
       </button>
     </div>
-    <p class="text-foreground/50 text-xs">
+    <p class="text-foreground/50 text-base">
       6/7 checks passed
     </p>
   </div>
@@ -270,93 +272,6 @@
           </svg>
         </button>
       </h3>
-    </div>
-  </div>
-</div>
-<div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card" id="suggestions">
-  <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
-    <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
-      Suggestions
-    </div>
-  </div>
-  <div class="px-6 space-y-4" data-slot="card-content">
-    <div class="rounded-lg border p-4">
-      <div class="mb-2 flex items-start justify-between">
-        <h4 class="text-lg font-medium">
-          Add llms.txt for AI discoverability
-        </h4>
-        <div class="flex gap-2">
-          <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
-            5 min
-          </span>
-          <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
-            discovered
-          </span>
-        </div>
-      </div>
-      <p class="text-foreground/60 text-base">
-        Create an llms.txt file at the root of your site to provide structured context for LLMs. This helps AI agents understand your content better.
-      </p>
-      <pre class="bg-muted mt-2 overflow-x-auto rounded p-2 font-mono text-base">
-        # Example Site Main description here. ## Sections - /about - /pricing
-      </pre>
-    </div>
-    <div class="rounded-lg border p-4">
-      <div class="mb-2 flex items-start justify-between">
-        <h4 class="text-lg font-medium">
-          Add sitemap.txt
-        </h4>
-        <div class="flex gap-2">
-          <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
-            5 min
-          </span>
-          <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
-            discovered
-          </span>
-        </div>
-      </div>
-      <p class="text-foreground/60 text-base">
-        Create a plain-text file at https://example.com/sitemap.txt with one URL per line listing all important pages on your site.
-      </p>
-      <pre class="bg-muted mt-2 overflow-x-auto rounded p-2 font-mono text-base">
-        # 1. robots.txt — add a Sitemap line: Sitemap: https://example.com/sitemap.txt # 2. HTML &amp;lt;head&amp;gt; — add a link tag: &amp;lt;link rel="sitemap" type="text/plain" title="Sitemap" href="/sitemap.txt"&amp;gt; # sitemap.txt content: https://example.com/ https://example.com/about https://example.com/products
-      </pre>
-    </div>
-    <div class="rounded-lg border p-4">
-      <div class="mb-2 flex items-start justify-between">
-        <h4 class="text-lg font-medium">
-          Add JSON-LD structured data
-        </h4>
-        <div class="flex gap-2">
-          <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
-            15 min
-          </span>
-          <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
-            trusted
-          </span>
-        </div>
-      </div>
-      <p class="text-foreground/60 text-base">
-        Add a &amp;lt;script type="application/ld+json"&amp;gt; block to your pages with schema.org structured data to help AI agents understand your content.
-      </p>
-    </div>
-    <div class="rounded-lg border p-4">
-      <div class="mb-2 flex items-start justify-between">
-        <h4 class="text-lg font-medium">
-          Fix meta description
-        </h4>
-        <div class="flex gap-2">
-          <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
-            2 min
-          </span>
-          <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200" data-slot="badge">
-            trusted
-          </span>
-        </div>
-      </div>
-      <p class="text-foreground/60 text-base">
-        Add a meta description tag to your homepage to help AI agents summarize your content.
-      </p>
     </div>
   </div>
 </div>
