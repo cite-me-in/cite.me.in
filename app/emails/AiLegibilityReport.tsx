@@ -1,9 +1,10 @@
+import { ArrowBigUpDashIcon } from "lucide-react";
 import { Section, Text } from "react-email";
 import { BrandReminderCard } from "~/components/email/BrandReminder";
 import Button from "~/components/email/Button";
 import Card from "~/components/email/Card";
 import CATEGORIES from "~/lib/aiLegibility/criteria";
-import type { ScanResult } from "~/lib/aiLegibility/types";
+import type { CheckResult, ScanResult } from "~/lib/aiLegibility/types";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
 import { sendEmail } from "./sendEmails";
@@ -51,6 +52,17 @@ export default async function sendAiLegibilityReport({
   });
 }
 
+const SCORE_COLORS = [
+  { max: 35, color: "#dc2626" },
+  { max: 65, color: "#eab308" },
+  { max: 100, color: "#16a34a" },
+];
+
+function scoreColor(score: number) {
+  for (const { max, color } of SCORE_COLORS) if (score <= max) return color;
+  return "#16a34a";
+}
+
 function AiLegibilityReport({
   site,
   result,
@@ -72,21 +84,56 @@ function AiLegibilityReport({
         Your AI Legibility Report for <strong>{site.domain}</strong> is ready.
       </Text>
 
-      <Card
-        title={`AI Legibility Score: ${score}%`}
-        subtitle={`${totalPassed}/${totalChecks} checks passed`}
-        withBorder
-      >
-        <SummaryTable result={result} />
+      <Card withBorder>
+        <Text className="text-light text-lg">Site AI legibility score</Text>
+        <Text
+          className="text-4xl font-bold"
+          style={{ color: scoreColor(score) }}
+        >
+          {score}
+        </Text>
+        <Text className="text-light text-sm">
+          {totalPassed} of {totalChecks} checks passed
+        </Text>
       </Card>
 
       <Section className="my-8 text-center">
-        <Button href={reportUrl}>View Full Report</Button>
+        <Button href={reportUrl} className="whitespace-nowrap">
+          <ArrowBigUpDashIcon className="mr-2 -mb-0.5 size-4" />
+          Improve your score
+        </Button>
+      </Section>
+
+      {CATEGORIES.map((category) => (
+        <Section key={category.key} className="mb-6">
+          <Text
+            className="text-base font-bold tracking-wide uppercase"
+            style={{ color: category.emailColor }}
+          >
+            {category.title} — {result.summary[category.key].passed}/
+            {result.summary[category.key].total}
+          </Text>
+
+          {result.checks
+            .filter((c) => c.category === category.key)
+            .map((check) =>
+              check.passed ? (
+                <CheckPassed key={check.name} check={check} />
+              ) : (
+                <CheckFailed key={check.name} check={check} />
+              ),
+            )}
+        </Section>
+      ))}
+
+      <Section className="my-8 text-center">
+        <Button href={reportUrl} className="whitespace-nowrap">
+          <ArrowBigUpDashIcon className="mr-2 -mb-0.5 size-4" />
+          View Full Report
+        </Button>
       </Section>
 
       <BrandReminderCard domain={site.domain} citations={totalPassed} />
-
-      <Explainer />
 
       <Text className="text-text my-4 text-base leading-relaxed">
         Best regards,
@@ -97,70 +144,73 @@ function AiLegibilityReport({
   );
 }
 
-function SummaryTable({ result }: { result: ScanResult }) {
+function CheckPassed({ check }: { check: CheckResult }) {
   return (
-    <table>
-      <thead>
-        <tr className="text-light text-center text-xs tracking-wide uppercase">
-          <th className="p-4 text-left">Category</th>
-          <th className="p-4">Passed</th>
-          <th className="p-4">Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {CATEGORIES.map((category) => (
-          <SummaryRow
-            key={category.key}
-            category={category.title}
-            passed={result.summary[category.key].passed}
-            total={result.summary[category.key].total}
-          />
-        ))}
-      </tbody>
-    </table>
-  );
-}
-
-function SummaryRow({
-  category,
-  passed,
-  total,
-}: {
-  category: string;
-  passed: number;
-  total: number;
-}) {
-  const status = passed === total ? "✓" : `${passed}/${total}`;
-  const statusColor = passed === total ? "text-green-600" : "text-red-600";
-
-  return (
-    <tr className="border-border border-t">
-      <td className="p-4 text-left font-medium">{category}</td>
-      <td className="p-4 text-center">
-        {passed}/{total}
-      </td>
-      <td className={`p-4 text-center font-bold ${statusColor}`}>{status}</td>
-    </tr>
-  );
-}
-
-function Explainer() {
-  return (
-    <Card
-      withBorder
-      title="About the categories"
-      subtitle="Checks are grouped by type"
-    >
-      <div className="mb-6">
-        {CATEGORIES.map((category) => (
-          <Text className="text-text text-base leading-relaxed">
-            <strong style={{ color: category.emailColor }}>
-              {category.title}
-            </strong>{" "}
-            — {category.description}
-          </Text>
-        ))}
-      </div>
+    <Card withBorder className="pb-1">
+      <Text className="mt-1 mb-3 text-base text-green-600">✓ {check.name}</Text>
     </Card>
+  );
+}
+
+function CheckFailed({ check }: { check: CheckResult }) {
+  return (
+    <Card withBorder className="pb-1">
+      <Text className="my-1 text-base font-bold text-red-600">
+        ✗ {check.name}
+      </Text>
+
+      <div
+        style={{
+          height: "1px",
+          backgroundColor: "#e5e7eb",
+          margin: "8px 0",
+        }}
+      />
+
+      {check.detail && (
+        <>
+          <DetailBlock label="Goal">{check.detail.goal}</DetailBlock>
+          <DetailBlock label="Issue">{check.detail.issue}</DetailBlock>
+          <DetailBlock label="How to implement">
+            {check.detail.howToImplement}
+          </DetailBlock>
+          {check.detail.fixExample && (
+            <DetailBlock label="Example">
+              <pre
+                style={{
+                  background: "#1e293b",
+                  color: "#e2e8f0",
+                  padding: "12px",
+                  borderRadius: "6px",
+                  fontSize: "13px",
+                  lineHeight: "1.5",
+                  overflowX: "auto",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                }}
+              >
+                {check.detail.fixExample}
+              </pre>
+            </DetailBlock>
+          )}
+        </>
+      )}
+    </Card>
+  );
+}
+
+function DetailBlock({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="text-text my-2 text-base leading-relaxed">
+      <strong>{label}:</strong>
+      <br />
+      {children}
+    </div>
   );
 }

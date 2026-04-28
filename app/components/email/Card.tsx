@@ -10,7 +10,7 @@ export default function Card({
 }: {
   children: React.ReactNode;
   className?: string;
-  title?: string;
+  title?: string | React.ReactNode;
   subtitle?: string;
   withBorder?: boolean;
 }) {
