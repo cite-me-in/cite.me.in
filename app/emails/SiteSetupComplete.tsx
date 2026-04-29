@@ -7,7 +7,7 @@ import SentimentBreakdown from "~/components/email/SentimentBreakdown";
 import { TopCompetitors } from "~/components/email/TopCompetitors";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
-import type { SentimentLabel } from "~/prisma";
+import type { Prisma, SentimentLabel } from "~/prisma";
 import { sendEmail } from "./sendEmails";
 
 export type SetupMetrics = {
@@ -30,23 +30,28 @@ export type SetupMetrics = {
 };
 
 export default async function sendSiteSetupEmail({
-  domain,
+  site,
   metrics,
   sendTo,
 }: {
-  domain: string;
+  site: Prisma.SiteGetPayload<{
+    select: {
+      domain: true;
+      citations: true;
+    };
+  }>;
   metrics: SetupMetrics;
   sendTo: { id: string; email: string; unsubscribed: boolean };
 }) {
   const citationsURL = new URL(
-    `/site/${domain}/citations`,
+    `/site/${site.domain}/citations`,
     envVars.VITE_APP_URL,
   ).toString();
   await sendEmail({
-    domain,
+    domain: site.domain,
     email: (
-      <SiteSetupComplete
-        domain={domain}
+      <SiteSetupCompleteEmail
+        site={site}
         citationsURL={citationsURL}
         metrics={metrics}
       />
@@ -60,19 +65,24 @@ export default async function sendSiteSetupEmail({
   });
 }
 
-function SiteSetupComplete({
+export function SiteSetupCompleteEmail({
+  site,
   citationsURL,
-  domain,
   metrics,
 }: {
+  site: Prisma.SiteGetPayload<{
+    select: {
+      domain: true;
+      citations: true;
+    };
+  }>;
   citationsURL: string;
-  domain: string;
   metrics: SetupMetrics;
 }) {
   return (
     <Section>
       <Text className="text-text my-4 text-base leading-relaxed">
-        Your site <strong>{domain}</strong> has been set up on cite.me.in.
+        Your site <strong>{site.domain}</strong> has been set up on cite.me.in.
       </Text>
 
       <Text className="text-text my-4 text-base leading-relaxed">
@@ -88,7 +98,7 @@ function SiteSetupComplete({
       <SetupTopQueries topQueries={metrics.topQueries} />
       <SentimentBreakdown byPlatform={metrics.byPlatform} />
       <TopCompetitors competitors={metrics.competitors} />
-      <BrandReminderCard domain={domain} citations={metrics.totalCitations} />
+      <BrandReminderCard site={site} />
 
       <Text className="text-text my-4 text-base leading-relaxed">
         Best regards,

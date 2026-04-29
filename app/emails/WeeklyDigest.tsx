@@ -11,11 +11,17 @@ import SentimentBreakdown from "~/components/email/SentimentBreakdown";
 import { TopCompetitors } from "~/components/email/TopCompetitors";
 import { formatDateShort } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
-import type { SentimentLabel } from "~/prisma";
+import type { Prisma, SentimentLabel } from "~/prisma";
 import { sendEmail } from "./sendEmails";
 
 export type WeeklyDigestEmailProps = {
-  domain: string;
+  site: Prisma.SiteGetPayload<{
+    select: {
+      id: true;
+      domain: true;
+      citations: true;
+    };
+  }>;
   queryCoverageRate: { current: number; previous: number };
   byPlatform: {
     [k: string]: {
@@ -39,7 +45,6 @@ export type WeeklyDigestEmailProps = {
   }[];
   score: { current: number; previous: number };
   sendTo: { id: string; email: string; unsubscribed: boolean }[];
-  siteId: string;
   topQueries: { query: string; count: number; delta: number }[];
   visits: {
     // Total page views (human + bot)
@@ -57,18 +62,18 @@ export async function sendSiteDigestEmails(
   data: Omit<WeeklyDigestEmailProps, "unsubscribeURL">,
 ): Promise<{ id: string }[]> {
   await prisma.site.updateMany({
-    where: { id: { in: [data.siteId] } },
+    where: { id: { in: [data.site.id] } },
     data: { digestSentAt: new Date() },
   });
 
   const today = Temporal.Now.plainDateISO("UTC");
-  const subject = `${data.domain} • ${formatDateShort(
+  const subject = `${data.site.domain} • ${formatDateShort(
     today.subtract({ days: 7 }),
   )} — ${formatDateShort(today)}`;
 
   const emailIds = await map(data.sendTo, async (sendTo) => {
     const emailId = await sendEmail({
-      domain: data.domain,
+      domain: data.site.domain,
       isTransactional: false,
       email: <WeeklyDigestEmail {...data} />,
       subject: subject,
@@ -83,12 +88,12 @@ export async function sendSiteDigestEmails(
 }
 
 export function WeeklyDigestEmail({
-  domain,
   queryCoverageRate,
   byPlatform,
   citationTrends,
   citations,
   citationsURL,
+  site,
   competitors,
   score,
   topQueries,
@@ -120,7 +125,7 @@ export function WeeklyDigestEmail({
         aiReferredVisitors={visits.aiReferredVisitors}
         botVisits={visits.botVisits}
       />
-      <BrandReminderCard domain={domain} citations={citations.domain.current} />
+      <BrandReminderCard site={site} />
     </>
   );
 }

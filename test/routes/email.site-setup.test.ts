@@ -16,7 +16,10 @@ describe("SiteSetupComplete email", () => {
       },
     });
     await sendSiteSetupEmail({
-      domain: "example.com",
+      site: {
+        domain: "example.com",
+        citations: [],
+      },
       sendTo: user,
       metrics: {
         totalCitations: 42,

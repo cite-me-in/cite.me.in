@@ -23,6 +23,7 @@ async function main() {
 
   const site = await prisma.site.findFirst({
     where: { domain: normalizeDomain(url) },
+    include: { citations: true },
   });
   if (!site) {
     console.error(`Site ${normalizeDomain(url)} not found`);

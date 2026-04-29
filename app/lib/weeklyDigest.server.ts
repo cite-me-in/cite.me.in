@@ -12,13 +12,12 @@ import { topCompetitors } from "~/routes/site.$domain_.citations/TopCompetitors"
 export async function loadWeeklyDigestMetrics(
   siteId: string,
 ): Promise<Omit<WeeklyDigestEmailProps, "unsubscribeURL">> {
-  const today = Temporal.Now.plainDateISO("UTC");
-  const weekStart = today.subtract({ days: 7 }).toJSON();
-  const prevWeekStart = today.subtract({ days: 14 }).toJSON();
-
-  const siteInfo = await prisma.site.findUniqueOrThrow({
+  const site = await prisma.site.findUniqueOrThrow({
     where: { id: siteId },
     select: {
+      id: true,
+      domain: true,
+      citations: true,
       owner: { select: { id: true, email: true, unsubscribed: true } },
       siteUsers: {
         select: {
@@ -27,6 +26,11 @@ export async function loadWeeklyDigestMetrics(
       },
     },
   });
+
+  const today = Temporal.Now.plainDateISO("UTC");
+  const weekStart = today.subtract({ days: 7 }).toJSON();
+  const prevWeekStart = today.subtract({ days: 14 }).toJSON();
+
   const metricsResult = await getSiteMetrics({ siteIds: [siteId] });
   const runs = await prisma.citationQueryRun.findMany({
     where: { siteId, onDate: { gte: prevWeekStart } },
@@ -126,7 +130,7 @@ export async function loadWeeklyDigestMetrics(
     })),
   );
 
-  const { owner, siteUsers } = siteInfo;
+  const { owner, siteUsers } = site;
   const sendTo = [owner, ...siteUsers.map((siteUser) => siteUser.user)].filter(
     ({ unsubscribed }) => !unsubscribed,
   );
@@ -172,7 +176,7 @@ export async function loadWeeklyDigestMetrics(
   };
 
   return {
-    domain,
+    site,
     queryCoverageRate: {
       current: metrics.queryCoverageRate.current,
       previous: metrics.queryCoverageRate.previous,
@@ -196,7 +200,6 @@ export async function loadWeeklyDigestMetrics(
       previous: metrics.visbilityScore.previous,
     },
     sendTo,
-    siteId,
     topQueries,
     visits,
   };

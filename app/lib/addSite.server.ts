@@ -91,7 +91,11 @@ export default async function addSite({
       select: { email: true, id: true, unsubscribed: true },
     });
     const metrics = await loadSetupMetrics(site.id);
-    await sendSiteSetupEmail({ domain: site.domain, sendTo: owner, metrics });
+    const withCitations = await prisma.site.findUniqueOrThrow({
+      where: { id: site.id },
+      include: { citations: true },
+    });
+    await sendSiteSetupEmail({ site: withCitations, sendTo: owner, metrics });
 
     await log("Done! Your citations are ready.");
     await setStatus({ siteId: site.id, userId: user.id, status: "complete" });

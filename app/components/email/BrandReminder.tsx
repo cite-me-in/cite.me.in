@@ -1,22 +1,26 @@
 import { Link, Text } from "react-email";
 import Card from "~/components/email/Card";
+import type { Prisma } from "~/prisma";
 
 export function BrandReminderCard({
-  domain,
-  citations,
+  site,
 }: {
-  domain: string;
-  citations: number;
+  site: Prisma.SiteGetPayload<{
+    select: {
+      domain: true;
+      citations: true;
+    };
+  }>;
 }) {
-  const n = citations.toLocaleString("en-US");
-  const noun = citations === 1 ? "citation" : "citations";
+  const n = site.citations.length.toLocaleString("en-US");
+  const noun = site.citations.length === 1 ? "citation" : "citations";
   return (
     <Card withBorder>
       <Text className="text-text text-base leading-relaxed">
         <Link href="https://cite.me.in">cite.me.in</Link> is your window into
         how AI talks about your brand. Every day it asks ChatGPT, Claude,
         Gemini, and Perplexity the questions your customers ask — and records
-        every time <strong>{domain}</strong> shows up. So far:{" "}
+        every time <strong>{site.domain}</strong> shows up. So far:{" "}
         <strong>
           {n} {noun}
         </strong>{" "}

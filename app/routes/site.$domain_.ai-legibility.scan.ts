@@ -3,6 +3,7 @@ import sendAiLegibilityReport from "~/emails/AiLegibilityReport";
 import { appendLog } from "~/lib/aiLegibility/progress.server";
 import runAILegibilityScan from "~/lib/aiLegibility/runAILegibilityScan";
 import { requireSiteAccess } from "~/lib/auth.server";
+import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/site.$domain_.ai-legibility.scan";
 
 export const config = { maxDuration: 300 }; // 5 minutes in seconds
@@ -25,8 +26,13 @@ export async function action({ request, params }: Route.ActionArgs) {
   const progress = await runAILegibilityScan({ log, site, user });
 
   if (progress.done && progress.result) {
+    const withCitations = await prisma.site.findUniqueOrThrow({
+      where: { id: site.id },
+      include: { citations: true },
+    });
+
     await sendAiLegibilityReport({
-      site,
+      site: withCitations,
       sendTo: user,
       result: progress.result,
     });

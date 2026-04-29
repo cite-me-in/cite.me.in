@@ -537,10 +537,11 @@ describe("ai-legibility email", () => {
         ownerId: user.id,
         summary: "",
       },
+      include: { citations: true },
     });
 
     await sendAiLegibilityReport({
-      site: { id: site.id, domain: site.domain },
+      site,
       result: SCAN_RESULT,
       sendTo: user,
     });

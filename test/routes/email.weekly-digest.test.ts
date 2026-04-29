@@ -23,7 +23,11 @@ describe("WeeklyDigestEmail", () => {
     });
 
     await sendSiteDigestEmails({
-      domain: "rentail.space",
+      site: {
+        id: "123",
+        domain: "rentail.space",
+        citations: [],
+      },
       queryCoverageRate: { current: 68, previous: 52 },
       byPlatform: {
         chatgpt: {
@@ -88,7 +92,6 @@ describe("WeeklyDigestEmail", () => {
       ],
       score: { current: 72, previous: 64 },
       sendTo: [user],
-      siteId: "123",
       topQueries: [
         {
           query: "How do I find short-term retail space in shopping malls?",

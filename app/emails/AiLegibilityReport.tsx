@@ -1,4 +1,5 @@
 import { ArrowBigUpDashIcon } from "lucide-react";
+import { useMemo } from "react";
 import { Section, Text } from "react-email";
 import { BrandReminderCard } from "~/components/email/BrandReminder";
 import Button from "~/components/email/Button";
@@ -8,6 +9,7 @@ import type { CheckResult, ScanResult } from "~/lib/aiLegibility/types";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
 import scoreColor from "~/lib/scoreColor";
+import type { Prisma } from "~/prisma";
 import { sendEmail } from "./sendEmails";
 
 export default async function sendAiLegibilityReport({
@@ -15,7 +17,12 @@ export default async function sendAiLegibilityReport({
   result,
   sendTo,
 }: {
-  site: { id: string; domain: string };
+  site: Prisma.SiteGetPayload<{
+    select: {
+      domain: true;
+      citations: true;
+    };
+  }>;
   result: ScanResult;
   sendTo: { id: string; email: string; unsubscribed: boolean };
 }) {
@@ -24,29 +31,13 @@ export default async function sendAiLegibilityReport({
     envVars.VITE_APP_URL,
   ).toString();
 
-  const totalPassed =
-    result.summary.discovered.passed +
-    result.summary.trusted.passed +
-    result.summary.welcomed.passed;
-  const totalChecks =
-    result.summary.discovered.total +
-    result.summary.trusted.total +
-    result.summary.welcomed.total;
-
-  const citationCount = await prisma.citation.count({
-    where: { siteId: site.id },
-  });
-
   await sendEmail({
     domain: site.domain,
     email: (
-      <AiLegibilityReport
+      <AiLegibilityReportEmail
         site={site}
         result={result}
         reportUrl={reportURL}
-        totalPassed={totalPassed}
-        totalChecks={totalChecks}
-        citationCount={citationCount}
       />
     ),
     isTransactional: true,
@@ -58,21 +49,34 @@ export default async function sendAiLegibilityReport({
   });
 }
 
-function AiLegibilityReport({
+export function AiLegibilityReportEmail({
   site,
   result,
   reportUrl,
-  totalPassed,
-  totalChecks,
-  citationCount,
 }: {
-  site: { id: string; domain: string };
-  result: ScanResult;
+  site: Prisma.SiteGetPayload<{
+    select: {
+      domain: true;
+      citations: true;
+    };
+  }>;
+  result: ScanResult | string;
   reportUrl: string;
-  totalPassed: number;
-  totalChecks: number;
-  citationCount: number;
 }) {
+  const { checks, summary } =
+    typeof result === "string" ? (JSON.parse(result) as ScanResult) : result;
+  const totalPassed = useMemo(
+    () =>
+      summary.discovered.passed +
+      summary.trusted.passed +
+      summary.welcomed.passed,
+    [summary],
+  );
+  const totalChecks = useMemo(
+    () =>
+      summary.discovered.total + summary.trusted.total + summary.welcomed.total,
+    [summary],
+  );
   const score = Math.round((totalPassed / totalChecks) * 100);
 
   return (
@@ -107,11 +111,11 @@ function AiLegibilityReport({
             className="text-base font-bold tracking-wide uppercase"
             style={{ color: category.emailColor }}
           >
-            {category.title} — {result.summary[category.key].passed}/
-            {result.summary[category.key].total}
+            {category.title} — {summary[category.key].passed}/
+            {summary[category.key].total}
           </Text>
 
-          {result.checks
+          {checks
             .filter((c) => c.category === category.key)
             .map((check) =>
               check.passed ? (
@@ -130,7 +134,7 @@ function AiLegibilityReport({
         </Button>
       </Section>
 
-      <BrandReminderCard domain={site.domain} citations={citationCount} />
+      <BrandReminderCard site={site} />
 
       <Text className="text-text my-4 text-base leading-relaxed">
         Best regards,
