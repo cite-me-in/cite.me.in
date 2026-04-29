@@ -101,7 +101,7 @@ describe("api.admin.users", () => {
 
     it("should return 200", async () => {
       expect(response.status).toBe(200);
-      body = await response.json();
+      body = (await response.json()) as typeof body;
     });
 
     it("should return the seeded user", async () => {

@@ -5,11 +5,16 @@ import type { QueryFn } from "~/lib/llm-visibility/queryFn";
 import { queryPlatform } from "~/lib/llm-visibility/queryPlatform";
 import prisma from "~/lib/prisma.server";
 
-vi.mock("@sentry/node", () => ({ captureException: vi.fn() }));
+vi.mock("@sentry/node", () => ({
+  captureException: vi.fn<() => Promise<void>>(),
+}));
 
 vi.mock("radashi", async (importOriginal) => {
   const original = await importOriginal<typeof import("radashi")>();
-  return { ...original, sleep: vi.fn().mockResolvedValue(undefined) };
+  return {
+    ...original,
+    sleep: vi.fn<() => Promise<void>>().mockResolvedValue(undefined),
+  };
 });
 
 const CITATION_SETS = [
@@ -79,7 +84,7 @@ describe("queryPlatform", () => {
       ...PLATFORM_ARGS,
       site,
       queryFn,
-      log: vi.fn(),
+      log: vi.fn<() => Promise<void>>(),
     });
   });
 

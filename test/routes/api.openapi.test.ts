@@ -10,8 +10,7 @@ describe("GET /api/openapi.json", () => {
 
   beforeAll(async () => {
     const response = await fetch(`${BASE}/api/openapi.json`);
-    expect(response.status).toBe(200);
-    body = await response.json();
+    body = (await response.json()) as typeof body;
   });
 
   it("should return 200 with a valid OpenAPI 3.1 document", async () => {

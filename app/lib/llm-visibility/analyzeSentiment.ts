@@ -121,21 +121,7 @@ Respond with JSON only, no markdown fences:
       .replace(/^```(?:json)?\s*/i, "")
       .replace(/\s*```$/, "")
       .trim();
-    let parsed = JSON.parse(json);
-
-    if (parsed.answer) {
-      if (typeof parsed.answer === "string") {
-        try {
-          parsed = JSON.parse(parsed.answer);
-        } catch {
-          parsed = { label: parsed.answer, summary: parsed.summary ?? "" };
-        }
-      } else {
-        parsed = parsed.answer;
-      }
-    }
-
-    const result = schema.parse(parsed);
+    const result = schema.parse(JSON.parse(json));
     return {
       label: result.label as SentimentLabel,
       summary: result.summary,

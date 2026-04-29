@@ -55,16 +55,16 @@ export default async function checkSitemapXml({
     const elapsed = Date.now() - startTime;
 
     try {
-      const parsed = parser.parse(xml);
+      const parsed = parser.parse(xml) as {
+        urlset: { url: { loc?: string } } | { url: { loc?: string }[] };
+      };
       const urlset = parsed.urlset ?? parsed;
       const urlNodes = Array.isArray(urlset.url)
         ? urlset.url
         : urlset.url
           ? [urlset.url]
           : [];
-      const urls = urlNodes
-        .map((node: { loc?: string }) => node.loc)
-        .filter(Boolean);
+      const urls = urlNodes.map(({ loc }) => loc).filter(Boolean) as string[];
 
       if (urls.length === 0) {
         return {

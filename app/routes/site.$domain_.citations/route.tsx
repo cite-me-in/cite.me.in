@@ -271,7 +271,7 @@ export default function SiteCitationsPage({
         <Tabs
           className="mx-auto"
           defaultValue={platform?.name ?? ""}
-          onValueChange={(platform) => setSearchParams({ platform })}
+          onValueChange={(platform: string) => setSearchParams({ platform })}
         >
           <TabsList>
             {activePlatforms.map((platform) => (

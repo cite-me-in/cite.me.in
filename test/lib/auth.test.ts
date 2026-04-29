@@ -127,7 +127,13 @@ describe("requireUserAccess", () => {
 
   it("should redirect when not authenticated", async () => {
     const request = makeRequest();
-    await expect(requireUserAccess(request)).rejects.toThrow();
+    let caught: unknown;
+    try {
+      await requireUserAccess(request);
+    } catch (e) {
+      caught = e;
+    }
+    expect(caught instanceof Response && caught.status === 302).toBe(true);
   });
 });
 
@@ -184,16 +190,24 @@ describe("requireSiteAccess", () => {
 
   it("should throw 404 for user without access", async () => {
     const request = makeRequest({ cookie: `session=${otherUserToken}` });
-    await expect(requireSiteAccess({ domain, request })).rejects.toSatisfy(
-      (e) => e instanceof Response && e.status === 404,
-    );
+    let caught: unknown;
+    try {
+      await requireSiteAccess({ domain, request });
+    } catch (e) {
+      caught = e;
+    }
+    expect(caught instanceof Response && caught.status === 404).toBe(true);
   });
 
   it("should throw 404 for non-existent site", async () => {
     const request = makeRequest({ cookie: `session=${ownerToken}` });
-    await expect(
-      requireSiteAccess({ domain: "nonexistent.example", request }),
-    ).rejects.toSatisfy((e) => e instanceof Response && e.status === 404);
+    let caught: unknown;
+    try {
+      await requireSiteAccess({ domain: "nonexistent.example", request });
+    } catch (e) {
+      caught = e;
+    }
+    expect(caught instanceof Response && caught.status === 404).toBe(true);
   });
 });
 
@@ -255,8 +269,12 @@ describe("requireSiteOwner", () => {
 
   it("should throw 404 for site user (not owner)", async () => {
     const request = makeRequest({ cookie: `session=${siteUserToken}` });
-    await expect(requireSiteOwner({ domain, request })).rejects.toSatisfy(
-      (e) => e instanceof Response && e.status === 404,
-    );
+    let caught: unknown;
+    try {
+      await requireSiteOwner({ domain, request });
+    } catch (e) {
+      caught = e;
+    }
+    expect(caught instanceof Response && caught.status === 404).toBe(true);
   });
 });

@@ -2,11 +2,19 @@ import { beforeAll, describe, expect, it, vi } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
 
 vi.mock("~/lib/citingPageHealth.server", () => ({
-  default: vi.fn().mockResolvedValue({
-    statusCode: 200,
-    contentHash: "abc123",
-    isHealthy: true,
-  }),
+  default: vi
+    .fn<
+      () => Promise<{
+        statusCode: number;
+        contentHash: string;
+        isHealthy: boolean;
+      }>
+    >()
+    .mockResolvedValue({
+      statusCode: 200,
+      contentHash: "abc123",
+      isHealthy: true,
+    }),
 }));
 
 vi.mock("~/lib/envVars.server", () => ({
@@ -62,8 +70,12 @@ describe("cron.check-citing-pages", () => {
   it("should reject requests without auth", async () => {
     const { loader } = await import("~/routes/cron.check-citing-pages");
     const request = new Request("http://localhost/cron/check-citing-pages");
-    await expect(
-      loader({ request, params: {}, context: {} } as never),
-    ).rejects.toThrow();
+    let caught: unknown;
+    try {
+      await loader({ request, params: {}, context: {} } as never);
+    } catch (e) {
+      caught = e;
+    }
+    expect(caught instanceof Response && caught.status === 401).toBe(true);
   });
 });

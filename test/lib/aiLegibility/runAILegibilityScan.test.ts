@@ -12,27 +12,28 @@ import runAILegibilityScan from "~/lib/aiLegibility/runAILegibilityScan";
 import msw from "~/test/mocks/msw";
 import { failingSite, partialSite, passingSite } from "./fixtures";
 
-const mockAppendLog = vi.fn();
-const mockGetProgress = vi.fn();
+const mockAppendLog = vi.fn<({ line }: { line: string }) => void>();
+const mockGetProgress =
+  vi.fn<() => { lines: never[]; done: boolean; nextOffset: number }>();
 
 vi.mock("~/lib/aiLegibility/progress.server", () => ({
-  appendLog: (...args: unknown[]) => mockAppendLog(...args),
-  getProgress: (...args: unknown[]) => mockGetProgress(...args),
-  setResult: vi.fn(),
-  setStatus: vi.fn(),
-  startNewScan: vi.fn(),
+  appendLog: (line: string) => mockAppendLog({ line }),
+  getProgress: () => mockGetProgress(),
+  setResult: vi.fn<() => void>(),
+  setStatus: vi.fn<() => void>(),
+  startNewScan: vi.fn<() => void>(),
 }));
 
 vi.mock("~/lib/prisma.server", () => ({
   default: {
     aiLegibilityReport: {
-      create: vi.fn(),
+      create: vi.fn<() => void>(),
     },
   },
 }));
 
 vi.mock("~/lib/captureAndLogError.server", () => ({
-  default: vi.fn(),
+  default: vi.fn<() => void>(),
 }));
 
 function setupMswHandlers(

@@ -55,7 +55,7 @@ function schemaData() {
         name: "Assaf Arkin",
         jobTitle: "CEO",
       },
-      email: import.meta.env.VITE_EMAIL_FROM,
+      email: import.meta.env.VITE_EMAIL_FROM as string,
       sameAs: ["https://github.com/cite-me-in/cite.me.in"],
       knowsAbout: [
         "LLM Citation Visibility",

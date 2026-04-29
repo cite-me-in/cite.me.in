@@ -45,8 +45,19 @@ describe("FAQ page", () => {
 
     expect(jsonLdContent).toBeTruthy();
 
-    const structuredData = JSON.parse(jsonLdContent ?? "");
-
+    const structuredData = JSON.parse(jsonLdContent ?? "") as {
+      "@context": string;
+      "@type": string;
+      name: string;
+      mainEntity: {
+        "@type": string;
+        name: string;
+        acceptedAnswer: {
+          "@type": string;
+          text: string;
+        };
+      }[];
+    };
     expect(structuredData["@context"]).toBe("https://schema.org");
     expect(structuredData["@type"]).toBe("FAQPage");
     expect(structuredData.name).toBeTruthy();

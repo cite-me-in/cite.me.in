@@ -15,7 +15,7 @@ import * as webhooks from "~/lib/webhooks.server";
 vi.mock("node:dns", () => ({
   default: {
     promises: {
-      resolve: vi.fn(),
+      resolve: vi.fn<() => Promise<string>>(),
     },
   },
 }));

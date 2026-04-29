@@ -108,7 +108,7 @@ describe("GET /api/site/:domain", () => {
 
     beforeAll(async () => {
       response = await get(`/api/site/${DOMAIN}`, API_KEY);
-      body = await response.json();
+      body = (await response.json()) as typeof body;
     });
 
     it("should return 200", async () => {
@@ -141,7 +141,12 @@ describe("GET /api/site/:domain/metrics", () => {
   it("should return metrics with summary counts", async () => {
     const res = await get(`/api/site/${DOMAIN}/metrics`, API_KEY);
     expect(res.status).toBe(200);
-    const body = await res.json();
+    const body = (await res.json()) as {
+      allCitations: { current: number; previous: number };
+      yourCitations: { current: number; previous: number };
+      visbilityScore: { current: number; previous: number };
+      queryCoverageRate: { current: number; previous: number };
+    };
     expect(body.allCitations.current).toBe(2);
     expect(body.allCitations.previous).toBe(0);
     expect(body.yourCitations.current).toBe(2);
@@ -178,7 +183,7 @@ describe("GET /api/site/:domain/queries", () => {
 
     beforeAll(async () => {
       response = await get(`/api/site/${DOMAIN}/queries`, API_KEY);
-      body = await response.json();
+      body = (await response.json()) as typeof body;
     });
 
     it("should return 200", async () => {

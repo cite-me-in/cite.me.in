@@ -138,7 +138,7 @@ describe("api.track", () => {
         referer: "https://chatgpt.com",
       });
       expect(res.status).toBe(200);
-      const body = await res.json();
+      const body = (await res.json()) as { ok: boolean };
       expect(body.ok).toBe(true);
 
       const record = await prisma.botVisit.findFirst({

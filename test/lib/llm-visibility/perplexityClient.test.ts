@@ -1,6 +1,19 @@
 import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
+import { InsufficientCreditError } from "~/lib/llm-visibility/insufficientCreditError";
 
-const mockCreate = vi.hoisted(() => vi.fn());
+const mockCreate = vi.hoisted(() =>
+  vi.fn<
+    () => Promise<{
+      id: string;
+      server_time: number;
+      results: {
+        title: string;
+        url: string;
+        snippet: string;
+      }[];
+    }>
+  >(),
+);
 
 vi.mock("@perplexity-ai/perplexity_ai", async (importOriginal) => {
   const { APIError: PerplexityAPIError } =
@@ -34,15 +47,11 @@ describe("queryPerplexity", () => {
           title: "Paris - Wikipedia",
           url: "https://example.com/paris",
           snippet: "Paris is the capital of France.",
-          date: "2024-01-15",
-          last_updated: "2024-01-16",
         },
         {
           title: "France Capital",
           url: "https://other.com/france",
           snippet: "The capital city of France is Paris.",
-          date: "2024-01-10",
-          last_updated: "2024-01-11",
         },
       ],
     });
@@ -94,15 +103,11 @@ describe("queryPerplexity", () => {
           title: "Valid Result",
           url: "https://example.com",
           snippet: "Valid snippet",
-          date: "2024-01-15",
-          last_updated: "2024-01-16",
         },
         {
           title: "No URL",
           url: "",
           snippet: "No URL snippet",
-          date: "2024-01-15",
-          last_updated: "2024-01-16",
         },
       ],
     });
@@ -129,15 +134,9 @@ describe("queryPerplexity", () => {
     const { default: queryPerplexity } =
       await import("~/lib/llm-visibility/perplexityClient.server");
 
-    const { isInsufficientCreditError } =
-      await import("~/lib/llm-visibility/insufficientCreditError");
-    try {
-      await queryPerplexity({ maxRetries: 0, timeout: 0, query: "query" });
-      expect.unreachable("Should have thrown");
-    } catch (error) {
-      expect(isInsufficientCreditError(error)).toBe(true);
-      expect(error).toMatchObject({ platform: "perplexity", statusCode: 429 });
-    }
+    await expect(
+      queryPerplexity({ maxRetries: 0, timeout: 0, query: "query" }),
+    ).rejects.toThrow(InsufficientCreditError);
   });
 
   it("should not throw InsufficientCreditError on other errors", async () => {
@@ -150,13 +149,13 @@ describe("queryPerplexity", () => {
     const { default: queryPerplexity } =
       await import("~/lib/llm-visibility/perplexityClient.server");
 
-    const { isInsufficientCreditError } =
-      await import("~/lib/llm-visibility/insufficientCreditError");
+    let caught: unknown;
     try {
       await queryPerplexity({ maxRetries: 0, timeout: 0, query: "query" });
-      expect.unreachable("Should have thrown");
-    } catch (error) {
-      expect(isInsufficientCreditError(error)).toBe(false);
+    } catch (e) {
+      caught = e;
     }
+    expect(caught instanceof InsufficientCreditError).toBe(false);
+    expect(caught).toBeInstanceOf(PerplexityAPIError);
   });
 });

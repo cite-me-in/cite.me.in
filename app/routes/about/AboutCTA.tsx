@@ -24,7 +24,7 @@ export default function AboutCTA() {
           </ActiveLink>
           <MailtoLink
             className="px-8"
-            email={import.meta.env.VITE_EMAIL_FROM}
+            email={import.meta.env.VITE_EMAIL_FROM as string}
             size="xl"
             variant="button"
           >

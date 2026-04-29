@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 
-const mockComplete = vi.fn();
+const mockComplete = vi.fn<
+  (args: { messages: { role: string; content: string }[] }) => Promise<{
+    choices: { message: { content: string } }[];
+  }>
+>();
 
 class RateLimitError extends Error {
   status = 429;

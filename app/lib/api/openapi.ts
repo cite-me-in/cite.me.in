@@ -148,7 +148,7 @@ export function generateOpenApiSpec(): ReturnType<typeof createDocument> {
         import.meta.env.VITE_APP_URL,
       )}) for more information.`,
     },
-    servers: [{ url: import.meta.env.VITE_APP_URL }],
+    servers: [{ url: import.meta.env.VITE_APP_URL as string }],
     components: {
       securitySchemes: {
         BearerAuth: {

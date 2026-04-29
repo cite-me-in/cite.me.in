@@ -18,7 +18,7 @@ export async function action({ request }: Route.ActionArgs) {
   };
 
   try {
-    body = await request.json();
+    body = (await request.json()) as typeof body;
   } catch {
     throw data({ error: "invalid_request" }, { status: 400 });
   }

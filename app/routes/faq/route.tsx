@@ -48,7 +48,7 @@ export default function FAQ() {
           24 hours.
         </p>
         <MailtoLink
-          email={import.meta.env.VITE_EMAIL_FROM}
+          email={import.meta.env.VITE_EMAIL_FROM as string}
           subject="I have questions"
           variant="button"
           bg="yellow"

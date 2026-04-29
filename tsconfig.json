@@ -4,7 +4,7 @@
     "**/.client/**/*",
     "**/.server/**/*",
     "**/*",
-    "test/**/*.ts",
+    "test/**/*",
     "scripts/*.ts"
   ],
   "exclude": [

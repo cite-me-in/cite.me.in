@@ -32,7 +32,7 @@ type CommandGroup = {
 export default function CommandPalette() {
   const data = useRouteLoaderData<typeof rootLoader>("root");
   const user = data?.user ?? null;
-  const sites = data?.sites ?? [];
+  const sites = useMemo(() => data?.sites ?? [], [data?.sites]);
   const isPro = data?.isPro ?? false;
 
   const [open, setOpen] = useState(false);

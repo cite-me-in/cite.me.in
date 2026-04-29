@@ -94,6 +94,7 @@ export default function SignUp({
               <Field data-invalid={!!errors.email}>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
+                  // oxlint-disable-next-line jsx_a11y/no-autofocus
                   autoFocus
                   id="email"
                   name="email"

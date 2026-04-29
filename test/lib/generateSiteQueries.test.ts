@@ -2,7 +2,13 @@ import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
 import type { Site } from "~/prisma";
 
-const mockCreate = vi.hoisted(() => vi.fn());
+const mockCreate = vi.hoisted(() =>
+  vi.fn<
+    () => Promise<{
+      content: { type: string; text: string }[];
+    }>
+  >(),
+);
 
 vi.mock("@anthropic-ai/sdk", () => ({
   Anthropic: class {

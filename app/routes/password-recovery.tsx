@@ -67,6 +67,7 @@ export default function PasswordRecovery({ actionData }: Route.ComponentProps) {
               <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
+                  // oxlint-disable-next-line jsx_a11y/no-autofocus
                   autoFocus
                   id="email"
                   name="email"

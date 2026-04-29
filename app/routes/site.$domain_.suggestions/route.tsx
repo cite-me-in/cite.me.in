@@ -57,10 +57,9 @@ export async function action({ params, request }: Route.ActionArgs) {
       }
 
       case "POST": {
-        const raw = await request.json();
         const queries = z
           .array(z.object({ group: z.string(), query: z.string() }))
-          .parse(raw);
+          .parse(await request.json());
         await addSiteQueries(site, queries);
         return redirect(`/site/${params.domain}/citations`);
       }

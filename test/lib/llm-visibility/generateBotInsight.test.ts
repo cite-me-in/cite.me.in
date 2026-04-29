@@ -1,6 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 
-const mockCreate = vi.fn();
+const mockCreate = vi.fn<
+  (args: { messages: { role: string; content: string }[] }) => Promise<{
+    choices: { message: { content: string } }[];
+  }>
+>();
 
 class MockOpenAI {
   chat = {

@@ -103,7 +103,7 @@ describe("sign-up route", () => {
       expect(new URL(page.url()).pathname).toBe("/sites");
     });
 
-    it("should create account ", async () => {
+    it("should create account", async () => {
       const user = await prisma.user.findUnique({
         where: { email: "brand-new@example.com" },
       });

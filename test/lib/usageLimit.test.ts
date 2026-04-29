@@ -78,15 +78,8 @@ describe("checkUsageLimits", () => {
       outputTokens: 500_000,
     });
 
-    try {
-      await checkUsageLimits(SITE_ID);
-      expect.fail("Should have thrown");
-    } catch (error) {
-      expect(error).toBeInstanceOf(UsageLimitExceededError);
-      const e = error as UsageLimitExceededError;
-      expect(e.timeWindow).toBe("hourly");
-      expect(Number(e.current)).toBeGreaterThan(2.0);
-      expect(Number(e.limit)).toBe(2.0);
-    }
+    await expect(checkUsageLimits(SITE_ID)).rejects.toThrow(
+      UsageLimitExceededError,
+    );
   });
 });

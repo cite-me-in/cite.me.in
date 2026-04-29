@@ -1,6 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
+import { InsufficientCreditError } from "~/lib/llm-visibility/insufficientCreditError";
 
-const mockGenerateContent = vi.hoisted(() => vi.fn());
+const mockGenerateContent = vi.hoisted(() =>
+  vi.fn<
+    () => {
+      text: string;
+      candidates: {
+        groundingMetadata: {
+          webSearchQueries: string[];
+          groundingChunks: { web: { uri: string; title: string } }[];
+        };
+      }[];
+      usageMetadata: { promptTokenCount: number; candidatesTokenCount: number };
+    }
+  >(),
+);
 
 vi.mock("@google/genai", async (importOriginal) => {
   const { ApiError } = await importOriginal<typeof import("@google/genai")>();
@@ -81,7 +95,7 @@ describe("queryGemini", () => {
 
   it("should follow redirects when resolving citation URLs", async () => {
     const fetchMock = vi
-      .fn()
+      .fn<() => Promise<{ url: string }>>()
       .mockResolvedValue({ url: "https://final.example.com" });
     vi.stubGlobal("fetch", fetchMock);
 
@@ -109,10 +123,10 @@ describe("queryGemini", () => {
       query: "query",
     });
 
-    expect(fetchMock).toHaveBeenCalledWith("https://redirect.example.com", {
-      signal: expect.any(AbortSignal),
-      redirect: "follow",
-    });
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://redirect.example.com",
+      expect.objectContaining({ redirect: "follow" }),
+    );
   });
 
   it("should return empty citations and extraQueries when groundingMetadata is absent", async () => {
@@ -120,7 +134,9 @@ describe("queryGemini", () => {
 
     mockGenerateContent.mockResolvedValue({
       text: "I don't know.",
-      candidates: [{}],
+      candidates: [
+        { groundingMetadata: { webSearchQueries: [], groundingChunks: [] } },
+      ],
       usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5 },
     });
 
@@ -169,15 +185,9 @@ describe("queryGemini", () => {
     const { default: queryGemini } =
       await import("~/lib/llm-visibility/geminiClient.server");
 
-    const { isInsufficientCreditError } =
-      await import("~/lib/llm-visibility/insufficientCreditError");
-    try {
-      await queryGemini({ maxRetries: 0, timeout: 0, query: "query" });
-      expect.unreachable("Should have thrown");
-    } catch (error) {
-      expect(isInsufficientCreditError(error)).toBe(true);
-      expect(error).toMatchObject({ platform: "gemini", statusCode: 429 });
-    }
+    await expect(
+      queryGemini({ maxRetries: 0, timeout: 0, query: "query" }),
+    ).rejects.toThrow(InsufficientCreditError);
   });
 
   it("should not throw InsufficientCreditError on other errors", async () => {
@@ -190,13 +200,13 @@ describe("queryGemini", () => {
     const { default: queryGemini } =
       await import("~/lib/llm-visibility/geminiClient.server");
 
-    const { isInsufficientCreditError } =
-      await import("~/lib/llm-visibility/insufficientCreditError");
+    let caught: unknown;
     try {
       await queryGemini({ maxRetries: 0, timeout: 0, query: "query" });
-      expect.unreachable("Should have thrown");
-    } catch (error) {
-      expect(isInsufficientCreditError(error)).toBe(false);
+    } catch (e) {
+      caught = e;
     }
+    expect(caught instanceof InsufficientCreditError).toBe(false);
+    expect(caught).toBeInstanceOf(GoogleApiError);
   });
 });

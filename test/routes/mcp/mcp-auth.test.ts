@@ -69,7 +69,11 @@ describe("MCP Authorization Flow", () => {
       );
 
       expect(res.ok).toBe(true);
-      const data = await res.json();
+      const data = (await res.json()) as {
+        resource: string;
+        authorization_servers: string[];
+        scopes_supported: string[];
+      };
       expect(data.resource).toBeDefined();
       expect(data.authorization_servers).toBeDefined();
       expect(Array.isArray(data.authorization_servers)).toBe(true);
@@ -82,7 +86,14 @@ describe("MCP Authorization Flow", () => {
       );
 
       expect(res.ok).toBe(true);
-      const data = await res.json();
+      const data = (await res.json()) as {
+        issuer: string;
+        authorization_endpoint: string;
+        token_endpoint: string;
+        registration_endpoint: string;
+        response_types_supported: string[];
+        code_challenge_methods_supported: string[];
+      };
       expect(data.issuer).toBeDefined();
       expect(data.authorization_endpoint).toBeDefined();
       expect(data.token_endpoint).toBeDefined();
@@ -108,7 +119,13 @@ describe("MCP Authorization Flow", () => {
       });
 
       expect(res.status).toBe(201);
-      const data = await res.json();
+      const data = (await res.json()) as {
+        client_id: string;
+        client_name: string;
+        redirect_uris: string[];
+        token_endpoint_auth_method: string;
+        client_secret: string;
+      };
       expect(data.client_id).toBeDefined();
       expect(data.client_name).toBe("Test MCP Client");
       expect(data.redirect_uris).toContain("http://localhost:3000/callback");
@@ -131,7 +148,10 @@ describe("MCP Authorization Flow", () => {
       });
 
       expect(res.status).toBe(201);
-      const data = await res.json();
+      const data = (await res.json()) as {
+        client_id: string;
+        client_secret: string;
+      };
       expect(data.client_id).toBeDefined();
       expect(data.client_secret).toBeDefined();
     });
@@ -148,7 +168,7 @@ describe("MCP Authorization Flow", () => {
       });
 
       expect(res.status).toBe(400);
-      const data = await res.json();
+      const data = (await res.json()) as { error: string };
       expect(data.error).toBe("invalid_redirect_uri");
     });
   });
@@ -170,7 +190,7 @@ describe("MCP Authorization Flow", () => {
           scope: "mcp:tools",
         }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as { client_id: string };
       clientId = data.client_id;
     });
 
@@ -234,7 +254,12 @@ describe("MCP Authorization Flow", () => {
       });
 
       expect(tokenRes.ok).toBe(true);
-      const tokens = await tokenRes.json();
+      const tokens = (await tokenRes.json()) as {
+        access_token: string;
+        refresh_token: string;
+        token_type: string;
+        expires_in: number;
+      };
       expect(tokens.access_token).toBeDefined();
       expect(tokens.refresh_token).toBeDefined();
       expect(tokens.token_type).toBe("Bearer");
@@ -303,7 +328,10 @@ describe("MCP Authorization Flow", () => {
       });
 
       expect(tokenRes.status).toBe(400);
-      const data = await tokenRes.json();
+      const data = (await tokenRes.json()) as {
+        error: string;
+        error_description: string;
+      };
       expect(data.error).toBe("invalid_grant");
       expect(data.error_description).toContain("PKCE");
     });
@@ -325,7 +353,7 @@ describe("MCP Authorization Flow", () => {
           scope: "mcp:tools",
         }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as { client_id: string };
       clientId = data.client_id;
 
       const pkce = generatePKCE();
@@ -365,7 +393,7 @@ describe("MCP Authorization Flow", () => {
         }),
       });
 
-      const tokens = await tokenRes.json();
+      const tokens = (await tokenRes.json()) as { refresh_token: string };
       refreshToken = tokens.refresh_token;
     });
 
@@ -381,7 +409,11 @@ describe("MCP Authorization Flow", () => {
       });
 
       expect(tokenRes.ok).toBe(true);
-      const tokens = await tokenRes.json();
+      const tokens = (await tokenRes.json()) as {
+        access_token: string;
+        refresh_token: string;
+        token_type: string;
+      };
       expect(tokens.access_token).toBeDefined();
       expect(tokens.refresh_token).toBeDefined();
       expect(tokens.token_type).toBe("Bearer");
@@ -399,7 +431,7 @@ describe("MCP Authorization Flow", () => {
       });
 
       expect(tokenRes.status).toBe(400);
-      const data = await tokenRes.json();
+      const data = (await tokenRes.json()) as { error: string };
       expect(data.error).toBe("invalid_grant");
     });
   });
@@ -418,7 +450,7 @@ describe("MCP Authorization Flow", () => {
           scope: "mcp:tools",
         }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as { client_id: string };
       const clientId = data.client_id;
 
       const pkce = generatePKCE();
@@ -458,7 +490,7 @@ describe("MCP Authorization Flow", () => {
         }),
       });
 
-      const tokens = await tokenRes.json();
+      const tokens = (await tokenRes.json()) as { access_token: string };
       accessToken = tokens.access_token;
     });
 
@@ -483,7 +515,9 @@ describe("MCP Authorization Flow", () => {
       });
 
       expect(res.ok).toBe(true);
-      const data = await res.json();
+      const data = (await res.json()) as {
+        result: { protocolVersion: string };
+      };
       expect(data.result).toBeDefined();
       expect(data.result.protocolVersion).toBe("2024-11-05");
     });
@@ -548,7 +582,7 @@ describe("MCP Authorization Flow", () => {
       });
 
       expect(res2.ok).toBe(true);
-      const data = await res2.json();
+      const data = (await res2.json()) as { result: { tools: string[] } };
       expect(data.result).toBeDefined();
       expect(data.result.tools).toBeDefined();
     });
@@ -570,7 +604,7 @@ describe("MCP Authorization Flow", () => {
           scope: "mcp:tools",
         }),
       });
-      const data = await res.json();
+      const data = (await res.json()) as { client_id: string };
       const clientId = data.client_id;
 
       const pkce = generatePKCE();
@@ -610,7 +644,7 @@ describe("MCP Authorization Flow", () => {
         }),
       });
 
-      const tokens = await tokenRes.json();
+      const tokens = (await tokenRes.json()) as { access_token: string };
       accessToken = tokens.access_token;
     });
 

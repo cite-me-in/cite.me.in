@@ -9,9 +9,9 @@ import {
 } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
 
-const mockQueryPlatform = vi.fn();
-const mockGenerateBotInsight = vi.fn();
-const mockUpsertCitingPages = vi.fn();
+const mockQueryPlatform = vi.fn<() => void>();
+const mockGenerateBotInsight = vi.fn<() => Promise<string>>();
+const mockUpsertCitingPages = vi.fn<() => void>();
 
 vi.mock("~/lib/llm-visibility/queryPlatform", () => ({
   queryPlatform: mockQueryPlatform,
@@ -26,7 +26,7 @@ vi.mock("~/lib/llm-visibility/upsertCitingPages", () => ({
 }));
 
 vi.mock("~/lib/captureAndLogError.server", () => ({
-  default: vi.fn(),
+  default: vi.fn<() => void>(),
 }));
 
 const fixedNow = new Date("2024-03-15T12:00:00Z");
@@ -116,7 +116,9 @@ describe("prepareSites", () => {
 
   beforeEach(async () => {
     mockQueryPlatform.mockReset().mockResolvedValue(undefined);
-    mockGenerateBotInsight.mockReset().mockResolvedValue("test insight");
+    mockGenerateBotInsight
+      .mockReset()
+      .mockResolvedValue("Test bot insight content");
     mockUpsertCitingPages.mockReset().mockResolvedValue(undefined);
 
     await prisma.botVisit.deleteMany();
@@ -137,7 +139,7 @@ describe("prepareSites", () => {
       });
 
       const prepareSites = (await import("~/lib/prepareSites.server")).default;
-      const result = await prepareSites({ log: vi.fn() });
+      const result = await prepareSites({ log: vi.fn<() => void>() });
 
       expect(result).toHaveLength(1);
       expect(result[0].domain).toBe("paid-null.com");
@@ -153,7 +155,7 @@ describe("prepareSites", () => {
       });
 
       const prepareSites = (await import("~/lib/prepareSites.server")).default;
-      const result = await prepareSites({ log: vi.fn() });
+      const result = await prepareSites({ log: vi.fn<() => void>() });
 
       expect(result).toHaveLength(1);
       expect(result[0].domain).toBe("paid-old.com");
@@ -169,7 +171,7 @@ describe("prepareSites", () => {
       });
 
       const prepareSites = (await import("~/lib/prepareSites.server")).default;
-      const result = await prepareSites({ log: vi.fn() });
+      const result = await prepareSites({ log: vi.fn<() => void>() });
 
       expect(result).toHaveLength(0);
     });
@@ -183,7 +185,7 @@ describe("prepareSites", () => {
       });
 
       const prepareSites = (await import("~/lib/prepareSites.server")).default;
-      const result = await prepareSites({ log: vi.fn() });
+      const result = await prepareSites({ log: vi.fn<() => void>() });
 
       expect(result).toHaveLength(1);
       expect(result[0].domain).toBe("gratis-null.com");
@@ -202,7 +204,7 @@ describe("prepareSites", () => {
       });
 
       const prepareSites = (await import("~/lib/prepareSites.server")).default;
-      const result = await prepareSites({ log: vi.fn() });
+      const result = await prepareSites({ log: vi.fn<() => void>() });
 
       expect(result).toHaveLength(1);
       expect(result[0].domain).toBe("trial-new.com");
@@ -222,7 +224,7 @@ describe("prepareSites", () => {
       });
 
       const prepareSites = (await import("~/lib/prepareSites.server")).default;
-      const result = await prepareSites({ log: vi.fn() });
+      const result = await prepareSites({ log: vi.fn<() => void>() });
 
       expect(result).toHaveLength(1);
       expect(result[0].domain).toBe("trial-old.com");
@@ -241,7 +243,7 @@ describe("prepareSites", () => {
       });
 
       const prepareSites = (await import("~/lib/prepareSites.server")).default;
-      const result = await prepareSites({ log: vi.fn() });
+      const result = await prepareSites({ log: vi.fn<() => void>() });
 
       expect(result).toHaveLength(0);
     });
@@ -260,7 +262,7 @@ describe("prepareSites", () => {
       });
 
       const prepareSites = (await import("~/lib/prepareSites.server")).default;
-      const result = await prepareSites({ log: vi.fn() });
+      const result = await prepareSites({ log: vi.fn<() => void>() });
 
       expect(result).toHaveLength(0);
     });
@@ -274,7 +276,7 @@ describe("prepareSites", () => {
       });
 
       const prepareSites = (await import("~/lib/prepareSites.server")).default;
-      const result = await prepareSites({ log: vi.fn() });
+      const result = await prepareSites({ log: vi.fn<() => void>() });
 
       expect(result).toHaveLength(0);
     });
@@ -298,7 +300,10 @@ describe("prepareSites", () => {
       });
 
       const prepareSites = (await import("~/lib/prepareSites.server")).default;
-      const result = await prepareSites({ log: vi.fn(), maxSites: 2 });
+      const result = await prepareSites({
+        log: vi.fn<() => void>(),
+        maxSites: 2,
+      });
 
       expect(result).toHaveLength(2);
     });
@@ -318,7 +323,7 @@ describe("prepareSites", () => {
 
       const prepareSites = (await import("~/lib/prepareSites.server")).default;
       const result = await prepareSites({
-        log: vi.fn(),
+        log: vi.fn<() => void>(),
         domain: "filter-b.com",
       });
 
@@ -342,7 +347,7 @@ describe("prepareSites", () => {
       });
 
       const prepareSites = (await import("~/lib/prepareSites.server")).default;
-      await prepareSites({ log: vi.fn() });
+      await prepareSites({ log: vi.fn<() => void>() });
 
       expect(mockQueryPlatform).toHaveBeenCalled();
     });
@@ -365,7 +370,7 @@ describe("prepareSites", () => {
       mockGenerateBotInsight.mockResolvedValueOnce("Test bot insight content");
 
       const prepareSites = (await import("~/lib/prepareSites.server")).default;
-      await prepareSites({ log: vi.fn() });
+      await prepareSites({ log: vi.fn<() => void>() });
 
       expect(mockGenerateBotInsight).toHaveBeenCalledWith(
         "process2.com",
@@ -389,7 +394,7 @@ describe("prepareSites", () => {
       });
 
       const prepareSites = (await import("~/lib/prepareSites.server")).default;
-      await prepareSites({ log: vi.fn() });
+      await prepareSites({ log: vi.fn<() => void>() });
 
       const updated = await prisma.site.findUnique({
         where: { id: site.id },
@@ -412,7 +417,7 @@ describe("prepareSites", () => {
       });
 
       const prepareSites = (await import("~/lib/prepareSites.server")).default;
-      const result = await prepareSites({ log: vi.fn() });
+      const result = await prepareSites({ log: vi.fn<() => void>() });
 
       expect(result).toHaveLength(2);
       expect(mockUpsertCitingPages).toHaveBeenCalledTimes(2);
@@ -428,7 +433,7 @@ describe("prepareSites", () => {
       });
 
       const prepareSites = (await import("~/lib/prepareSites.server")).default;
-      const result = await prepareSites({ log: vi.fn() });
+      const result = await prepareSites({ log: vi.fn<() => void>() });
 
       expect(result[0]).toHaveProperty("id");
       expect(result[0]).toHaveProperty("domain");

@@ -53,6 +53,7 @@ export default function AddSiteForm({
               <div className="flex justify-between gap-4">
                 <Input
                   aria-label="Website URL or domain"
+                  // oxlint-disable-next-line jsx_a11y/no-autofocus
                   autoFocus
                   id="url"
                   name="url"

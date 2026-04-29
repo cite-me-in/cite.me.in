@@ -49,8 +49,9 @@ Retrieve your API key from your [profile page](/profile).`);
     const queryTable = queryParamsTable(params);
     if (queryTable) parts.push(queryTable);
 
-    const okResponse = op.responses?.["200"];
-    const schema = okResponse?.content?.["application/json"]?.schema;
+    const okResponse = op.responses?.["200"] as ZodOpenApiResponseObject;
+    const schema = okResponse?.content?.["application/json"]
+      ?.schema as ZodOpenApiSchemaObject;
     if (schema) {
       parts.push("#### Response: 200");
       parts.push(responseTable(schema));

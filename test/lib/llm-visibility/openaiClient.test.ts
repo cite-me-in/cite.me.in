@@ -1,6 +1,26 @@
 import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
-const mockCreate = vi.hoisted(() => vi.fn());
+const mockCreate = vi.hoisted(() =>
+  vi.fn<
+    () => Promise<{
+      output: {
+        type: string;
+        content: {
+          type: "output_text";
+          text: string;
+          annotations: (
+            | { type: "url_citation"; url: string }
+            | { type: "other"; id: string }
+          )[];
+        }[];
+      }[];
+      usage: {
+        input_tokens: number;
+        output_tokens: number;
+      };
+    }>
+  >(),
+);
 
 vi.mock("openai", async (importOriginal) => {
   const { APIError } = await importOriginal<typeof import("openai")>();

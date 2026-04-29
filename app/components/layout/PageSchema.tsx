@@ -1,7 +1,7 @@
 import prices from "~/data/stripe-prices.json";
 
-const siteUrl = import.meta.env.VITE_APP_URL;
-const siteEmail = import.meta.env.VITE_EMAIL_FROM;
+const siteURL = import.meta.env.VITE_APP_URL as string;
+const siteEmail = import.meta.env.VITE_EMAIL_FROM as string;
 
 export default function PageSchema() {
   return (
@@ -16,7 +16,7 @@ export default function PageSchema() {
               "Monitor whether your brand gets cited when people ask AI questions.",
             applicationCategory: "BusinessApplication",
             operatingSystem: "Web",
-            url: siteUrl,
+            url: siteURL,
             offers: {
               "@type": "Offer",
               price: prices.monthlyAmount,
@@ -28,9 +28,9 @@ export default function PageSchema() {
             name: "Cite.me.in",
             description: "Monitor AI citation visibility for your brand.",
             email: siteEmail,
-            url: siteUrl,
-            logo: new URL("/icon-192.png", siteUrl).toString(),
-            image: new URL("/images/og-image.png", siteUrl).toString(),
+            url: siteURL,
+            logo: new URL("/icon-192.png", siteURL).toString(),
+            image: new URL("/images/og-image.png", siteURL).toString(),
             contactPoint: {
               "@type": "ContactPoint",
               email: siteEmail,
@@ -39,22 +39,22 @@ export default function PageSchema() {
             slogan: "Monitor AI citation visibility for your brand.",
           },
           {
-            "@id": siteUrl,
+            "@id": siteURL,
             "@type": "WebSite",
             name: "Cite.me.in",
             description: "Monitor AI citation visibility for your brand.",
             inLanguage: "en",
-            url: siteUrl,
+            url: siteURL,
             keywords:
               "AI citation visibility, AI citation monitoring, AI citation tracking, AI citation analysis, AI citation optimization, AI citation improvement",
           },
           {
-            "@id": new URL("/images/og-image.png", siteUrl).toString(),
+            "@id": new URL("/images/og-image.png", siteURL).toString(),
             "@type": "ImageObject",
             name: "Cite.me.in OG Image",
             caption: "Monitor AI citation visibility for your brand.",
-            contentUrl: new URL("/images/og-image.png", siteUrl).toString(),
-            url: new URL("/images/og-image.png", siteUrl).toString(),
+            contentUrl: new URL("/images/og-image.png", siteURL).toString(),
+            url: new URL("/images/og-image.png", siteURL).toString(),
             height: 1024,
             width: 1024,
           },

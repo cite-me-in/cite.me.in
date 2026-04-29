@@ -66,7 +66,7 @@ export default function PageFooter() {
             ))}
             {column.title === "Resources" && (
               <MailtoLink
-                email={import.meta.env.VITE_EMAIL_FROM}
+                email={import.meta.env.VITE_EMAIL_FROM as string}
                 variant="footer"
                 aria-label="Contact us by email"
               >

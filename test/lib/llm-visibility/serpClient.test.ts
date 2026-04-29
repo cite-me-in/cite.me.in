@@ -1,5 +1,6 @@
 import { HttpResponse, http } from "msw";
 import { afterEach, describe, expect, it } from "vite-plus/test";
+import { InsufficientCreditError } from "~/lib/llm-visibility/insufficientCreditError";
 import fetchSERPResults from "~/lib/llm-visibility/serpApi.server";
 import msw from "~/test/mocks/msw";
 
@@ -80,18 +81,15 @@ describe.each(["google", "bing"] as const)(
         ),
       );
 
-      const { isInsufficientCreditError } =
-        await import("~/lib/llm-visibility/insufficientCreditError");
+      let caught: unknown;
       try {
-        await fetchSERPResults({
-          query: "query",
-          engine,
-          timeout: 5000,
-        });
-        expect.unreachable("Should have thrown");
-      } catch (error) {
-        expect(isInsufficientCreditError(error)).toBe(true);
+        await fetchSERPResults({ query: "query", engine, timeout: 5000 });
+      } catch (e) {
+        caught = e;
       }
+      expect(caught instanceof InsufficientCreditError).toBe(true);
+      expect((caught as InsufficientCreditError).platform).toBe(engine);
+      expect((caught as InsufficientCreditError).statusCode).toBe(429);
     });
 
     it("should throw InsufficientCreditError on 402 response for copilot", async () => {
@@ -101,19 +99,13 @@ describe.each(["google", "bing"] as const)(
         ),
       );
 
-      const { isInsufficientCreditError } =
-        await import("~/lib/llm-visibility/insufficientCreditError");
-      try {
-        await fetchSERPResults({
+      await expect(
+        fetchSERPResults({
           query: "query",
           engine: "bing_copilot",
           timeout: 5000,
-        });
-        expect.unreachable("Should have thrown");
-      } catch (error) {
-        expect(isInsufficientCreditError(error)).toBe(true);
-        expect(error).toMatchObject({ platform: "copilot" });
-      }
+        }),
+      ).rejects.toThrow(new InsufficientCreditError("copilot", 402));
     });
 
     it("should throw when the API response is not ok", async () => {

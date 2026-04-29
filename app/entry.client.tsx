@@ -6,7 +6,7 @@ import { HydratedRouter } from "react-router/dom";
 // Only enable Sentry in production
 if (import.meta.env.PROD) {
   Sentry.init({
-    dsn: import.meta.env.VITE_SENTRY_DSN,
+    dsn: import.meta.env.VITE_SENTRY_DSN as string,
     enableLogs: true,
     environment: "production",
     integrations: [

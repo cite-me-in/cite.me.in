@@ -39,7 +39,7 @@ export default async function checkJsonLd({
     if (!jsonContent) continue;
 
     try {
-      const parsed = JSON.parse(jsonContent);
+      const parsed = JSON.parse(jsonContent) as Record<string, unknown>;
       const nodes = flattenNodes(parsed);
 
       for (const node of nodes) {

@@ -33,8 +33,16 @@ const logtail =
 const isColorEnabled = !process.env.NO_COLOR;
 
 for (const level of ["debug", "error", "info", "log", "trace", "warn"]) {
-  const sentryFunction = Reflect.get(sentry, level);
-  const logtailFunction = logtail && Reflect.get(logtail, level);
+  const sentryFunction = Reflect.get(sentry, level) as (
+    message: string,
+    ...metadata: unknown[]
+  ) => void;
+  const logtailFunction =
+    logtail &&
+    (Reflect.get(logtail, level) as (
+      message: string,
+      ...metadata: unknown[]
+    ) => Promise<void>);
   const colorCode = colors[level as keyof typeof colors];
 
   Reflect.set(console, level, (message: string, ...metadata: unknown[]) => {

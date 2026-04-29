@@ -41,7 +41,7 @@ export async function action({ request }: { request: Request }) {
 
   let parsed: unknown;
   try {
-    parsed = await request.json();
+    parsed = (await request.json()) as z.infer<typeof TrackSchema>;
   } catch (error) {
     logger(
       "api.track: invalid JSON",

@@ -155,7 +155,10 @@ function extractArticleBody(html: string): string | null {
     match = scriptRegex.exec(html);
     if (match === null) break;
     try {
-      const ld = JSON.parse(match[1]) as Record<string, unknown>;
+      const ld = JSON.parse(match[1]) as {
+        "@type": string | string[];
+        articleBody?: string;
+      };
       // Check if ld is an Article or NewsArticle or BlogPosting per schema.org
       const type =
         typeof ld["@type"] === "string"
@@ -171,7 +174,7 @@ function extractArticleBody(html: string): string | null {
       ) {
         continue; // skip if not an Article type
       }
-      const articleBody = ld.articleBody as string | undefined;
+      const articleBody = ld.articleBody;
       if (articleBody && articleBody.length > 50) return articleBody;
     } catch {
       // malformed JSON-LD — try next

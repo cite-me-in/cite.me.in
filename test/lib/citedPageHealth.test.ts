@@ -11,7 +11,9 @@ describe("checkCitingPageHealth", () => {
       "fetch",
       vi.fn().mockResolvedValue({
         status: 200,
-        text: vi.fn().mockResolvedValue("<html>content</html>"),
+        text: vi
+          .fn<() => Promise<string>>()
+          .mockResolvedValue("<html>content</html>"),
       }),
     );
 
@@ -26,7 +28,7 @@ describe("checkCitingPageHealth", () => {
       "fetch",
       vi.fn().mockResolvedValue({
         status: 404,
-        text: vi.fn().mockResolvedValue("Not found"),
+        text: vi.fn<() => Promise<string>>().mockResolvedValue("Not found"),
       }),
     );
 

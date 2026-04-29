@@ -71,7 +71,7 @@ describe("GET /api/me", () => {
 
     beforeAll(async () => {
       response = await get("/api/me", API_KEY);
-      body = await response.json();
+      body = (await response.json()) as typeof body;
     });
 
     it("should return 200", async () => {

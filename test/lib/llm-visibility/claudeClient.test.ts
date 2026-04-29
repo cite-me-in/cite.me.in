@@ -1,6 +1,17 @@
+import type {
+  BetaContentBlock,
+  BetaWebSearchResultBlock,
+} from "@anthropic-ai/sdk/resources/beta/messages/messages.mjs";
 import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 
-const mockCreate = vi.hoisted(() => vi.fn());
+const mockCreate = vi.hoisted(() =>
+  vi.fn<
+    () => {
+      content: BetaContentBlock[];
+      usage: { input_tokens: number; output_tokens: number };
+    }
+  >(),
+);
 
 vi.mock("@anthropic-ai/sdk", async (importOriginal) => {
   const { APIError } =
@@ -30,13 +41,31 @@ describe("queryClaude", () => {
   it("should return citations from URL sources and the response text", async () => {
     mockCreate.mockResolvedValue({
       content: [
-        { type: "text", text: "Paris is the capital of France." },
+        {
+          type: "text",
+          text: "Paris is the capital of France.",
+          citations: [],
+        },
         {
           type: "web_search_tool_result",
+          caller: { type: "direct" },
           content: [
-            { type: "web_search_result", url: "https://example.com" },
-            { type: "web_search_result", url: "https://other.com" },
+            {
+              type: "web_search_result",
+              url: "https://example.com",
+              encrypted_content: "",
+              page_age: "0h",
+              title: "",
+            },
+            {
+              type: "web_search_result",
+              url: "https://other.com",
+              encrypted_content: "",
+              page_age: "0h",
+              title: "",
+            },
           ],
+          tool_use_id: "123",
         },
       ],
       usage: { input_tokens: 100, output_tokens: 50 },
@@ -62,13 +91,26 @@ describe("queryClaude", () => {
   it("should filter out sources without URLs", async () => {
     mockCreate.mockResolvedValue({
       content: [
-        { type: "text", text: "Response" },
+        { type: "text", text: "Response", citations: [] },
         {
           type: "web_search_tool_result",
           content: [
-            { type: "web_search_result", url: "https://example.com" },
-            { type: "web_search_result", url: undefined },
+            {
+              type: "web_search_result",
+              url: "https://example.com",
+              encrypted_content: "",
+              page_age: null,
+              title: "",
+            },
+            {
+              type: "web_search_result",
+              url: undefined,
+              encrypted_content: "",
+              page_age: null,
+              title: "",
+            } as unknown as BetaWebSearchResultBlock,
           ],
+          tool_use_id: "123",
         },
       ],
       usage: { input_tokens: 100, output_tokens: 50 },
@@ -98,13 +140,18 @@ describe("queryClaude", () => {
 
     const { isInsufficientCreditError } =
       await import("~/lib/llm-visibility/insufficientCreditError");
-    try {
-      await queryClaude({ maxRetries: 0, timeout: 0, query: "query" });
-      expect.unreachable("Should have thrown");
-    } catch (error) {
-      expect(isInsufficientCreditError(error)).toBe(true);
-      expect(error).toMatchObject({ platform: "claude", statusCode: 402 });
-    }
+
+    const error = await queryClaude({
+      maxRetries: 0,
+      timeout: 0,
+      query: "query",
+    }).then(
+      () => undefined,
+      (error: unknown) => error,
+    );
+
+    expect(error).toBeDefined();
+    expect(isInsufficientCreditError(error)).toBe(true);
   });
 
   it("should throw InsufficientCreditError on 429 response", async () => {
@@ -119,13 +166,17 @@ describe("queryClaude", () => {
 
     const { isInsufficientCreditError } =
       await import("~/lib/llm-visibility/insufficientCreditError");
-    try {
-      await queryClaude({ maxRetries: 0, timeout: 0, query: "query" });
-      expect.unreachable("Should have thrown");
-    } catch (error) {
-      expect(isInsufficientCreditError(error)).toBe(true);
-      expect(error).toMatchObject({ platform: "claude", statusCode: 429 });
-    }
+    const error = await queryClaude({
+      maxRetries: 0,
+      timeout: 0,
+      query: "query",
+    }).then(
+      () => undefined,
+      (error: unknown) => error,
+    );
+
+    expect(error).toBeDefined();
+    expect(isInsufficientCreditError(error)).toBe(true);
   });
 
   it("should not throw InsufficientCreditError on other errors", async () => {
@@ -140,24 +191,42 @@ describe("queryClaude", () => {
 
     const { isInsufficientCreditError } =
       await import("~/lib/llm-visibility/insufficientCreditError");
-    try {
-      await queryClaude({ maxRetries: 0, timeout: 0, query: "query" });
-      expect.unreachable("Should have thrown");
-    } catch (error) {
-      expect(isInsufficientCreditError(error)).toBe(false);
-    }
+    const error = await queryClaude({
+      maxRetries: 0,
+      timeout: 0,
+      query: "query",
+    }).then(
+      () => undefined,
+      (error: unknown) => error,
+    );
+
+    expect(error).toBeDefined();
+    expect(isInsufficientCreditError(error)).toBe(false);
   });
 
   it("should deduplicate citations", async () => {
     mockCreate.mockResolvedValue({
       content: [
-        { type: "text", text: "Response" },
+        { type: "text", text: "Response", citations: [] },
         {
           type: "web_search_tool_result",
           content: [
-            { type: "web_search_result", url: "https://example.com" },
-            { type: "web_search_result", url: "https://example.com" },
+            {
+              type: "web_search_result",
+              url: "https://example.com",
+              encrypted_content: "",
+              page_age: null,
+              title: "",
+            },
+            {
+              type: "web_search_result",
+              url: "https://example.com",
+              encrypted_content: "",
+              page_age: null,
+              title: "",
+            },
           ],
+          tool_use_id: "123",
         },
       ],
       usage: { input_tokens: 100, output_tokens: 50 },

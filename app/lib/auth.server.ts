@@ -39,7 +39,14 @@ export async function createSession(
   request: Request,
 ): Promise<string> {
   const cookieHeader = request.headers.get("Cookie");
-  const utm = await utmCookie.parse(cookieHeader);
+  const utm = (await utmCookie.parse(cookieHeader)) as {
+    referer?: string;
+    utmSource?: string;
+    utmMedium?: string;
+    utmCampaign?: string;
+    utmTerm?: string;
+    utmContent?: string;
+  };
 
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
@@ -102,7 +109,7 @@ export async function requireUserAccess(request: Request): Promise<{
   siteUsers: { site: { id: string; domain: string; summary: string } }[];
 }> {
   const cookieHeader = request.headers.get("Cookie");
-  const token = await sessionCookie.parse(cookieHeader);
+  const token = (await sessionCookie.parse(cookieHeader)) as string;
   if (token) {
     const session = await prisma.session.findUnique({
       where: { token },

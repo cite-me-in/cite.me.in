@@ -37,23 +37,36 @@ describe("requireAdmin", () => {
   });
 
   it("should throw 401 when no Authorization header", async () => {
-    const err = await requireAdmin(makeRequest()).catch((e) => e);
-    expect(err).toBeInstanceOf(Response);
-    expect((err as Response).status).toBe(401);
+    let caught: unknown;
+    try {
+      await requireAdmin(makeRequest());
+    } catch (e) {
+      caught = e;
+    }
+    expect(caught instanceof Response && caught.status === 401).toBe(true);
   });
 
   it("should throw 403 when user is not an admin", async () => {
-    // Use the non-admin user seeded in verifySiteAccess describe
     const nonAdminKey = `cite.me.in_${userId}_testabcdefghijklmnop`;
-    const err = await requireAdmin(makeRequest(nonAdminKey)).catch((e) => e);
-    expect(err).toBeInstanceOf(Response);
-    expect((err as Response).status).toBe(403);
+    let caught: unknown;
+    try {
+      await requireAdmin(makeRequest(nonAdminKey));
+    } catch (e) {
+      caught = e;
+    }
+    expect(caught instanceof Response && caught.status === 403).toBe(true);
   });
 
-  it("should throw 404 when token is unknown", async () => {
-    await expect(
-      requireAdmin(makeRequest("cite.me.in_nonexistent-user_wrongsecret")),
-    ).rejects.toThrow(Response);
+  it("should throw 403 when token is unknown", async () => {
+    let caught: unknown;
+    try {
+      await requireAdmin(
+        makeRequest("cite.me.in_nonexistent-user_wrongsecret"),
+      );
+    } catch (e) {
+      caught = e;
+    }
+    expect(caught instanceof Response && caught.status === 403).toBe(true);
   });
 });
 
@@ -134,22 +147,34 @@ describe("verifyUserAccess", () => {
   });
 
   it("should throw 401 when no Authorization header", async () => {
-    const err = await verifyUserAccess(makeRequest()).catch((e) => e);
-    expect(err).toBeInstanceOf(Response);
-    expect((err as Response).status).toBe(401);
+    let caught: unknown;
+    try {
+      await verifyUserAccess(makeRequest());
+    } catch (e) {
+      caught = e;
+    }
+    expect(caught instanceof Response && caught.status === 401).toBe(true);
   });
 
   it("should throw 404 Response when token is unknown", async () => {
-    await expect(
-      verifyUserAccess(makeRequest(`cite.me.in_${userId}_wrongsecret`)),
-    ).rejects.toThrow(Response);
+    let caught: unknown;
+    try {
+      await verifyUserAccess(makeRequest(`cite.me.in_${userId}_wrongsecret`));
+    } catch (e) {
+      caught = e;
+    }
+    expect(caught instanceof Response && caught.status === 403).toBe(true);
   });
 
   it("should throw 404 when userId in token doesn't exist", async () => {
-    await expect(
-      verifyUserAccess(
+    let caught: unknown;
+    try {
+      await verifyUserAccess(
         makeRequest("cite.me.in_nonexistent-user-id_testabcdef"),
-      ),
-    ).rejects.toThrow(Response);
+      );
+    } catch (e) {
+      caught = e;
+    }
+    expect(caught instanceof Response && caught.status === 403).toBe(true);
   });
 });

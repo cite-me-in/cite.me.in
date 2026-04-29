@@ -1,4 +1,5 @@
 import { expect } from "@playwright/test";
+import type { InputJsonObject } from "@prisma/client/runtime/client";
 import { beforeAll, describe, it } from "vite-plus/test";
 import sendAiLegibilityReport from "~/emails/AiLegibilityReport";
 import { appendLog, startNewScan } from "~/lib/aiLegibility/progress.server";
@@ -165,7 +166,7 @@ describe("ai-legibility page - with report", () => {
         id: "test-report-id",
         siteId: site.id,
         userId: user.id,
-        result: JSON.parse(JSON.stringify(SCAN_RESULT)),
+        result: SCAN_RESULT as InputJsonObject,
       },
     });
 
@@ -209,7 +210,7 @@ describe("ai-legibility page - with report", () => {
     });
   });
 
-  it.only("should share score as a downloadable PNG", async () => {
+  it("should share score as a downloadable PNG", async () => {
     await expect(reportPage).toMatchDownload({
       name: "ai-legibility/share-image",
       trigger: reportPage.getByRole("button", { name: /share/i }).first(),
@@ -352,7 +353,7 @@ describe("ai-legibility page - accordion and flip card", () => {
         id: "test-report-detail-id",
         siteId: site.id,
         userId: user.id,
-        result: JSON.parse(JSON.stringify(CHECK_WITH_DETAIL)),
+        result: CHECK_WITH_DETAIL as InputJsonObject,
       },
     });
 
@@ -429,33 +430,30 @@ describe("ai-legibility page - improve score modal", () => {
         id: "test-report-modal-id",
         siteId: site.id,
         userId: user.id,
-        result: JSON.parse(
-          JSON.stringify({
-            url: "https://modal-example.com",
-            scannedAt: "2026-04-19T10:00:00.000Z",
-            checks: [
-              {
-                name: "robots.txt",
-                category: "discovered",
-                passed: false,
-                message: "robots.txt blocks AI crawlers",
-                detail: {
-                  goal: "Allow AI crawlers to access your site",
-                  issue: "AI agents respect robots.txt directives",
-                  howToImplement:
-                    "Add Allow rules for known AI bot user-agents",
-                  effort: "2 min",
-                  resourceLinks: [],
-                },
+        result: {
+          url: "https://modal-example.com",
+          scannedAt: "2026-04-19T10:00:00.000Z",
+          checks: [
+            {
+              name: "robots.txt",
+              category: "discovered",
+              passed: false,
+              message: "robots.txt blocks AI crawlers",
+              detail: {
+                goal: "Allow AI crawlers to access your site",
+                issue: "AI agents respect robots.txt directives",
+                howToImplement: "Add Allow rules for known AI bot user-agents",
+                effort: "2 min",
+                resourceLinks: [],
               },
-            ],
-            summary: {
-              discovered: { passed: 0, total: 1 },
-              trusted: { passed: 0, total: 0 },
-              welcomed: { passed: 0, total: 0 },
             },
-          }),
-        ),
+          ],
+          summary: {
+            discovered: { passed: 0, total: 1 },
+            trusted: { passed: 0, total: 0 },
+            welcomed: { passed: 0, total: 0 },
+          },
+        },
       },
     });
 

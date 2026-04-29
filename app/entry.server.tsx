@@ -9,6 +9,7 @@ import type {
 } from "react-router";
 import "~/lib/logger.server";
 import captureAndLogError from "./lib/captureAndLogError.server";
+import envVars from "./lib/envVars.server";
 import { trackVisits } from "./lib/trackVisits.server";
 
 switch (process.env.NODE_ENV) {
@@ -17,7 +18,7 @@ switch (process.env.NODE_ENV) {
     initLogger({ projectName: "cite.me.in" });
 
     Sentry.init({
-      dsn: import.meta.env.VITE_SENTRY_DSN,
+      dsn: envVars.VITE_SENTRY_DSN,
       enableLogs: true,
       environment: "production",
       integrations: [

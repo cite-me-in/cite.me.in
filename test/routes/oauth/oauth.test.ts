@@ -46,7 +46,13 @@ describe("OAuth Routes", () => {
       );
 
       expect(res.ok).toBe(true);
-      const data = await res.json();
+      const data = (await res.json()) as {
+        device_code: string;
+        user_code: string;
+        verification_uri: string;
+        expires_in: number;
+        interval: number;
+      };
       expect(data.device_code).toBeDefined();
       expect(data.user_code).toBeDefined();
       expect(data.verification_uri).toBeDefined();
@@ -85,7 +91,9 @@ describe("OAuth Routes", () => {
         },
       );
 
-      const { device_code } = await startRes.json();
+      const { device_code } = (await startRes.json()) as {
+        device_code: string;
+      };
 
       const tokenRes = await fetch(
         `http://localhost:${port}/oauth/device/token`,
@@ -102,7 +110,7 @@ describe("OAuth Routes", () => {
       );
 
       expect(tokenRes.status).toBe(400);
-      const data = await tokenRes.json();
+      const data = (await tokenRes.json()) as { error: string };
       expect(data.error).toBe("authorization_pending");
     });
 
@@ -120,7 +128,9 @@ describe("OAuth Routes", () => {
         },
       );
 
-      const { device_code } = await startRes.json();
+      const { device_code } = (await startRes.json()) as {
+        device_code: string;
+      };
 
       await prisma.oAuthDeviceCode.updateMany({
         where: { code: device_code },
@@ -142,7 +152,12 @@ describe("OAuth Routes", () => {
       );
 
       expect(tokenRes.ok).toBe(true);
-      const data = await tokenRes.json();
+      const data = (await tokenRes.json()) as {
+        access_token: string;
+        refresh_token: string;
+        token_type: string;
+        expires_in: number;
+      };
       expect(data.access_token).toBeDefined();
       expect(data.refresh_token).toBeDefined();
       expect(data.token_type).toBe("Bearer");
@@ -201,7 +216,10 @@ describe("OAuth Routes", () => {
       });
 
       expect(res.ok).toBe(true);
-      const data = await res.json();
+      const data = (await res.json()) as {
+        access_token: string;
+        refresh_token: string;
+      };
       expect(data.access_token).toBeDefined();
       expect(data.refresh_token).toBeDefined();
     });
@@ -242,7 +260,9 @@ describe("OAuth Routes", () => {
       });
 
       expect(res.ok).toBe(true);
-      const data = await res.json();
+      const data = (await res.json()) as {
+        access_token: string;
+      };
       expect(data.access_token).toBeDefined();
       expect(data.access_token).not.toBe(accessToken);
     });
