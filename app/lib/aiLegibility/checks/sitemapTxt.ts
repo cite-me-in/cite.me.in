@@ -28,6 +28,22 @@ export default async function checkSitemapTxt({
       };
     }
 
+    const contentType = response.headers.get("content-type") ?? "";
+    if (!contentType.startsWith("text/plain")) {
+      return {
+        name: "sitemap.txt",
+        category: "discovered",
+        passed: false,
+        message: `sitemap.txt has incorrect MIME type: ${contentType}`,
+        details: {
+          contentType,
+          url: sitemapUrl,
+          expected: "text/plain",
+        },
+        urls: [],
+      };
+    }
+
     const content = await response.text();
     const lines = content.split("\n").filter((line) => line.trim());
     const urls: string[] = [];

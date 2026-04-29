@@ -74,6 +74,15 @@ Disallow: /private/
 Sitemap: https://acme.com/sitemap.xml
 `;
 
+export const ROBOTS_TXT_WITH_SIGNAL = `User-agent: *
+Disallow: /admin/
+Disallow: /private/
+
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+Sitemap: https://acme.com/sitemap.xml
+`;
+
 export const ROBOTS_EMPTY = "";
 
 export const ROBOTS_TXT_BLOCKS_AI = `User-agent: *
@@ -230,11 +239,10 @@ export function passingSite(): Record<
       body: HOMEPAGE_WITH_CONTENT,
       contentType: "text/plain",
       headers: {
-        "Content-Signature": "sig123",
         Link: '</sitemap.xml>; rel="sitemap"',
       },
     },
-    "https://acme.com/robots.txt": text(ROBOTS_TXT, "text/plain"),
+    "https://acme.com/robots.txt": text(ROBOTS_TXT_WITH_SIGNAL, "text/plain"),
     "https://acme.com/sitemap.txt": text(SITEMAP_TXT, "text/plain"),
     "https://acme.com/sitemap.xml": text(SITEMAP_XML, "application/xml"),
     "https://acme.com/llms.txt": text(LLMS_TXT, "text/plain"),

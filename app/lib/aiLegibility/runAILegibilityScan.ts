@@ -151,7 +151,7 @@ async function runScanSteps({
   checks.push(markdownResult);
   await log(`${markdownResult.passed ? "✓" : "✗"} ${markdownResult.message}`);
 
-  await log("Checking Content Signals...");
+  await log("Checking Content-Signal in robots.txt...");
   const contentSignalsResult = await checkContentSignals({ url });
   checks.push(contentSignalsResult);
   await log(

@@ -79,7 +79,7 @@ const CATEGORIES: Category[] = [
       },
       {
         name: "Content Signals",
-        desc: "Content-Signature header for content provenance verification",
+        desc: "Content-Signal declaration in robots.txt for content usage permissions",
       },
     ],
   },

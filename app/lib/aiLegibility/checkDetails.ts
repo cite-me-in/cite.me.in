@@ -338,22 +338,34 @@ const checkDetails: Record<string, CheckDetail> = {
     ],
   },
   "Content Signals": {
-    goal: "Provide a Content-Signature header so AI agents can verify your content is authentic and unmodified",
+    goal: "Declare a Content-Signal in your robots.txt so AI agents know whether they can use your content",
     issue:
-      "Without a Content-Signature header, AI agents have no cryptographic proof that your content is authentic. This can reduce trust in your citations compared to sites that provide content provenance signals.",
+      "Without a Content-Signal directive in robots.txt, AI agents have no signal about whether they may collect, process, or train on your content. Adding one gives you control and clarity.",
     howToImplement:
-      "Generate a Content-Signature header using the emerging standard (see Cloudflare Content Signals). This provides cryptographic verification that your content hasn't been tampered with, increasing trust with AI agents that check for it.",
-    effort: "1 hour",
+      "Add a `Content-Signal` directive to your robots.txt file. The directive can appear as a comment or as a field following the pattern: Content-Signal: search=yes, ai-input=yes, ai-train=no. Each key controls a different use: search (indexing for search results), ai-input (real-time AI retrieval/grounding), and ai-train (model training).",
+    fixExample:
+      "# robots.txt\n\nUser-agent: *\nAllow: /\n\n# Declare content usage signals:\nContent-Signal: search=yes, ai-input=yes, ai-train=no\n\nSitemap: https://example.com/sitemap.xml",
+    effort: "5 min",
     resourceLinks: [
       {
-        label: "Cloudflare Content Signals",
-        url: "https://blog.cloudflare.com/content-signals/",
+        label: "About Content-Signal",
+        url: "https://www.content-signature.org/",
       },
     ],
     auditSteps: [
       {
-        label: "Check Content-Signature header",
-        value: "HEAD / — look for Content-Signature response header",
+        label: "Fetch /robots.txt",
+        value: "GET /robots.txt and read the full content",
+      },
+      {
+        label: "Search for Content-Signal",
+        value:
+          "Look for 'Content-Signal:' lines (as directives or in comments)",
+      },
+      {
+        label: "Parse values",
+        value:
+          "Check for search, ai-input, and ai-train keys with yes/no values",
       },
     ],
   },

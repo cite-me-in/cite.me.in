@@ -143,7 +143,9 @@ function CheckSummary({
         <DetailBlock term="Goal">{check.detail.goal}</DetailBlock>
       )}
 
-      <DetailBlock term="Issue">{check.message}</DetailBlock>
+      <DetailBlock term="Issue" bold>
+        {check.message}
+      </DetailBlock>
 
       {check.detail && (
         <DetailBlock term="How to implement">
@@ -228,13 +230,29 @@ function CheckSummary({
   );
 }
 
-function DetailBlock({ term, children }: { term: string; children: string }) {
+function DetailBlock({
+  term,
+  children,
+  bold,
+}: {
+  term: string;
+  children: string;
+  bold?: boolean;
+}) {
   return (
     <div>
       <h4 className="text-foreground/70 mb-1 text-base font-semibold">
         {term}
       </h4>
-      <p className="text-foreground/80 text-base">{children}</p>
+      <p
+        className={
+          bold
+            ? "text-foreground/80 text-base font-bold"
+            : "text-foreground/80 text-base"
+        }
+      >
+        {children}
+      </p>
     </div>
   );
 }
