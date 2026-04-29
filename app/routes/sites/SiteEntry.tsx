@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { Streamdown } from "streamdown";
 import { twMerge } from "tailwind-merge";
 import { ActiveLink } from "~/components/ui/ActiveLink";
+import scoreColor from "~/lib/scoreColor";
 import type { Site } from "~/prisma";
 
 export default function SiteEntry({
@@ -89,16 +90,13 @@ function Metric({
   suffix?: string;
   highlightScore?: boolean;
 }) {
-  const scoreColor = highlightScore ? getScoreColor(value) : null;
+  const scoreColorValue = highlightScore ? scoreColor(value) : null;
   return (
     <div className={`metric-${label.toLowerCase().replace(" ", "-")}`}>
       <div className="font-light whitespace-nowrap">{label}</div>
       <div
-        className={twMerge(
-          "font-bold text-3xl tabular-nums",
-          scoreColor === "green" && "text-green-600",
-          scoreColor === "red" && "text-red-600",
-        )}
+        className="text-3xl font-bold tabular-nums"
+        style={scoreColorValue ? { color: scoreColorValue } : undefined}
       >
         {value.toLocaleString()}
         {suffix}
@@ -114,12 +112,6 @@ function Metric({
       </div>
     </div>
   );
-}
-
-function getScoreColor(score: number): "green" | "gray" | "red" {
-  if (score >= 70) return "green";
-  if (score >= 30) return "gray";
-  return "red";
 }
 
 function Delta({

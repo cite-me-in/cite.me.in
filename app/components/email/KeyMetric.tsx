@@ -1,5 +1,6 @@
 import { Column, Row, Section, Text } from "react-email";
 import { twMerge } from "tailwind-merge";
+import scoreColor from "~/lib/scoreColor";
 
 type KeyMetric =
   | {
@@ -46,12 +47,12 @@ export default function KeyMetrics({ metrics }: { metrics: KeyMetric[] }) {
                   {metric.label}
                 </Text>
                 <Text
-                  className={twMerge(
-                    "font-bold text-2xl tabular-nums",
+                  className="text-2xl font-bold tabular-nums"
+                  style={
                     metric.highlightScore
-                      ? getScoreColor(Number(metric.current))
-                      : "text-dark",
-                  )}
+                      ? { color: scoreColor(Number(metric.current)) }
+                      : undefined
+                  }
                 >
                   {metric.current.toLocaleString()}
                 </Text>
@@ -99,10 +100,4 @@ function pctDeltaColor(current: number, previous: number): string {
   if (current > previous) return "text-green-500";
   if (current < previous) return "text-red-500";
   return "text-gray-500";
-}
-
-function getScoreColor(score: number): string {
-  if (score >= 70) return "text-green-600";
-  if (score >= 30) return "text-gray-600";
-  return "text-red-600";
 }

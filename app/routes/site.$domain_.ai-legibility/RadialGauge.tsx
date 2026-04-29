@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import CATEGORIES from "~/lib/aiLegibility/criteria";
 import type { ScanResult } from "~/lib/aiLegibility/types";
+import scoreColor from "~/lib/scoreColor";
 
 const GAP = 8;
 
@@ -74,8 +75,7 @@ export default function RadialGauge({
   const x1 = cx - radius;
   const x2 = cx + radius;
   const pct = overallPct * 100;
-  const overallColor =
-    pct >= 66 ? "#16a34a" : pct >= 36 ? "#eab308" : "#dc2626";
+  const overallColor = scoreColor(pct);
   const numTop = cy - radius / 2 - 18 + 18;
   const arcPath = `M ${x1} ${cy} A ${radius} ${radius} 0 0 1 ${x2} ${cy}`;
 

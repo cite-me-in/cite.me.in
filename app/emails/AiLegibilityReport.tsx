@@ -7,6 +7,7 @@ import CATEGORIES from "~/lib/aiLegibility/criteria";
 import type { CheckResult, ScanResult } from "~/lib/aiLegibility/types";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
+import scoreColor from "~/lib/scoreColor";
 import { sendEmail } from "./sendEmails";
 
 export default async function sendAiLegibilityReport({
@@ -55,17 +56,6 @@ export default async function sendAiLegibilityReport({
   await prisma.sentEmail.create({
     data: { user: { connect: { id: sendTo.id } }, type: "AiLegibilityReport" },
   });
-}
-
-const SCORE_COLORS = [
-  { max: 35, color: "#dc2626" },
-  { max: 65, color: "#eab308" },
-  { max: 100, color: "#16a34a" },
-];
-
-function scoreColor(score: number) {
-  for (const { max, color } of SCORE_COLORS) if (score <= max) return color;
-  return "#16a34a";
 }
 
 function AiLegibilityReport({
