@@ -1,5 +1,5 @@
 import { ms } from "convert";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useInterval } from "usehooks-ts";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
@@ -14,37 +14,38 @@ export default function Scanning({ domain }: { domain: string }) {
   const offsetRef = useRef(0);
   const logRef = useRef<HTMLPreElement>(null);
 
-  useInterval(
-    async () => {
-      try {
-        const res = await fetch(
-          `/site/${domain}/ai-legibility/status?offset=${offsetRef.current}`,
-        );
-        const data = (await res.json()) as {
-          lines: string[];
-          done: boolean;
-          nextOffset: number;
-          result?: ScanResult;
-        };
-        if (data.lines.length > 0) {
-          setLines((prev) => [...prev, ...data.lines]);
-          offsetRef.current = data.nextOffset;
-        }
-        if (data.done && !done) {
-          setDone(true);
-          setTimeout(() => navigate("."), 1000);
-        }
-      } catch {}
-    },
-    done ? null : ms("1s"),
-  );
+  const handlePoll = useCallback(async () => {
+    try {
+      const res = await fetch(
+        `/site/${domain}/ai-legibility/status?offset=${offsetRef.current}`,
+      );
+      const data = (await res.json()) as {
+        lines: string[];
+        done: boolean;
+        nextOffset: number;
+        result?: ScanResult;
+      };
+      if (data.lines.length > 0) {
+        setLines((prev) => [...prev, ...data.lines]);
+        offsetRef.current = data.nextOffset;
+      }
+      if (data.done && !done) {
+        setDone(true);
+        setTimeout(() => navigate("."), 1000);
+      }
+    } catch (error) {
+      console.error("[Scanning] Poll error:", error);
+    }
+  }, [domain, done, navigate]);
+
+  useInterval(handlePoll, done ? null : ms("1s"));
 
   useEffect(() => {
     logRef.current?.scrollTo({
       top: logRef.current.scrollHeight,
       behavior: "smooth",
     });
-  });
+  }, [lines]);
 
   return (
     <Card>

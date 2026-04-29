@@ -12,6 +12,7 @@ import {
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
 import { getProgress } from "~/lib/aiLegibility/progress.server";
+import { ScanResultSchema } from "~/lib/aiLegibility/scanResultSchema";
 import type { ScanResult } from "~/lib/aiLegibility/types";
 import { requireSiteAccess } from "~/lib/auth.server";
 import { formatDateMed } from "~/lib/formatDate";
@@ -38,21 +39,30 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     orderBy: { createdAt: "desc" },
   });
 
+  let reportData: {
+    id: string;
+    result: ScanResult;
+    scannedAt: string;
+  } | null = null;
+  if (report) {
+    const parsed = ScanResultSchema.parse(
+      typeof report.result === "string"
+        ? JSON.parse(report.result)
+        : report.result,
+    );
+    reportData = {
+      id: report.id,
+      result: parsed,
+      scannedAt: report.scannedAt.toISOString(),
+    };
+  }
+
   const progress = await getProgress({ offset: 0, domain: site.domain });
   const isRunning = progress && !progress.done;
 
   return {
     site,
-    report: report
-      ? {
-          id: report.id,
-          result:
-            typeof report.result === "string"
-              ? (JSON.parse(report.result) as ScanResult)
-              : (report.result as ScanResult),
-          scannedAt: report.scannedAt.toISOString(),
-        }
-      : null,
+    report: reportData,
     isRunning,
     scannedAt: report?.scannedAt.toISOString(),
   };

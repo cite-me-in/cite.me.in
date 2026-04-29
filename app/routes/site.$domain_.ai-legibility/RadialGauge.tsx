@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import CATEGORIES from "~/lib/aiLegibility/criteria";
+import type { ScanResult } from "~/lib/aiLegibility/types";
 
 const GAP = 8;
 
@@ -7,10 +8,7 @@ export default function RadialGauge({
   summary,
   size = 200,
 }: {
-  summary: Record<
-    "discovered" | "trusted" | "welcomed",
-    { passed: number; total: number }
-  >;
+  summary: ScanResult["summary"];
   size?: number;
 }) {
   const totalPassed = Object.values(summary).reduce((a, c) => a + c.passed, 0);

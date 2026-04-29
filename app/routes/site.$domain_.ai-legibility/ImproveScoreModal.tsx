@@ -9,24 +9,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/Dialog";
+import buildPrompt from "~/lib/aiLegibility/buildPrompt";
 import type { CheckResult } from "~/lib/aiLegibility/types";
-
-function buildPrompt(check: CheckResult) {
-  if (!check.detail) return "";
-  const docs = check.detail.resourceLinks.map((l) => l.url).join(", ");
-  const parts = [
-    `Goal: ${check.detail.goal}`,
-    `Issue: ${check.message}`,
-    `Fix: ${check.detail.howToImplement}`,
-  ];
-  if (check.detail.skillURL) {
-    parts.push(`Skill: ${check.detail.skillURL}`);
-  }
-  if (docs) {
-    parts.push(`Docs: ${docs}`);
-  }
-  return parts.join("\n\n");
-}
 
 export default function ImproveScoreModal({
   failedChecks,

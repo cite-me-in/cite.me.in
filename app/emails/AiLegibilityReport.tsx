@@ -32,6 +32,10 @@ export default async function sendAiLegibilityReport({
     result.summary.trusted.total +
     result.summary.welcomed.total;
 
+  const citationCount = await prisma.citation.count({
+    where: { siteId: site.id },
+  });
+
   await sendEmail({
     domain: site.domain,
     email: (
@@ -41,6 +45,7 @@ export default async function sendAiLegibilityReport({
         reportUrl={reportURL}
         totalPassed={totalPassed}
         totalChecks={totalChecks}
+        citationCount={citationCount}
       />
     ),
     isTransactional: true,
@@ -69,12 +74,14 @@ function AiLegibilityReport({
   reportUrl,
   totalPassed,
   totalChecks,
+  citationCount,
 }: {
   site: { id: string; domain: string };
   result: ScanResult;
   reportUrl: string;
   totalPassed: number;
   totalChecks: number;
+  citationCount: number;
 }) {
   const score = Math.round((totalPassed / totalChecks) * 100);
 
@@ -133,7 +140,7 @@ function AiLegibilityReport({
         </Button>
       </Section>
 
-      <BrandReminderCard domain={site.domain} citations={totalPassed} />
+      <BrandReminderCard domain={site.domain} citations={citationCount} />
 
       <Text className="text-text my-4 text-base leading-relaxed">
         Best regards,

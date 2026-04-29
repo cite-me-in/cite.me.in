@@ -9,6 +9,7 @@ import {
 } from "~/components/ui/Accordion";
 import { Badge } from "~/components/ui/Badge";
 import { Button } from "~/components/ui/Button";
+import buildPrompt from "~/lib/aiLegibility/buildPrompt";
 import CATEGORIES from "~/lib/aiLegibility/criteria";
 import type { CheckResult } from "~/lib/aiLegibility/types";
 
@@ -202,19 +203,4 @@ function DetailBlock({
       </p>
     </div>
   );
-}
-
-function buildPrompt(check: CheckResult) {
-  if (!check.detail) return "";
-  const docs = check.detail.resourceLinks.map((l) => l.url).join(", ");
-  const parts = [
-    `Goal: ${check.detail.goal}`,
-    `Issue: ${check.message}`,
-    `Fix: ${check.detail.howToImplement}`,
-  ];
-  if (check.detail.fixExample)
-    parts.push(`Example:\n\`\`\`\n${check.detail.fixExample}\n\`\`\``);
-  if (check.detail.skillURL) parts.push(`Skill: ${check.detail.skillURL}`);
-  if (docs) parts.push(`Docs: ${docs}`);
-  return parts.join("\n\n");
 }

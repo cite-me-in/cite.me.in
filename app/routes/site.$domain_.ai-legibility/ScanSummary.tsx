@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "~/components/ui/Card";
 import CATEGORIES from "~/lib/aiLegibility/criteria";
-import type { CheckResult } from "~/lib/aiLegibility/types";
+import type { CheckResult, ScanResult } from "~/lib/aiLegibility/types";
 import ImproveScoreModal from "~/routes/site.$domain_.ai-legibility/ImproveScoreModal";
 import RadialGauge from "~/routes/site.$domain_.ai-legibility/RadialGauge";
 
@@ -22,11 +22,7 @@ export default function ScanSummary({
 }: {
   checks: CheckResult[];
   domain: string;
-  summary: {
-    discovered: { passed: number; total: number };
-    trusted: { passed: number; total: number };
-    welcomed: { passed: number; total: number };
-  };
+  summary: ScanResult["summary"];
 }) {
   const scoreCardRef = useRef<HTMLDivElement>(null);
 

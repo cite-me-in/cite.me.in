@@ -2,6 +2,7 @@ import { toPng } from "html-to-image";
 import { Loader2Icon, Share2Icon } from "lucide-react";
 import { useState } from "react";
 import { Button, type ButtonProps } from "~/components/ui/Button";
+import base64ToBlob from "~/lib/base64ToBlob";
 
 export default function ShareButton({
   scoreCardRef,
@@ -34,7 +35,7 @@ export default function ShareButton({
                 node.dataset.slot === "card-footer"
               ),
           });
-          const blob = await (await fetch(dataUrl)).blob();
+          const blob = base64ToBlob(dataUrl);
           const file = new File([blob], "ai-legibility-score.png", {
             type: "image/png",
           });
