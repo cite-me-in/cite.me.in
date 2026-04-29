@@ -56,15 +56,15 @@ function setupMswHandlers(
       ];
     }
     return [
-      http.get(url, ({ request }) => {
-        return HttpResponse.text(response.body, {
+      http.get(url, () =>
+        HttpResponse.text(response.body, {
           status,
           headers: {
             "Content-Type": response.contentType ?? "text/html",
             ...extra,
           },
-        });
-      }),
+        }),
+      ),
       http.head(
         url,
         () =>
@@ -261,7 +261,9 @@ describe("runScan", () => {
     expect(
       logs.some((l) => l.includes("Checking markdown content negotiation")),
     ).toBe(true);
-    expect(logs.some((l) => l.includes("Checking Content-Signal in robots.txt"))).toBe(true);
+    expect(
+      logs.some((l) => l.includes("Checking Content-Signal in robots.txt")),
+    ).toBe(true);
     expect(logs.some((l) => l.includes("Discovered:"))).toBe(true);
     expect(logs.some((l) => l.includes("Trusted:"))).toBe(true);
     expect(logs.some((l) => l.includes("Welcomed:"))).toBe(true);

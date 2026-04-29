@@ -59,12 +59,12 @@ const SCAN_RESULT: ScanResult = {
         goal: "Provide an llms.txt file for AI context",
         issue: "Without llms.txt, LLMs lack structured guidance",
         howToImplement: "Create /llms.txt at your site root",
-        fixExample: "# Example Site\n> Description\n\n## Pages\n- [Home](https://example.com/)",
+        fixExample:
+          "# Example Site\n> Description\n\n## Pages\n- [Home](https://example.com/)",
         effort: "15 min",
         resourceLinks: [
           { label: "llms.txt spec", url: "https://llmstxt.org/" },
         ],
-        auditSteps: [],
       },
     },
   ],
@@ -309,14 +309,6 @@ describe("ai-legibility page - accordion and flip card", () => {
               url: "https://developers.google.com/search/docs/crawling-indexing/robots/intro",
             },
           ],
-          auditSteps: [
-            { label: "Fetch /robots.txt", value: "GET /robots.txt" },
-            {
-              label: "Parse user-agent groups",
-              value: "Identify each User-agent block",
-            },
-            { label: "Check AI bot rules", value: "Look for Disallow: /" },
-          ],
         },
       },
     ],
@@ -374,9 +366,7 @@ describe("ai-legibility page - accordion and flip card", () => {
   });
 
   it("should show Issue section in expanded check", async () => {
-    await expect(
-      page.getByText("robots.txt blocks AI crawlers"),
-    ).toBeVisible();
+    await expect(page.getByText("robots.txt blocks AI crawlers")).toBeVisible();
   });
 
   it("should show How to implement section", async () => {
@@ -386,9 +376,7 @@ describe("ai-legibility page - accordion and flip card", () => {
   });
 
   it("should show Example code block", async () => {
-    await expect(
-      page.getByText("User-agent: GPTBot"),
-    ).toBeVisible();
+    await expect(page.getByText("User-agent: GPTBot")).toBeVisible();
   });
 
   it("should show Copy prompt button in expanded check", async () => {
@@ -396,7 +384,6 @@ describe("ai-legibility page - accordion and flip card", () => {
       page.getByRole("button", { name: /copy prompt/i }),
     ).toBeVisible();
   });
-
 
   it("should match visually - accordion open on failed check", async () => {
     await page.waitForTimeout(600);
@@ -451,9 +438,6 @@ describe("ai-legibility page - improve score modal", () => {
                     "Add Allow rules for known AI bot user-agents",
                   effort: "2 min",
                   resourceLinks: [],
-                  auditSteps: [
-                    { label: "Fetch /robots.txt", value: "GET /robots.txt" },
-                  ],
                 },
               },
             ],
