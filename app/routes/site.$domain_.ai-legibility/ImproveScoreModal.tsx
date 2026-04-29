@@ -48,7 +48,7 @@ export default function ImproveScoreModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
-        <Button variant="default" size={size}>
+        <Button variant="default" size={size} render={<div />}>
           <ArrowBigUpDashIcon className="size-4" />
           Improve your score
         </Button>

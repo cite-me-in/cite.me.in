@@ -1,6 +1,5 @@
 import { useRef } from "react";
 import { twMerge } from "tailwind-merge";
-import ImproveScoreModal from "~/components/ImproveScoreModal";
 import ShareButton from "~/components/ShareButton";
 import { Badge } from "~/components/ui/Badge";
 import {
@@ -13,6 +12,7 @@ import {
 } from "~/components/ui/Card";
 import CATEGORIES from "~/lib/aiLegibility/criteria";
 import type { CheckResult } from "~/lib/aiLegibility/types";
+import ImproveScoreModal from "~/routes/site.$domain_.ai-legibility/ImproveScoreModal";
 import RadialGauge from "~/routes/site.$domain_.ai-legibility/RadialGauge";
 
 export default function ScanSummary({
