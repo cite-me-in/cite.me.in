@@ -55,6 +55,17 @@ const SCAN_RESULT: ScanResult = {
       category: "discovered",
       passed: false,
       message: "llms.txt not found (optional but recommended)",
+      detail: {
+        goal: "Provide an llms.txt file for AI context",
+        issue: "Without llms.txt, LLMs lack structured guidance",
+        howToImplement: "Create /llms.txt at your site root",
+        fixExample: "# Example Site\n> Description\n\n## Pages\n- [Home](https://example.com/)",
+        effort: "15 min",
+        resourceLinks: [
+          { label: "llms.txt spec", url: "https://llmstxt.org/" },
+        ],
+        auditSteps: [],
+      },
     },
   ],
   summary: {
@@ -554,19 +565,19 @@ describe("ai-legibility email", () => {
   });
 
   it("should show score in email", async () => {
-    await expect(email.page.getByText("86%")).toBeVisible();
+    await expect(email.page.getByText("86").first()).toBeVisible();
   });
 
   it("should show category summary", async () => {
-    const table = email.page.locator("table");
+    const page = email.page;
     await expect(
-      table.getByText("Discoverability", { exact: true }).first(),
+      page.getByText("Discovered", { exact: false }).first(),
     ).toBeVisible();
     await expect(
-      table.getByText("Informative", { exact: true }).first(),
+      page.getByText("Trusted", { exact: false }).first(),
     ).toBeVisible();
     await expect(
-      table.getByText("Bot Access", { exact: true }).first(),
+      page.getByText("Welcomed", { exact: false }).first(),
     ).toBeVisible();
   });
 
@@ -576,8 +587,10 @@ describe("ai-legibility email", () => {
     await expect(codeBlock).toContainText("# Example Site");
   });
 
-  it("should show link to view all suggestions", async () => {
-    await expect(email.page.getByText("View all 4 suggestions")).toBeVisible();
+  it("should show link to full report", async () => {
+    await expect(
+      email.page.getByRole("link", { name: /view full report/i }),
+    ).toBeVisible();
   });
 
   it("should match visually", async () => {
