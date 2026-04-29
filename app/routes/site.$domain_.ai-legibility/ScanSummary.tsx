@@ -61,9 +61,9 @@ export default function ScanSummary({
         <RadialGauge summary={summary} />
         <div className="flex justify-center gap-6">
           {CATEGORIES.map((category) => {
-            const s = summary[category.key];
+            const checks = summary[category.key];
             return (
-              s && (
+              checks && (
                 <button
                   key={category.key}
                   onClick={() => handleCategoryClick(category.key)}
@@ -75,14 +75,14 @@ export default function ScanSummary({
                     {category.title}
                   </div>
                   <div className="text-foreground/50 text-xl">
-                    {s.passed}/{s.total}
+                    {checks.passed}/{checks.total}
                   </div>
                 </button>
               )
             );
           })}
         </div>
-        <p className="text-foreground/50 text-base">
+        <p className="text-foreground/50 min-w-xl text-center text-base">
           {totalPassed}/{totalChecks} checks passed
         </p>
       </CardContent>

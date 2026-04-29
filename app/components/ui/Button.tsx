@@ -42,18 +42,21 @@ const buttonVariants = cva(
   },
 );
 
+const TAG_MAP = { div: <div />, span: <span />, button: <button /> } as const;
+
 export interface ButtonProps
   extends
     React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   render?: React.ReactElement;
+  as?: keyof typeof TAG_MAP;
 }
 
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, render, ...props }, ref) =>
+const Button = forwardRef<HTMLElement, ButtonProps>(
+  ({ className, variant, size, render, as, ...props }, ref) =>
     useRender({
       defaultTagName: "button",
-      render,
+      render: render ?? (as ? TAG_MAP[as] : undefined),
       state: {},
       props: {
         ...props,

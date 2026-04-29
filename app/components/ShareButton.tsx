@@ -22,7 +22,18 @@ export default function ShareButton({
         if (!el) return;
         setLoading(true);
         try {
-          const dataUrl = await toPng(el, { quality: 1, pixelRatio: 2 });
+          const dataUrl = await toPng(el, {
+            quality: 1,
+            pixelRatio: 2,
+            skipFonts: true,
+            backgroundColor: "white",
+            type: "image/png",
+            filter: (node) =>
+              !(
+                node instanceof HTMLElement &&
+                node.dataset.slot === "card-footer"
+              ),
+          });
           const blob = await (await fetch(dataUrl)).blob();
           const file = new File([blob], "ai-legibility-score.png", {
             type: "image/png",
