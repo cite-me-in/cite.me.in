@@ -66,7 +66,7 @@ export default function ImproveScoreModal({
         </DialogHeader>
 
         <textarea
-          className="border-border bg-secondary-background rounded-base min-h-[300px] w-full border-2 p-4 font-mono text-sm"
+          className="border-border bg-secondary-background rounded-base min-h-[40vh] w-full border-2 p-4 font-mono text-sm"
           value={allPrompts}
           readOnly
         />
