@@ -7,8 +7,7 @@ export type CheckDetail = {
   fixExample?: string;
   effort: "2 min" | "5 min" | "15 min" | "1 hour";
   resourceLinks: { label: string; url: string }[];
-  skillUrl?: string;
-  auditSteps: { label: string; value: string }[];
+  skillURL?: string;
 };
 
 export type CheckResult = {

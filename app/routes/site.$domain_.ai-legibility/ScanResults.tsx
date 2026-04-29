@@ -1,9 +1,4 @@
-import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  CheckIcon,
-  CopyIcon,
-} from "lucide-react";
+import { CheckIcon, CopyIcon } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
 import {
@@ -54,8 +49,6 @@ export default function ScanResults({ checks }: { checks: CheckResult[] }) {
 }
 
 function ExpandableCheckCard({ check }: { check: CheckResult }) {
-  const [showAudit, setShowAudit] = useState(false);
-
   return (
     <AccordionItem
       value={check.name}
@@ -78,57 +71,15 @@ function ExpandableCheckCard({ check }: { check: CheckResult }) {
       </AccordionTrigger>
 
       {check.detail && (
-        <AccordionContent>
-          <div className="border-border border-t px-4 py-4">
-            <div
-              className="check-card-container"
-              style={{ perspective: "1000px", position: "relative" }}
-            >
-              <div
-                className="check-card-inner"
-                style={{
-                  transition: "transform 0.5s ease",
-                  transformStyle: "preserve-3d",
-                  transform: showAudit ? "rotateY(180deg)" : "rotateY(0deg)",
-                  minHeight: "100%",
-                }}
-              >
-                <div
-                  className="check-card-front"
-                  style={{ backfaceVisibility: "hidden" }}
-                >
-                  <CheckSummary check={check} setShowAudit={setShowAudit} />
-                </div>
-                <div
-                  className="check-card-back"
-                  style={{
-                    backfaceVisibility: "hidden",
-                    transform: "rotateY(180deg)",
-                    position: "absolute",
-                    inset: 0,
-                  }}
-                >
-                  <CheckAuditDetails
-                    check={check}
-                    setShowAudit={setShowAudit}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+        <AccordionContent className="border-border border-t px-4 py-4">
+          <CheckSummary check={check} />
         </AccordionContent>
       )}
     </AccordionItem>
   );
 }
 
-function CheckSummary({
-  check,
-  setShowAudit,
-}: {
-  check: CheckResult;
-  setShowAudit: (show: boolean) => void;
-}) {
+function CheckSummary({ check }: { check: CheckResult }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -185,9 +136,9 @@ function CheckSummary({
                 </Badge>
               </Link>
             ))}
-            {check.detail.skillUrl && (
+            {check.detail.skillURL && (
               <Link
-                to={check.detail.skillUrl}
+                to={check.detail.skillURL}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -221,10 +172,6 @@ function CheckSummary({
             </>
           )}
         </Button>
-        <Button size="sm" variant="outline" onClick={() => setShowAudit(true)}>
-          Audit details
-          <ArrowRightIcon className="size-3" />
-        </Button>
       </div>
     </div>
   );
@@ -257,42 +204,6 @@ function DetailBlock({
   );
 }
 
-function CheckAuditDetails({
-  check,
-  setShowAudit,
-}: {
-  check: CheckResult;
-  setShowAudit: (show: boolean) => void;
-}) {
-  return (
-    <div className="space-y-4">
-      <div className="space-y-3">
-        {check.detail?.auditSteps.map((step, i) => (
-          <div
-            key={i}
-            className="rounded-base border-border bg-secondary-background border-2 p-3"
-          >
-            <div className="flex items-center gap-2 text-sm">
-              <span className="bg-main text-main-foreground flex size-5 shrink-0 items-center justify-center rounded-full text-xs font-bold">
-                {i + 1}
-              </span>
-              <span className="font-medium">{step.label}</span>
-            </div>
-            <p className="text-foreground/60 mt-1 ml-7 text-sm">{step.value}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="flex justify-end gap-2">
-        <Button size="sm" variant="outline" onClick={() => setShowAudit(false)}>
-          <ArrowLeftIcon className="size-3" />
-          Back
-        </Button>
-      </div>
-    </div>
-  );
-}
-
 function buildPrompt(check: CheckResult) {
   if (!check.detail) return "";
   const docs = check.detail.resourceLinks.map((l) => l.url).join(", ");
@@ -303,7 +214,7 @@ function buildPrompt(check: CheckResult) {
   ];
   if (check.detail.fixExample)
     parts.push(`Example:\n\`\`\`\n${check.detail.fixExample}\n\`\`\``);
-  if (check.detail.skillUrl) parts.push(`Skill: ${check.detail.skillUrl}`);
+  if (check.detail.skillURL) parts.push(`Skill: ${check.detail.skillURL}`);
   if (docs) parts.push(`Docs: ${docs}`);
   return parts.join("\n\n");
 }

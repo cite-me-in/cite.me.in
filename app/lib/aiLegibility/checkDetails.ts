@@ -10,7 +10,7 @@ const checkDetails: Record<string, CheckDetail> = {
     fixExample:
       "User-agent: GPTBot\nAllow: /\n\nUser-agent: ClaudeBot\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /\n\nUser-agent: *\nDisallow: /private/",
     effort: "2 min",
-    skillUrl: "https://skills.sh/kostja94/marketing-skills/robots-txt",
+    skillURL: "https://skills.sh/kostja94/marketing-skills/robots-txt",
     resourceLinks: [
       {
         label: "About robots.txt",
@@ -19,26 +19,6 @@ const checkDetails: Record<string, CheckDetail> = {
       {
         label: "AI bot list",
         url: "https://darkvisitors.com/",
-      },
-    ],
-    auditSteps: [
-      {
-        label: "Fetch /robots.txt",
-        value: "GET /robots.txt — check response status and content type",
-      },
-      {
-        label: "Parse user-agent groups",
-        value: "Identify each User-agent block and its Allow/Disallow rules",
-      },
-      {
-        label: "Check AI bot rules",
-        value:
-          "Look for Disallow: / under GPTBot, ClaudeBot, PerplexityBot, etc.",
-      },
-      {
-        label: "Verify ordering",
-        value:
-          "AI bot rules must appear before any catch-all User-agent: * Disallow",
       },
     ],
   },
@@ -61,24 +41,6 @@ const checkDetails: Record<string, CheckDetail> = {
         url: "https://developers.google.com/search/docs/crawling-indexing/sitemaps/overview",
       },
     ],
-    auditSteps: [
-      {
-        label: "Fetch /sitemap.xml",
-        value: "GET /sitemap.xml — check HTTP 200 and Content-Type header",
-      },
-      {
-        label: "Parse XML",
-        value: "Parse as XML and validate against sitemaps.org schema",
-      },
-      {
-        label: "Extract URLs",
-        value: "Collect all <loc> values and validate they are absolute URLs",
-      },
-      {
-        label: "Check count",
-        value: "Verify at least one valid URL exists in the sitemap",
-      },
-    ],
   },
   "Homepage content": {
     goal: "Return rich HTML content from your homepage without requiring JavaScript execution",
@@ -95,24 +57,6 @@ const checkDetails: Record<string, CheckDetail> = {
         url: "https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics",
       },
     ],
-    auditSteps: [
-      {
-        label: "Fetch homepage",
-        value: "GET / — check HTTP 200, no JavaScript execution",
-      },
-      {
-        label: "Strip HTML tags",
-        value: "Remove all HTML/script/style tags to isolate text content",
-      },
-      {
-        label: "Measure text length",
-        value: "Count remaining characters — must be >= 100",
-      },
-      {
-        label: "Detect SPA shell",
-        value: 'Check HTML for <div id="root"> or <div id="app"> patterns',
-      },
-    ],
   },
   "llms.txt": {
     goal: "Provide an llms.txt file so LLMs have structured guidance about your site's content",
@@ -123,27 +67,11 @@ const checkDetails: Record<string, CheckDetail> = {
     fixExample:
       "# Your Site Name\n> Brief description of your site for AI context.\n\n## Featured\n- [Homepage](https://example.com/)\n- [About us](https://example.com/about)\n\n## Blog\n- [Latest post](https://example.com/blog/latest)\n# [Archived posts](https://example.com/blog/archive)\n\n## Resources\n- [Documentation](https://docs.example.com/)",
     effort: "15 min",
-    skillUrl: "https://skills.sh/github/awesome-copilot/create-llms",
+    skillURL: "https://skills.sh/github/awesome-copilot/create-llms",
     resourceLinks: [
       {
         label: "llms.txt spec",
         url: "https://llmstxt.org/",
-      },
-    ],
-    auditSteps: [
-      {
-        label: "Fetch /llms.txt",
-        value: "GET /llms.txt — check HTTP 200 with Content-Type: text/plain",
-      },
-      {
-        label: "Check content",
-        value:
-          "Verify the file contains a site description and at least one link",
-      },
-      {
-        label: "Validate format",
-        value:
-          "Check for optional sections, comments (#), and valid URL format",
       },
     ],
   },
@@ -162,17 +90,6 @@ const checkDetails: Record<string, CheckDetail> = {
         url: "https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap#text",
       },
     ],
-    auditSteps: [
-      {
-        label: "Fetch /sitemap.txt",
-        value: "GET /sitemap.txt — check HTTP 200 and Content-Type header",
-      },
-      {
-        label: "Validate URLs",
-        value: "Test each line with new URL() — must be absolute, valid URLs",
-      },
-      { label: "Check minimum", value: "Verify at least one valid URL exists" },
-    ],
   },
   "Sample pages": {
     goal: "Ensure pages listed in your sitemap return real content, not empty shells",
@@ -184,25 +101,6 @@ const checkDetails: Record<string, CheckDetail> = {
       "# Example: Node.js audit script\nimport { readFile } from 'fs/promises'\n\nconst sitemap = await fetch('https://example.com/sitemap.xml')\nconst urls = [...sitemap.body.matchAll(/<loc>([^<]+)<\\/loc>/g)].map(m => m[1])\n\nfor (const url of urls.slice(0, 10)) {\n  const res = await fetch(url)\n  const html = await res.text()\n  const text = html.replace(/<style[^>]*>[^<]*<\\/style>/gi, '')\n    .replace(/<script[^>]*>[^<]*<\\/script>/gi, '')\n    .replace(/<[^>]+>/g, '')\n  console.log(url, res.status, text.length >= 100 ? 'PASS' : 'FAIL')\n}",
     effort: "15 min",
     resourceLinks: [],
-    auditSteps: [
-      {
-        label: "Sample selection",
-        value: "Pick up to 10 unique URLs from your sitemaps",
-      },
-      {
-        label: "Fetch each page",
-        value: "GET each URL — no JavaScript, check HTTP 200",
-      },
-      {
-        label: "Check content",
-        value: "Verify each page has at least 100 characters of visible text",
-      },
-      {
-        label: "Detect SPA shells",
-        value:
-          'Check each page for <div id="root"> or <div id="app"> without content',
-      },
-    ],
   },
   "JSON-LD": {
     goal: "Add structured data so AI agents can accurately categorize and cite your content",
@@ -221,25 +119,6 @@ const checkDetails: Record<string, CheckDetail> = {
       {
         label: "Google structured data guide",
         url: "https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data",
-      },
-    ],
-    auditSteps: [
-      {
-        label: "Find JSON-LD blocks",
-        value: "Search HTML for <script type='application/ld+json'>",
-      },
-      {
-        label: "Parse each block",
-        value: "Parse JSON and flatten @graph arrays",
-      },
-      {
-        label: "Validate schema types",
-        value:
-          "Check against 12 known schema types (Article, Organization, etc.)",
-      },
-      {
-        label: "Check required fields",
-        value: "Verify fields like name, headline, url are present",
       },
     ],
   },
@@ -262,20 +141,6 @@ const checkDetails: Record<string, CheckDetail> = {
         url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta",
       },
     ],
-    auditSteps: [
-      {
-        label: "Find meta description",
-        value: "Search HTML for <meta name='description'> with content",
-      },
-      {
-        label: "Find OG tags",
-        value: "Search for <meta property='og:title'> and og:description",
-      },
-      {
-        label: "Find canonical",
-        value: "Search for <link rel='canonical'> with a valid href",
-      },
-    ],
   },
   "Link headers": {
     goal: "Provide sitemap references via Link response headers and HTML link tags so AI agents can discover all your content",
@@ -296,16 +161,6 @@ const checkDetails: Record<string, CheckDetail> = {
         url: "https://developers.google.com/search/docs/crawling-indexing/sitemaps/overview#other",
       },
     ],
-    auditSteps: [
-      {
-        label: "Check HTTP Link header",
-        value: "HEAD / — look for Link header containing 'sitemap'",
-      },
-      {
-        label: "Check HTML link tag",
-        value: "Scan <head> for <link rel='sitemap'> tag",
-      },
-    ],
   },
   "Markdown content negotiation": {
     goal: "Support markdown content negotiation so AI agents can consume your content in their preferred format",
@@ -322,20 +177,6 @@ const checkDetails: Record<string, CheckDetail> = {
         url: "https://developers.cloudflare.com/fundamentals/reference/markdown-for-agents/",
       },
     ],
-    auditSteps: [
-      {
-        label: "Request with Accept: text/markdown",
-        value: "GET / with Accept: text/markdown header",
-      },
-      {
-        label: "Check response",
-        value: "Verify Content-Type starts with text/markdown or text/plain",
-      },
-      {
-        label: "Validate content",
-        value: "Ensure response body has at least 50 characters of content",
-      },
-    ],
   },
   "Content Signals": {
     goal: "Declare a Content-Signal in your robots.txt so AI agents know whether they can use your content",
@@ -350,22 +191,6 @@ const checkDetails: Record<string, CheckDetail> = {
       {
         label: "About Content-Signal",
         url: "https://www.content-signature.org/",
-      },
-    ],
-    auditSteps: [
-      {
-        label: "Fetch /robots.txt",
-        value: "GET /robots.txt and read the full content",
-      },
-      {
-        label: "Search for Content-Signal",
-        value:
-          "Look for 'Content-Signal:' lines (as directives or in comments)",
-      },
-      {
-        label: "Parse values",
-        value:
-          "Check for search, ai-input, and ai-train keys with yes/no values",
       },
     ],
   },
