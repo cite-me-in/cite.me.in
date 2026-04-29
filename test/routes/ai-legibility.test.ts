@@ -367,34 +367,36 @@ describe("ai-legibility page - accordion and flip card", () => {
     ).toBeVisible();
   });
 
-  it("should show Audit details button in expanded check", async () => {
+  it("should show Goal section in expanded check", async () => {
     await expect(
-      page.getByRole("button", { name: /audit details/i }),
+      page.getByText("Allow AI crawlers to access your site"),
     ).toBeVisible();
   });
 
-  it("should flip to audit details when clicked", async () => {
-    await page.getByRole("button", { name: /audit details/i }).click();
+  it("should show Issue section in expanded check", async () => {
     await expect(
-      page.getByText("Fetch /robots.txt", { exact: true }),
+      page.getByText("robots.txt blocks AI crawlers"),
     ).toBeVisible();
   });
 
-  it("should show numbered audit steps", async () => {
+  it("should show How to implement section", async () => {
     await expect(
-      page.getByText("Parse user-agent groups"),
-    ).toBeVisible();
-    await expect(
-      page.getByText("Check AI bot rules"),
+      page.getByText("Add Allow rules for known AI bot user-agents"),
     ).toBeVisible();
   });
 
-  it("should flip back when Back is clicked", async () => {
-    await page.getByRole("button", { name: /back/i }).click();
+  it("should show Example code block", async () => {
     await expect(
-      page.getByRole("button", { name: /audit details/i }),
+      page.getByText("User-agent: GPTBot"),
     ).toBeVisible();
   });
+
+  it("should show Copy prompt button in expanded check", async () => {
+    await expect(
+      page.getByRole("button", { name: /copy prompt/i }),
+    ).toBeVisible();
+  });
+
 
   it("should match visually - accordion open on failed check", async () => {
     await page.waitForTimeout(600);

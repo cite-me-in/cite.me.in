@@ -77,20 +77,20 @@
         </div>
       </button>
     </div>
-    <p class="text-foreground/50 text-base">
+    <p class="text-foreground/50 min-w-xl text-center text-base">
       1/2 checks passed
     </p>
   </div>
   <div class="flex items-center justify-between px-6 [.border-t]:pt-6" data-slot="card-footer">
     <div class="col-start-2 row-span-2 row-start-1 self-start justify-self-end" data-slot="card-action">
       <button aria-expanded="false" aria-haspopup="dialog" data-slot="dialog-trigger" id="base-ui-_r_4_" tabindex="0" type="button">
-        <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 cursor-pointer rounded-base border-2 border-black bg-[#F59E0B] text-black shadow-[3px_3px_0px_0px_black] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] active:shadow-[1px_1px_0px_0px_black] active:translate-x-[2px] active:translate-y-[2px] h-10 rounded-sm px-4 text-xs" type="button">
+        <div class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 cursor-pointer rounded-base border-2 border-black bg-[#F59E0B] text-black shadow-[3px_3px_0px_0px_black] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] active:shadow-[1px_1px_0px_0px_black] active:translate-x-[2px] active:translate-y-[2px] h-10 rounded-sm px-4 text-xs">
           <svg aria-hidden="true" class="lucide lucide-arrow-big-up-dash size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
             <path d="M14 16a1 1 0 0 0 1-1v-2a1 1 0 0 1 1-1h3.293a.707.707 0 0 0 .5-1.207l-6.939-6.939a1.207 1.207 0 0 0-1.708 0l-6.94 6.94a.707.707 0 0 0 .5 1.206H8a1 1 0 0 1 1 1v2a1 1 0 0 0 1 1z"></path>
             <path d="M9 20h6"></path>
           </svg>
           Improve your score
-        </button>
+        </div>
       </button>
     </div>
     <div class="col-start-2 row-span-2 row-start-1 self-start justify-self-end" data-slot="card-action">
@@ -154,129 +154,60 @@
         </button>
       </h3>
       <div class="data-open:animate-accordion-down data-closed:animate-accordion-up overflow-hidden text-sm" data-index="1" data-orientation="vertical" data-slot="accordion-content" id="base-ui-_r_9_" role="region" style="--accordion-panel-height: auto; --accordion-panel-width: auto; animation-name: none;">
-        <div class="h-(--accordion-panel-height) pt-0 pb-2.5 data-ending-style:h-0 data-starting-style:h-0 [&amp;_a]:underline [&amp;_a]:underline-offset-3 [&amp;_a]:hover:text-foreground [&amp;_p:not(:last-child)]:mb-4">
-          <div class="border-border border-t px-4 py-4">
-            <div class="check-card-container" style="perspective: 1000px; position: relative;">
-              <div class="check-card-inner" style="transition: transform 0.5s; transform-style: preserve-3d; transform: rotateY(0deg); min-height: 100%;">
-                <div class="check-card-front" style="backface-visibility: hidden;">
-                  <div class="space-y-4">
-                    <div>
-                      <h4 class="text-foreground/70 mb-1 text-base font-semibold">
-                        Goal
-                      </h4>
-                      <p class="text-foreground/80 text-base">
-                        Allow AI crawlers to access your site
-                      </p>
-                    </div>
-                    <div>
-                      <h4 class="text-foreground/70 mb-1 text-base font-semibold">
-                        Issue
-                      </h4>
-                      <p class="text-foreground/80 text-base font-bold">
-                        robots.txt blocks AI crawlers
-                      </p>
-                    </div>
-                    <div>
-                      <h4 class="text-foreground/70 mb-1 text-base font-semibold">
-                        How to implement
-                      </h4>
-                      <p class="text-foreground/80 text-base">
-                        Add Allow rules for known AI bot user-agents
-                      </p>
-                    </div>
-                    <div>
-                      <h4 class="text-foreground/70 mb-1 text-base font-semibold">
-                        Example
-                      </h4>
-                      <pre class="bg-muted overflow-x-auto rounded p-3 font-mono text-sm leading-relaxed whitespace-pre-wrap">
-                        User-agent: GPTBot Allow: / User-agent: * Disallow: /private/
-                      </pre>
-                    </div>
-                    <div>
-                      <h4 class="text-foreground/70 mb-1 text-base font-semibold">
-                        Resources
-                      </h4>
-                      <div class="flex flex-wrap gap-2">
-                        <a href="https://developers.google.com/search/docs/crawling-indexing/robots/intro" rel="noopener noreferrer" target="_blank">
-                          <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200 cursor-pointer hover:bg-neutral-200" data-slot="badge">
-                            About robots.txt
-                          </span>
-                        </a>
-                      </div>
-                    </div>
-                    <div class="flex justify-end gap-2">
-                      <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-black bg-white text-black shadow-[3px_3px_0px_0px_black] hover:bg-[hsl(60,100%,99%)] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] h-10 rounded-sm px-4 text-xs" type="button">
-                        <svg aria-hidden="true" class="lucide lucide-copy size-3" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                          <rect height="14" rx="2" ry="2" width="14" x="8" y="8"></rect>
-                          <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
-                        </svg>
-                        Copy prompt
-                      </button>
-                      <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-black bg-white text-black shadow-[3px_3px_0px_0px_black] hover:bg-[hsl(60,100%,99%)] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] h-10 rounded-sm px-4 text-xs" type="button">
-                        Audit details
-                        <svg aria-hidden="true" class="lucide lucide-arrow-right size-3" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M5 12h14"></path>
-                          <path d="m12 5 7 7-7 7"></path>
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div class="check-card-back" style="backface-visibility: hidden; transform: rotateY(180deg); position: absolute; inset: 0px;">
-                  <div class="space-y-4">
-                    <div class="space-y-3">
-                      <div class="rounded-base border-border bg-secondary-background border-2 p-3">
-                        <div class="flex items-center gap-2 text-sm">
-                          <span class="bg-main text-main-foreground flex size-5 shrink-0 items-center justify-center rounded-full text-xs font-bold">
-                            1
-                          </span>
-                          <span class="font-medium">
-                            Fetch /robots.txt
-                          </span>
-                        </div>
-                        <p class="text-foreground/60 mt-1 ml-7 text-sm">
-                          GET /robots.txt
-                        </p>
-                      </div>
-                      <div class="rounded-base border-border bg-secondary-background border-2 p-3">
-                        <div class="flex items-center gap-2 text-sm">
-                          <span class="bg-main text-main-foreground flex size-5 shrink-0 items-center justify-center rounded-full text-xs font-bold">
-                            2
-                          </span>
-                          <span class="font-medium">
-                            Parse user-agent groups
-                          </span>
-                        </div>
-                        <p class="text-foreground/60 mt-1 ml-7 text-sm">
-                          Identify each User-agent block
-                        </p>
-                      </div>
-                      <div class="rounded-base border-border bg-secondary-background border-2 p-3">
-                        <div class="flex items-center gap-2 text-sm">
-                          <span class="bg-main text-main-foreground flex size-5 shrink-0 items-center justify-center rounded-full text-xs font-bold">
-                            3
-                          </span>
-                          <span class="font-medium">
-                            Check AI bot rules
-                          </span>
-                        </div>
-                        <p class="text-foreground/60 mt-1 ml-7 text-sm">
-                          Look for Disallow: /
-                        </p>
-                      </div>
-                    </div>
-                    <div class="flex justify-end gap-2">
-                      <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-black bg-white text-black shadow-[3px_3px_0px_0px_black] hover:bg-[hsl(60,100%,99%)] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] h-10 rounded-sm px-4 text-xs" type="button">
-                        <svg aria-hidden="true" class="lucide lucide-arrow-left size-3" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                          <path d="m12 19-7-7 7-7"></path>
-                          <path d="M19 12H5"></path>
-                        </svg>
-                        Back
-                      </button>
-                    </div>
-                  </div>
-                </div>
+        <div class="h-(--accordion-panel-height) data-ending-style:h-0 data-starting-style:h-0 [&amp;_a]:underline [&amp;_a]:underline-offset-3 [&amp;_a]:hover:text-foreground [&amp;_p:not(:last-child)]:mb-4 border-border border-t px-4 py-4">
+          <div class="space-y-4">
+            <div>
+              <h4 class="text-foreground/70 mb-1 text-base font-semibold">
+                Goal
+              </h4>
+              <p class="text-foreground/80 text-base">
+                Allow AI crawlers to access your site
+              </p>
+            </div>
+            <div>
+              <h4 class="text-foreground/70 mb-1 text-base font-semibold">
+                Issue
+              </h4>
+              <p class="text-foreground/80 text-base font-bold">
+                robots.txt blocks AI crawlers
+              </p>
+            </div>
+            <div>
+              <h4 class="text-foreground/70 mb-1 text-base font-semibold">
+                How to implement
+              </h4>
+              <p class="text-foreground/80 text-base">
+                Add Allow rules for known AI bot user-agents
+              </p>
+            </div>
+            <div>
+              <h4 class="text-foreground/70 mb-1 text-base font-semibold">
+                Example
+              </h4>
+              <pre class="bg-muted overflow-x-auto rounded p-3 font-mono text-sm leading-relaxed whitespace-pre-wrap">
+                User-agent: GPTBot Allow: / User-agent: * Disallow: /private/
+              </pre>
+            </div>
+            <div>
+              <h4 class="text-foreground/70 mb-1 text-base font-semibold">
+                Resources
+              </h4>
+              <div class="flex flex-wrap gap-2">
+                <a href="https://developers.google.com/search/docs/crawling-indexing/robots/intro" rel="noopener noreferrer" target="_blank">
+                  <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&amp;&gt;svg]:size-3 gap-1 [&amp;&gt;svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200 cursor-pointer hover:bg-neutral-200" data-slot="badge">
+                    About robots.txt
+                  </span>
+                </a>
               </div>
+            </div>
+            <div class="flex justify-end gap-2">
+              <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 rounded-base border-2 border-black bg-white text-black shadow-[3px_3px_0px_0px_black] hover:bg-[hsl(60,100%,99%)] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] h-10 rounded-sm px-4 text-xs" type="button">
+                <svg aria-hidden="true" class="lucide lucide-copy size-3" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                  <rect height="14" rx="2" ry="2" width="14" x="8" y="8"></rect>
+                  <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+                </svg>
+                Copy prompt
+              </button>
             </div>
           </div>
         </div>
