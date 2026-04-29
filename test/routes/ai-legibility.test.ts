@@ -8,6 +8,7 @@ import getLastEmailSent from "~/test/helpers/getLastEmailSent";
 import { goto } from "~/test/helpers/launchBrowser";
 import { port } from "~/test/helpers/launchServer";
 import { signIn } from "~/test/helpers/signIn";
+import "~/test/helpers/toMatchDownload";
 import "~/test/helpers/toMatchVisual";
 
 const SCAN_RESULT: ScanResult = {
@@ -205,6 +206,13 @@ describe("ai-legibility page - with report", () => {
     await reportPage.waitForTimeout(600);
     await expect(reportPage.locator("main")).toMatchVisual({
       name: "ai-legibility/results",
+    });
+  });
+
+  it.only("should share score as a downloadable PNG", async () => {
+    await expect(reportPage).toMatchDownload({
+      name: "ai-legibility/share-image",
+      trigger: reportPage.getByRole("button", { name: /share/i }).first(),
     });
   });
 });
