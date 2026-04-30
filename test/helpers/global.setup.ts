@@ -2,7 +2,7 @@
  * NOTE: Setup code to run only once before all tests.
  */
 
-import { execFile, spawn } from "node:child_process";
+import { execFile } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
 import { rm } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -63,14 +63,8 @@ export async function teardown() {
 
   if (hasNewScreenshots()) {
     console.info(
-      "\nVisual differences detected. Launching screenshot review...\n",
+      "\nVisual differences detected. Suggest: ./scripts/screenshots.ts \n",
     );
-    await new Promise<void>((resolve) => {
-      spawn("tsx", ["scripts/screenshots.ts"], {
-        stdio: "inherit",
-        detached: true,
-      }).once("spawn", resolve);
-    });
   }
 
   await promisify(execFile)("terminal-notifier", [

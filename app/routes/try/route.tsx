@@ -208,10 +208,6 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
       {!domain && <BenefitsSection />}
 
       {!user && <SignUpSection domain={domain} />}
-
-      <footer className="border-t-2 border-black px-6 py-8 text-center text-sm font-medium text-black/60">
-        cite.me.in — AI citation visibility monitoring
-      </footer>
     </Main>
   );
 }

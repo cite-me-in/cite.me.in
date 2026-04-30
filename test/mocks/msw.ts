@@ -4,9 +4,187 @@ import { setupServer } from "msw/node";
 
 const logger = debug("msw");
 
+const EXAMPLE_COM_RESPONSES: Record<
+  string,
+  { body: string; contentType: string }
+> = {
+  "https://example.com": {
+    body: `<!DOCTYPE html>
+<html>
+<head>
+  <title>Example Domain</title>
+  <meta name="description" content="Example domain for testing">
+  <meta property="og:title" content="Example">
+  <link rel="canonical" href="https://example.com/">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Example","url":"https://example.com"}</script>
+</head>
+<body>
+  <main>
+    <h1>Example Domain</h1>
+    <p>This domain is for use in illustrative examples in documents. You may use this domain in literature without prior coordination or asking for permission.</p>
+  </main>
+</body>
+</html>`,
+    contentType: "text/html",
+  },
+  "https://example.com/robots.txt": {
+    body: "User-agent: *\nDisallow:\nSitemap: https://example.com/sitemap.xml\n",
+    contentType: "text/plain",
+  },
+  "https://example.com/sitemap.xml": {
+    body: `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://example.com</loc></url>
+  <url><loc>https://example.com/about</loc></url>
+</urlset>`,
+    contentType: "application/xml",
+  },
+  "https://example.com/sitemap.txt": {
+    body: "https://example.com\nhttps://example.com/about\n",
+    contentType: "text/plain",
+  },
+  "https://example.com/llms.txt": {
+    body: "# Example\nThis is the main documentation for Example Domain.\n",
+    contentType: "text/plain",
+  },
+  "https://example.com/about": {
+    body: "<html><body><main><h1>About</h1><p>This page has enough content to pass the legibility scan. More text here for padding.</p></main></body></html>",
+    contentType: "text/html",
+  },
+};
+
 const handlers = [
-  http.get("https://example.com/", () =>
-    HttpResponse.html("<html><body><p>Hello world</p></body></html>"),
+  http.get("https://example.com/", () => {
+    const r = EXAMPLE_COM_RESPONSES["https://example.com"];
+    return new HttpResponse(r.body, {
+      headers: {
+        "Content-Type": r.contentType,
+        Link: '</sitemap.xml>; rel="sitemap"',
+      },
+    });
+  }),
+  // Mock all legibility scan URLs for example.com — both GET and HEAD
+  ...Object.keys(EXAMPLE_COM_RESPONSES).flatMap((url) => {
+    if (url === "https://example.com") return [];
+    const r = EXAMPLE_COM_RESPONSES[url];
+    return [
+      http.get(url, () =>
+        HttpResponse.text(r.body, {
+          headers: { "Content-Type": r.contentType },
+        }),
+      ),
+      http.head(
+        url,
+        () =>
+          new HttpResponse(null, {
+            headers: { "Content-Type": r.contentType },
+          }),
+      ),
+    ];
+  }),
+  // HEAD handler for example.com homepage (used by checkLinkHeaders)
+  http.head(
+    "https://example.com/",
+    () =>
+      new HttpResponse(null, {
+        headers: {
+          "Content-Type": "text/html",
+          Link: '</sitemap.xml>; rel="sitemap"',
+        },
+      }),
+  ),
+
+  // Legibility scan mocks for acme.com (used by /try page test)
+  http.get(
+    "https://acme.com/",
+    () =>
+      new HttpResponse(
+        `<!DOCTYPE html>
+<html>
+<head>
+  <title>Acme Corp</title>
+  <meta name="description" content="Acme Corp builds great software">
+  <meta property="og:title" content="Acme Corp">
+  <link rel="canonical" href="https://acme.com/">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Acme Corp","url":"https://acme.com"}</script>
+</head>
+<body><main><h1>Welcome</h1><p>Acme makes great software for business.</p></main></body>
+</html>`,
+        {
+          headers: {
+            "Content-Type": "text/html",
+            Link: '</sitemap.xml>; rel="sitemap"',
+          },
+        },
+      ),
+  ),
+  http.head(
+    "https://acme.com/",
+    () =>
+      new HttpResponse(null, {
+        headers: {
+          "Content-Type": "text/html",
+          Link: '</sitemap.xml>; rel="sitemap"',
+        },
+      }),
+  ),
+  http.get("https://acme.com/robots.txt", () =>
+    HttpResponse.text(
+      "User-agent: *\nDisallow: /admin/\nSitemap: https://acme.com/sitemap.xml\n",
+      {
+        headers: { "Content-Type": "text/plain" },
+      },
+    ),
+  ),
+  http.head(
+    "https://acme.com/robots.txt",
+    () => new HttpResponse(null, { headers: { "Content-Type": "text/plain" } }),
+  ),
+  http.get("https://acme.com/sitemap.xml", () =>
+    HttpResponse.text(
+      `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://acme.com</loc></url>
+  <url><loc>https://acme.com/about</loc></url>
+</urlset>`,
+      {
+        headers: { "Content-Type": "application/xml" },
+      },
+    ),
+  ),
+  http.head(
+    "https://acme.com/sitemap.xml",
+    () =>
+      new HttpResponse(null, {
+        headers: { "Content-Type": "application/xml" },
+      }),
+  ),
+  http.get("https://acme.com/sitemap.txt", () =>
+    HttpResponse.text("https://acme.com\nhttps://acme.com/about\n", {
+      headers: { "Content-Type": "text/plain" },
+    }),
+  ),
+  http.head(
+    "https://acme.com/sitemap.txt",
+    () => new HttpResponse(null, { headers: { "Content-Type": "text/plain" } }),
+  ),
+  http.get("https://acme.com/llms.txt", () =>
+    HttpResponse.text("# Acme Corp\nDocumentation for Acme Corp.\n", {
+      headers: { "Content-Type": "text/plain" },
+    }),
+  ),
+  http.head(
+    "https://acme.com/llms.txt",
+    () => new HttpResponse(null, { headers: { "Content-Type": "text/plain" } }),
+  ),
+  http.get("https://acme.com/about", () =>
+    HttpResponse.html(
+      "<html><body><main><h1>About</h1><p>About page with enough content to pass the legibility scan sample check. More text here for padding.</p></main></body></html>",
+    ),
+  ),
+  http.head(
+    "https://acme.com/about",
+    () => new HttpResponse(null, { headers: { "Content-Type": "text/html" } }),
   ),
 
   http.get("https://serpapi.com/search", () =>
