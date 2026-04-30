@@ -4,6 +4,14 @@ import { useEffect, useRef } from "react";
 import { render } from "react-email";
 import { useFetcher, useSearchParams } from "react-router";
 import { Button } from "~/components/ui/Button";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/Select";
 import sendAiLegibilityReport, {
   AiLegibilityReportEmail,
 } from "~/emails/AiLegibilityReport";
@@ -75,13 +83,11 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     }
 
     case "legibility-report": {
-      const legibility = await prisma.aiLegibilityReport.findFirst({
+      const legibility = await prisma.aiLegibilityReport.findFirstOrThrow({
         where: { siteId: site.id, userId: user.id },
         orderBy: { createdAt: "desc" },
         include: { site: { select: { domain: true, citations: true } } },
       });
-      if (!legibility)
-        throw new Response("No legibility report found", { status: 404 });
 
       const subject = `AI Legibility Report for ${site.domain}`;
       const html = await render(
@@ -129,13 +135,11 @@ export async function action({ request, params }: Route.ActionArgs) {
     }
 
     case "legibility-report": {
-      const legibility = await prisma.aiLegibilityReport.findFirst({
+      const legibility = await prisma.aiLegibilityReport.findFirstOrThrow({
         where: { siteId: site.id, userId: user.id },
         orderBy: { createdAt: "desc" },
         include: { site: { select: { domain: true, citations: true } } },
       });
-      if (!legibility)
-        throw new Response("No legibility report found", { status: 404 });
       return await sendAiLegibilityReport({
         site: legibility.site,
         result: legibility.result as ScanResult,
@@ -177,17 +181,23 @@ export default function EmailPreview({ loaderData }: Route.ComponentProps) {
   return (
     <div className="p-4">
       <div className="mb-4 flex items-center justify-end gap-4">
-        <select
+        <Select
           value={currentType}
-          onChange={(e) => setSearchParams({ type: e.target.value })}
-          className="rounded-base flex h-10 border-2 border-black bg-white px-3 py-1 text-sm font-medium shadow-[2px_2px_0px_0px_black] focus-visible:outline-none"
+          onValueChange={(value) => setSearchParams({ type: value as string })}
         >
-          {EMAIL_TYPES.map((t) => (
-            <option key={t} value={t}>
-              {EMAIL_LABELS[t]}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue>{EMAIL_LABELS[currentType as EmailType]}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {EMAIL_TYPES.map((t) => (
+                <SelectItem key={t} value={t}>
+                  {EMAIL_LABELS[t]}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
 
         <fetcher.Form method="post">
           <input type="hidden" name="type" value={currentType} />
