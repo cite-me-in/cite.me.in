@@ -22,11 +22,15 @@ vi.mock("node:dns", () => ({
 
 describe("extractDomain", () => {
   it("should extract hostname from full URL", () => {
-    expect(extractDomain("https://example.com/path?q=1")).toBe("example.com");
+    expect(extractDomain("https://acme.com/path?q=1")).toBe("acme.com");
   });
 
   it("should extract hostname when scheme is missing", () => {
-    expect(extractDomain("example.com")).toBe("example.com");
+    expect(extractDomain("acme.com")).toBe("acme.com");
+  });
+
+  it("should return null for reserved example.com", () => {
+    expect(extractDomain("https://example.com")).toBeNull();
   });
 
   it("should return null for localhost", () => {
@@ -50,7 +54,9 @@ describe("fetchSiteContent", () => {
       maxWords: 1000,
       maxSeconds: 10,
     });
-    expect(content).toContain("Hello world");
+    expect(content).toContain(
+      "This is the main documentation for Example Domain",
+    );
   });
 
   it("should return summary from crawled content", async () => {

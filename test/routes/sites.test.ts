@@ -139,17 +139,17 @@ describe("sites route", () => {
       page = await goto("/sites");
       await page
         .getByRole("textbox", { name: "Website URL or domain" })
-        .fill("example.com");
+        .fill("acme.com");
       await page.getByRole("button", { name: "Add Site" }).click();
       await page.waitForURL(/\/site\/[^/]+\/setup/, { timeout: 15_000 });
 
       site = await prisma.site.findFirstOrThrow({
-        where: { domain: "example.com", ownerId: user.id },
+        where: { domain: "acme.com", ownerId: user.id },
       });
     });
 
     it("should create site record in DB", async () => {
-      expect(site.domain).toBe("example.com");
+      expect(site.domain).toBe("acme.com");
     });
 
     it("should redirect to setup page", async () => {
