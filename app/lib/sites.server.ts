@@ -1,3 +1,5 @@
+import { resolve4, resolve6 } from "node:dns/promises";
+import net from "node:net";
 import { ms } from "convert";
 import debug from "debug";
 import { generateApiKey } from "random-password-toolkit";
@@ -7,6 +9,60 @@ import type { Site } from "~/prisma";
 import prisma from "./prisma.server";
 
 const logger = debug("server");
+
+const RESERVED_DOMAINS = new Set([
+  "example.com",
+  "example.net",
+  "example.org",
+  "example.edu",
+  "test.com",
+  "test.net",
+  "test.org",
+]);
+
+const PRIVATE_TLDS = new Set([".local", ".internal", ".corp", ".home", ".lan"]);
+
+function isPrivateIP(ip: string): boolean {
+  if (net.isIPv4(ip)) {
+    const parts = ip.split(".").map(Number);
+    if (parts[0] === 10) return true;
+    if (parts[0] === 127) return true;
+    if (parts[0] === 169 && parts[1] === 254) return true;
+    if (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) return true;
+    if (parts[0] === 192 && parts[1] === 168) return true;
+    return false;
+  }
+  if (net.isIPv6(ip)) {
+    const normalized = ip.toLowerCase();
+    if (normalized.startsWith("fc") || normalized.startsWith("fd")) return true;
+    if (normalized === "::1") return true;
+    if (normalized.startsWith("fe80")) return true;
+    return false;
+  }
+  return false;
+}
+
+async function checkPublicIP(domain: string): Promise<void> {
+  const addresses: string[] = [];
+  try {
+    const v4 = await resolve4(domain);
+    addresses.push(...v4);
+  } catch {
+    // No A record
+  }
+  try {
+    const v6 = await resolve6(domain);
+    addresses.push(...v6);
+  } catch {
+    // No AAAA record
+  }
+  if (addresses.length === 0) return;
+
+  if (addresses.some(isPrivateIP))
+    throw new Error(
+      `${domain} resolves to a private IP address. Enter a website accessible from the internet.`,
+    );
+}
 
 /**
  * Create a new site for a user. This function verifies the user can add a site
@@ -42,9 +98,11 @@ export async function createSite({
     );
   }
 
-  // Quick reachability check — the only sync step before backgrounding.
-  // Skipped in test environment (no outbound network access).
+  // Skip network checks in test environment
   if (process.env.NODE_ENV !== "test") {
+    logger("[createSite] Checking public DNS of %s", domain);
+    await checkPublicIP(domain);
+
     logger("[createSite] Checking reachability of %s", domain);
     try {
       const res = await fetch(`https://${domain}/`, {
@@ -87,9 +145,14 @@ export function extractDomain(url: string): string | null {
   try {
     const href = url.startsWith("http") ? url : `https://${url}`;
     const { hostname } = new URL(href);
-    if (!hostname || hostname === "localhost") return null;
-    if (/^\d{1,3}(\.\d{1,3}){3}$/.test(hostname)) return null;
-    return hostname.toLowerCase();
+    const lower = hostname.toLowerCase();
+    if (!lower || lower === "localhost") return null;
+    if (/^\d{1,3}(\.\d{1,3}){3}$/.test(lower)) return null;
+    if (RESERVED_DOMAINS.has(lower)) return null;
+    for (const tld of PRIVATE_TLDS) {
+      if (lower.endsWith(tld)) return null;
+    }
+    return lower;
   } catch {
     return null;
   }
