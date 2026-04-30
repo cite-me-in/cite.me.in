@@ -116,39 +116,49 @@ function LandingNav({ isSignedIn }: { isSignedIn: boolean }) {
 function HeroSection({ isSignedIn }: { isSignedIn: boolean }) {
   return (
     <section className="border-b-2 border-black bg-[#F59E0B] px-6 py-20 md:py-32">
-      <div className="mx-auto max-w-4xl">
-        <blockquote className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border-2 bg-white px-4 py-1.5 text-base font-bold text-black shadow-md">
-          <SparklesIcon className="h-4 w-4" />
-          Squirrel-brain friendly 🐿️
-        </blockquote>
+      <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2">
+        <div>
+          <blockquote className="mb-4 inline-flex items-center gap-2 rounded-full border-2 bg-white px-4 py-1.5 text-base font-bold text-black shadow-md">
+            <SparklesIcon className="h-4 w-4" />
+            Squirrel-brain friendly 🐿️
+          </blockquote>
 
-        <h1 className="mb-6 text-4xl leading-tight font-bold text-black md:text-6xl">
-          Does ChatGPT mention
-          <br />
-          your brand?
-        </h1>
+          <h1 className="mb-6 text-4xl leading-tight font-bold text-black md:text-6xl">
+            Does ChatGPT mention
+            <br />
+            your brand?
+          </h1>
 
-        <p className="mb-10 max-w-2xl text-xl leading-relaxed font-medium text-black md:text-2xl">
-          Most founders are running blind on AI visibility. Cite.me.in runs your
-          queries across ChatGPT, Claude, and Gemini and records every time they
-          cite your website. See what's working. Fix what's not.
-        </p>
+          <p className="mb-10 max-w-2xl text-xl leading-relaxed font-medium text-black md:text-2xl">
+            Most founders are running blind on AI visibility. Cite.me.in runs
+            your queries across ChatGPT, Claude, and Gemini and records every
+            time they cite your website. See what's working. Fix what's not.
+          </p>
 
-        <div className="flex flex-col gap-4 sm:flex-row">
-          {isSignedIn ? (
-            <ActiveLink variant="button" bg="blue" to="/sites" size="xl">
-              Add a site
-            </ActiveLink>
-          ) : (
-            <>
-              <ActiveLink variant="button" bg="blue" to="/sign-up" size="xl">
-                Start monitoring — free
+          <div className="flex flex-col gap-4 sm:flex-row">
+            {isSignedIn ? (
+              <ActiveLink variant="button" bg="blue" to="/sites" size="xl">
+                Add a site
               </ActiveLink>
-              <ActiveLink variant="button" bg="white" to="/sign-in" size="xl">
-                Sign in
-              </ActiveLink>
-            </>
-          )}
+            ) : (
+              <>
+                <ActiveLink variant="button" bg="blue" to="/sign-up" size="xl">
+                  Start monitoring — free
+                </ActiveLink>
+                <ActiveLink variant="button" bg="white" to="/sign-in" size="xl">
+                  Sign in
+                </ActiveLink>
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className="rounded-base overflow-hidden border-2 border-black shadow-[8px_8px_0px_0px_black]">
+          <img
+            src="/images/hero-screenshot.png"
+            alt="Cite.me.in dashboard showing AI citation tracking across ChatGPT, Claude, and Gemini"
+            className="w-full"
+          />
         </div>
       </div>
     </section>
