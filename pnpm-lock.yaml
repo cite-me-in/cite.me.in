@@ -140,6 +140,9 @@ importers:
       tiny-invariant:
         specifier: ^1.3.3
         version: 1.3.3
+      turndown:
+        specifier: ^7.2.4
+        version: 7.2.4
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
@@ -192,6 +195,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.2.3
         version: 19.2.3(@types/react@19.2.14)
+      '@types/turndown':
+        specifier: ^5.0.6
+        version: 5.0.6
       '@vercel/config':
         specifier: ^0.2.1
         version: 0.2.1
@@ -1234,6 +1240,9 @@ packages:
 
   '@mermaid-js/parser@1.1.0':
     resolution: {integrity: sha512-gxK9ZX2+Fex5zu8LhRQoMeMPEHbc73UKZ0FQ54YrQtUxE1VVhMwzeNtKRPAu5aXks4FasbMe4xB4bWrmq6Jlxw==}
+
+  '@mixmark-io/domino@2.2.0':
+    resolution: {integrity: sha512-Y28PR25bHXUg88kCV7nivXrP2Nj2RueZ3/l/jdx6J9f8J4nsEGcgX0Qe6lt7Pa+J79+kPiJU3LguR6O/6zrLOw==}
 
   '@mjackson/node-fetch-server@0.2.0':
     resolution: {integrity: sha512-EMlH1e30yzmTpGLQjlFmaDAjyOeZhng1/XCd7DExR8PNAnG/G1tyruZxEoUe11ClnwGhGrtsdnyyUx1frSzjng==}
@@ -3262,6 +3271,9 @@ packages:
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
+
+  '@types/turndown@5.0.6':
+    resolution: {integrity: sha512-ru00MoyeeouE5BX4gRL+6m/BsDfbRayOskWqUvh7CLGW+UXxHQItqALa38kKnOiZPqJrtzJUgAC2+F0rL1S4Pg==}
 
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
@@ -6952,6 +6964,10 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
+  turndown@7.2.4:
+    resolution: {integrity: sha512-I8yFsfRzmzK0WV1pNNOA4A7y4RDfFxPRxb3t+e3ui14qSGOxGtiSP6GjeX+Y6CHb7HYaFj7ECUD7VE5kQMZWGQ==}
+    engines: {node: '>=18', npm: '>=9'}
+
   tw-animate-css@1.4.0:
     resolution: {integrity: sha512-7bziOlRqH0hJx80h/3mbicLW7o8qLsH5+RaLR2t+OHM3D0JlWGODQKQ4cxbK7WlvmUxpcj6Kgu6EKqjrGFe3QQ==}
 
@@ -8200,6 +8216,8 @@ snapshots:
   '@mermaid-js/parser@1.1.0':
     dependencies:
       langium: 4.2.2
+
+  '@mixmark-io/domino@2.2.0': {}
 
   '@mjackson/node-fetch-server@0.2.0': {}
 
@@ -10043,6 +10061,8 @@ snapshots:
 
   '@types/trusted-types@2.0.7':
     optional: true
+
+  '@types/turndown@5.0.6': {}
 
   '@types/unist@2.0.11': {}
 
@@ -14417,6 +14437,10 @@ snapshots:
       get-tsconfig: 4.14.0
     optionalDependencies:
       fsevents: 2.3.3
+
+  turndown@7.2.4:
+    dependencies:
+      '@mixmark-io/domino': 2.2.0
 
   tw-animate-css@1.4.0: {}
 

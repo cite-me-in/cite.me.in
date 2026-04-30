@@ -7,10 +7,17 @@ import type {
   EntryContext,
   LoaderFunctionArgs,
 } from "react-router";
+import TurndownService from "turndown";
 import "~/lib/logger.server";
 import captureAndLogError from "./lib/captureAndLogError.server";
 import envVars from "./lib/envVars.server";
 import { trackVisits } from "./lib/trackVisits.server";
+
+const turndown = new TurndownService({
+  headingStyle: "atx",
+  codeBlockStyle: "fenced",
+  emDelimiter: "*",
+});
 
 switch (process.env.NODE_ENV) {
   case "production": {
@@ -63,7 +70,7 @@ export default wrapTraced(
       const start = Date.now();
       logger("%s %s", request.method, request.url);
 
-      const response = await handleRequest(
+      let response = await handleRequest(
         request,
         responseStatusCode,
         responseHeaders,
@@ -71,6 +78,21 @@ export default wrapTraced(
         loadContext,
         { nonce: crypto.randomUUID() },
       );
+      if (
+        response.ok &&
+        request.headers.get("Accept")?.includes("text/markdown")
+      ) {
+        let html = await response.clone().text();
+        html = html.replace(
+          /<(header|style|script|nav|footer)[^>]*>[\s\S]*?<\/\1>/gi,
+          "",
+        );
+        const markdown = turndown.turndown(html);
+        response = new Response(markdown, {
+          status: response.status,
+          headers: { "Content-Type": "text/markdown" },
+        });
+      }
       void waitForResponse(response, start).then((duration) => {
         logger(
           "%s %s => %d (%dms)",
