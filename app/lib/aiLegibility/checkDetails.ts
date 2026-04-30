@@ -10,7 +10,7 @@ const checkDetails: Record<string, CheckDetail> = {
     fixExample:
       "User-agent: GPTBot\nAllow: /\n\nUser-agent: ClaudeBot\nAllow: /\n\nUser-agent: PerplexityBot\nAllow: /\n\nUser-agent: *\nDisallow: /private/",
     effort: "2 min",
-    skillURL: "https://skills.sh/kostja94/marketing-skills/robots-txt",
+    skillURL: "https://skills.sh/coreyhaines31/marketingskills/ai-seo",
     resourceLinks: [
       {
         label: "About robots.txt",
@@ -31,6 +31,7 @@ const checkDetails: Record<string, CheckDetail> = {
     fixExample:
       '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <url>\n    <loc>https://example.com/</loc>\n    <lastmod>2025-01-01</lastmod>\n  </url>\n  <url>\n    <loc>https://example.com/about</loc>\n  </url>\n  <url>\n    <loc>https://example.com/products</loc>\n  </url>\n</urlset>\n\n# robots.txt reference:\nSitemap: https://example.com/sitemap.xml\n\n# HTML <head>:\n<link rel="sitemap" type="application/xml" href="/sitemap.xml">\n\n# HTTP header:\nLink: </sitemap.xml>; rel=sitemap; type=application/xml',
     effort: "15 min",
+    skillURL: "https://skills.sh/coreyhaines31/marketingskills/seo-audit",
     resourceLinks: [
       {
         label: "Sitemaps protocol",
@@ -51,6 +52,7 @@ const checkDetails: Record<string, CheckDetail> = {
     fixExample:
       '<!-- If you can\'t enable SSR, inject a hidden navigation block: -->\n<noscript>\n  <nav>\n    <a href="/about">About us</a>\n    <a href="/products">Our products</a>\n    <a href="/contact">Contact</a>\n  </nav>\n</noscript>\n<div style="display:none">\n  <!-- Fallback content for AI crawlers -->\n  <p>Welcome to our site. We offer products, services, and more.</p>\n</div>',
     effort: "1 hour",
+    skillURL: "https://skills.sh/coreyhaines31/marketingskills/ai-seo",
     resourceLinks: [
       {
         label: "SPA SEO guide",
@@ -100,6 +102,7 @@ const checkDetails: Record<string, CheckDetail> = {
     fixExample:
       "# Example: Node.js audit script\nimport { readFile } from 'fs/promises'\n\nconst sitemap = await fetch('https://example.com/sitemap.xml')\nconst urls = [...sitemap.body.matchAll(/<loc>([^<]+)<\\/loc>/g)].map(m => m[1])\n\nfor (const url of urls.slice(0, 10)) {\n  const res = await fetch(url)\n  const html = await res.text()\n  const text = html.replace(/<style[^>]*>[^<]*<\\/style>/gi, '')\n    .replace(/<script[^>]*>[^<]*<\\/script>/gi, '')\n    .replace(/<[^>]+>/g, '')\n  console.log(url, res.status, text.length >= 100 ? 'PASS' : 'FAIL')\n}",
     effort: "15 min",
+    skillURL: "https://skills.sh/squirrelscan/skills/audit-website",
     resourceLinks: [],
   },
   "JSON-LD": {
@@ -111,6 +114,7 @@ const checkDetails: Record<string, CheckDetail> = {
     fixExample:
       '<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "Organization",\n  "name": "Your Company",\n  "url": "https://example.com",\n  "description": "Description of your organization"\n}\n</script>\n\n<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "WebSite",\n  "name": "Your Site",\n  "url": "https://example.com"\n}\n</script>',
     effort: "15 min",
+    skillURL: "https://skills.sh/coreyhaines31/marketingskills/schema-markup",
     resourceLinks: [
       {
         label: "Schema.org",
@@ -131,6 +135,7 @@ const checkDetails: Record<string, CheckDetail> = {
     fixExample:
       '<head>\n  <meta name="description" content="Brief summary of your page for AI agents and search engines">\n  <meta property="og:title" content="Your Page Title">\n  <meta property="og:description" content="Social preview description">\n  <meta property="og:image" content="https://example.com/og-image.png">\n  <link rel="canonical" href="https://example.com/page">\n</head>',
     effort: "5 min",
+    skillURL: "https://skills.sh/coreyhaines31/marketingskills/seo-audit",
     resourceLinks: [
       {
         label: "Open Graph protocol",
@@ -151,6 +156,7 @@ const checkDetails: Record<string, CheckDetail> = {
     fixExample:
       '# HTTP response header:\nLink: </sitemap.xml>; rel=sitemap; type=application/xml\nLink: </sitemap.txt>; rel=sitemap; type=text/plain\n\n# HTML <head>:\n<link rel="sitemap" type="application/xml" title="XML Sitemap" href="/sitemap.xml">\n<link rel="sitemap" type="text/plain" title="Text Sitemap" href="/sitemap.txt">',
     effort: "5 min",
+    skillURL: "https://skills.sh/squirrelscan/skills/audit-website",
     resourceLinks: [
       {
         label: "Link header (MDN)",
@@ -187,6 +193,7 @@ const checkDetails: Record<string, CheckDetail> = {
     fixExample:
       "# robots.txt\n\nUser-agent: *\nAllow: /\n\n# Declare content usage signals:\nContent-Signal: search=yes, ai-input=yes, ai-train=no\n\nSitemap: https://example.com/sitemap.xml",
     effort: "5 min",
+    skillURL: "https://skills.sh/coreyhaines31/marketingskills/ai-seo",
     resourceLinks: [
       {
         label: "About Content-Signal",
