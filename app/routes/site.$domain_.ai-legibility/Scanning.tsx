@@ -31,7 +31,7 @@ export default function Scanning({ domain }: { domain: string }) {
       }
       if (data.done && !done) {
         setDone(true);
-        setTimeout(() => navigate("."), 1000);
+        setTimeout(() => navigate("."), 2000);
       }
     } catch (error) {
       console.error("[Scanning] Poll error:", error);
@@ -51,8 +51,12 @@ export default function Scanning({ domain }: { domain: string }) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Spinner />
-          Scanning…
+          {done ? (
+            <span className="text-green-600 text-xl">✓</span>
+          ) : (
+            <Spinner />
+          )}
+          {done ? "Scan Complete!" : "Scanning\u2026"}
         </CardTitle>
       </CardHeader>
 
@@ -65,7 +69,7 @@ export default function Scanning({ domain }: { domain: string }) {
           className="border-border bg-muted text-foreground/60 h-96 overflow-y-auto rounded border p-4 font-mono text-sm leading-relaxed whitespace-break-spaces"
         >
           {lines.length === 0 && (
-            <span className="text-foreground/40">Starting…</span>
+            <span className="text-foreground/40">Starting\u2026</span>
           )}
           {lines.map((line, i) => (
             <div key={i.toString()}>{line}</div>

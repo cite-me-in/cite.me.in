@@ -123,8 +123,8 @@ describe("ai-legibility page - no scan yet", () => {
     ).toBeVisible();
   });
 
-  it("should show check AI readability title", async () => {
-    await expect(page.getByText("Check AI Readability")).toBeVisible();
+  it("should show check AI legibility title", async () => {
+    await expect(page.getByText("Check AI Legibility")).toBeVisible();
   });
 
   it("should show run scan button", async () => {
@@ -192,8 +192,7 @@ describe("ai-legibility page - with report", () => {
     await expect(reportPage.getByText("3/3").first()).toBeVisible();
   });
 
-  it("should show failed check with error icon", async () => {
-    await expect(reportPage.getByText("✗").first()).toBeVisible();
+  it("should show failed check in expanded accordion", async () => {
     await expect(reportPage.getByText("llms.txt").first()).toBeVisible();
   });
 

@@ -1,4 +1,9 @@
-import { CheckIcon, CopyIcon } from "lucide-react";
+import {
+  CheckIcon,
+  CopyIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+} from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
 import {
@@ -38,10 +43,17 @@ export default function ScanResults({ checks }: { checks: CheckResult[] }) {
               className="space-y-2"
               multiple
             >
-              {group.checks.map((check, i) => (
+              {group.checks.filter((c) => !c.passed).map((check, i) => (
                 <ExpandableCheckCard key={i} check={check} />
               ))}
             </Accordion>
+            {group.checks.filter((c) => c.passed).length > 0 && (
+              <div className="rounded-base border-border bg-green-50 border-2 px-4 py-2 text-sm text-green-700">
+                {group.checks.filter((c) => c.passed).length} check
+                {group.checks.filter((c) => c.passed).length > 1 ? "s" : ""}{" "}
+                passed
+              </div>
+            )}
           </div>
         ) : null,
       )}
@@ -60,15 +72,12 @@ function ExpandableCheckCard({ check }: { check: CheckResult }) {
           check.passed ? "bg-green-50" : "bg-red-50"
         }`}
       >
-        <span
-          className={`text-lg ${check.passed ? "text-green-600" : "text-red-600"}`}
-        >
-          {check.passed ? "✓" : "✗"}
-        </span>
-        <span className="font-bold">
-          {check.passed ? "Pass" : "Fail"}{" "}
-          <span className="font-normal">{check.name}</span>
-        </span>
+        {check.passed ? (
+          <CheckCircleIcon className="size-5 shrink-0 text-green-600" />
+        ) : (
+          <XCircleIcon className="size-5 shrink-0 text-red-600" />
+        )}
+        <span className="font-medium">{check.name}</span>
       </AccordionTrigger>
 
       {check.detail && (

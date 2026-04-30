@@ -118,10 +118,10 @@ function Fallback({ handleStartScan }: { handleStartScan: () => void }) {
   return (
     <Card variant="yellow">
       <CardHeader>
-        <CardTitle>Check AI Readability</CardTitle>
+        <CardTitle>Check AI Legibility</CardTitle>
         <CardDescription className="text-center">
-          Run a scan to check if your website is readable by AI agents like
-          ChatGPT, Claude, and Gemini.
+          Run a scan to check your website's AI legibility across ChatGPT,
+          Claude, and Gemini.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex justify-center">

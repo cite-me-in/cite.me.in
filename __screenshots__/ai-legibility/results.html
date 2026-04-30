@@ -31,7 +31,7 @@
       report-example.com
     </p>
   </div>
-  <div class="px-6 mb-0 flex flex-col items-center gap-8" data-slot="card-content">
+  <div class="px-6 mb-0 flex flex-col items-center gap-4" data-slot="card-content">
     <div class="relative inline-flex items-center justify-center">
       <svg height="125" width="200">
         <g>
@@ -51,8 +51,11 @@
         86
       </span>
     </div>
+    <p class="text-foreground/50 text-sm">
+      1 more to pass all checks
+    </p>
     <div class="flex justify-center gap-6">
-      <button class="flex cursor-pointer flex-col items-center gap-1 transition-all hover:scale-105">
+      <button class="flex min-h-11 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg px-4 py-2 transition-all hover:scale-105">
         <div class="text-base font-bold text-blue-600">
           Discovered
         </div>
@@ -60,7 +63,7 @@
           2/3
         </div>
       </button>
-      <button class="flex cursor-pointer flex-col items-center gap-1 transition-all hover:scale-105">
+      <button class="flex min-h-11 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg px-4 py-2 transition-all hover:scale-105">
         <div class="text-base font-bold text-purple-600">
           Trusted
         </div>
@@ -68,7 +71,7 @@
           3/3
         </div>
       </button>
-      <button class="flex cursor-pointer flex-col items-center gap-1 transition-all hover:scale-105">
+      <button class="flex min-h-11 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg px-4 py-2 transition-all hover:scale-105">
         <div class="text-base font-bold text-emerald-600">
           Welcomed
         </div>
@@ -77,7 +80,7 @@
         </div>
       </button>
     </div>
-    <p class="text-foreground/50 min-w-xl text-center text-base">
+    <p class="text-foreground/50 text-center text-base">
       6/7 checks passed
     </p>
   </div>
@@ -114,36 +117,14 @@
   <div class="flex w-full flex-col space-y-2" data-orientation="vertical" data-slot="accordion" dir="ltr" role="region">
     <div class="not-last:border-b rounded-base border-border bg-secondary-background overflow-hidden border-2" data-index="0" data-orientation="vertical" data-slot="accordion-item">
       <h3 class="flex" data-index="0" data-orientation="vertical">
-        <button aria-disabled="false" aria-expanded="false" class="group/accordion-trigger relative flex-1 justify-between rounded-lg border border-transparent text-left text-sm font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground flex items-center gap-3 px-4 py-3 hover:no-underline bg-green-50" data-orientation="vertical" data-slot="accordion-trigger" data-value="llms.txt" tabindex="0" type="button">
-          <span class="text-lg text-green-600">
-            ✓
-          </span>
-          <span class="font-bold">
-            Pass
-            <span class="font-normal">
-              sitemap.txt
-            </span>
-          </span>
-          <svg aria-hidden="true" class="lucide lucide-chevron-down pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-            <path d="m6 9 6 6 6-6"></path>
+        <button aria-controls="base-ui-_r_6_" aria-disabled="false" aria-expanded="true" class="group/accordion-trigger relative flex-1 justify-between rounded-lg border border-transparent text-left text-sm font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground flex items-center gap-3 px-4 py-3 hover:no-underline bg-red-50" data-orientation="vertical" data-slot="accordion-trigger" data-value="llms.txt" tabindex="0" type="button">
+          <svg aria-hidden="true" class="lucide lucide-circle-x size-5 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="m15 9-6 6"></path>
+            <path d="m9 9 6 6"></path>
           </svg>
-          <svg aria-hidden="true" class="lucide lucide-chevron-up pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-            <path d="m18 15-6-6-6 6"></path>
-          </svg>
-        </button>
-      </h3>
-    </div>
-    <div class="not-last:border-b rounded-base border-border bg-secondary-background overflow-hidden border-2" data-index="1" data-orientation="vertical" data-slot="accordion-item">
-      <h3 class="flex" data-index="1" data-orientation="vertical">
-        <button aria-disabled="false" aria-expanded="false" class="group/accordion-trigger relative flex-1 justify-between rounded-lg border border-transparent text-left text-sm font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground flex items-center gap-3 px-4 py-3 hover:no-underline bg-green-50" data-index="1" data-orientation="vertical" data-slot="accordion-trigger" data-value="llms.txt" tabindex="0" type="button">
-          <span class="text-lg text-green-600">
-            ✓
-          </span>
-          <span class="font-bold">
-            Pass
-            <span class="font-normal">
-              sitemap.xml
-            </span>
+          <span class="font-medium">
+            llms.txt
           </span>
           <svg aria-hidden="true" class="lucide lucide-chevron-down pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
             <path d="m6 9 6 6 6-6"></path>
@@ -153,28 +134,7 @@
           </svg>
         </button>
       </h3>
-    </div>
-    <div class="not-last:border-b rounded-base border-border bg-secondary-background overflow-hidden border-2" data-index="2" data-orientation="vertical" data-slot="accordion-item">
-      <h3 class="flex" data-index="2" data-orientation="vertical">
-        <button aria-controls="base-ui-_r_c_" aria-disabled="false" aria-expanded="true" class="group/accordion-trigger relative flex-1 justify-between rounded-lg border border-transparent text-left text-sm font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground flex items-center gap-3 px-4 py-3 hover:no-underline bg-red-50" data-index="2" data-orientation="vertical" data-slot="accordion-trigger" data-value="llms.txt" tabindex="0" type="button">
-          <span class="text-lg text-red-600">
-            ✗
-          </span>
-          <span class="font-bold">
-            Fail
-            <span class="font-normal">
-              llms.txt
-            </span>
-          </span>
-          <svg aria-hidden="true" class="lucide lucide-chevron-down pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-            <path d="m6 9 6 6 6-6"></path>
-          </svg>
-          <svg aria-hidden="true" class="lucide lucide-chevron-up pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-            <path d="m18 15-6-6-6 6"></path>
-          </svg>
-        </button>
-      </h3>
-      <div class="data-open:animate-accordion-down data-closed:animate-accordion-up overflow-hidden text-sm" data-index="2" data-orientation="vertical" data-slot="accordion-content" id="base-ui-_r_c_" role="region" style="--accordion-panel-height: auto; --accordion-panel-width: auto; animation-name: none;">
+      <div class="data-open:animate-accordion-down data-closed:animate-accordion-up overflow-hidden text-sm" data-index="0" data-orientation="vertical" data-slot="accordion-content" id="base-ui-_r_6_" role="region" style="--accordion-panel-height: auto; --accordion-panel-width: auto; animation-name: none;">
         <div class="h-(--accordion-panel-height) data-ending-style:h-0 data-starting-style:h-0 [&amp;_a]:underline [&amp;_a]:underline-offset-3 [&amp;_a]:hover:text-foreground [&amp;_p:not(:last-child)]:mb-4 border-border border-t px-4 py-4">
           <div class="space-y-4">
             <div>
@@ -235,102 +195,25 @@
       </div>
     </div>
   </div>
+  <div class="rounded-base border-border bg-green-50 border-2 px-4 py-2 text-sm text-green-700">
+    2 checks passed
+  </div>
 </div>
 <div class="scroll-mt-20 space-y-2" id="section-trusted">
   <h3 class="text-lg font-bold text-purple-600">
     Trusted
   </h3>
-  <div class="flex w-full flex-col space-y-2" data-orientation="vertical" data-slot="accordion" dir="ltr" role="region">
-    <div class="not-last:border-b rounded-base border-border bg-secondary-background overflow-hidden border-2" data-index="0" data-orientation="vertical" data-slot="accordion-item">
-      <h3 class="flex" data-index="0" data-orientation="vertical">
-        <button aria-disabled="false" aria-expanded="false" class="group/accordion-trigger relative flex-1 justify-between rounded-lg border border-transparent text-left text-sm font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground flex items-center gap-3 px-4 py-3 hover:no-underline bg-green-50" data-orientation="vertical" data-slot="accordion-trigger" tabindex="0" type="button">
-          <span class="text-lg text-green-600">
-            ✓
-          </span>
-          <span class="font-bold">
-            Pass
-            <span class="font-normal">
-              Homepage Content
-            </span>
-          </span>
-          <svg aria-hidden="true" class="lucide lucide-chevron-down pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-            <path d="m6 9 6 6 6-6"></path>
-          </svg>
-          <svg aria-hidden="true" class="lucide lucide-chevron-up pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-            <path d="m18 15-6-6-6 6"></path>
-          </svg>
-        </button>
-      </h3>
-    </div>
-    <div class="not-last:border-b rounded-base border-border bg-secondary-background overflow-hidden border-2" data-index="1" data-orientation="vertical" data-slot="accordion-item">
-      <h3 class="flex" data-index="1" data-orientation="vertical">
-        <button aria-disabled="false" aria-expanded="false" class="group/accordion-trigger relative flex-1 justify-between rounded-lg border border-transparent text-left text-sm font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground flex items-center gap-3 px-4 py-3 hover:no-underline bg-green-50" data-index="1" data-orientation="vertical" data-slot="accordion-trigger" tabindex="0" type="button">
-          <span class="text-lg text-green-600">
-            ✓
-          </span>
-          <span class="font-bold">
-            Pass
-            <span class="font-normal">
-              JSON-LD Structured Data
-            </span>
-          </span>
-          <svg aria-hidden="true" class="lucide lucide-chevron-down pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-            <path d="m6 9 6 6 6-6"></path>
-          </svg>
-          <svg aria-hidden="true" class="lucide lucide-chevron-up pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-            <path d="m18 15-6-6-6 6"></path>
-          </svg>
-        </button>
-      </h3>
-    </div>
-    <div class="not-last:border-b rounded-base border-border bg-secondary-background overflow-hidden border-2" data-index="2" data-orientation="vertical" data-slot="accordion-item">
-      <h3 class="flex" data-index="2" data-orientation="vertical">
-        <button aria-disabled="false" aria-expanded="false" class="group/accordion-trigger relative flex-1 justify-between rounded-lg border border-transparent text-left text-sm font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground flex items-center gap-3 px-4 py-3 hover:no-underline bg-green-50" data-index="2" data-orientation="vertical" data-slot="accordion-trigger" tabindex="0" type="button">
-          <span class="text-lg text-green-600">
-            ✓
-          </span>
-          <span class="font-bold">
-            Pass
-            <span class="font-normal">
-              Meta Tags
-            </span>
-          </span>
-          <svg aria-hidden="true" class="lucide lucide-chevron-down pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-            <path d="m6 9 6 6 6-6"></path>
-          </svg>
-          <svg aria-hidden="true" class="lucide lucide-chevron-up pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-            <path d="m18 15-6-6-6 6"></path>
-          </svg>
-        </button>
-      </h3>
-    </div>
+  <div class="flex w-full flex-col space-y-2" data-orientation="vertical" data-slot="accordion" dir="ltr" role="region"></div>
+  <div class="rounded-base border-border bg-green-50 border-2 px-4 py-2 text-sm text-green-700">
+    3 checks passed
   </div>
 </div>
 <div class="scroll-mt-20 space-y-2" id="section-welcomed">
   <h3 class="text-lg font-bold text-emerald-600">
     Welcomed
   </h3>
-  <div class="flex w-full flex-col space-y-2" data-orientation="vertical" data-slot="accordion" dir="ltr" role="region">
-    <div class="not-last:border-b rounded-base border-border bg-secondary-background overflow-hidden border-2" data-index="0" data-orientation="vertical" data-slot="accordion-item">
-      <h3 class="flex" data-index="0" data-orientation="vertical">
-        <button aria-disabled="false" aria-expanded="false" class="group/accordion-trigger relative flex-1 justify-between rounded-lg border border-transparent text-left text-sm font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground flex items-center gap-3 px-4 py-3 hover:no-underline bg-green-50" data-orientation="vertical" data-slot="accordion-trigger" tabindex="0" type="button">
-          <span class="text-lg text-green-600">
-            ✓
-          </span>
-          <span class="font-bold">
-            Pass
-            <span class="font-normal">
-              robots.txt
-            </span>
-          </span>
-          <svg aria-hidden="true" class="lucide lucide-chevron-down pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-            <path d="m6 9 6 6 6-6"></path>
-          </svg>
-          <svg aria-hidden="true" class="lucide lucide-chevron-up pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-            <path d="m18 15-6-6-6 6"></path>
-          </svg>
-        </button>
-      </h3>
-    </div>
+  <div class="flex w-full flex-col space-y-2" data-orientation="vertical" data-slot="accordion" dir="ltr" role="region"></div>
+  <div class="rounded-base border-border bg-green-50 border-2 px-4 py-2 text-sm text-green-700">
+    1 check passed
   </div>
 </div>

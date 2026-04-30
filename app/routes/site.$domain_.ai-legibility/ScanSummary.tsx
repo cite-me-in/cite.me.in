@@ -53,8 +53,13 @@ export default function ScanSummary({
           {domain}
         </p>
       </CardHeader>
-      <CardContent className="mb-0 flex flex-col items-center gap-8">
+      <CardContent className="mb-0 flex flex-col items-center gap-4">
         <RadialGauge summary={summary} />
+        {failedChecks.length > 0 && (
+          <p className="text-foreground/50 text-sm">
+            {failedChecks.length} more to pass all checks
+          </p>
+        )}
         <div className="flex justify-center gap-6">
           {CATEGORIES.map((category) => {
             const checks = summary[category.key];
@@ -63,7 +68,7 @@ export default function ScanSummary({
                 <button
                   key={category.key}
                   onClick={() => handleCategoryClick(category.key)}
-                  className="flex cursor-pointer flex-col items-center gap-1 transition-all hover:scale-105"
+                  className="flex min-h-11 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg px-4 py-2 transition-all hover:scale-105"
                 >
                   <div
                     className={twMerge("text-base font-bold", category.color)}
@@ -78,7 +83,7 @@ export default function ScanSummary({
             );
           })}
         </div>
-        <p className="text-foreground/50 min-w-xl text-center text-base">
+        <p className="text-foreground/50 text-center text-base">
           {totalPassed}/{totalChecks} checks passed
         </p>
       </CardContent>
