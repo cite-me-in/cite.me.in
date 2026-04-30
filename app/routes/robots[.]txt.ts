@@ -3,6 +3,8 @@ import envVars from "~/lib/envVars.server";
 const robots = [
   ["User-agent: *", "Allow: /"],
   ["Disallow: /error"],
+  ["# Declare content usage signals:"],
+  ["Content-Signal: search=yes, ai-input=yes, ai-train=no"],
   [
     `Sitemap: ${new URL("/sitemap.xml", envVars.VITE_APP_URL).toString()}`,
     `Sitemap: ${new URL("/sitemap.txt", envVars.VITE_APP_URL).toString()}`,
