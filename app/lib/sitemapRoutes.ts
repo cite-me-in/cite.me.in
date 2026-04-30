@@ -8,6 +8,7 @@ const localRoutes = [
   "/terms",
   "/docs",
   "/pricing",
+  "/try",
   "/visibility-score",
 ].map((path) => new URL(path, process.env.VITE_APP_URL).toString());
 

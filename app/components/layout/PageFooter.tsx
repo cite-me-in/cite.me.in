@@ -7,6 +7,7 @@ const links = [
   {
     title: "Product",
     links: [
+      { to: "/try", label: "Free AI Scan" },
       { to: "/pricing", label: "Pricing" },
       { to: "/faq", label: "FAQ" },
       { to: "/docs", label: "API Docs" },
