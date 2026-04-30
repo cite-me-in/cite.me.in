@@ -20,7 +20,10 @@ test("shows scan page with domain badge", async () => {
 });
 
 test("displays scan progress and results", async () => {
-  await page.waitForTimeout(5_000);
+  // Wait for scan to complete by checking for a UI element indicating scan result (adapt selector as needed)
+  await expect(
+    page.getByText(/scan complete|scan finished|results/i),
+  ).toBeVisible({ timeout: 20_000 });
   await expect(page.locator("main")).toMatchVisual({
     name: `legibility-scan/2.result`,
   });
@@ -28,7 +31,7 @@ test("displays scan progress and results", async () => {
 
 test("shows CTA section after scrolling", async () => {
   await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(100);
   await expect(page.locator("main")).toMatchVisual({
     name: `legibility-scan/3.cta`,
   });
