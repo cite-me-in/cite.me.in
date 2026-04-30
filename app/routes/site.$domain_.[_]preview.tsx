@@ -185,10 +185,10 @@ export default function EmailPreview({ loaderData }: Route.ComponentProps) {
           value={currentType}
           onValueChange={(value) => setSearchParams({ type: value as string })}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-48">
             <SelectValue>{EMAIL_LABELS[currentType as EmailType]}</SelectValue>
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="w-48">
             <SelectGroup>
               {EMAIL_TYPES.map((t) => (
                 <SelectItem key={t} value={t}>
@@ -201,7 +201,7 @@ export default function EmailPreview({ loaderData }: Route.ComponentProps) {
 
         <fetcher.Form method="post">
           <input type="hidden" name="type" value={currentType} />
-          <Button type="submit" disabled={fetcher.state !== "idle"}>
+          <Button type="submit" disabled={fetcher.state !== "idle"} size="sm">
             <MailIcon className="size-4" />
             {fetcher.state === "submitting"
               ? "Sending..."
