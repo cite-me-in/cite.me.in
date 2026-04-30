@@ -52,7 +52,7 @@ export default function Scanning({ domain }: { domain: string }) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           {done ? (
-            <span className="text-green-600 text-xl">✓</span>
+            <span className="text-xl text-green-600">✓</span>
           ) : (
             <Spinner />
           )}

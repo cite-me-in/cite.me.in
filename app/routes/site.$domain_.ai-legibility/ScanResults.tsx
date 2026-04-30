@@ -43,14 +43,18 @@ export default function ScanResults({ checks }: { checks: CheckResult[] }) {
               className="space-y-2"
               multiple
             >
-              {group.checks.filter((c) => !c.passed).map((check, i) => (
-                <ExpandableCheckCard key={i} check={check} />
-              ))}
+              {group.checks
+                .filter((c) => !c.passed)
+                .map((check, i) => (
+                  <ExpandableCheckCard key={i} check={check} />
+                ))}
             </Accordion>
             {group.checks.filter((c) => c.passed).length > 0 && (
-              <div className="rounded-base border-border bg-green-50 border-2 px-4 py-2 text-sm text-green-700">
+              <div className="rounded-base border-border border-2 bg-green-50 px-4 py-2 text-sm text-green-700">
                 {group.checks.filter((c) => c.passed).length} check
-                {group.checks.filter((c) => c.passed).length > 1 ? "s" : ""}{" "}
+                {group.checks.filter((c) => c.passed).length > 1
+                  ? "s"
+                  : ""}{" "}
                 passed
               </div>
             )}

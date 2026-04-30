@@ -74,7 +74,7 @@ export default async function runAILegibilityScan({
   }
 }
 
-async function runScanSteps({
+export async function runScanSteps({
   log,
   domain,
 }: {
