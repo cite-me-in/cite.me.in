@@ -4,6 +4,7 @@
   font-family: "Archivo";
   font-weight: 100 900;
   src: url("/fonts/Archivo-VariableFont_wdth,wght.ttf") format("truetype");
+  font-display: swap;
 }
 
 @font-face {
@@ -12,11 +13,13 @@
     format("truetype");
   font-weight: 100 900;
   font-style: italic;
+  font-display: swap;
 }
 
 @font-face {
   font-family: "Outfit";
   src: url("/fonts/Outfit-VariableFont_wght.ttf") format("truetype");
+  font-display: swap;
 }
 
 @font-face {
@@ -24,12 +27,14 @@
   src: url("/fonts/Quando-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
   font-family: "Atkinson";
   src: url("/fonts/AtkinsonHyperlegibleMono-VariableFont_wght.ttf")
     format("truetype");
+  font-display: swap;
 }
 
 @theme {

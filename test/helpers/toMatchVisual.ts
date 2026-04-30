@@ -55,8 +55,10 @@ expect.extend({
     if (
       "waitForLoadState" in locator &&
       typeof locator.waitForLoadState === "function"
-    )
+    ) {
       await locator.waitForLoadState("networkidle");
+      await locator.evaluate(() => document.fonts.ready);
+    }
     // Wait for all possible animations/transitions (tweak ms if needed for your UI)
     await sleep(200);
 
