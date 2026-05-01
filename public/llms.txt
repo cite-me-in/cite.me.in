@@ -1,87 +1,132 @@
 # cite.me.in
 
-> Monitor your brand's visibility in AI-generated responses. Cite.me.in tracks when and where AI platforms cite your website in their answers. Think of it as Google Search Console, but for LLMs. Squirrel-brain friendly.
+> Monitor your brand's visibility in AI-generated responses. Cite.me.in tracks when and where AI platforms cite your website. Think of it as Google Search Console, but for LLMs.
+
+## What is cite.me.in?
+
+Cite.me.in monitors whether AI platforms cite your domain in their answers. We run queries across Claude, ChatGPT, Gemini, and Copilot with web search enabled, record which URLs appear in responses, and track how your visibility changes over time.
+
+Answering questions like: "Which AI platforms mention my site?", "What queries trigger citations of my content?", "Who are my competitors in AI search?", "Is my AI visibility growing or shrinking?"
+
+## How to try it (free, no account)
+
+Go to [/try](/try) and enter any website URL. We run 13 AI legibility checks — sitemaps, robots.txt, JSON-LD, meta tags, content quality, and more — showing which checks pass and fail with explanations. No sign-up required.
+
+After your scan, [sign up](/sign-up) for 25 days free to get weekly monitoring across all platforms.
 
 ## How it works
 
-1. Add your website domain
-2. We read your site content and auto-suggest 9 queries across three intent categories: discovery (users who don't know your brand), active search (users looking for what you offer), and comparison (users evaluating options)
-3. Queries run once per platform per day with web search enabled — the same experience your potential customers have
-4. Every URL that appears in an AI response gets recorded — you see which platforms cite you, how often, and for which queries
-5. Brand sentiment is analyzed per platform run (positive, negative, neutral, mixed)
+1. [Sign up](/sign-up) for free (25 days, no credit card)
+2. Add your domain — we read your content and auto-suggest 9 queries across three categories: discovery, active search, and comparison
+3. Queries run once per platform per day via official APIs with web search enabled
+4. Every URL cited in responses is recorded — you see which platforms cite you, for which queries, and at what position
+5. Brand sentiment is analyzed per run (positive, negative, neutral, mixed)
 
-## Supported AI platforms
+You have full control over queries — add, edit, delete, and organize into named groups. See the [dashboard](/sites) for your citation data.
 
-- Claude (Anthropic)
-- ChatGPT (OpenAI)
-- Gemini (Google)
-- Copilot
+## Benefits
 
-All four are queried in parallel for each monitoring run.
+Answering "Why should I use cite.me.in?":
+
+- **Know where you stand** — see which AI platforms cite your domain and which queries trigger citations. [Pricing page](/pricing)
+- **Track trends** — daily snapshots build a visibility trend from day one. [Dashboard](/sites)
+- **Discover competitors** — see which other domains appear alongside you in AI responses. [Dashboard](/sites)
+- **Auto-suggested queries** — we read your site and generate 9 relevant queries. [How it works](#how-it-works)
+- **[Free AI legibility scan](/try)** — check if AI agents can find, trust, and cite your content. No account needed.
+- **[API access](/docs)** — REST API with Bearer token authentication, OpenAPI 3.1 spec
+- **Email digests** — notifications when citation patterns change (Pro plan)
+- **Bot traffic analytics** — see which AI crawlers visit your site
+
+## Supported platforms
+
+- [Claude](https://claude.ai) (Anthropic) — daily queries with web search
+- [ChatGPT](https://chatgpt.com) (OpenAI) — daily queries with web search
+- [Gemini](https://gemini.google.com) (Google) — daily queries with web search
+- [Copilot](https://copilot.microsoft.com) — daily queries with web search
+
+All four queried in parallel per monitoring run. Skip a platform if a run already exists within 24 hours.
 
 ## Key metrics
 
+Answering "What data does cite.me.in show?":
+
+- **Visibility score** (0-100) — composite of query coverage (35%), position-weighted citation rank (30%), share of voice (20%), mention rate (15%)
 - **All citations** — total URLs cited across all queries (current vs previous week)
 - **Your citations** — how many times your domain appears (current vs previous week)
-- **Visibility score** — LLM visibility score (current vs previous week)
-- **Query coverage rate** — percentage of queries where your domain appears in citations (0-100)
-
-## Features
-
-- Auto-suggested queries based on site content (9 queries across discovery, active search, comparison)
-- Custom queries — add, edit, delete, and organize into named groups
-- Citation tracking with position data
-- Top competitors — see which other domains appear alongside you
-- Brand sentiment analysis per platform
-- Daily monitoring runs per platform
-- Email digests and alerts (Pro)
-- Benchmark data — aggregate network comparisons (Pro)
-- API access (Pro)
-- Bot traffic analytics — see which AI crawlers visit your site
-- Visitor traffic from AI platforms
+- **Query coverage rate** — percentage of queries where your domain appears in citations
 
 ## Pricing
 
-- **Free Trial** — $0 for 25 days, 1 domain, all 4 platforms, monitoring included
-- **Pro** — $35/month or $320/year (save $100), up to 5 sites, unlimited daily runs, full citation history, API access, email digests, benchmark data
-- **Custom** — unlimited sites, everything in Pro, priority support — for agencies
+Answering "How much does cite.me.in cost?":
+
+- **[Free Trial](/sign-up)** — $0 for 25 days, no credit card, 1 domain, all platforms. Most tools give a week; we give enough time to actually see results.
+- **[Pro](/pricing)** — $35/month or $320/year (save $100), up to 5 sites, unlimited daily runs, full citation history, API, email digests, benchmarks. Cancel anytime.
+- **Custom** — unlimited sites, priority support — for agencies
+
+## FAQ
+
+### What counts as a citation?
+Any URL that appears in an AI platform's response to a query. We record the full list of cited URLs and check whether your domain appears and at what position.
+
+### How is the visibility score calculated?
+Composite: query coverage (35%), position-weighted citation rank (30%), share of voice (20%), mention rate (15%).
+
+### Do I have to write my own queries?
+No. When you add a site, we read your content and automatically suggest 9 queries across discovery, active search, and comparison. Use them as-is, edit, or add your own.
+
+### How far back does historical data go?
+From day one of monitoring. No backfill, but trends build automatically with daily runs.
+
+### What if a platform cites no URLs?
+We record the result anyway. A zero-citation response is meaningful — the platform answered without external sources.
+
+### Why pay when it's open-source?
+Self-hosting means managing uptime, updates, and LLM API keys. $35/mo handles all that plus aggregate benchmark data that self-hosting can't provide.
+
+### Can I cancel?
+Yes — from your billing portal. No commitment, no fee. Data stays accessible until end of billing period.
 
 ## API
 
-REST API with Bearer token authentication. Full OpenAPI 3.1 spec at [/docs](/docs).
+Answering "How do I integrate cite.me.in programmatically?":
 
-Endpoints:
+REST API with Bearer token authentication. Full [OpenAPI 3.1 spec](/docs).
 
+Key endpoints:
 - `GET /api/me` — authenticated user details with sites
-- `GET /api/user/{id}` — user details by ID (own user only)
+- `GET /api/user/{id}` — user details (own user only)
 - `GET /api/site/{domain}` — site details with users and roles
 - `GET /api/site/{domain}/metrics` — citation metrics (current vs previous week)
 - `GET /api/site/{domain}/queries` — queries, citations, and sentiment per platform
 
 ## Who it's for
 
-- **Solo founders** — know if AI platforms are sending you traffic or ignoring you
-- **Small businesses** — find out if ChatGPT and Copilot mention you in their answers
-- **Marketing teams** — track AI citation visibility as a channel, see trends, compare platforms
+- **Solo founders** — know if AI platforms send you traffic or ignore you
+- **Small businesses** — find out if ChatGPT and Copilot mention you
+- **Marketing teams** — track AI citation visibility as a channel, compare platforms
 - **Agencies** — monitor multiple client domains from one account
+- **Anyone** — try the [free AI legibility scan](/try) without signing up
 
 ## Open source
 
-Cite.me.in is open source. You can self-host, but running it yourself means managing uptime, updates, and LLM API keys. The hosted version handles all of that plus provides aggregate benchmark data.
+[Source code on GitHub](https://github.com/cite-me-in/cite.me.in). Self-hostable, but the hosted version handles uptime, updates, and LLM API keys, plus provides aggregate benchmark data.
 
 ## Pages
 
-- [/](/) — Landing page
-- [/pricing](/pricing) — Plans and pricing
-- [/faq](/faq) — Frequently asked questions
-- [/docs](/docs) — API documentation and OpenAPI spec
-- [/about](/about) — About cite.me.in
-- [/sign-up](/sign-up) — Create an account
-- [/sign-in](/sign-in) — Sign in to your account
-- [/privacy](/privacy) — Privacy policy
-- [/terms](/terms) — Terms of service
+- [/](/): Landing page with overview, feature highlights, testimonials, pricing comparison, and CTA to sign up or try the free scan
+- [/try](/try): Free AI legibility scan — enter any URL, get 13 checks with pass/fail results and explanations. No account needed.
+- [/pricing](/pricing): Plan comparison — Free Trial (25 days), Pro ($35/mo), Custom. Features per tier, FAQ about billing and switching plans
+- [/sign-up](/sign-up): Create account — email, name, password. 25-day free trial, no credit card
+- [/sign-in](/sign-in): Sign in with email and password
+- [/faq](/faq): Full FAQ covering getting started, how it works, platforms, data, pricing, account management
+- [/docs](/docs): API documentation with OpenAPI 3.1 spec — authentication, endpoints, rate limits, code examples
+- [/about](/about): About cite.me.in — mission, team, story
+# [/privacy](/privacy): Privacy policy — data collection, cookies, third-party services, GDPR/CCPA rights
+# [/terms](/terms): Terms of service — account terms, acceptable use, payment terms, limitation of liability
+- [/blog](https://blog.cite.me.in): Product updates, guides on AI visibility, industry analysis
 
 ## Links
 
 - [Blog](https://blog.cite.me.in) — Updates and insights
 - [GitHub](https://github.com/cite-me-in/cite.me.in) — Source code
+- [/try](/try) — Free AI legibility scan
