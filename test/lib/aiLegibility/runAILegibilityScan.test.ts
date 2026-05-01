@@ -177,7 +177,7 @@ describe("runScan", () => {
 
     expect(result?.summary.discovered.passed).toBe(1);
     expect(result?.summary.discovered.total).toBe(5);
-    expect(result?.summary.trusted.passed).toBe(3);
+    expect(result?.summary.trusted.passed).toBe(4);
     expect(result?.summary.welcomed.passed).toBe(2);
   });
 

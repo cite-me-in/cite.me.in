@@ -17,7 +17,6 @@
     "!__screenshots__"
   ],
   "ignoreDependencies": [
-    "@prisma/client",
     "@secretlint/secretlint-rule-preset-recommend",
     "vercel"
   ],
