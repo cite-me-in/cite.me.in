@@ -1,6 +1,5 @@
 import { expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vite-plus/test";
-import { removeElements } from "~/lib/html/parseHTML";
 import prisma from "~/lib/prisma.server";
 import type { User } from "~/prisma";
 import { goto } from "~/test/helpers/launchBrowser";
@@ -124,12 +123,12 @@ describe("single citation page", () => {
     const page = await goto(`/site/${HOSTNAME}/citation/${QUERY_ID}`);
     await expect(page.locator("main")).toMatchVisual({
       name: "site/citations.query",
-      modify: (html) =>
-        removeElements(html, (node) => {
-          // Strip internal navigation links that contain dynamic paths
-          const href = node.attributes.href ?? "";
-          return href.startsWith("/site/");
-        }),
+      modify: (doc) => {
+        for (const el of doc.querySelectorAll("*")) {
+          const href = el.getAttribute("href") ?? "";
+          if (href.startsWith("/site/")) el.remove();
+        }
+      },
     });
   });
 });

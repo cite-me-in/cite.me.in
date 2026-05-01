@@ -1,8 +1,6 @@
 import { type Locator, type Page, expect } from "@playwright/test";
 import { afterAll, beforeAll, describe, it } from "vite-plus/test";
 import { hashPassword } from "~/lib/auth.server";
-import type { HTMLNode } from "~/lib/html/HTMLNode";
-import { modifyElements, removeElements } from "~/lib/html/parseHTML";
 import prisma from "~/lib/prisma.server";
 import type { Site, User } from "~/prisma";
 import { goto } from "~/test/helpers/launchBrowser";
@@ -400,44 +398,17 @@ describe("sites route", () => {
   });
 });
 
-function fixBaseline(html: HTMLNode[]) {
-  // Ignore the varying href attribute on site links
-  modifyElements(
-    html,
-    (node) =>
-      node.tag === "a" && /\/site\/[^/]+/.test(node.attributes.href ?? ""),
-    (node) => ({
-      ...node,
-      attributes: { ...node.attributes, href: "/site/id" },
-    }),
-  );
-
-  // Ignore the varying id attribute on input elements
-  modifyElements(
-    html,
-    (node) => node.tag === "input",
-    (node) => ({
-      ...node,
-      attributes: { ...node.attributes, id: null },
-    }),
-  );
-
-  // Ignore the varying id attribute on button elements
-  modifyElements(
-    html,
-    (node) => node.tag === "button",
-    (node) => ({
-      ...node,
-      attributes: { ...node.attributes, id: null },
-    }),
-  );
-
-  // Don't test Recharts charts
-  removeElements(
-    html,
-    (node) =>
-      !!node.attributes.class?.includes("recharts-responsive-container"),
-  );
-
-  return html;
+function fixBaseline(doc: Document) {
+  for (const el of doc.querySelectorAll("*")) {
+    if (
+      el.tagName === "A" &&
+      /\/site\/[^/]+/.test(el.getAttribute("href") ?? "")
+    )
+      el.setAttribute("href", "/site/id");
+    if (el.tagName === "INPUT" || el.tagName === "BUTTON")
+      el.removeAttribute("id");
+    if (el.getAttribute("class")?.includes("recharts-responsive-container"))
+      el.remove();
+  }
+  return doc;
 }

@@ -1,23 +1,13 @@
 import { ms } from "convert";
 import debug from "debug";
+import { parseHTML } from "linkedom";
 import captureAndLogError from "~/lib/captureAndLogError.server";
-import parseHTMLTree, { getElementsByTagName } from "~/lib/html/parseHTML";
 import { isSameDomain, normalizeDomain } from "~/lib/isSameDomain";
 
 const MEDIA_EXTENSIONS = /\.(pdf|jpg|jpeg|png|gif|svg|webp|mp4|mp3|zip|exe)$/i;
 
 const logger = debug("crawl");
 
-/**
- * Discovers URLs from the given domain. Looks at robots.txt, sitemap.txt,
- * sitemap.xml, and RSS/Atom feeds. Also looks at nav links in the homepage
- * HTML. Only returns URLs that are on the same domain as the base URL.
- *
- * @param baseURL - The base URL of the domain to discover URLs from.
- * @param homepage - The HTML of the homepage.
- * @param signal - The abort signal to use to cancel the discovery.
- * @returns The discovered URLs and the disallowed URLs.
- */
 export default async function discoverURLs({
   url,
   homepage,
@@ -29,13 +19,13 @@ export default async function discoverURLs({
 }): Promise<URL[]> {
   const { hostname } = new URL(url);
   const probe = () => AbortSignal.any([signal, AbortSignal.timeout(ms("3s"))]);
-  const tree = parseHTMLTree(homepage);
+  const doc = parseHTML(homepage).document;
 
   const [sitemapURLs, rssURLs] = await Promise.all([
-    fetchSitemapURLs(url, tree, probe()),
-    fetchRSS(url, tree, probe()),
+    fetchSitemapURLs(url, doc, probe()),
+    fetchRSS(url, doc, probe()),
   ]);
-  const navURLs = extractNavURLs({ baseURL: url, tree });
+  const navURLs = extractNavURLs({ baseURL: url, doc });
   const urls = dedup([...sitemapURLs, ...rssURLs, ...navURLs]).filter((url) =>
     isSameDomain({ domain: hostname, url }),
   );
@@ -44,25 +34,13 @@ export default async function discoverURLs({
   return urls;
 }
 
-/**
- * Fetches the sitemap.txt or sitemap.xml file from the homepage HTML and
- * returns a list of URLs from it.
- *
- * @param baseURL - The base URL of the domain to fetch sitemap URLs from.
- * @param tree - The HTML tree of the homepage.
- * @param signal - The abort signal to use to cancel the fetch.
- * @returns A list of URLs from the sitemap.
- */
 async function fetchSitemapURLs(
   baseURL: URL,
-  tree: ReturnType<typeof parseHTMLTree>,
+  doc: Document,
   signal: AbortSignal,
 ): Promise<URL[]> {
-  const links = getElementsByTagName(tree, "link");
-
-  const url = links.find(
-    (link) => link.attributes.rel === "sitemap" && link.attributes.href,
-  )?.attributes.href;
+  const link = doc.querySelector('link[rel="sitemap"]');
+  const url = link?.getAttribute("href");
   if (!url) return [];
 
   try {
@@ -94,13 +72,6 @@ async function fetchSitemapURLs(
   }
 }
 
-/**
- * Parses the XML of the sitemap and returns a list of URLs from it.
- *
- * @param xml - The XML of the sitemap.
- * @param domain - The domain of the URLs in the sitemap.
- * @returns A list of URLs from the sitemap.
- */
 async function parseSitemapXML({
   xml,
   baseURL,
@@ -112,33 +83,20 @@ async function parseSitemapXML({
   const locRegex = /<loc>(.*?)<\/loc>/g;
   let match = locRegex.exec(xml);
   while (match !== null) {
-    const url = match[1]?.trim();
-    if (url) locs.push(new URL(url, baseURL));
+    const locUrl = match[1]?.trim();
+    if (locUrl) locs.push(new URL(locUrl, baseURL));
     match = locRegex.exec(xml);
   }
   return locs;
 }
 
-/**
- * Fetches the RSS/Atom feed link from the homepage HTML and returns a list of
- * URLs from it.
- *
- * @param baseURL - The base URL of the domain to fetch RSS/Atom feed from.
- * @param tree - The HTML tree of the homepage.
- * @param signal - The abort signal to use to cancel the fetch.
- * @returns A list of URLs from the RSS/Atom feed.
- */
 async function fetchRSS(
   baseURL: URL,
-  tree: ReturnType<typeof parseHTMLTree>,
+  doc: Document,
   signal: AbortSignal,
 ): Promise<URL[]> {
-  const links = getElementsByTagName(tree, "link");
-  const url = links.find(
-    (link) =>
-      link.attributes.type?.includes("rss") ||
-      link.attributes.type?.includes("atom"),
-  )?.attributes.href;
+  const link = doc.querySelector('link[type*="rss"], link[type*="atom"]');
+  const url = link?.getAttribute("href");
   if (!url) return [];
 
   try {
@@ -164,9 +122,7 @@ async function fetchRSS(
       atomMatch = atomRegex.exec(xml);
     }
 
-    const urls = [...rssLinks, ...atomLinks].map(
-      (url) => new URL(url, baseURL),
-    );
+    const urls = [...rssLinks, ...atomLinks].map((u) => new URL(u, baseURL));
     logger("[crawl] Fetched %s: %d RSS/Atom URLs", url, urls.length);
     return urls;
   } catch (error) {
@@ -180,31 +136,22 @@ async function fetchRSS(
   }
 }
 
-/**
- * Extracts the navigation anchor `href`s from the homepage HTML and returns a list of
- * URLs from them.
- *
- * @param baseURL - The base URL of the domain to extract navigation anchor `href`s from.
- * @param tree - The HTML tree of the homepage.
- * @returns A list of navigation anchor `href`s, deduplicated and filtered
- * against the disallowed URLs, normalized to the base URL.
- */
 function extractNavURLs({
   baseURL,
-  tree,
+  doc,
 }: {
   baseURL: URL;
-  tree: ReturnType<typeof parseHTMLTree>;
+  doc: Document;
 }): URL[] {
-  const navs = getElementsByTagName(tree, "nav");
+  const navs = doc.querySelectorAll("nav");
   const anchors =
     navs.length > 0
-      ? navs.flatMap((nav) => getElementsByTagName(nav.children, "a"))
-      : getElementsByTagName(tree, "a");
+      ? [...navs].flatMap((nav) => [...nav.querySelectorAll("a")])
+      : [...doc.querySelectorAll("a")];
 
   const urls = anchors
     .map((anchor) => {
-      const href = anchor.attributes.href;
+      const href = anchor.getAttribute("href");
       if (!href || href.startsWith("#") || href.startsWith("mailto:"))
         return null;
       if (MEDIA_EXTENSIONS.test(href)) return null;

@@ -7,7 +7,6 @@ import { expect } from "@playwright/test";
 import type { Locator, Page } from "playwright";
 import { sleep } from "radashi";
 import invariant from "tiny-invariant";
-import type { HTMLNode } from "~/lib/html/HTMLNode";
 import "~/test/helpers/toMatchInnerHTML";
 import "~/test/helpers/toMatchScreenshot";
 import vitestConfig from "../../vitest.config";
@@ -29,7 +28,7 @@ declare global {
       toMatchVisual(options?: {
         name?: string;
         tolerance?: number;
-        modify?: (html: HTMLNode[]) => void;
+        modify?: (doc: Document) => void;
       }): Promise<R>;
     }
   }
@@ -45,7 +44,7 @@ expect.extend({
     options?: {
       name?: string;
       tolerance?: number;
-      modify?: (html: HTMLNode[]) => void;
+      modify?: (doc: Document) => void;
     },
   ): Promise<{ message: () => string; pass: boolean }> {
     const name = options?.name || getTestName();

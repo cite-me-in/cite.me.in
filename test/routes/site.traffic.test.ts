@@ -1,6 +1,5 @@
 import { expect } from "@playwright/test";
 import { afterAll, beforeAll, describe, it } from "vite-plus/test";
-import { removeElements } from "~/lib/html/parseHTML";
 import prisma from "~/lib/prisma.server";
 import type { User } from "~/prisma";
 import { goto } from "~/test/helpers/launchBrowser";
@@ -198,12 +197,17 @@ describe("traffic page", () => {
     it("should match visually", { timeout: 30_000 }, async () => {
       await expect(page.locator("main")).toMatchVisual({
         name: "site/traffic-with-visitors",
-        modify: (html) =>
-          removeElements(html, (node) => {
-            if (node.attributes["data-slot"] === "chart") return true;
-            const href = node.attributes.href ?? "";
-            return href.startsWith("/site/") && !href.endsWith("/traffic");
-          }),
+        modify: (doc) => {
+          for (const el of doc.querySelectorAll("*")) {
+            if (el.getAttribute("data-slot") === "chart") {
+              el.remove();
+              continue;
+            }
+            const href = el.getAttribute("href") ?? "";
+            if (href.startsWith("/site/") && !href.endsWith("/traffic"))
+              el.remove();
+          }
+        },
       });
     });
   });

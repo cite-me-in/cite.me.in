@@ -1,7 +1,6 @@
 import { expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vite-plus/test";
 import { sessionCookie } from "~/lib/cookies.server";
-import { removeElements } from "~/lib/html/parseHTML";
 import prisma from "~/lib/prisma.server";
 import type { User } from "~/prisma";
 import { goto } from "~/test/helpers/launchBrowser";
@@ -75,11 +74,13 @@ describe("site queries page", () => {
     it("should match visually", async () => {
       await expect(page.locator("main")).toMatchVisual({
         name: "site/queries-empty",
-        modify: (html) =>
-          removeElements(html, (node) => {
-            const href = node.attributes.href ?? "";
-            return href.startsWith("/site/") && !href.endsWith("/queries");
-          }),
+        modify: (doc) => {
+          for (const el of doc.querySelectorAll("*")) {
+            const href = el.getAttribute("href") ?? "";
+            if (href.startsWith("/site/") && !href.endsWith("/queries"))
+              el.remove();
+          }
+        },
       });
     });
   });
@@ -134,11 +135,13 @@ describe("site queries page", () => {
     it("should match visually", async () => {
       await expect(page.locator("main")).toMatchVisual({
         name: "site/queries-few",
-        modify: (html) =>
-          removeElements(html, (node) => {
-            const href = node.attributes.href ?? "";
-            return href.startsWith("/site/") && !href.endsWith("/queries");
-          }),
+        modify: (doc) => {
+          for (const el of doc.querySelectorAll("*")) {
+            const href = el.getAttribute("href") ?? "";
+            if (href.startsWith("/site/") && !href.endsWith("/queries"))
+              el.remove();
+          }
+        },
       });
     });
   });

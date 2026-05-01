@@ -9,29 +9,18 @@ import {
 } from "node:fs/promises";
 import path, { dirname } from "node:path";
 import { expect } from "@playwright/test";
+import { diffLines } from "diff";
+import { parseHTML } from "linkedom";
 import type { Locator, Page } from "playwright";
 import invariant from "tiny-invariant";
-import diffHTMLs from "~/lib/html/diffHTMLs";
-import formatHTMLTree from "~/lib/html/formatHTML";
-import type { HTMLNode } from "~/lib/html/HTMLNode";
-import parseHTMLTree from "~/lib/html/parseHTML";
 import { baseDir } from "./toMatchVisual";
 
 declare global {
   namespace PlaywrightTest {
     interface Matchers<R> {
-      /**
-       * Takes the inner HTML of the page and compares it to the baseline HTML.
-       *
-       * @param options - The options for the matcher.
-       * @param options.name - The name of the test.
-       * @param options.modify - A function to modify the HTML of any desired content.
-       * @example
-       * await expect(page).toMatchInnerHTML();
-       */
       toMatchInnerHTML(options?: {
         name?: string;
-        modify?: (html: HTMLNode[]) => void;
+        modify?: (doc: Document) => void;
       }): Promise<R>;
     }
   }
@@ -40,7 +29,7 @@ declare global {
 expect.extend({
   async toMatchInnerHTML(
     locator: Locator | Page,
-    options?: { name?: string; modify?: (html: HTMLNode[]) => void },
+    options?: { name?: string; modify?: (doc: Document) => void },
   ): Promise<{ message: () => string; pass: boolean }> {
     const name = options?.name || getTestName();
     const filename = path.resolve(baseDir, `${name}.html`);
@@ -49,9 +38,9 @@ expect.extend({
         ? await locator.innerHTML()
         : await (locator as Page).innerHTML("body");
 
-    const html = parseHTMLTree(rawHtml);
-    if (options?.modify) options.modify(html);
-    const formattedHtml = formatHTMLTree(html);
+    const doc = parseHTML(rawHtml).document;
+    if (options?.modify) options.modify(doc);
+    const formattedHtml = formatHTMLTree(doc);
 
     try {
       await access(filename, constants.R_OK);
@@ -80,6 +69,92 @@ expect.extend({
     return { message: () => "HTML matches baseline", pass: true };
   },
 });
+
+function formatHTMLTree(doc: Document): string {
+  const parts: string[] = [];
+
+  function formatNode(node: Node, indent = 0): void {
+    const pad = "  ".repeat(indent);
+
+    if (node.nodeType === 3) {
+      const text = (node as Text).textContent ?? "";
+      const escaped = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+      parts.push(pad + escaped);
+    } else if (node.nodeType === 1) {
+      const el = node as Element;
+      const tag = el.tagName.toLowerCase();
+
+      const attrs = [...el.attributes]
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .filter(
+          (attr) =>
+            !(
+              (attr.name === "id" || attr.name === "for") &&
+              attr.value?.match(/^_r_\d+_$/)
+            ),
+        )
+        .map((attr) =>
+          attr.value === ""
+            ? attr.name
+            : `${attr.name}="${attr.value.replace(/"/g, "&quot;")}"`,
+        )
+        .join(" ");
+
+      const tagOpen = attrs ? `<${tag} ${attrs}>` : `<${tag}>`;
+
+      if (!el.childNodes.length) {
+        if (
+          /^(area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)$/i.test(
+            tag,
+          )
+        ) {
+          parts.push(pad + (attrs ? `<${tag} ${attrs} />` : `<${tag} />`));
+        } else {
+          parts.push(`${pad + tagOpen}</${tag}>`);
+        }
+        return;
+      }
+
+      parts.push(pad + tagOpen);
+      for (const child of el.childNodes) formatNode(child, indent + 1);
+      parts.push(`${pad}</${tag}>`);
+    }
+  }
+
+  if (doc.childNodes.length === 1 && doc.firstChild?.nodeType === 1) {
+    formatNode(doc.firstChild as Element, 0);
+  } else {
+    for (const child of doc.childNodes) formatNode(child, 0);
+  }
+
+  return parts.join("\n");
+}
+
+function diffHTMLs(html: string, original: string): string {
+  const diffs = diffLines(html, original, { ignoreWhitespace: true });
+  return diffs
+    .map((diff) => (diff.added || diff.removed ? multipleLines(diff) : null))
+    .filter(Boolean)
+    .join("\n");
+}
+
+function multipleLines({
+  added,
+  count,
+  value,
+}: {
+  added: boolean;
+  count: number;
+  value: string;
+}) {
+  return [
+    added ? `added: ${count}` : `removed: ${count}`,
+    ...value.split("\n").map((line) => (added ? `+ ${line}` : `- ${line}`)),
+  ].join("\n");
+}
 
 function getTestName(): string {
   const error = new Error();

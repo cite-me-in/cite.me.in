@@ -2,7 +2,6 @@ import { expect } from "@playwright/test";
 import { beforeAll, describe, it, vi } from "vite-plus/test";
 import { sendSiteDigestEmails } from "~/emails/WeeklyDigest";
 import envVars from "~/lib/envVars.server";
-import { removeElements } from "~/lib/html/parseHTML";
 import prisma from "~/lib/prisma.server";
 import getLastEmailSent from "~/test/helpers/getLastEmailSent";
 
@@ -134,12 +133,12 @@ describe("WeeklyDigestEmail", () => {
     await email.page.setViewportSize({ width: 1024, height: 3000 });
     await expect(email.page).toMatchVisual({
       name: "email/weekly-digest",
-      modify: (html) =>
-        removeElements(
-          html,
-          (node) =>
-            node.tag === "img" && node.attributes["data-slot"] === "chart",
-        ),
+      modify: (doc) => {
+        for (const el of doc.querySelectorAll("*")) {
+          if (el.tagName === "IMG" && el.getAttribute("data-slot") === "chart")
+            el.remove();
+        }
+      },
     });
   });
 });
