@@ -67,9 +67,7 @@ function findBlockedAiBots(content: string) {
     );
     if (!isFullyBlocked) continue;
 
-    const hasAllow = lastGroup.rules.some((r) =>
-      /^allow:\s*\/\s*$/i.test(r),
-    );
+    const hasAllow = lastGroup.rules.some((r) => /^allow:\s*\/\s*$/i.test(r));
     if (hasAllow) continue;
 
     blocked.push({

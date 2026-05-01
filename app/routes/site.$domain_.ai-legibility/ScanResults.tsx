@@ -52,12 +52,12 @@ export default function ScanResults({ result }: { result: ScanResult }) {
                 ))}
             </Accordion>
             {group.checks.filter((c) => c.passed).length > 0 && (
-              <div className="rounded-base border-border border-2 bg-green-50 px-4 py-2 text-sm text-green-700">
-                {group.checks.filter((c) => c.passed).length} check
-                {group.checks.filter((c) => c.passed).length > 1
-                  ? "s"
-                  : ""}{" "}
-                passed
+              <div className="space-y-2">
+                {group.checks
+                  .filter((c) => c.passed)
+                  .map((check, i) => (
+                    <PassedCheckCard key={i} check={check} />
+                  ))}
               </div>
             )}
           </div>
@@ -102,6 +102,18 @@ export default function ScanResults({ result }: { result: ScanResult }) {
         </div>
       )}
     </>
+  );
+}
+
+function PassedCheckCard({ check }: { check: CheckResult }) {
+  return (
+    <div className="rounded-base border-border flex items-start gap-3 border-2 bg-green-50 p-3 text-sm text-green-700">
+      <CheckCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
+      <div>
+        <span className="font-bold">{check.name}</span>
+        <span className="ml-1 text-green-600">{check.message}</span>
+      </div>
+    </div>
   );
 }
 
