@@ -54,22 +54,28 @@ function findBlockedAiBots(content: string) {
   const blocked: { agent: string; displayName: string }[] = [];
 
   for (const bot of AI_BOT_USER_AGENTS) {
-    for (const group of groups) {
-      const matchesBot = group.agents.some(
+    const matchingGroups = groups.filter((g) =>
+      g.agents.some(
         (a) => a.toLowerCase().replace(/\s+/g, "-") === bot.pattern,
-      );
-      if (!matchesBot) continue;
+      ),
+    );
+    if (matchingGroups.length === 0) continue;
 
-      const isFullyBlocked = group.rules.some((r) =>
-        /^disallow:\s*\/\s*$/i.test(r),
-      );
-      if (isFullyBlocked) {
-        blocked.push({
-          agent: group.agents[0],
-          displayName: bot.name,
-        });
-      }
-    }
+    const lastGroup = matchingGroups[matchingGroups.length - 1];
+    const isFullyBlocked = lastGroup.rules.some((r) =>
+      /^disallow:\s*\/\s*$/i.test(r),
+    );
+    if (!isFullyBlocked) continue;
+
+    const hasAllow = lastGroup.rules.some((r) =>
+      /^allow:\s*\/\s*$/i.test(r),
+    );
+    if (hasAllow) continue;
+
+    blocked.push({
+      agent: lastGroup.agents[0],
+      displayName: bot.name,
+    });
   }
 
   return blocked;
