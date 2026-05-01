@@ -74,6 +74,14 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
   const logRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    startedRef.current = false;
+    setLines(loaderData.scanStatus?.lines ?? []);
+    setScanStatus(loaderData.scanStatus?.status ?? "idle");
+    setResult(loaderData.scanStatus?.result ?? undefined);
+    setScanError(loaderData.scanStatus?.error ?? null);
+  }, [loaderData.domain]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
     if (startedRef.current) return;
     if (!domain || scanStatus !== "idle") return;
     startedRef.current = true;
