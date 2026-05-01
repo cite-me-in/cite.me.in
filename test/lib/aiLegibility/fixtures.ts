@@ -147,6 +147,23 @@ export const SITEMAP_XML = `<?xml version="1.0" encoding="UTF-8"?>
 export const SITEMAP_XML_INVALID = `<?xml version="1.0" encoding="UTF-8"?>
 <invalid>Not a valid sitemap</invalid>`;
 
+export const SITEMAP_INDEX_XML = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap><loc>https://acme.com/sitemap-1.xml</loc></sitemap>
+  <sitemap><loc>https://acme.com/sitemap-2.xml</loc></sitemap>
+</sitemapindex>`;
+
+export const CHILD_SITEMAP_1_XML = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://acme.com/page1</loc></url>
+  <url><loc>https://acme.com/page2</loc></url>
+</urlset>`;
+
+export const CHILD_SITEMAP_2_XML = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://acme.com/page3</loc></url>
+</urlset>`;
+
 export const JSON_LD_ARTICLE = `<!DOCTYPE html>
 <html>
 <head>

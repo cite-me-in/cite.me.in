@@ -54,9 +54,109 @@ export default async function checkSitemapXml({
 
     try {
       const parsed = parser.parse(xml) as {
-        urlset: { url: { loc?: string } } | { url: { loc?: string }[] };
+        sitemapindex?: {
+          sitemap: { loc: string } | { loc: string }[];
+        };
+        urlset?: {
+          url: { loc?: string } | { loc?: string }[];
+        };
       };
-      const urlset = parsed.urlset ?? parsed;
+
+      if (parsed.sitemapindex) {
+        const sitemapNodes = Array.isArray(parsed.sitemapindex.sitemap)
+          ? parsed.sitemapindex.sitemap
+          : [parsed.sitemapindex.sitemap];
+        const childUrls = sitemapNodes
+          .map((s) => s.loc)
+          .filter(Boolean) as string[];
+
+        if (childUrls.length === 0) {
+          return {
+            name: "sitemap.xml",
+            passed: true,
+            message: "sitemap.xml is a sitemap index with no child sitemaps",
+            details: { url: sitemapUrl, elapsed, mimeType: contentType },
+            urls: [],
+          };
+        }
+
+        const allUrls: string[] = [];
+        const sitemapIndexElapsed = Date.now() - startTime;
+
+        for (const childUrl of childUrls) {
+          try {
+            const childResponse = await fetch(childUrl, {
+              headers: {
+                "User-Agent": "CiteMeIn-AI-Legibility-Bot/1.0",
+                Accept: "application/xml,text/xml",
+              },
+              signal: AbortSignal.timeout(10_000),
+            });
+
+            if (!childResponse.ok) continue;
+
+            const childXml = await childResponse.text();
+            const childParsed = parser.parse(childXml) as {
+              urlset?: {
+                url: { loc?: string } | { loc?: string }[];
+              };
+            };
+
+            if (childParsed.urlset) {
+              const childUrlNodes = Array.isArray(childParsed.urlset.url)
+                ? childParsed.urlset.url
+                : [childParsed.urlset.url];
+              const childPageUrls = childUrlNodes
+                .map((u) => u.loc)
+                .filter(Boolean) as string[];
+              allUrls.push(...childPageUrls);
+            }
+          } catch {
+            continue;
+          }
+        }
+
+        if (allUrls.length === 0) {
+          return {
+            name: "sitemap.xml",
+            passed: true,
+            message:
+              "sitemap.xml is a sitemap index but no child sitemaps resolved to URLs",
+            details: {
+              url: sitemapUrl,
+              childSitemaps: childUrls.length,
+              elapsed: sitemapIndexElapsed,
+              mimeType: contentType,
+            },
+            urls: [],
+          };
+        }
+
+        return {
+          name: "sitemap.xml",
+          passed: true,
+          message: `sitemap.xml is a sitemap index with ${childUrls.length} child sitemaps, ${allUrls.length} total URLs`,
+          details: {
+            url: sitemapUrl,
+            childSitemaps: childUrls.length,
+            validUrls: allUrls.length,
+            elapsed: sitemapIndexElapsed,
+            mimeType: contentType,
+          },
+          urls: allUrls,
+        };
+      }
+
+      const urlset = parsed.urlset;
+      if (!urlset) {
+        return {
+          name: "sitemap.xml",
+          passed: true,
+          message: "sitemap.xml is valid but contains no URLs",
+          details: { url: sitemapUrl, elapsed, mimeType: contentType },
+          urls: [],
+        };
+      }
       const urlNodes = Array.isArray(urlset.url)
         ? urlset.url
         : urlset.url

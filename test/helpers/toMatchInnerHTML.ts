@@ -41,8 +41,8 @@ expect.extend({
     const doc = parseHTML(rawHtml).document;
     if (options?.modify) options.modify(doc);
 
-    for (const script of doc.querySelectorAll("script[none]"))
-      script.removeAttribute("nonce");
+    // Remove all scripts from the document (JSON-LD, etc.)
+    for (const script of doc.querySelectorAll("script")) script.remove();
 
     const formattedHtml = formatHTMLTree(doc);
 
