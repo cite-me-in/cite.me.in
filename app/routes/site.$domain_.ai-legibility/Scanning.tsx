@@ -69,7 +69,7 @@ export default function Scanning({ domain }: { domain: string }) {
           className="border-border bg-muted text-foreground/60 h-96 overflow-y-auto rounded border p-4 font-mono text-sm leading-relaxed whitespace-break-spaces"
         >
           {lines.length === 0 && (
-            <span className="text-foreground/40">Starting\u2026</span>
+            <span className="text-foreground/40">Starting ...</span>
           )}
           {lines.map((line, i) => (
             <div key={i.toString()}>{line}</div>
