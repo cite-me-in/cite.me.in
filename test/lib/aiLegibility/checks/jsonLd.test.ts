@@ -18,7 +18,6 @@ describe("checkJsonLd", () => {
 
     expect(result.passed).toBe(true);
     expect(result.name).toBe("JSON-LD");
-    expect(result.category).toBe("welcomed");
     expect(result.message).toContain("Organization");
     expect(result.schemas).toHaveLength(1);
     expect(result.schemas[0].valid).toBe(true);

@@ -4,7 +4,7 @@ export default async function checkSitemapTxt({
   url,
 }: {
   url: string;
-}): Promise<CheckResult & { urls: string[] }> {
+}): Promise<Omit<CheckResult, "category"> & { urls: string[] }> {
   const sitemapUrl = new URL("/sitemap.txt", url).href;
   const startTime = Date.now();
 
@@ -20,7 +20,6 @@ export default async function checkSitemapTxt({
     if (!response.ok) {
       return {
         name: "sitemap.txt",
-        category: "discovered",
         passed: false,
         message: `sitemap.txt not found (HTTP ${response.status})`,
         details: { statusCode: response.status, url: sitemapUrl },
@@ -32,7 +31,6 @@ export default async function checkSitemapTxt({
     if (!contentType.startsWith("text/plain")) {
       return {
         name: "sitemap.txt",
-        category: "discovered",
         passed: false,
         message: `sitemap.txt has incorrect MIME type: ${contentType}`,
         details: {
@@ -66,7 +64,6 @@ export default async function checkSitemapTxt({
     if (urls.length === 0) {
       return {
         name: "sitemap.txt",
-        category: "discovered",
         passed: false,
         message: "sitemap.txt exists but contains no valid URLs",
         details: {
@@ -81,7 +78,6 @@ export default async function checkSitemapTxt({
     if (invalidLines.length > 0) {
       return {
         name: "sitemap.txt",
-        category: "discovered",
         passed: true,
         message: `sitemap.txt has ${urls.length} URLs (${invalidLines.length} invalid lines)`,
         details: {
@@ -96,7 +92,6 @@ export default async function checkSitemapTxt({
 
     return {
       name: "sitemap.txt",
-      category: "discovered",
       passed: true,
       message: `sitemap.txt has ${urls.length} valid URLs`,
       details: { url: sitemapUrl, validUrls: urls.length, elapsed },
@@ -108,7 +103,6 @@ export default async function checkSitemapTxt({
     if (error instanceof Error && error.name === "TimeoutError") {
       return {
         name: "sitemap.txt",
-        category: "discovered",
         passed: false,
         message: "sitemap.txt request timed out (10s limit)",
         timedOut: true,
@@ -119,7 +113,6 @@ export default async function checkSitemapTxt({
 
     return {
       name: "sitemap.txt",
-      category: "discovered",
       passed: false,
       message: `Failed to fetch sitemap.txt: ${errorMessage}`,
       details: { url: sitemapUrl, error: errorMessage },

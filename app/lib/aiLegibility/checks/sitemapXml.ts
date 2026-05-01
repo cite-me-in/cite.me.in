@@ -7,7 +7,7 @@ export default async function checkSitemapXml({
   url,
 }: {
   url: string;
-}): Promise<CheckResult & { urls: string[] }> {
+}): Promise<Omit<CheckResult, "category"> & { urls: string[] }> {
   const sitemapUrl = new URL("/sitemap.xml", url).href;
   const startTime = Date.now();
 
@@ -23,7 +23,6 @@ export default async function checkSitemapXml({
     if (!response.ok) {
       return {
         name: "sitemap.xml",
-        category: "discovered",
         passed: false,
         message: `sitemap.xml not found (HTTP ${response.status})`,
         details: { statusCode: response.status, url: sitemapUrl },
@@ -39,7 +38,6 @@ export default async function checkSitemapXml({
     if (!isReadable) {
       return {
         name: "sitemap.xml",
-        category: "discovered",
         passed: false,
         message: `sitemap.xml has incorrect MIME type: ${contentType}`,
         details: {
@@ -69,7 +67,6 @@ export default async function checkSitemapXml({
       if (urls.length === 0) {
         return {
           name: "sitemap.xml",
-          category: "discovered",
           passed: true,
           message: "sitemap.xml is valid but contains no URLs",
           details: { url: sitemapUrl, elapsed, mimeType: contentType },
@@ -79,7 +76,6 @@ export default async function checkSitemapXml({
 
       return {
         name: "sitemap.xml",
-        category: "discovered",
         passed: true,
         message: `sitemap.xml has ${urls.length} URLs (${contentType})`,
         details: {
@@ -93,7 +89,6 @@ export default async function checkSitemapXml({
     } catch (parseError) {
       return {
         name: "sitemap.xml",
-        category: "discovered",
         passed: false,
         message: `sitemap.xml failed to parse: ${parseError instanceof Error ? parseError.message : "Unknown error"}`,
         details: { url: sitemapUrl, elapsed, mimeType: contentType },
@@ -106,7 +101,6 @@ export default async function checkSitemapXml({
     if (error instanceof Error && error.name === "TimeoutError") {
       return {
         name: "sitemap.xml",
-        category: "discovered",
         passed: false,
         message: "sitemap.xml request timed out (10s limit)",
         timedOut: true,
@@ -116,7 +110,6 @@ export default async function checkSitemapXml({
     }
     return {
       name: "sitemap.xml",
-      category: "discovered",
       passed: false,
       message: `Failed to fetch sitemap.xml: ${errorMessage}`,
       details: { url: sitemapUrl, error: errorMessage },

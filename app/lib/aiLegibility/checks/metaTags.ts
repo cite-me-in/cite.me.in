@@ -7,7 +7,7 @@ export default async function checkMetaTags({
   html: string;
   url: string;
 }): Promise<
-  CheckResult & {
+  Omit<CheckResult, "category"> & {
     description?: string;
     ogTitle?: string;
     ogDescription?: string;
@@ -43,7 +43,7 @@ export default async function checkMetaTags({
   if (!hasDescription && !hasOgTags && !hasCanonical) {
     return {
       name: "Meta tags",
-      category: "trusted",
+
       passed: false,
       message: "No meta description, Open Graph tags, or canonical URL found",
       details: { url, elapsed },
@@ -57,7 +57,7 @@ export default async function checkMetaTags({
 
   return {
     name: "Meta tags",
-    category: "trusted",
+
     passed: true,
     message: `Found: ${found.join(", ")}`,
     details: { url, elapsed },

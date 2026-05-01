@@ -4,7 +4,7 @@ export default async function checkContentSignals({
   url,
 }: {
   url: string;
-}): Promise<CheckResult> {
+}): Promise<Omit<CheckResult, "category">> {
   const robotsUrl = new URL("/robots.txt", url).href;
 
   try {
@@ -19,7 +19,6 @@ export default async function checkContentSignals({
     if (!response.ok) {
       return {
         name: "Content Signals",
-        category: "welcomed",
         passed: false,
         message: `Could not check Content-Signal — robots.txt returned HTTP ${response.status}`,
         details: { statusCode: response.status },
@@ -38,7 +37,6 @@ export default async function checkContentSignals({
     if (contentSignalLines.length > 0) {
       return {
         name: "Content Signals",
-        category: "welcomed",
         passed: true,
         message: `Content-Signal found in robots.txt — ${contentSignalLines.length} directive${contentSignalLines.length > 1 ? "s" : ""}`,
         details: { contentSignalLines },
@@ -47,7 +45,6 @@ export default async function checkContentSignals({
 
     return {
       name: "Content Signals",
-      category: "welcomed",
       passed: false,
       message:
         "No Content-Signal found in robots.txt — AI agents lack a content usage signal",
@@ -57,7 +54,6 @@ export default async function checkContentSignals({
     if (error instanceof Error && error.name === "TimeoutError") {
       return {
         name: "Content Signals",
-        category: "welcomed",
         passed: false,
         message: "Content-Signal check timed out (10s limit)",
         timedOut: true,
@@ -65,7 +61,6 @@ export default async function checkContentSignals({
     }
     return {
       name: "Content Signals",
-      category: "welcomed",
       passed: false,
       message: `Failed to check Content-Signal: ${error instanceof Error ? error.message : "Unknown error"}`,
     };

@@ -1,44 +1,65 @@
+/**
+ * The category of a check: discovered, trusted, welcomed. This indicates the
+ * purpose of the check and the expected outcome.
+ */
 type CheckCategory = "discovered" | "trusted" | "welcomed";
 
-export type CheckDetail = {
-  goal: string;
-  issue: string;
-  howToImplement: string;
-  fixExample?: string;
-  effort: "2 min" | "5 min" | "15 min" | "1 hour";
-  resourceLinks: { label: string; url: string }[];
-  skillURL?: string;
-};
-
-export type CheckResult = {
-  name: string;
-  category: CheckCategory;
-  passed: boolean;
-  message: string;
-  details?: Record<string, unknown>;
-  timedOut?: boolean;
-  detail?: CheckDetail;
-};
-
+/**
+ * The result of scanning a site for AI legibility issues.
+ */
 export type ScanResult = {
-  url: string;
-  scannedAt: string;
   checks: CheckResult[];
+  scannedAt: string;
   suggestions?: Suggestion[];
   summary: {
     discovered: { passed: number; total: number };
     trusted: { passed: number; total: number };
     welcomed: { passed: number; total: number };
   };
+  url: string;
 };
 
+/**
+ * A single check result (eg robots.txt, sitemap.xml, etc.)
+ */
+export type CheckResult = {
+  category: CheckCategory;
+  detail?: CheckDetail;
+  details?: Record<string, unknown>;
+  message: string;
+  name: string;
+  passed: boolean;
+  timedOut?: boolean;
+};
+
+/**
+ * The details of a check result (eg robots.txt, sitemap.xml, etc.)
+ */
+export type CheckDetail = {
+  effort: "2 min" | "5 min" | "15 min" | "1 hour";
+  fixExample?: string;
+  goal: string;
+  howToImplement: string;
+  issue: string;
+  resourceLinks: { label: string; url: string }[];
+  skillURL?: string;
+};
+
+/**
+ * A suggestion for improving the AI legibility of a site. Not a failed check,
+ * since these are not required or expected to be fixed.
+ */
 export type Suggestion = {
-  title: string;
   description: string;
   effort: string;
   resourceLinks: { label: string; url: string }[];
+  title: string;
 };
 
+/**
+ * The progress of a scan. Anonymous scans are tracked in Redis, logged-in scans
+ * are tracked in the database.
+ */
 export type ScanProgress = {
   lines: string[];
   done: boolean;

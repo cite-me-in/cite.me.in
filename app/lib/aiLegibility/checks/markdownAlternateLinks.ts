@@ -6,7 +6,7 @@ export default async function checkMarkdownAlternateLinks({
 }: {
   url: string;
   html: string;
-}): Promise<CheckResult> {
+}): Promise<Omit<CheckResult, "category">> {
   try {
     const response = await fetch(url, {
       method: "HEAD",
@@ -30,7 +30,6 @@ export default async function checkMarkdownAlternateLinks({
       if (hasHtmlMarkdownLink) sources.push("HTML <link> tag");
       return {
         name: "Markdown alternate links",
-        category: "discovered",
         passed: true,
         message: `Markdown alternate version advertised via ${sources.join(" and ")}`,
         details: { linkHeader, htmlMarkdownLink: hasHtmlMarkdownLink },
@@ -39,7 +38,6 @@ export default async function checkMarkdownAlternateLinks({
 
     return {
       name: "Markdown alternate links",
-      category: "discovered",
       passed: false,
       message:
         "No <link rel='alternate' type='text/markdown'> found in HTML or HTTP Link header",
@@ -49,14 +47,12 @@ export default async function checkMarkdownAlternateLinks({
     if (error instanceof Error && error.name === "TimeoutError")
       return {
         name: "Markdown alternate links",
-        category: "discovered",
         passed: false,
         message: "Markdown alternate links check timed out (10s limit)",
         timedOut: true,
       };
     return {
       name: "Markdown alternate links",
-      category: "discovered",
       passed: false,
       message: `Failed to check markdown alternate links: ${error instanceof Error ? error.message : "Unknown error"}`,
     };

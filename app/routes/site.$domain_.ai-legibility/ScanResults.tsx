@@ -1,7 +1,7 @@
 import {
+  CheckCircleIcon,
   CheckIcon,
   CopyIcon,
-  CheckCircleIcon,
   LightbulbIcon,
   XCircleIcon,
 } from "lucide-react";
@@ -16,7 +16,7 @@ import {
 import { Badge } from "~/components/ui/Badge";
 import { Button } from "~/components/ui/Button";
 import buildPrompt from "~/lib/aiLegibility/buildPrompt";
-import CATEGORIES from "~/lib/aiLegibility/criteria";
+import CATEGORIES from "~/lib/aiLegibility/checkDetails";
 import type { CheckResult, ScanResult } from "~/lib/aiLegibility/types";
 
 export default function ScanResults({ result }: { result: ScanResult }) {
@@ -81,9 +81,7 @@ export default function ScanResults({ result }: { result: ScanResult }) {
                 className="rounded-base border-2 border-purple-300 bg-white p-4"
               >
                 <h4 className="font-bold text-purple-900">{s.title}</h4>
-                <p className="mt-1 text-sm text-purple-700">
-                  {s.description}
-                </p>
+                <p className="mt-1 text-sm text-purple-700">{s.description}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-purple-500">
                   <span>Effort: {s.effort}</span>
                   {s.resourceLinks.map((link) => (

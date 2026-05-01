@@ -44,7 +44,7 @@ test("verifies user created in DB", async () => {
 });
 
 test("adds site", async () => {
-  await page.getByLabel("Website URL or domain").fill("https://example.com");
+  await page.getByLabel("Website URL or domain").fill("https://acme.com");
   await page.getByRole("button", { name: "Add Site" }).click();
   await page.waitForURL(/\/site\/[^/]+\/setup/, { timeout: 15_000 });
 });
@@ -53,7 +53,7 @@ test("verifies site created in DB", async () => {
   site = await prisma.site.findFirstOrThrow({
     where: { ownerId: user?.id },
   });
-  expect(site!.domain).toBe("example.com");
+  expect(site!.domain).toBe("acme.com");
 });
 
 test("waits for setup pipeline to complete", async () => {

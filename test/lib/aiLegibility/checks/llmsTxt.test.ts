@@ -24,7 +24,6 @@ describe("checkLlmsTxt", () => {
 
     expect(result.passed).toBe(true);
     expect(result.name).toBe("llms.txt");
-    expect(result.category).toBe("discovered");
     expect(result.message).toContain("5 lines");
   });
 

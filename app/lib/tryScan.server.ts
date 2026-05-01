@@ -1,5 +1,5 @@
 import { runScanSteps } from "~/lib/aiLegibility/runAILegibilityScan";
-import type { ScanResult } from "~/lib/aiLegibility/types";
+import type { CheckResult, ScanResult } from "~/lib/aiLegibility/types";
 import { getDomainMeta } from "~/lib/domainMeta.server";
 
 type ScanState = {
@@ -70,14 +70,14 @@ async function runScan(domain: string) {
 
     log(lower, "Running AI legibility check...");
     const result = await runScanSteps({
-      log: (line) => log(lower, line),
+      log: (line: string) => log(lower, line),
       domain,
     });
 
     const state = scans.get(lower);
     if (!state) return;
 
-    const passed = result.checks.filter((c) => c.passed).length;
+    const passed = result.checks.filter((c: CheckResult) => c.passed).length;
     const total = result.checks.length;
 
     log(lower, `${passed}/${total} checks passed`);

@@ -4,7 +4,7 @@ export default async function checkMdRoutes({
   url,
 }: {
   url: string;
-}): Promise<CheckResult> {
+}): Promise<Omit<CheckResult, "category">> {
   try {
     const mdUrl = url.endsWith("/") ? `${url}index.md` : `${url}.md`;
     const response = await fetch(mdUrl, {
@@ -17,7 +17,6 @@ export default async function checkMdRoutes({
     if (response.status === 404)
       return {
         name: ".md routes",
-        category: "trusted",
         passed: false,
         message: "No .md version of homepage found",
         details: { mdUrl, status: 404 },
@@ -26,7 +25,6 @@ export default async function checkMdRoutes({
     if (!response.ok)
       return {
         name: ".md routes",
-        category: "trusted",
         passed: false,
         message: `.md route returned HTTP ${response.status}`,
         details: { mdUrl, status: response.status },
@@ -41,7 +39,6 @@ export default async function checkMdRoutes({
     if (text.length < 50)
       return {
         name: ".md routes",
-        category: "trusted",
         passed: false,
         message: ".md route exists but contains very little content",
         details: { mdUrl, contentLength: text.length },
@@ -49,7 +46,6 @@ export default async function checkMdRoutes({
 
     return {
       name: ".md routes",
-      category: "trusted",
       passed: true,
       message: `.md route serves ${text.length} chars of content`,
       details: { mdUrl, contentType, contentLength: text.length, isMarkdown },
@@ -58,14 +54,12 @@ export default async function checkMdRoutes({
     if (error instanceof Error && error.name === "TimeoutError")
       return {
         name: ".md routes",
-        category: "trusted",
         passed: false,
         message: ".md routes check timed out (10s limit)",
         timedOut: true,
       };
     return {
       name: ".md routes",
-      category: "trusted",
       passed: false,
       message: `Failed to check .md routes: ${error instanceof Error ? error.message : "Unknown error"}`,
     };

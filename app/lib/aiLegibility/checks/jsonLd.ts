@@ -27,7 +27,7 @@ export default async function checkJsonLd({
 }: {
   html: string;
   url: string;
-}): Promise<CheckResult & { schemas: JsonLdResult[] }> {
+}): Promise<Omit<CheckResult, "category"> & { schemas: JsonLdResult[] }> {
   const scriptMatches = html.matchAll(
     /<script\s+type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi,
   );
@@ -73,7 +73,7 @@ export default async function checkJsonLd({
   if (schemas.length === 0) {
     return {
       name: "JSON-LD",
-      category: "welcomed",
+
       passed: false,
       message: "No JSON-LD structured data found",
       details: { url, elapsed },
@@ -90,7 +90,7 @@ export default async function checkJsonLd({
       .join("; ");
     return {
       name: "JSON-LD",
-      category: "welcomed",
+
       passed: false,
       message: `${validCount}/${schemas.length} schemas valid (${errors})`,
       details: { url, validCount, totalCount: schemas.length, elapsed },
@@ -101,7 +101,7 @@ export default async function checkJsonLd({
   const uniqueTypes = [...new Set(schemas.map((s) => s.type))];
   return {
     name: "JSON-LD",
-    category: "welcomed",
+
     passed: true,
     message: `Valid JSON-LD: ${uniqueTypes.join(", ")}`,
     details: { url, validCount, totalCount: schemas.length, elapsed },

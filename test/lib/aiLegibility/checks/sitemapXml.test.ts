@@ -28,7 +28,6 @@ describe("checkSitemapXml", () => {
 
     expect(result.passed).toBe(true);
     expect(result.name).toBe("sitemap.xml");
-    expect(result.category).toBe("discovered");
     expect(result.message).toContain("3 URLs");
     expect(result.urls).toHaveLength(3);
   });

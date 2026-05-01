@@ -8,7 +8,7 @@ import {
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import { normalizeURL } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
-import { getCheckDetail } from "./criteria";
+import { getCheckCategory, getCheckDetail } from "./checkDetails";
 import checkContentSignals from "./checks/contentSignals";
 import checkHomepageContent from "./checks/homepageContent";
 import checkJsonLd from "./checks/jsonLd";
@@ -81,15 +81,16 @@ export default async function runAILegibilityScan({
   }
 }
 
-async function runScanSteps({
+export async function runScanSteps({
   log,
   domain,
 }: {
   log: (line: string) => Promise<void> | void;
   domain: string;
 }): Promise<ScanResult> {
+  const scannedAt = new Date().toISOString();
   const url = normalizeURL(domain);
-  const checks: CheckResult[] = [];
+  const checks: Omit<CheckResult, "category">[] = [];
 
   await log("Checking homepage content...");
   const homepageResult = await checkHomepageContent({ url });
@@ -180,17 +181,21 @@ async function runScanSteps({
     `${contentSignalsResult.passed ? "✓" : "✗"} ${contentSignalsResult.message}`,
   );
 
-  for (const check of checks) {
-    check.detail = getCheckDetail(check.name);
-  }
-  const summary = await summarize({ checks, log });
-
+  const withCategory = checks.map((check) => ({
+    ...check,
+    category: getCheckCategory(check.name) as
+      | "discovered"
+      | "trusted"
+      | "welcomed",
+    detail: getCheckDetail(check.name),
+  }));
+  const summary = await summarize({ checks: withCategory, log });
   const suggestions = generateSuggestions();
 
   return {
     url,
-    scannedAt: new Date().toISOString(),
-    checks,
+    scannedAt,
+    checks: withCategory,
     suggestions,
     summary,
   };

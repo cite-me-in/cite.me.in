@@ -89,7 +89,7 @@ export default async function checkRobotsTxt({
   url,
 }: {
   url: string;
-}): Promise<CheckResult> {
+}): Promise<Omit<CheckResult, "category">> {
   const robotsUrl = new URL("/robots.txt", url).href;
   const startTime = Date.now();
 
@@ -105,7 +105,6 @@ export default async function checkRobotsTxt({
     if (!response.ok) {
       return {
         name: "robots.txt",
-        category: "welcomed",
         passed: false,
         message: `robots.txt not found (HTTP ${response.status})`,
         details: { statusCode: response.status, url: robotsUrl },
@@ -125,7 +124,6 @@ export default async function checkRobotsTxt({
     if (!hasUserAgent && !hasAllowOrDisallow) {
       return {
         name: "robots.txt",
-        category: "welcomed",
         passed: true,
         message: "robots.txt exists but has no crawl rules",
         details: {
@@ -142,7 +140,6 @@ export default async function checkRobotsTxt({
       const botNames = blockedAiBots.map((b) => b.displayName).join(", ");
       return {
         name: "robots.txt",
-        category: "welcomed",
         passed: false,
         message: `robots.txt blocks AI bots: ${botNames}`,
         details: {
@@ -158,7 +155,6 @@ export default async function checkRobotsTxt({
 
     return {
       name: "robots.txt",
-      category: "welcomed",
       passed: true,
       message: `robots.txt found with ${lines.length} lines${hasSitemap ? " (includes sitemap reference)" : ""}`,
       details: { url: robotsUrl, lineCount: lines.length, hasSitemap, elapsed },
@@ -169,7 +165,6 @@ export default async function checkRobotsTxt({
     if (error instanceof Error && error.name === "TimeoutError") {
       return {
         name: "robots.txt",
-        category: "welcomed",
         passed: false,
         message: "robots.txt request timed out (10s limit)",
         timedOut: true,
@@ -178,7 +173,6 @@ export default async function checkRobotsTxt({
     }
     return {
       name: "robots.txt",
-      category: "welcomed",
       passed: false,
       message: `Failed to fetch robots.txt: ${errorMessage}`,
       details: { url: robotsUrl, error: errorMessage },

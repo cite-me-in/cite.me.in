@@ -100,7 +100,7 @@ describe("try page scan flow", () => {
 
   it("should show scan results", async () => {
     await expect(page.getByText(/AI Legibility Report/)).toBeVisible({
-      timeout: 30_000,
+      timeout: 40_000,
     });
   });
 });

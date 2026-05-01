@@ -20,7 +20,7 @@ export default async function checkSamplePages({
 }: {
   sampleURLs: string[];
   url: string;
-}): Promise<CheckResult & { pages: PageResult[] }> {
+}): Promise<Omit<CheckResult, "category"> & { pages: PageResult[] }> {
   const startTime = Date.now();
   const TOTAL_TIMEOUT = 120_000;
   const PAGE_TIMEOUT = 10_000;
@@ -30,7 +30,7 @@ export default async function checkSamplePages({
   if (pagesToCheck.length === 0) {
     return {
       name: "Sample pages",
-      category: "trusted",
+
       passed: false,
       message: "No sample URLs found in sitemap",
       details: { sitemapUrlCount: sampleURLs.length },
@@ -143,7 +143,7 @@ export default async function checkSamplePages({
   if (passedCount === totalCount) {
     return {
       name: "Sample pages",
-      category: "trusted",
+
       passed: true,
       message: `All ${totalCount} sample pages have content`,
       details: { passedCount, totalCount, timedOutCount, elapsed },
@@ -153,7 +153,7 @@ export default async function checkSamplePages({
 
   return {
     name: "Sample pages",
-    category: "trusted",
+
     passed: false,
     message: `${passedCount}/${totalCount} pages have content${timedOutCount > 0 ? ` (${timedOutCount} timed out)` : ""}`,
     details: { passedCount, totalCount, timedOutCount, elapsed },

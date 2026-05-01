@@ -5,7 +5,6 @@ import {
   ChevronDownIcon,
   GlobeIcon,
   LayoutDashboardIcon,
-  LightbulbIcon,
   SearchIcon,
   SparklesIcon,
   XCircleIcon,
@@ -17,7 +16,7 @@ import CiteMeInLogo from "~/components/layout/CiteMeInLogo";
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
-import CATEGORIES from "~/lib/aiLegibility/criteria";
+import CATEGORIES from "~/lib/aiLegibility/checkDetails";
 import type { ScanResult } from "~/lib/aiLegibility/types";
 import { requireUserAccess } from "~/lib/auth.server";
 import { extractDomain } from "~/lib/sites.server";

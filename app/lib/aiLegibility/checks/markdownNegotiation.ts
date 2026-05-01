@@ -4,7 +4,7 @@ export default async function checkMarkdownNegotiation({
   url,
 }: {
   url: string;
-}): Promise<CheckResult> {
+}): Promise<Omit<CheckResult, "category">> {
   try {
     const response = await fetch(url, {
       headers: {
@@ -24,7 +24,6 @@ export default async function checkMarkdownNegotiation({
       const hasContent = text.trim().length > 50;
       return {
         name: "Markdown content negotiation",
-        category: "trusted",
         passed: hasContent,
         message: hasContent
           ? `Homepage serves markdown (${text.trim().length} chars) when requested with Accept: text/markdown`
@@ -36,7 +35,6 @@ export default async function checkMarkdownNegotiation({
     if (response.status === 406) {
       return {
         name: "Markdown content negotiation",
-        category: "trusted",
         passed: false,
         message:
           "Homepage returns HTTP 406 (Not Acceptable) for Accept: text/markdown — markdown content negotiation not supported",
@@ -46,7 +44,6 @@ export default async function checkMarkdownNegotiation({
 
     return {
       name: "Markdown content negotiation",
-      category: "trusted",
       passed: false,
       message: `Homepage does not serve markdown (Content-Type: ${contentType || "none"})`,
       details: { contentType },
@@ -55,7 +52,6 @@ export default async function checkMarkdownNegotiation({
     if (error instanceof Error && error.name === "TimeoutError") {
       return {
         name: "Markdown content negotiation",
-        category: "trusted",
         passed: false,
         message: "Markdown negotiation request timed out (10s limit)",
         timedOut: true,
@@ -63,7 +59,6 @@ export default async function checkMarkdownNegotiation({
     }
     return {
       name: "Markdown content negotiation",
-      category: "trusted",
       passed: false,
       message: `Failed to check markdown negotiation: ${error instanceof Error ? error.message : "Unknown error"}`,
     };

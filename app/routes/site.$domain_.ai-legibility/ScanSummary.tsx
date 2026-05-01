@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/Card";
-import CATEGORIES from "~/lib/aiLegibility/criteria";
+import CATEGORIES from "~/lib/aiLegibility/checkDetails";
 import type { CheckResult, ScanResult } from "~/lib/aiLegibility/types";
 import ImproveScoreModal from "~/routes/site.$domain_.ai-legibility/ImproveScoreModal";
 import RadialGauge from "~/routes/site.$domain_.ai-legibility/RadialGauge";

@@ -6,7 +6,7 @@ export default async function checkLinkHeaders({
 }: {
   url: string;
   html: string;
-}): Promise<CheckResult> {
+}): Promise<Omit<CheckResult, "category">> {
   try {
     const response = await fetch(url, {
       method: "HEAD",
@@ -30,7 +30,6 @@ export default async function checkLinkHeaders({
       if (hasHtmlSitemapLink) sources.push("HTML <link> tag");
       return {
         name: "Link headers",
-        category: "discovered",
         passed: true,
         message: `Sitemap referenced via ${sources.join(" and ")}`,
         details: { linkHeader, htmlSitemapLink: hasHtmlSitemapLink },
@@ -39,7 +38,6 @@ export default async function checkLinkHeaders({
 
     return {
       name: "Link headers",
-      category: "discovered",
       passed: false,
       message:
         "No sitemap reference found in Link header or HTML <link rel='sitemap'> tag",
@@ -49,7 +47,6 @@ export default async function checkLinkHeaders({
     if (error instanceof Error && error.name === "TimeoutError") {
       return {
         name: "Link headers",
-        category: "discovered",
         passed: false,
         message: "Link headers check timed out (10s limit)",
         timedOut: true,
@@ -57,7 +54,6 @@ export default async function checkLinkHeaders({
     }
     return {
       name: "Link headers",
-      category: "discovered",
       passed: false,
       message: `Failed to check Link headers: ${error instanceof Error ? error.message : "Unknown error"}`,
     };
