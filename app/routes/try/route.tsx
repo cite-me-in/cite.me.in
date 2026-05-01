@@ -37,7 +37,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   let scanStatus = null;
   if (domain) {
     const d = extractDomain(domain);
-    if (d) scanStatus = getScanStatus(d);
+    if (d) scanStatus = await getScanStatus(d);
   }
 
   return {

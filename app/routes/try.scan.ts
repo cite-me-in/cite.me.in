@@ -6,7 +6,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const domain = url.searchParams.get("domain");
   if (!domain) return { status: "idle" as const };
 
-  const status = getScanStatus(domain);
+  const status = await getScanStatus(domain);
   if (!status) return { status: "idle" as const };
 
   return status;

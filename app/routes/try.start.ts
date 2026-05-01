@@ -6,6 +6,6 @@ export async function action({ request }: Route.ActionArgs) {
   const domain = (form.get("domain") as string).trim().toLowerCase();
   if (!domain) return { error: "Missing domain" };
 
-  startScan(domain);
+  await startScan(domain);
   return { ok: true as const };
 }
