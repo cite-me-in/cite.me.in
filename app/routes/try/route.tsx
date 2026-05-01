@@ -5,6 +5,7 @@ import {
   ChevronDownIcon,
   GlobeIcon,
   LayoutDashboardIcon,
+  LightbulbIcon,
   SearchIcon,
   SparklesIcon,
   XCircleIcon,
@@ -126,7 +127,7 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
             Is your site ready for AI?
           </h1>
           <p className="mx-auto mb-10 max-w-xl text-lg font-medium text-black/80">
-            Enter any website. We'll run 11 free checks to see if AI agents can
+            Enter any website. We'll run 13 free checks to see if AI agents can
             find, trust, and cite your content.
           </p>
 
@@ -299,7 +300,7 @@ function ResultDisplay({
         <div className="rounded-base border-2 border-black bg-green-100 p-6 text-center shadow-[4px_4px_0px_0px_black]">
           <CheckCircleIcon className="mx-auto mb-2 h-8 w-8 text-green-600" />
           <h3 className="text-xl font-bold text-green-800">
-            All 11 checks passed!
+            All {totalChecks} checks passed!
           </h3>
           <p className="mt-1 text-green-700">
             Your site is well-optimized for AI discovery.
@@ -461,7 +462,7 @@ function BenefitsSection() {
         <div className="grid gap-6 md:grid-cols-3">
           <BenefitCard
             icon={SearchIcon}
-            title="11 free checks"
+            title="13 free checks"
             body="We test sitemaps, robots.txt, JSON-LD, meta tags, content quality, and more — all for free."
           />
           <BenefitCard

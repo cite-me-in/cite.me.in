@@ -201,6 +201,38 @@ const checkDetails: Record<string, CheckDetail> = {
       },
     ],
   },
+  ".md routes": {
+    goal: "Provide a clean Markdown version of each page at the same URL with .md appended",
+    issue:
+      "When AI agents or users paste your URL into ChatGPT/Claude, the model has to parse HTML to extract content. A .md route serves clean Markdown directly — reducing token count by ~80% and eliminating navigation/script noise.",
+    howToImplement:
+      "Serve a Markdown version of every page at {path}.md. For the homepage, serve /index.md or /page.md (where /page is the homepage path). Use Content-Type: text/markdown. If your content is authored in Markdown, serve the source directly. If in a CMS, convert on the fly.",
+    fixExample:
+      '# Route handler for /blog/:slug\napp.get("/blog/:slug.md", (req, res) => {\n  const post = getPost(req.params.slug)\n  res.type("text/markdown").send(post.markdownContent)\n})',
+    effort: "1 hour",
+    resourceLinks: [
+      {
+        label: "Making agent-friendly pages (Vercel)",
+        url: "https://vercel.com/blog/making-agent-friendly-pages-with-content-negotiation",
+      },
+    ],
+  },
+  "Markdown alternate links": {
+    goal: "Advertise Markdown versions of your pages via HTML <link> tags and HTTP Link headers",
+    issue:
+      "AI agents that don't parse HTML body (e.g., autonomous agents, coding assistants) can still discover Markdown versions through HTTP headers. Without these signals, agents may never find your .md routes.",
+    howToImplement:
+      'Add <link rel="alternate" type="text/markdown" href="/page.md"> to your HTML <head> and a Link: </page.md>; rel="alternate"; type="text/markdown" HTTP header. The HTML tag catches crawlers that process the DOM. The HTTP header catches headless fetchers that don\'t.',
+    fixExample:
+      '# HTTP response header:\nLink: </index.md>; rel="alternate"; type="text/markdown"\n\n# HTML <head>:\n<link rel="alternate" type="text/markdown" title="Markdown version" href="/index.md">',
+    effort: "5 min",
+    resourceLinks: [
+      {
+        label: "Evil Martians LLM visibility guide",
+        url: "https://evilmartians.com/chronicles/how-to-make-your-website-visible-to-llms",
+      },
+    ],
+  },
 };
 
 export default checkDetails;

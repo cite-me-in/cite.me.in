@@ -2,6 +2,7 @@ import {
   CheckIcon,
   CopyIcon,
   CheckCircleIcon,
+  LightbulbIcon,
   XCircleIcon,
 } from "lucide-react";
 import { useState } from "react";
@@ -16,9 +17,10 @@ import { Badge } from "~/components/ui/Badge";
 import { Button } from "~/components/ui/Button";
 import buildPrompt from "~/lib/aiLegibility/buildPrompt";
 import CATEGORIES from "~/lib/aiLegibility/criteria";
-import type { CheckResult } from "~/lib/aiLegibility/types";
+import type { CheckResult, ScanResult } from "~/lib/aiLegibility/types";
 
-export default function ScanResults({ checks }: { checks: CheckResult[] }) {
+export default function ScanResults({ result }: { result: ScanResult }) {
+  const { checks, suggestions } = result;
   const groupedChecks = CATEGORIES.map((category) => ({
     ...category,
     checks: checks.filter((c) => c.category === category.key),
@@ -60,6 +62,46 @@ export default function ScanResults({ checks }: { checks: CheckResult[] }) {
             )}
           </div>
         ) : null,
+      )}
+
+      {suggestions && suggestions.length > 0 && (
+        <div className="rounded-base border-2 border-purple-300 bg-purple-50 p-6">
+          <h3 className="flex items-center gap-2 text-lg font-bold text-purple-800">
+            <LightbulbIcon className="size-5" />
+            Suggestions to go further
+          </h3>
+          <p className="mt-1 text-sm text-purple-600">
+            These are optional enhancements that can improve how AI agents
+            discover and understand your content.
+          </p>
+          <div className="mt-4 space-y-3">
+            {suggestions.map((s) => (
+              <div
+                key={s.title}
+                className="rounded-base border-2 border-purple-300 bg-white p-4"
+              >
+                <h4 className="font-bold text-purple-900">{s.title}</h4>
+                <p className="mt-1 text-sm text-purple-700">
+                  {s.description}
+                </p>
+                <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-purple-500">
+                  <span>Effort: {s.effort}</span>
+                  {s.resourceLinks.map((link) => (
+                    <a
+                      key={link.url}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-purple-600 underline hover:text-purple-800"
+                    >
+                      {link.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </>
   );

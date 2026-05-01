@@ -123,6 +123,8 @@ describe("runScan", () => {
       "llms.txt",
       "Sample pages",
       "Link headers",
+      "Markdown alternate links",
+      ".md routes",
       "Markdown content negotiation",
       "Content Signals",
     ]);
@@ -140,9 +142,9 @@ describe("runScan", () => {
     });
 
     expect(result?.summary.discovered.passed).toBeGreaterThan(0);
-    expect(result?.summary.discovered.total).toBe(4);
+    expect(result?.summary.discovered.total).toBe(5);
     expect(result?.summary.trusted.total).toBe(5);
-    expect(result?.summary.welcomed.total).toBe(2);
+    expect(result?.summary.welcomed.total).toBe(3);
   });
 
   it("should produce correct summary for failing site", async () => {
@@ -157,9 +159,9 @@ describe("runScan", () => {
     });
 
     expect(result?.summary.discovered.passed).toBe(0);
-    expect(result?.summary.discovered.total).toBe(4);
+    expect(result?.summary.discovered.total).toBe(5);
     expect(result?.summary.trusted.total).toBe(5);
-    expect(result?.summary.welcomed.total).toBe(2);
+    expect(result?.summary.welcomed.total).toBe(3);
   });
 
   it("should produce correct summary for partial site", async () => {
@@ -174,9 +176,9 @@ describe("runScan", () => {
     });
 
     expect(result?.summary.discovered.passed).toBe(1);
-    expect(result?.summary.discovered.total).toBe(4);
-    expect(result?.summary.trusted.passed).toBe(4);
-    expect(result?.summary.welcomed.passed).toBe(1);
+    expect(result?.summary.discovered.total).toBe(5);
+    expect(result?.summary.trusted.passed).toBe(3);
+    expect(result?.summary.welcomed.passed).toBe(2);
   });
 
   it("should normalize URL without protocol", async () => {
@@ -260,6 +262,10 @@ describe("runScan", () => {
     expect(logs.some((l) => l.includes("Checking sitemap.txt"))).toBe(true);
     expect(logs.some((l) => l.includes("Checking Link headers"))).toBe(true);
     expect(
+      logs.some((l) => l.includes("Checking markdown alternate links")),
+    ).toBe(true);
+    expect(logs.some((l) => l.includes("Checking .md routes"))).toBe(true);
+    expect(
       logs.some((l) => l.includes("Checking markdown content negotiation")),
     ).toBe(true);
     expect(
@@ -298,7 +304,7 @@ describe("runScan", () => {
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
 
-    expect(result?.checks.length).toBe(11);
+    expect(result?.checks.length).toBe(13);
     expect(result?.checks.every((c) => c.name && c.category && c.message)).toBe(
       true,
     );
@@ -331,6 +337,7 @@ describe("runScan", () => {
         "sitemap.txt",
         "llms.txt",
         "Link headers",
+        "Markdown alternate links",
       ]),
     );
     expect(trustedChecks?.map((c) => c.name)).toEqual(
@@ -338,12 +345,12 @@ describe("runScan", () => {
         "Homepage content",
         "Sample pages",
         "Meta tags",
-        "JSON-LD",
         "Markdown content negotiation",
+        ".md routes",
       ]),
     );
     expect(welcomedChecks?.map((c) => c.name)).toEqual(
-      expect.arrayContaining(["robots.txt", "Content Signals"]),
+      expect.arrayContaining(["robots.txt", "Content Signals", "JSON-LD"]),
     );
   });
 });

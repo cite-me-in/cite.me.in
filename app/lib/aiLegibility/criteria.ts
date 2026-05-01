@@ -33,6 +33,10 @@ const CATEGORIES: Category[] = [
         name: "Link headers",
         desc: "HTTP Link headers and HTML link tags pointing to sitemaps",
       },
+      {
+        name: "Markdown alternate links",
+        desc: "Alternate link tags advertising Markdown versions",
+      },
     ],
   },
   {
@@ -56,12 +60,12 @@ const CATEGORIES: Category[] = [
         desc: "Title and description for summaries",
       },
       {
-        name: "JSON-LD",
-        desc: "Structured data for entity understanding",
-      },
-      {
         name: "Markdown content negotiation",
         desc: "Serves markdown when AI agents request it",
+      },
+      {
+        name: ".md routes",
+        desc: "Clean Markdown versions of pages at .md URLs",
       },
     ],
   },
@@ -80,6 +84,10 @@ const CATEGORIES: Category[] = [
       {
         name: "Content Signals",
         desc: "Content-Signal declaration in robots.txt for content usage permissions",
+      },
+      {
+        name: "JSON-LD",
+        desc: "Structured data for entity understanding",
       },
     ],
   },

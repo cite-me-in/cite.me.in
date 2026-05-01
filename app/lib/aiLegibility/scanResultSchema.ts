@@ -20,10 +20,18 @@ const CheckResultSchema = z.object({
     .optional(),
 });
 
+const SuggestionSchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  effort: z.string(),
+  resourceLinks: z.array(z.object({ label: z.string(), url: z.string() })),
+});
+
 export const ScanResultSchema = z.object({
   url: z.string(),
   scannedAt: z.string(),
   checks: z.array(CheckResultSchema),
+  suggestions: z.array(SuggestionSchema).optional(),
   summary: z.object({
     discovered: z.object({ passed: z.number(), total: z.number() }),
     trusted: z.object({ passed: z.number(), total: z.number() }),

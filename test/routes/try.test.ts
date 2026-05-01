@@ -39,7 +39,7 @@ describe("try page hero and nav", () => {
       page.getByRole("heading", { name: "After your scan, you'll get" }),
     ).toBeVisible();
     await expect(
-      page.getByText("11 free checks", { exact: true }),
+      page.getByText("13 free checks", { exact: true }),
     ).toBeVisible();
     await expect(
       page.getByText("Know your gaps", { exact: true }),

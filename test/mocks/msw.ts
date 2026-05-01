@@ -187,6 +187,34 @@ const handlers = [
     () => new HttpResponse(null, { headers: { "Content-Type": "text/html" } }),
   ),
 
+  // .md routes for acme.com
+  http.get("https://acme.com.md", () =>
+    HttpResponse.text(
+      "# Acme Corp\n\nWelcome to Acme Corp. We build great software.",
+      {
+        headers: { "Content-Type": "text/markdown" },
+      },
+    ),
+  ),
+  http.head(
+    "https://acme.com.md",
+    () =>
+      new HttpResponse(null, { headers: { "Content-Type": "text/markdown" } }),
+  ),
+  http.get("https://acme.com/index.md", () =>
+    HttpResponse.text(
+      "# Acme Corp\n\nWelcome to Acme Corp. We build great software.",
+      {
+        headers: { "Content-Type": "text/markdown" },
+      },
+    ),
+  ),
+  http.head(
+    "https://acme.com/index.md",
+    () =>
+      new HttpResponse(null, { headers: { "Content-Type": "text/markdown" } }),
+  ),
+
   http.get("https://serpapi.com/search", () =>
     HttpResponse.json({ organic_results: [] }),
   ),

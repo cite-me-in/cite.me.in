@@ -105,7 +105,7 @@ export default function AiLegibilityPage({ loaderData }: Route.ComponentProps) {
             summary={report.result.summary}
             domain={site.domain}
           />
-          <ScanResults checks={report.result.checks} />
+          <ScanResults result={report.result} />
         </>
       ) : (
         <Fallback handleStartScan={startScan} />

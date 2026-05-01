@@ -239,7 +239,7 @@ export function passingSite(): Record<
       body: HOMEPAGE_WITH_CONTENT,
       contentType: "text/plain",
       headers: {
-        Link: '</sitemap.xml>; rel="sitemap"',
+        Link: '</sitemap.xml>; rel="sitemap", </index.md>; rel="alternate"; type="text/markdown"',
       },
     },
     "https://acme.com/robots.txt": text(ROBOTS_TXT_WITH_SIGNAL, "text/plain"),
@@ -249,12 +249,21 @@ export function passingSite(): Record<
     "https://acme.com/about": text(SAMPLE_PAGE_CONTENT),
     "https://acme.com/pricing": text(SAMPLE_PAGE_CONTENT),
     "https://acme.com/blog": text(SAMPLE_PAGE_CONTENT),
+    "https://acme.com.md": text(
+      "# Acme Corp\n\nWelcome to Acme Corp.",
+      "text/markdown",
+    ),
   };
 }
 
 export function failingSite(): Record<
   string,
-  { body: string; contentType?: string; status?: number }
+  {
+    body: string;
+    contentType?: string;
+    status?: number;
+    headers?: Record<string, string>;
+  }
 > {
   return {
     "https://acme.com": text(HOMEPAGE_SPA_SHELL),
@@ -262,12 +271,18 @@ export function failingSite(): Record<
     "https://acme.com/sitemap.txt": notFound(),
     "https://acme.com/sitemap.xml": notFound(),
     "https://acme.com/llms.txt": notFound(),
+    "https://acme.com.md": notFound(),
   };
 }
 
 export function partialSite(): Record<
   string,
-  { body: string; contentType?: string; status?: number }
+  {
+    body: string;
+    contentType?: string;
+    status?: number;
+    headers?: Record<string, string>;
+  }
 > {
   return {
     "https://acme.com": text(HOMEPAGE_WITH_CONTENT),
@@ -277,5 +292,6 @@ export function partialSite(): Record<
     "https://acme.com/llms.txt": notFound(),
     "https://acme.com/about": text(SAMPLE_PAGE_CONTENT),
     "https://acme.com/pricing": text(SAMPLE_PAGE_CONTENT),
+    "https://acme.com.md": notFound(),
   };
 }

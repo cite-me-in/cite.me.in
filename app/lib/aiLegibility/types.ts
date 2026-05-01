@@ -24,11 +24,19 @@ export type ScanResult = {
   url: string;
   scannedAt: string;
   checks: CheckResult[];
+  suggestions?: Suggestion[];
   summary: {
     discovered: { passed: number; total: number };
     trusted: { passed: number; total: number };
     welcomed: { passed: number; total: number };
   };
+};
+
+export type Suggestion = {
+  title: string;
+  description: string;
+  effort: string;
+  resourceLinks: { label: string; url: string }[];
 };
 
 export type ScanProgress = {

@@ -14,13 +14,20 @@ import checkHomepageContent from "./checks/homepageContent";
 import checkJsonLd from "./checks/jsonLd";
 import checkLinkHeaders from "./checks/linkHeaders";
 import checkLlmsTxt from "./checks/llmsTxt";
+import checkMarkdownAlternateLinks from "./checks/markdownAlternateLinks";
 import checkMarkdownNegotiation from "./checks/markdownNegotiation";
+import checkMdRoutes from "./checks/mdRoutes";
 import checkMetaTags from "./checks/metaTags";
 import checkRobotsTxt from "./checks/robotsTxt";
 import checkSamplePages from "./checks/samplePages";
 import checkSitemapTxt from "./checks/sitemapTxt";
 import checkSitemapXml from "./checks/sitemapXml";
-import type { CheckResult, ScanProgress, ScanResult } from "./types";
+import type {
+  CheckResult,
+  ScanProgress,
+  ScanResult,
+  Suggestion,
+} from "./types";
 
 /**
  * Run AI Legibility scan for a site, identifying any SEO problems and
@@ -74,7 +81,7 @@ export default async function runAILegibilityScan({
   }
 }
 
-export async function runScanSteps({
+async function runScanSteps({
   log,
   domain,
 }: {
@@ -136,7 +143,7 @@ export async function runScanSteps({
     `${samplePagesResult.passed ? "✓" : "✗"} ${samplePagesResult.message}`,
   );
 
-  await log("Checking Link headers...");
+  await log("Checking Link headers (sitemap)...");
   const linkHeadersResult = await checkLinkHeaders({
     url,
     html: homepageResult.html,
@@ -145,6 +152,21 @@ export async function runScanSteps({
   await log(
     `${linkHeadersResult.passed ? "✓" : "✗"} ${linkHeadersResult.message}`,
   );
+
+  await log("Checking markdown alternate links...");
+  const markdownAlternateResult = await checkMarkdownAlternateLinks({
+    url,
+    html: homepageResult.html,
+  });
+  checks.push(markdownAlternateResult);
+  await log(
+    `${markdownAlternateResult.passed ? "✓" : "✗"} ${markdownAlternateResult.message}`,
+  );
+
+  await log("Checking .md routes...");
+  const mdRoutesResult = await checkMdRoutes({ url });
+  checks.push(mdRoutesResult);
+  await log(`${mdRoutesResult.passed ? "✓" : "✗"} ${mdRoutesResult.message}`);
 
   await log("Checking markdown content negotiation...");
   const markdownResult = await checkMarkdownNegotiation({ url });
@@ -163,12 +185,47 @@ export async function runScanSteps({
   }
   const summary = await summarize({ checks, log });
 
+  const suggestions = generateSuggestions();
+
   return {
     url,
     scannedAt: new Date().toISOString(),
     checks,
+    suggestions,
     summary,
   };
+}
+
+function generateSuggestions(): Suggestion[] {
+  const suggestions: Suggestion[] = [];
+
+  suggestions.push({
+    title: "Hidden LLM hint",
+    description:
+      "Add a visually-hidden <div> to your pages that tells AI agents where to find clean Markdown versions. When someone pastes your URL into ChatGPT or Claude, the AI reads the rendered text and can follow the hint to get better content.",
+    effort: "2 min",
+    resourceLinks: [
+      {
+        label: "Evil Martians guide",
+        url: "https://evilmartians.com/chronicles/how-to-make-your-website-visible-to-llms",
+      },
+    ],
+  });
+
+  suggestions.push({
+    title: "/llms-full.txt",
+    description:
+      "Create /llms-full.txt containing your site's full content in a single Markdown file. AI tools like ChatGPT can ingest everything in one fetch. Mintlify's data shows llms-full.txt gets 3-4x more visits than llms.txt. For small sites, concatenate all page content. For larger sites, redirect to /index.md.",
+    effort: "15 min",
+    resourceLinks: [
+      {
+        label: "llms.txt spec",
+        url: "https://llmstxt.org/",
+      },
+    ],
+  });
+
+  return suggestions;
 }
 
 async function summarize({
