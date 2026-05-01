@@ -54,7 +54,6 @@ export default function PageSchema() {
             name: "Cite.me.in OG Image",
             caption: "Monitor AI citation visibility for your brand.",
             contentUrl: new URL("/images/og-image.png", siteURL).toString(),
-            url: new URL("/images/og-image.png", siteURL).toString(),
             height: 1024,
             width: 1024,
           },

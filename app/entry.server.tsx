@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/react-router";
 import { handleRequest } from "@vercel/react-router/entry.server";
-import { initLogger, wrapTraced } from "braintrust";
+import { wrapTraced } from "braintrust";
 import debug from "debug";
 import { Defuddle } from "defuddle/node";
 import { parseHTML } from "linkedom";
@@ -11,7 +11,6 @@ import type {
 } from "react-router";
 import "~/lib/logger.server";
 import captureAndLogError from "./lib/captureAndLogError.server";
-import envVars from "./lib/envVars.server";
 import { trackVisits } from "./lib/trackVisits.server";
 
 const logger = debug("server");
@@ -45,15 +44,19 @@ export default wrapTraced(
         response.ok &&
         request.headers.get("Accept")?.includes("text/markdown")
       ) {
-        const html = await response.clone().text();
-        const { document } = parseHTML(html);
-        const result = await Defuddle(document, request.url, {
-          markdown: true,
-        });
-        response = new Response(result.content, {
-          status: response.status,
-          headers: { "Content-Type": "text/markdown" },
-        });
+        try {
+          const html = await response.clone().text();
+          const { document } = parseHTML(html);
+          const result = await Defuddle(document, request.url, {
+            markdown: true,
+          });
+          response = new Response(result.content, {
+            status: response.status,
+            headers: { "Content-Type": "text/markdown" },
+          });
+        } catch (error) {
+          logger("Defuddle failed: %s", error);
+        }
       }
       void waitForResponse(response, start).then((duration) => {
         logger(
