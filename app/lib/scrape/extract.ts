@@ -1,5 +1,7 @@
 import { ms } from "convert";
 import debug from "debug";
+import { Defuddle } from "defuddle/node";
+import { parseHTML } from "linkedom";
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import type { HTMLNode } from "~/lib/html/HTMLNode";
 import parseHTMLTree, {
@@ -97,14 +99,14 @@ function extractFromMarkdown(
  * @param url - The URL of the document.
  * @returns The title and text.
  */
-function extractFromHtml(
+async function extractFromHtml(
   html: string,
   url: URL,
-): {
+): Promise<{
   title: string;
   text: string;
   html: string;
-} {
+}> {
   const tree = parseHTMLTree(html);
 
   const titleNodes = getElementsByTagName(tree, "title");
@@ -134,7 +136,8 @@ function extractFromHtml(
   const jsonText = extractArticleBody(html);
   if (jsonText) return { title, text: jsonText, html };
 
-  const text = extractSemanticContent(tree);
+  const text =
+    (await extractWithDefuddle(html, url)) ?? extractSemanticContent(tree);
   return { title, text, html };
 }
 
@@ -218,6 +221,27 @@ function extractSemanticContent(tree: HTMLNode[]): string {
   if (idContent) return htmlToMarkdown(idContent.children);
 
   return htmlToMarkdown(getMainContent(tree));
+}
+
+/**
+ * Extracts content using Defuddle (Readability-based content extraction with Markdown conversion).
+ * Falls back gracefully — returns null if anything goes wrong.
+ */
+async function extractWithDefuddle(
+  html: string,
+  url: URL,
+): Promise<string | null> {
+  try {
+    const { document } = parseHTML(html);
+    const result = await Defuddle(document, url.toString(), {
+      markdown: true,
+    });
+    if (result.content && result.content.trim().length > 50)
+      return result.content;
+    return null;
+  } catch {
+    return null;
+  }
 }
 
 /**
