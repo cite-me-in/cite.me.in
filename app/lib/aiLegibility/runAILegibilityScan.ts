@@ -8,7 +8,7 @@ import {
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import { normalizeURL } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
-import checkDetails from "./checkDetails";
+import { getCheckDetail } from "./criteria";
 import checkContentSignals from "./checks/contentSignals";
 import checkHomepageContent from "./checks/homepageContent";
 import checkJsonLd from "./checks/jsonLd";
@@ -181,7 +181,7 @@ async function runScanSteps({
   );
 
   for (const check of checks) {
-    check.detail = checkDetails[check.name] ?? undefined;
+    check.detail = getCheckDetail(check.name);
   }
   const summary = await summarize({ checks, log });
 
