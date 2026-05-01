@@ -40,6 +40,10 @@ expect.extend({
 
     const doc = parseHTML(rawHtml).document;
     if (options?.modify) options.modify(doc);
+
+    for (const script of doc.querySelectorAll("script[none]"))
+      script.removeAttribute("nonce");
+
     const formattedHtml = formatHTMLTree(doc);
 
     try {

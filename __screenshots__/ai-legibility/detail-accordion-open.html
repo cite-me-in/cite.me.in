@@ -1,0 +1,217 @@
+<div class="flex items-center justify-between gap-4">
+  <div>
+    <p>
+      <a class="text-foreground/60 block max-w-md truncate font-mono hover:underline" data-discover="true" href="/site/detail-example.com" title="detail-example.com">
+        detail-example.com
+      </a>
+    </p>
+    <h1 class="font-heading text-3xl">
+      AI Legibility
+    </h1>
+    <p class="text-foreground/60 mt-1 text-base">
+      Last scanned: Nov 14, 2023
+    </p>
+  </div>
+  <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold text-base transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 rounded-base border-2 border-black bg-white text-black shadow-[3px_3px_0px_0px_black] hover:bg-[hsl(60,100%,99%)] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] h-12 px-6 py-3" type="button">
+    <svg aria-hidden="true" class="lucide lucide-refresh-ccw size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+      <path d="M3 3v5h5"></path>
+      <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"></path>
+      <path d="M16 16h5v5"></path>
+    </svg>
+    Run New Scan
+  </button>
+</div>
+<div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
+  <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
+    <div class="flex items-center justify-center gap-2 font-heading text-2xl leading-none" data-slot="card-title">
+      AI Legibility Score
+    </div>
+    <p class="text-foreground/60 text-center font-mono text-base">
+      detail-example.com
+    </p>
+  </div>
+  <div class="px-6 mb-0 flex flex-col items-center gap-4" data-slot="card-content">
+    <div class="relative inline-flex items-center justify-center">
+      <svg height="125" width="200">
+        <g>
+          <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#e5e7eb" stroke-dasharray="251.03537555513242 16" stroke-dashoffset="267.0353755551324" stroke-linecap="butt" stroke-width="14"></path>
+          <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#3b82f6" stroke-dasharray="125.51768777756621 141.5176877775662" stroke-dashoffset="267.0353755551324" stroke-linecap="butt" stroke-width="14"></path>
+        </g>
+        <g>
+          <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#e5e7eb" stroke-dasharray="0 267.0353755551324" stroke-dashoffset="8" stroke-linecap="butt" stroke-width="14"></path>
+          <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#9333ea" stroke-dasharray="0 267.0353755551324" stroke-dashoffset="8" stroke-linecap="butt" stroke-width="14"></path>
+        </g>
+        <g>
+          <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#e5e7eb" stroke-dasharray="0 267.0353755551324" stroke-dashoffset="0" stroke-linecap="butt" stroke-width="14"></path>
+          <path d="M 15 120 A 85 85 0 0 1 185 120" fill="none" stroke="#059669" stroke-dasharray="0 267.0353755551324" stroke-dashoffset="0" stroke-linecap="butt" stroke-width="14"></path>
+        </g>
+      </svg>
+      <span class="absolute text-6xl font-bold tabular-nums" style="color: rgb(255, 195, 0); top: 77.5px;">
+        50
+      </span>
+    </div>
+    <p class="text-foreground/50 text-sm">
+      1 more to pass all checks
+    </p>
+    <div class="flex justify-center gap-6">
+      <button class="flex min-h-11 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg px-4 py-2 transition-all hover:scale-105">
+        <div class="text-base font-bold text-blue-600">
+          Discovered
+        </div>
+        <div class="text-foreground/50 text-xl">
+          1/2
+        </div>
+      </button>
+      <button class="flex min-h-11 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg px-4 py-2 transition-all hover:scale-105">
+        <div class="text-base font-bold text-purple-600">
+          Trusted
+        </div>
+        <div class="text-foreground/50 text-xl">
+          0/0
+        </div>
+      </button>
+      <button class="flex min-h-11 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg px-4 py-2 transition-all hover:scale-105">
+        <div class="text-base font-bold text-emerald-600">
+          Welcomed
+        </div>
+        <div class="text-foreground/50 text-xl">
+          0/0
+        </div>
+      </button>
+    </div>
+    <p class="text-foreground/50 text-center text-base">
+      1/2 checks passed
+    </p>
+  </div>
+  <div class="flex items-center justify-between px-6 [.border-t]:pt-6" data-slot="card-footer">
+    <div class="col-start-2 row-span-2 row-start-1 self-start justify-self-end" data-slot="card-action">
+      <button aria-expanded="false" aria-haspopup="dialog" data-base-ui-click-trigger data-slot="dialog-trigger" id="base-ui-_r_4_" tabindex="0" type="button">
+        <div class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 cursor-pointer rounded-base border-2 border-black bg-[#F59E0B] text-black shadow-[3px_3px_0px_0px_black] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] active:shadow-[1px_1px_0px_0px_black] active:translate-x-[2px] active:translate-y-[2px] h-10 rounded-sm px-4 text-xs">
+          <svg aria-hidden="true" class="lucide lucide-arrow-big-up-dash size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 16a1 1 0 0 0 1-1v-2a1 1 0 0 1 1-1h3.293a.707.707 0 0 0 .5-1.207l-6.939-6.939a1.207 1.207 0 0 0-1.708 0l-6.94 6.94a.707.707 0 0 0 .5 1.206H8a1 1 0 0 1 1 1v2a1 1 0 0 0 1 1z"></path>
+            <path d="M9 20h6"></path>
+          </svg>
+          Improve your score
+        </div>
+      </button>
+    </div>
+    <div class="col-start-2 row-span-2 row-start-1 self-start justify-self-end" data-slot="card-action">
+      <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 rounded-base border-2 border-black bg-white text-black shadow-[3px_3px_0px_0px_black] hover:bg-[hsl(60,100%,99%)] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] h-10 rounded-sm px-4 text-xs" type="button">
+        <svg aria-hidden="true" class="lucide lucide-share2 lucide-share-2 size-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line>
+          <line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line>
+        </svg>
+        Share
+      </button>
+    </div>
+  </div>
+</div>
+<div class="scroll-mt-20 space-y-2" id="section-discovered">
+  <h3 class="text-lg font-bold text-blue-600">
+    Discovered
+  </h3>
+  <div class="flex w-full flex-col space-y-2" data-orientation="vertical" data-slot="accordion" dir="ltr" role="region">
+    <div class="not-last:border-b rounded-base border-border bg-secondary-background overflow-hidden border-2" data-index="0" data-open data-orientation="vertical" data-slot="accordion-item">
+      <h3 class="flex" data-index="0" data-open data-orientation="vertical">
+        <button aria-controls="base-ui-_r_6_" aria-disabled="false" aria-expanded="true" class="group/accordion-trigger relative flex-1 justify-between rounded-lg border border-transparent text-left text-sm font-medium transition-all outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:after:border-ring aria-disabled:pointer-events-none aria-disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ml-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground flex items-center gap-3 px-4 py-3 hover:no-underline bg-red-50" data-orientation="vertical" data-panel-open data-slot="accordion-trigger" data-value="robots.txt" tabindex="0" type="button">
+          <svg aria-hidden="true" class="lucide lucide-circle-x size-5 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="m15 9-6 6"></path>
+            <path d="m9 9 6 6"></path>
+          </svg>
+          <span class="font-medium">
+            robots.txt
+          </span>
+          <svg aria-hidden="true" class="lucide lucide-chevron-down pointer-events-none shrink-0 group-aria-expanded/accordion-trigger:hidden" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <path d="m6 9 6 6 6-6"></path>
+          </svg>
+          <svg aria-hidden="true" class="lucide lucide-chevron-up pointer-events-none hidden shrink-0 group-aria-expanded/accordion-trigger:inline" data-slot="accordion-trigger-icon" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+            <path d="m18 15-6-6-6 6"></path>
+          </svg>
+        </button>
+      </h3>
+      <div class="data-open:animate-accordion-down data-closed:animate-accordion-up overflow-hidden text-sm" data-index="0" data-open data-orientation="vertical" data-slot="accordion-content" id="base-ui-_r_6_" role="region" style="--accordion-panel-height: auto; --accordion-panel-width: auto; animation-name: none;">
+        <div class="h-(--accordion-panel-height) data-ending-style:h-0 data-starting-style:h-0 [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground [&_p:not(:last-child)]:mb-4 border-border border-t px-4 py-4">
+          <div class="space-y-4">
+            <div>
+              <h4 class="text-foreground/70 mb-1 text-base font-semibold">
+                Goal
+              </h4>
+              <p class="text-foreground/80 text-base">
+                Allow AI crawlers to access your site
+              </p>
+            </div>
+            <div>
+              <h4 class="text-foreground/70 mb-1 text-base font-semibold">
+                Issue
+              </h4>
+              <p class="text-foreground/80 text-base font-bold">
+                robots.txt blocks AI crawlers
+              </p>
+            </div>
+            <div>
+              <h4 class="text-foreground/70 mb-1 text-base font-semibold">
+                How to implement
+              </h4>
+              <p class="text-foreground/80 text-base">
+                Add Allow rules for known AI bot user-agents
+              </p>
+            </div>
+            <div>
+              <h4 class="text-foreground/70 mb-1 text-base font-semibold">
+                Example
+              </h4>
+              <pre class="bg-muted overflow-x-auto rounded p-3 font-mono text-sm leading-relaxed whitespace-pre-wrap">
+                User-agent: GPTBot
+Allow: /
+User-agent: *
+Disallow: /private/
+              </pre>
+            </div>
+            <div>
+              <h4 class="text-foreground/70 mb-1 text-base font-semibold">
+                Resources
+              </h4>
+              <div class="flex flex-wrap gap-2">
+                <a href="https://developers.google.com/search/docs/crawling-indexing/robots/intro" rel="noopener noreferrer" target="_blank">
+                  <span class="inline-flex items-center justify-center rounded-base border-2 px-2.5 py-0.5 text-xs font-base w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] overflow-hidden text-foreground bg-neutral-100 border-neutral-200 cursor-pointer hover:bg-neutral-200" data-slot="badge">
+                    About robots.txt
+                  </span>
+                </a>
+              </div>
+            </div>
+            <div class="flex justify-end gap-2">
+              <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 rounded-base border-2 border-black bg-white text-black shadow-[3px_3px_0px_0px_black] hover:bg-[hsl(60,100%,99%)] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] h-10 rounded-sm px-4 text-xs" type="button">
+                <svg aria-hidden="true" class="lucide lucide-copy size-3" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                  <rect height="14" rx="2" ry="2" width="14" x="8" y="8"></rect>
+                  <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+                </svg>
+                Copy prompt
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="space-y-2">
+    <div class="rounded-base border-border flex items-start gap-3 border-2 bg-green-50 p-3 text-sm text-green-700">
+      <svg aria-hidden="true" class="lucide lucide-circle-check-big mt-0.5 h-4 w-4 shrink-0 text-green-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M21.801 10A10 10 0 1 1 17 3.335"></path>
+        <path d="m9 11 3 3L22 4"></path>
+      </svg>
+      <div>
+        <span class="font-bold">
+          llms.txt
+        </span>
+        <span class="ml-1 text-green-600">
+          llms.txt found with valid content
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
