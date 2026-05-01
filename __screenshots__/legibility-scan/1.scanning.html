@@ -54,194 +54,20 @@
         </svg>
         acme.com
       </div>
-      <div class="rounded-base inline-flex items-center gap-2 border-2 border-black bg-green-100 px-3 py-1.5 text-sm font-bold shadow-[2px_2px_0px_0px_black]">
-        <svg aria-hidden="true" class="lucide lucide-check h-4 w-4 shrink-0 text-green-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M20 6 9 17l-5-5"></path>
-        </svg>
-        Scan complete
-      </div>
     </div>
-    <div class="space-y-8">
-      <div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-[hsl(47,100%,95%)]" data-slot="card">
-        <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
-          <div class="justify-center font-heading text-2xl leading-none flex items-center gap-2" data-slot="card-title">
-            <svg aria-hidden="true" class="lucide lucide-building2 lucide-building-2 h-5 w-5 text-amber-500" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M10 12h4"></path>
-              <path d="M10 8h4"></path>
-              <path d="M14 21v-3a2 2 0 0 0-4 0v3"></path>
-              <path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"></path>
-              <path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"></path>
-            </svg>
-            AI Legibility Report — 9/13 checks passed
-          </div>
-        </div>
-        <div class="px-6 space-y-6" data-slot="card-content">
-          <div class="grid gap-4 sm:grid-cols-3">
-            <div class="rounded-base border-2 border-black bg-white p-4 text-center shadow-[2px_2px_0px_0px_black]">
-              <div class="text-base font-bold text-blue-600">
-                Discovered
-              </div>
-              <div class="mt-1 text-2xl font-bold">
-                4/5
-              </div>
-              <div class="text-sm text-black/50">
-                checks passed
-              </div>
-            </div>
-            <div class="rounded-base border-2 border-black bg-white p-4 text-center shadow-[2px_2px_0px_0px_black]">
-              <div class="text-base font-bold text-purple-600">
-                Trusted
-              </div>
-              <div class="mt-1 text-2xl font-bold">
-                3/5
-              </div>
-              <div class="text-sm text-black/50">
-                checks passed
-              </div>
-            </div>
-            <div class="rounded-base border-2 border-black bg-white p-4 text-center shadow-[2px_2px_0px_0px_black]">
-              <div class="text-base font-bold text-emerald-600">
-                Welcomed
-              </div>
-              <div class="mt-1 text-2xl font-bold">
-                2/3
-              </div>
-              <div class="text-sm text-black/50">
-                checks passed
-              </div>
-            </div>
-          </div>
-          <div>
-            <h3 class="mb-2 font-bold text-blue-600">
-              Discovered
-            </h3>
-            <div class="space-y-2">
-              <div class="rounded-base flex items-start gap-3 border-2 border-black p-3 text-sm shadow-[2px_2px_0px_0px_black] bg-red-50">
-                <svg aria-hidden="true" class="lucide lucide-circle-x mt-0.5 h-4 w-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="m15 9-6 6"></path>
-                  <path d="m9 9 6 6"></path>
-                </svg>
-                <div>
-                  <span class="font-bold">
-                    Markdown alternate links
-                  </span>
-                  <span class="ml-1 text-black/60">
-                    No &amp;lt;link rel='alternate' type='text/markdown'&amp;gt; found in HTML or HTTP Link header
-                  </span>
-                </div>
-              </div>
-              <div>
-                <button class="rounded-base flex w-full items-center gap-2 border-2 border-dashed border-black bg-green-50/50 px-3 py-2 text-left text-sm font-medium text-green-700 transition-all hover:bg-green-50">
-                  <svg aria-hidden="true" class="lucide lucide-chevron-down h-4 w-4 transition-transform -rotate-90" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="m6 9 6 6 6-6"></path>
-                  </svg>
-                  4 checks passed
-                </button>
-              </div>
-            </div>
-          </div>
-          <div>
-            <h3 class="mb-2 font-bold text-purple-600">
-              Trusted
-            </h3>
-            <div class="space-y-2">
-              <div class="rounded-base flex items-start gap-3 border-2 border-black p-3 text-sm shadow-[2px_2px_0px_0px_black] bg-red-50">
-                <svg aria-hidden="true" class="lucide lucide-circle-x mt-0.5 h-4 w-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="m15 9-6 6"></path>
-                  <path d="m9 9 6 6"></path>
-                </svg>
-                <div>
-                  <span class="font-bold">
-                    Homepage content
-                  </span>
-                  <span class="ml-1 text-black/60">
-                    Homepage has minimal content (46 characters)
-                  </span>
-                </div>
-              </div>
-              <div class="rounded-base flex items-start gap-3 border-2 border-black p-3 text-sm shadow-[2px_2px_0px_0px_black] bg-red-50">
-                <svg aria-hidden="true" class="lucide lucide-circle-x mt-0.5 h-4 w-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="m15 9-6 6"></path>
-                  <path d="m9 9 6 6"></path>
-                </svg>
-                <div>
-                  <span class="font-bold">
-                    Markdown content negotiation
-                  </span>
-                  <span class="ml-1 text-black/60">
-                    Homepage does not serve markdown (Content-Type: text/html)
-                  </span>
-                </div>
-              </div>
-              <div>
-                <button class="rounded-base flex w-full items-center gap-2 border-2 border-dashed border-black bg-green-50/50 px-3 py-2 text-left text-sm font-medium text-green-700 transition-all hover:bg-green-50">
-                  <svg aria-hidden="true" class="lucide lucide-chevron-down h-4 w-4 transition-transform -rotate-90" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="m6 9 6 6 6-6"></path>
-                  </svg>
-                  3 checks passed
-                </button>
-              </div>
-            </div>
-          </div>
-          <div>
-            <h3 class="mb-2 font-bold text-emerald-600">
-              Welcomed
-            </h3>
-            <div class="space-y-2">
-              <div class="rounded-base flex items-start gap-3 border-2 border-black p-3 text-sm shadow-[2px_2px_0px_0px_black] bg-red-50">
-                <svg aria-hidden="true" class="lucide lucide-circle-x mt-0.5 h-4 w-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <path d="m15 9-6 6"></path>
-                  <path d="m9 9 6 6"></path>
-                </svg>
-                <div>
-                  <span class="font-bold">
-                    Content Signals
-                  </span>
-                  <span class="ml-1 text-black/60">
-                    No Content-Signal found in robots.txt — AI agents lack a content usage signal
-                  </span>
-                </div>
-              </div>
-              <div>
-                <button class="rounded-base flex w-full items-center gap-2 border-2 border-dashed border-black bg-green-50/50 px-3 py-2 text-left text-sm font-medium text-green-700 transition-all hover:bg-green-50">
-                  <svg aria-hidden="true" class="lucide lucide-chevron-down h-4 w-4 transition-transform -rotate-90" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-                    <path d="m6 9 6 6 6-6"></path>
-                  </svg>
-                  2 checks passed
-                </button>
-              </div>
-            </div>
-          </div>
+    <div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
+      <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
+        <div class="justify-center font-heading flex items-center gap-2 text-lg" data-slot="card-title">
+          <span class="inline-block h-4 w-4 animate-spin rounded-full border-2 border-black/20 border-t-black"></span>
+          Checking acme.com...
         </div>
       </div>
-      <div class="rounded-base border-2 border-black bg-white p-6 shadow-[6px_6px_0px_0px_black]">
-        <h3 class="mb-4 flex items-center gap-2 text-xl font-bold">
-          <svg aria-hidden="true" class="lucide lucide-sparkles h-5 w-5 text-amber-500" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path>
-            <path d="M20 2v4"></path>
-            <path d="M22 4h-4"></path>
-            <circle cx="4" cy="20" r="2"></circle>
-          </svg>
-          See if AI actually cites your site
-        </h3>
-        <p class="mb-6 font-medium text-black/70">
-          Legibility is one thing. Our weekly scans run
-          <strong>
-            9 targeted queries
-          </strong>
-          across all
-          <strong>
-            5 AI platforms
-          </strong>
-          — ChatGPT, Claude, Gemini, Copilot, and Perplexity — to find every citation, track trends, and measure your AI visibility over time.
-        </p>
-        <a class="rounded-base inline-flex w-full items-center justify-center gap-2 border-2 border-black bg-amber-400 px-8 py-4 text-lg font-bold shadow-[4px_4px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_black]" href="/sign-up">
-          Start monitoring — free
-        </a>
+      <div class="px-6" data-slot="card-content">
+        <div class="max-h-64 space-y-1 overflow-y-auto font-mono text-sm text-black/60">
+          <div class="text-black/40">
+            Starting scan...
+          </div>
+        </div>
       </div>
     </div>
   </div>

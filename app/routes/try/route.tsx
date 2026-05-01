@@ -1,13 +1,16 @@
+import { Dialog } from "@base-ui/react/dialog";
 import {
   Building2Icon,
   CheckCircleIcon,
   CheckIcon,
   ChevronDownIcon,
+  CopyIcon,
   GlobeIcon,
   LayoutDashboardIcon,
   SearchIcon,
   SparklesIcon,
   XCircleIcon,
+  XIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Form, redirect, useActionData } from "react-router";
@@ -16,8 +19,9 @@ import CiteMeInLogo from "~/components/layout/CiteMeInLogo";
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
+import buildPrompt from "~/lib/aiLegibility/buildPrompt";
 import CATEGORIES from "~/lib/aiLegibility/checkDetails";
-import type { ScanResult } from "~/lib/aiLegibility/types";
+import type { CheckResult, ScanResult } from "~/lib/aiLegibility/types";
 import { requireUserAccess } from "~/lib/auth.server";
 import { extractDomain } from "~/lib/sites.server";
 import { getScanStatus } from "~/lib/tryScan.server";
@@ -358,6 +362,12 @@ function ResultDisplay({
         </CardContent>
       </Card>
 
+      {totalPassed < totalChecks && (
+        <ImproveSiteModal
+          failedChecks={result.checks.filter((c) => !c.passed)}
+        />
+      )}
+
       <UpgradeCard user={user} />
     </div>
   );
@@ -528,6 +538,78 @@ function SignUpSection({ domain }: { domain: string }) {
         </div>
       </div>
     </section>
+  );
+}
+
+function ImproveSiteModal({ failedChecks }: { failedChecks: CheckResult[] }) {
+  const allPrompts = failedChecks.map(buildPrompt).join("\n\n---\n\n");
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyAll = async () => {
+    await navigator.clipboard.writeText(allPrompts);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Trigger
+        className="rounded-base inline-flex w-full items-center justify-center gap-2 border-2 border-black bg-emerald-400 px-8 py-4 text-lg font-bold shadow-[4px_4px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_black]"
+        onClick={() => setOpen(true)}
+      >
+        <SparklesIcon className="h-5 w-5" />
+        Improve Your Site
+      </Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/50 transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0" />
+        <Dialog.Popup className="rounded-base fixed top-[50%] left-[50%] z-50 flex max-h-[80vh] w-full max-w-2xl translate-x-[-50%] translate-y-[-50%] flex-col gap-4 border-2 border-black bg-white p-6 shadow-[8px_8px_0px_0px_black] transition-all duration-200 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
+          <Dialog.Title className="font-heading pr-8 text-xl font-bold">
+            Improve Your Site
+          </Dialog.Title>
+          <Dialog.Description className="font-base text-sm text-black/60">
+            Use the prompts below with your coding agent to fix the issues found
+            during the scan.
+          </Dialog.Description>
+
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            <textarea
+              className="rounded-base min-h-[30vh] w-full resize-none border-2 border-black bg-[hsl(60,100%,97%)] p-4 font-mono text-sm"
+              value={allPrompts}
+              readOnly
+            />
+          </div>
+
+          <div className="flex items-center justify-between border-t-2 border-black pt-4">
+            <span className="text-sm font-medium text-black/50">
+              {failedChecks.length} issue
+              {failedChecks.length > 1 ? "s" : ""} to fix
+            </span>
+            <button
+              onClick={handleCopyAll}
+              className="rounded-base inline-flex items-center gap-2 border-2 border-black bg-amber-400 px-6 py-3 text-sm font-bold shadow-[3px_3px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_black]"
+            >
+              {copied ? (
+                <>
+                  <CheckIcon className="size-4" />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <CopyIcon className="size-4" />
+                  Copy all instructions
+                </>
+              )}
+            </button>
+          </div>
+
+          <Dialog.Close className="rounded-base absolute top-4 right-4 p-1 transition-colors hover:bg-black/5">
+            <XIcon className="size-5" />
+            <span className="sr-only">Close</span>
+          </Dialog.Close>
+        </Dialog.Popup>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }
 
