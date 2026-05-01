@@ -2,54 +2,17 @@ import * as Sentry from "@sentry/react-router";
 import { handleRequest } from "@vercel/react-router/entry.server";
 import { initLogger, wrapTraced } from "braintrust";
 import debug from "debug";
+import { Defuddle } from "defuddle/node";
+import { parseHTML } from "linkedom";
 import type {
   ActionFunctionArgs,
   EntryContext,
   LoaderFunctionArgs,
 } from "react-router";
-import TurndownService from "turndown";
 import "~/lib/logger.server";
 import captureAndLogError from "./lib/captureAndLogError.server";
 import envVars from "./lib/envVars.server";
 import { trackVisits } from "./lib/trackVisits.server";
-
-const turndown = new TurndownService({
-  headingStyle: "atx",
-  codeBlockStyle: "fenced",
-  emDelimiter: "*",
-});
-
-switch (process.env.NODE_ENV) {
-  case "production": {
-    // Initialize Braintrust logger
-    initLogger({ projectName: "cite.me.in" });
-
-    Sentry.init({
-      dsn: envVars.VITE_SENTRY_DSN,
-      enableLogs: true,
-      environment: "production",
-      integrations: [
-        Sentry.consoleLoggingIntegration({ levels: ["log", "warn", "error"] }),
-        Sentry.anthropicAIIntegration({
-          recordInputs: true,
-          recordOutputs: true,
-        }),
-        Sentry.vercelAIIntegration({ recordInputs: true, recordOutputs: true }),
-      ],
-      tracesSampleRate: 1.0,
-    });
-    break;
-  }
-  case "test": {
-    // NOTE: Make sure we don't accidentally load MSW in dev/production.
-    void import("~/test/helpers/worker.setup").then(
-      ({ default: setupTestServer }) => {
-        setupTestServer();
-      },
-    );
-    break;
-  }
-}
 
 const logger = debug("server");
 
@@ -82,13 +45,12 @@ export default wrapTraced(
         response.ok &&
         request.headers.get("Accept")?.includes("text/markdown")
       ) {
-        let html = await response.clone().text();
-        html = html.replace(
-          /<(header|style|script|nav|footer)[^>]*>[\s\S]*?<\/\1>/gi,
-          "",
-        );
-        const markdown = turndown.turndown(html);
-        response = new Response(markdown, {
+        const html = await response.clone().text();
+        const { document } = parseHTML(html);
+        const result = await Defuddle(document, request.url, {
+          markdown: true,
+        });
+        response = new Response(result.content, {
           status: response.status,
           headers: { "Content-Type": "text/markdown" },
         });
