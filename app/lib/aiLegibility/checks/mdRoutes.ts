@@ -6,7 +6,7 @@ export default async function checkMdRoutes({
   url: string;
 }): Promise<Omit<CheckResult, "category">> {
   try {
-    const mdUrl = url.endsWith("/") ? `${url}index.md` : `${url}.md`;
+    const mdUrl = url.endsWith("/") ? `${url}index.md` : `${url}/index.md`;
     const response = await fetch(mdUrl, {
       headers: {
         "User-Agent": "CiteMeIn-AI-Legibility-Bot/1.0",
