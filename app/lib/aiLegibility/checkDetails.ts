@@ -284,6 +284,30 @@ const CATEGORIES: Category[] = [
         },
       },
       {
+        name: "Robots directives",
+        desc: "No noindex that prevents AI citation",
+        detail: {
+          goal: "Ensure no pages block AI citation via noindex directives",
+          issue:
+            "AI agents respect robots meta tags and X-Robots-Tag headers. If your homepage or key pages include noindex, agents won't include them in their knowledge base, making your site invisible in AI-generated answers.",
+          howToImplement:
+            "Check your HTML <head> for <meta name='robots' content='noindex'> and your HTTP response headers for X-Robots-Tag: noindex. Remove or change these to 'index' on pages you want AI agents to cite. Use noindex selectively only for admin pages, drafts, or duplicate content.",
+          fixExample:
+            '# Remove this from <head> for pages you want cited:\n<meta name="robots" content="noindex">\n\n# Remove this HTTP header for pages you want cited:\nX-Robots-Tag: noindex\n\n# For most pages, omit the tag entirely (index is the default)',
+          effort: "5 min",
+          resourceLinks: [
+            {
+              label: "Robots meta tag (MDN)",
+              url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta/name/robots",
+            },
+            {
+              label: "X-Robots-Tag (Google)",
+              url: "https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag",
+            },
+          ],
+        },
+      },
+      {
         name: "Content Signals",
         desc: "Content-Signal declaration in robots.txt for content usage permissions",
         detail: {

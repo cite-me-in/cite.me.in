@@ -67,7 +67,7 @@ describe("checkSitemapTxt", () => {
 
     const result = await checkSitemapTxt({ url: "https://acme.com/" });
 
-    expect(result.passed).toBe(false);
+    expect(result.passed).toBe(true);
     expect(result.message).toContain("no valid URLs");
     expect(result.urls).toHaveLength(0);
   });

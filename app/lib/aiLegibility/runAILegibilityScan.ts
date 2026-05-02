@@ -18,6 +18,7 @@ import checkMarkdownAlternateLinks from "./checks/markdownAlternateLinks";
 import checkMarkdownNegotiation from "./checks/markdownNegotiation";
 import checkMdRoutes from "./checks/mdRoutes";
 import checkMetaTags from "./checks/metaTags";
+import checkRobotsDirectives from "./checks/robotsDirectives";
 import checkRobotsTxt from "./checks/robotsTxt";
 import checkSamplePages from "./checks/samplePages";
 import checkSitemapTxt from "./checks/sitemapTxt";
@@ -204,6 +205,17 @@ export async function runScanSteps({
   const mdRoutesResult = await checkMdRoutes({ urls: alternateUrls ?? [] });
   checks.push(mdRoutesResult);
   await log(`${mdRoutesResult.passed ? "✓" : "✗"} ${mdRoutesResult.message}`);
+
+  await log("Checking robots directives (noindex)...");
+  const robotsDirectivesResult = await checkRobotsDirectives({
+    html: homepageResult.html,
+    url,
+    pages: samplePagesWithHtml,
+  });
+  checks.push(robotsDirectivesResult);
+  await log(
+    `${robotsDirectivesResult.passed ? "✓" : "✗"} ${robotsDirectivesResult.message}`,
+  );
 
   await log("Checking markdown content negotiation...");
   const markdownResult = await checkMarkdownNegotiation({

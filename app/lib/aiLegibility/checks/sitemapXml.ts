@@ -87,12 +87,7 @@ async function fetchSitemapXml(
       };
 
       if (parsed.sitemapindex) {
-        return handleSitemapIndex(
-          parsed.sitemapindex,
-          sitemapUrl,
-          baseElapsed,
-          contentType,
-        );
+        return handleSitemapIndex(parsed.sitemapindex, sitemapUrl, baseElapsed);
       }
 
       const urlset = parsed.urlset;
@@ -235,7 +230,6 @@ async function handleSitemapIndex(
         url: sitemapUrl,
         childSitemaps: childUrls.length,
         elapsed: sitemapIndexElapsed,
-        mimeType: contentType,
       },
       urls: [],
     };
@@ -250,7 +244,6 @@ async function handleSitemapIndex(
       childSitemaps: childUrls.length,
       validUrls: allUrls.length,
       elapsed: sitemapIndexElapsed,
-      mimeType: contentType,
     },
     urls: allUrls,
   };
