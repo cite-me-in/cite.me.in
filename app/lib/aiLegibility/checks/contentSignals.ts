@@ -16,30 +16,35 @@ const VALID_VALUES = ["yes", "no"] as const;
 
 export default async function checkContentSignals({
   url,
+  robotsContent,
 }: {
   url: string;
+  robotsContent?: string;
 }): Promise<Omit<CheckResult, "category">> {
   const robotsUrl = new URL("/robots.txt", url).href;
 
   try {
-    const response = await fetch(robotsUrl, {
-      headers: {
-        "User-Agent": "CiteMeIn-AI-Legibility-Bot/1.0",
-        Accept: "text/plain",
-      },
-      signal: AbortSignal.timeout(10_000),
-    });
+    const content =
+      robotsContent ??
+      (await (async () => {
+        const response = await fetch(robotsUrl, {
+          headers: {
+            "User-Agent": "CiteMeIn-AI-Legibility-Bot/1.0",
+            Accept: "text/plain",
+          },
+          signal: AbortSignal.timeout(10_000),
+        });
+        return response.ok ? await response.text() : null;
+      })());
 
-    if (!response.ok) {
+    if (content === null) {
       return {
         name: "Content Signals",
         passed: false,
-        message: `Could not check Content-Signal — robots.txt returned HTTP ${response.status}`,
-        details: { statusCode: response.status },
+        message: `Could not check Content-Signal — robots.txt returned HTTP 404`,
+        details: { statusCode: 404 },
       };
     }
-
-    const content = await response.text();
     const signalLines = content
       .split("\n")
       .filter((line) => /^Content-Signal\s*:/i.test(line.trim()));

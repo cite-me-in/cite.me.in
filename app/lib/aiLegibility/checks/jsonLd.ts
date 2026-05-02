@@ -1,18 +1,11 @@
 /**
  * Spec: schema.org
  * JSON-LD structured data embedded in <script type="application/ld+json"> tags.
- * Required: at least one page (homepage or sample page) must have valid JSON-LD.
+ * Required: ALL pages (homepage AND sample pages) must have valid JSON-LD.
+ *   - A page with no sample pages only needs homepage JSON-LD to pass.
+ *   - A page with sample pages requires BOTH homepage AND all fetchable
+ *     sample pages to have valid JSON-LD.
  * Per-schema required fields:
- *   - Article/NewsArticle/BlogPosting: headline or name
- *   - Organization: name
- *   - WebSite: name or url
- *   - BreadcrumbList: itemListElement
- *   - Product: name
- *   - Person: name
- *   - FAQPage: mainEntity
- *   - HowTo: name
- *   - LocalBusiness: name
- *   - SoftwareApplication: name
  */
 
 import type { CheckResult } from "~/lib/aiLegibility/types";
@@ -122,9 +115,16 @@ export default async function checkJsonLd({
     ...pageResults,
   ];
 
-  const anyHasValidLd = allPageResults.some(
+  const homepageValid =
+    homepageSchemas.length > 0 && homepageSchemas.every((s) => s.valid);
+
+  // ALL pages must have valid JSON-LD — a page with zero schemas fails
+  const allPagesValid = allPageResults.every(
     (p) => p.schemas.length > 0 && p.schemas.every((s) => s.valid),
   );
+
+  // Pass only if homepage is valid AND all fetchable sample pages have valid JSON-LD
+  const passed = pagesRequested === 0 ? homepageValid : allPagesValid;
 
   const allErrors: string[] = [];
   for (const result of allPageResults) {
@@ -164,11 +164,15 @@ export default async function checkJsonLd({
   }
 
   const noLdAnywhere = allPageResults.every((p) => p.schemas.length === 0);
-  const passed = anyHasValidLd;
+  const pagesWithNoLd = allPageResults
+    .filter((p) => p.schemas.length === 0)
+    .map((p) => (p.url === "homepage" ? "homepage" : p.url));
 
   let message: string;
   if (noLdAnywhere) {
     message = "No JSON-LD found on homepage or sample pages";
+  } else if (pagesWithNoLd.length > 0) {
+    message = `No JSON-LD on ${pagesWithNoLd.join(", ")}`;
   } else if (!passed) {
     message = ["JSON-LD found but all schemas are invalid", ...allErrors].join(
       " | ",
@@ -190,7 +194,7 @@ export default async function checkJsonLd({
       homepageSchemaCount: homepageSchemas.length,
       pagesRequested,
       pagesChecked: pageResults.length,
-      anyPageHasValidLd: anyHasValidLd,
+      anyPageHasValidLd: passed,
     },
     schemas: homepageSchemas,
     pageResults,

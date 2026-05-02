@@ -179,7 +179,7 @@ describe("runScan", () => {
     expect(result?.summary.discovered.passed).toBe(2);
     expect(result?.summary.discovered.total).toBe(5);
     expect(result?.summary.trusted.passed).toBe(3);
-    expect(result?.summary.welcomed.passed).toBe(3);
+    expect(result?.summary.welcomed.passed).toBe(2);
   });
 
   it("should normalize URL without protocol", async () => {

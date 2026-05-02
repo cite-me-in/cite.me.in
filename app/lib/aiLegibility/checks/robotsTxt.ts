@@ -107,31 +107,42 @@ function generateRobotsFix(
 
 export default async function checkRobotsTxt({
   url,
+  robotsContent: externalContent,
 }: {
   url: string;
-}): Promise<Omit<CheckResult, "category">> {
+  robotsContent?: string;
+}): Promise<Omit<CheckResult, "category"> & { robotsContent?: string }> {
   const robotsUrl = new URL("/robots.txt", url).href;
   const startTime = Date.now();
 
   try {
-    const response = await fetch(robotsUrl, {
-      headers: {
-        "User-Agent": "CiteMeIn-AI-Legibility-Bot/1.0",
-        Accept: "text/plain",
-      },
-      signal: AbortSignal.timeout(10_000),
-    });
+    const content =
+      externalContent ??
+      (await (async () => {
+        const response = await fetch(robotsUrl, {
+          headers: {
+            "User-Agent": "CiteMeIn-AI-Legibility-Bot/1.0",
+            Accept: "text/plain",
+          },
+          signal: AbortSignal.timeout(10_000),
+        });
 
-    if (!response.ok) {
+        if (!response.ok) {
+          return null;
+        }
+
+        return await response.text();
+      })());
+
+    if (content === null) {
       return {
         name: "robots.txt",
         passed: false,
-        message: `robots.txt not found (HTTP ${response.status})`,
-        details: { statusCode: response.status, url: robotsUrl },
+        message: `robots.txt not found (HTTP ${404})`,
+        details: { statusCode: 404, url: robotsUrl },
       };
     }
 
-    const content = await response.text();
     const elapsed = Date.now() - startTime;
 
     const lines = content.split("\n").filter((line) => line.trim());
@@ -153,6 +164,7 @@ export default async function checkRobotsTxt({
           hasSitemap,
           sitemapUrls,
           elapsed,
+          robotsContent: content,
         },
       };
     }
@@ -172,6 +184,7 @@ export default async function checkRobotsTxt({
           elapsed,
           blockedAiBots,
           suggestedFix: generateRobotsFix(blockedAiBots),
+          robotsContent: content,
         },
       };
     }
@@ -186,6 +199,7 @@ export default async function checkRobotsTxt({
         hasSitemap,
         sitemapUrls,
         elapsed,
+        robotsContent: content,
       },
     };
   } catch (error) {

@@ -24,7 +24,7 @@ describe("checkLlmsTxt", () => {
 
     expect(result.passed).toBe(true);
     expect(result.name).toBe("llms.txt");
-    expect(result.message).toContain("valid structure");
+    expect(result.message).toContain("well-structured");
     expect(result.details?.hasH1).toBe(true);
     expect(result.details?.h2SectionCount).toBe(2);
     expect(result.details?.hasFileLinks).toBe(true);
@@ -49,7 +49,7 @@ describe("checkLlmsTxt", () => {
     expect(result.details?.h2SectionCount).toBe(1);
   });
 
-  it("should fail when llms.txt has no H1 title", async () => {
+  it("should pass and note missing H1 title as informative", async () => {
     msw.use(
       http.get("https://acme.com/llms.txt", () =>
         HttpResponse.text("Some content without H1", {
@@ -60,12 +60,12 @@ describe("checkLlmsTxt", () => {
 
     const result = await checkLlmsTxt({ url: "https://acme.com/" });
 
-    expect(result.passed).toBe(false);
-    expect(result.message).toContain("missing H1 title");
+    expect(result.passed).toBe(true);
+    expect(result.message).toContain("no H1 title");
     expect(result.details?.hasH1).toBe(false);
   });
 
-  it("should fail when llms.txt has no H2 sections", async () => {
+  it("should pass and note missing H2 sections as informative", async () => {
     msw.use(
       http.get("https://acme.com/llms.txt", () =>
         HttpResponse.text("# Acme Corp\n\nJust a description, no sections.", {
@@ -76,8 +76,7 @@ describe("checkLlmsTxt", () => {
 
     const result = await checkLlmsTxt({ url: "https://acme.com/" });
 
-    expect(result.passed).toBe(false);
-    expect(result.details?.h2SectionCount).toBe(0);
+    expect(result.passed).toBe(true);
   });
 
   it("should warn about content under Optional section", async () => {

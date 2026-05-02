@@ -15,7 +15,7 @@ minimumReleaseAgeExclude:
   - "@oxfmt/*"
 
 onlyBuiltDependencies:
-  - '@google/genai'
+  - "@google/genai"
   - "@infisical/cli"
   - "@prisma/client"
   - "@prisma/engines"

@@ -1,8 +1,10 @@
 /**
  * Spec: llmstxt.org
- * Required: H1 title (# Title)
- * Optional: blockquote (> description), H2 sections with file links ([name](url): notes)
- * The "## Optional" section marks content below it as skip-able by AI agents
+ * Required: file must exist and have content.
+ * Informative: H1 title, H2 sections with file links, blockquote.
+ * The "## Optional" section marks content below it as skip-able by AI agents.
+ * Structure issues are advisory — the file being present and non-empty is
+ * enough to pass.
  */
 
 import type { CheckResult } from "~/lib/aiLegibility/types";
@@ -71,22 +73,21 @@ export default async function checkLlmsTxt({
         /^##\s+Optional\b/i.test(line) || /^##\s+Optional\s*$/.test(line),
     );
 
-    const issues: string[] = [];
+    // Always pass — structure notes are informative
+    const notes: string[] = [];
 
     if (!hasH1) {
-      issues.push("missing H1 title (required by spec)");
+      notes.push("no H1 title (recommended)");
     }
 
     if (h2Sections.length === 0) {
-      issues.push("no H2 sections found");
+      notes.push("no H2 sections (recommended)");
     }
 
     if (!hasFileLinks) {
-      issues.push("no file links found (use [name](url) format)");
+      notes.push("no file links in [name](url) format (recommended)");
     }
 
-    const passed = hasH1 && h2Sections.length > 0;
-    const warnParts: string[] = [];
     if (hasOptionalSection) {
       const optionalIndex = lines.findIndex(
         (line) =>
@@ -96,21 +97,20 @@ export default async function checkLlmsTxt({
         .slice(optionalIndex + 1)
         .filter((line) => line.trim() && !line.trim().startsWith("#"));
       if (contentAfterOptional.length > 0) {
-        warnParts.push(
-          "content under 'Optional' section should be moved above it",
-        );
+        notes.push("content under 'Optional' section should be moved above it");
       } else {
-        warnParts.push("has 'Optional' section");
+        notes.push("has 'Optional' section — content below is skip-able");
       }
     }
 
-    const message = passed
-      ? `llms.txt has valid structure: H1 title, ${h2Sections.length} section${h2Sections.length === 1 ? "" : "s"}${!hasFileLinks ? ", no file links" : ""}${warnParts.length > 0 ? `. Note: ${warnParts.join("; ")}` : ""}`
-      : `llms.txt issues: ${issues.join("; ")}${warnParts.length > 0 ? `. Note: ${warnParts.join("; ")}` : ""}`;
+    const message =
+      notes.length > 0
+        ? `llms.txt with ${nonEmptyLines.length} lines. Notes: ${notes.join("; ")}`
+        : `llms.txt with ${nonEmptyLines.length} lines, well-structured`;
 
     return {
       name: "llms.txt",
-      passed,
+      passed: true,
       message,
       details: {
         url: llmsUrl,

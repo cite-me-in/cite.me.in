@@ -35,31 +35,35 @@ type PageNoindexResult = {
 async function checkPageNoindex({
   url,
   html,
+  xRobotsTag,
 }: {
   url: string;
   html: string;
+  xRobotsTag?: string | null;
 }): Promise<PageNoindexResult> {
-  let xRobotsTag = false;
-  try {
-    const response = await fetch(url, {
-      method: "HEAD",
-      headers: { "User-Agent": "CiteMeIn-AI-Legibility-Bot/1.0" },
-      signal: AbortSignal.timeout(10_000),
-    });
-    const header = response.headers.get("X-Robots-Tag");
-    xRobotsTag = hasNoindexInHeader(header);
-  } catch {
-    // fetch failed; rely on HTML check only
+  let xRobotsTagValue = xRobotsTag ?? null;
+  if (xRobotsTagValue === null) {
+    try {
+      const response = await fetch(url, {
+        method: "HEAD",
+        headers: { "User-Agent": "CiteMeIn-AI-Legibility-Bot/1.0" },
+        signal: AbortSignal.timeout(10_000),
+      });
+      xRobotsTagValue = response.headers.get("X-Robots-Tag");
+    } catch {
+      // fetch failed; rely on HTML check only
+    }
   }
 
   const metaTag = hasNoindexInHtml(html);
-  const noindexFound = metaTag || xRobotsTag;
+  const headerHasNoindex = hasNoindexInHeader(xRobotsTagValue);
+  const noindexFound = metaTag || headerHasNoindex;
 
   return {
     url,
     passed: !noindexFound,
     metaTag,
-    xRobotsTag,
+    xRobotsTag: headerHasNoindex,
   };
 }
 
@@ -67,12 +71,20 @@ export default async function checkRobotsDirectives({
   url,
   html,
   pages,
+  homepageXRobotsTag,
+  pageXRobotsTags,
 }: {
   url: string;
   html: string;
   pages?: { url: string; html?: string }[];
+  homepageXRobotsTag?: string | null;
+  pageXRobotsTags?: Record<string, string | null | undefined>;
 }): Promise<Omit<CheckResult, "category">> {
-  const homepageResult = await checkPageNoindex({ url, html });
+  const homepageResult = await checkPageNoindex({
+    url,
+    html,
+    xRobotsTag: homepageXRobotsTag,
+  });
 
   const pageResults: PageNoindexResult[] = [];
   if (pages) {
@@ -86,7 +98,11 @@ export default async function checkRobotsDirectives({
         });
         continue;
       }
-      const result = await checkPageNoindex({ url: page.url, html: page.html });
+      const result = await checkPageNoindex({
+        url: page.url,
+        html: page.html,
+        xRobotsTag: pageXRobotsTags?.[page.url],
+      });
       pageResults.push(result);
     }
   }

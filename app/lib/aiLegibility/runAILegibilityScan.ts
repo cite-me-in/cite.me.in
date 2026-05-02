@@ -155,6 +155,21 @@ export async function runScanSteps({
   const samplePagesWithHtml = samplePagesResult.pages
     .filter((p) => p.html)
     .map((p) => ({ url: p.url, html: p.html }));
+  const pageLinkHeaders: Record<string, string | null | undefined> = {};
+  const samplePageHeaders: {
+    url: string;
+    html?: string;
+    xRobotsTag?: string | null;
+  }[] = [];
+  for (const p of samplePagesResult.pages) {
+    if (p.responseHeaders?.Link)
+      pageLinkHeaders[p.url] = p.responseHeaders.Link;
+    samplePageHeaders.push({
+      url: p.url,
+      html: p.html,
+      xRobotsTag: p.responseHeaders?.["X-Robots-Tag"] ?? null,
+    });
+  }
   const jsonLdResult = await checkJsonLd({
     html: homepageResult.html,
     url,
@@ -180,6 +195,7 @@ export async function runScanSteps({
   const linkHeadersResult = await checkLinkHeaders({
     url,
     html: homepageResult.html,
+    homepageLinkHeader: homepageResult.responseHeaders?.Link,
   });
   checks.push(linkHeadersResult);
   await log(
@@ -191,6 +207,8 @@ export async function runScanSteps({
     url,
     html: homepageResult.html,
     pages: samplePagesWithHtml,
+    homepageLinkHeader: homepageResult.responseHeaders?.Link,
+    pageLinkHeaders,
   });
   checks.push(markdownAlternateResult);
   await log(
@@ -207,10 +225,17 @@ export async function runScanSteps({
   await log(`${mdRoutesResult.passed ? "✓" : "✗"} ${mdRoutesResult.message}`);
 
   await log("Checking robots directives (noindex)...");
+  const pageXRobotsTags: Record<string, string | null | undefined> = {};
+  for (const p of samplePagesResult.pages) {
+    if (p.responseHeaders)
+      pageXRobotsTags[p.url] = p.responseHeaders["X-Robots-Tag"];
+  }
   const robotsDirectivesResult = await checkRobotsDirectives({
     html: homepageResult.html,
     url,
     pages: samplePagesWithHtml,
+    homepageXRobotsTag: homepageResult.responseHeaders?.["X-Robots-Tag"],
+    pageXRobotsTags,
   });
   checks.push(robotsDirectivesResult);
   await log(
@@ -226,7 +251,10 @@ export async function runScanSteps({
   await log(`${markdownResult.passed ? "✓" : "✗"} ${markdownResult.message}`);
 
   await log("Checking Content-Signal in robots.txt...");
-  const contentSignalsResult = await checkContentSignals({ url });
+  const contentSignalsResult = await checkContentSignals({
+    url,
+    robotsContent: robotsTxtResult.details?.robotsContent as string | undefined,
+  });
   checks.push(contentSignalsResult);
   await log(
     `${contentSignalsResult.passed ? "✓" : "✗"} ${contentSignalsResult.message}`,

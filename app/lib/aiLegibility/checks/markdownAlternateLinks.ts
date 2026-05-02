@@ -53,9 +53,11 @@ function resolveUrl(base: string, href: string): string {
 async function checkPage({
   url,
   html,
+  linkHeader,
 }: {
   url: string;
   html: string;
+  linkHeader?: string | null;
 }): Promise<{
   found: boolean;
   header: boolean;
@@ -63,44 +65,44 @@ async function checkPage({
   headerUrls: string[];
   htmlUrls: string[];
 }> {
-  try {
-    const response = await fetch(url, {
-      method: "HEAD",
-      headers: {
-        "User-Agent": "CiteMeIn-AI-Legibility-Bot/1.0",
-      },
-      signal: AbortSignal.timeout(10_000),
-    });
-    const linkHeader = response.headers.get("Link");
-    const headerUrls = extractMarkdownUrlsFromHeader(linkHeader);
-    const htmlUrls = extractMarkdownUrlsFromHtml(html);
-    return {
-      found: headerUrls.length > 0 || htmlUrls.length > 0,
-      header: headerUrls.length > 0,
-      htmlTag: htmlUrls.length > 0,
-      headerUrls,
-      htmlUrls,
-    };
-  } catch {
-    const htmlUrls = extractMarkdownUrlsFromHtml(html);
-    return {
-      found: htmlUrls.length > 0,
-      header: false,
-      htmlTag: htmlUrls.length > 0,
-      headerUrls: [],
-      htmlUrls,
-    };
+  let linkHeaderValue = linkHeader ?? null;
+  if (linkHeaderValue === null) {
+    try {
+      const response = await fetch(url, {
+        method: "HEAD",
+        headers: {
+          "User-Agent": "CiteMeIn-AI-Legibility-Bot/1.0",
+        },
+        signal: AbortSignal.timeout(10_000),
+      });
+      linkHeaderValue = response.headers.get("Link");
+    } catch {
+      // fall through to HTML-only check below
+    }
   }
+  const headerUrls = extractMarkdownUrlsFromHeader(linkHeaderValue);
+  const htmlUrls = extractMarkdownUrlsFromHtml(html);
+  return {
+    found: headerUrls.length > 0 || htmlUrls.length > 0,
+    header: headerUrls.length > 0,
+    htmlTag: htmlUrls.length > 0,
+    headerUrls,
+    htmlUrls,
+  };
 }
 
 export default async function checkMarkdownAlternateLinks({
   url,
   html,
   pages,
+  homepageLinkHeader,
+  pageLinkHeaders,
 }: {
   url: string;
   html: string;
   pages?: { url: string; html?: string }[];
+  homepageLinkHeader?: string | null;
+  pageLinkHeaders?: Record<string, string | null | undefined>;
 }): Promise<
   Omit<CheckResult, "category"> & {
     pagesChecked?: number;
@@ -108,7 +110,11 @@ export default async function checkMarkdownAlternateLinks({
     alternateUrls?: string[];
   }
 > {
-  const homepageResult = await checkPage({ url, html });
+  const homepageResult = await checkPage({
+    url,
+    html,
+    linkHeader: homepageLinkHeader,
+  });
 
   let sampleResults: {
     url: string;
@@ -132,7 +138,11 @@ export default async function checkMarkdownAlternateLinks({
         });
         continue;
       }
-      const result = await checkPage({ url: page.url, html: page.html });
+      const result = await checkPage({
+        url: page.url,
+        html: page.html,
+        linkHeader: pageLinkHeaders?.[page.url],
+      });
       sampleResults.push({ url: page.url, ...result });
     }
   }

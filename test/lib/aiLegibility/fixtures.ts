@@ -44,10 +44,19 @@ export const HOMEPAGE_WITH_CONTENT = `<!DOCTYPE html>
   </script>
 </head>
 <body>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+    <a href="/pricing">Pricing</a>
+  </nav>
   <main>
-    <h1>Welcome to Acme</h1>
-    <p>We make great software products for businesses all around the world. Our team is dedicated to delivering quality solutions.</p>
+    <h1>Welcome to Acme Corp</h1>
+    <p>Acme Corp is the leading provider of enterprise software solutions for businesses of all sizes. Our platform helps teams collaborate more effectively and deliver results faster than ever before.</p>
+    <p>With over ten thousand customers across fifty countries, we have proven that our approach to software development delivers measurable improvements in productivity and team satisfaction.</p>
   </main>
+  <footer>
+    <p>&copy; 2025 Acme Corp. All rights reserved.</p>
+  </footer>
 </body>
 </html>`;
 
@@ -243,7 +252,7 @@ const SAMPLE_PAGE_CONTENT = `<!DOCTYPE html>
 <body>
   <main>
     <h1>Page Title</h1>
-    <p>This page has enough content to pass the sample pages check. We need at least 100 characters of text content here.</p>
+    <p>This page has enough content to pass the sample pages check. We need at least 100 characters of text content here. Our company provides software solutions for businesses of all sizes across the globe.</p>
   </main>
 </body>
 </html>`;

@@ -9,22 +9,27 @@ import type { CheckResult } from "~/lib/aiLegibility/types";
 export default async function checkLinkHeaders({
   url,
   html,
+  homepageLinkHeader,
 }: {
   url: string;
   html: string;
+  homepageLinkHeader?: string | null;
 }): Promise<Omit<CheckResult, "category">> {
   const startTime = Date.now();
 
   try {
-    const response = await fetch(url, {
-      method: "HEAD",
-      headers: {
-        "User-Agent": "CiteMeIn-AI-Legibility-Bot/1.0",
-      },
-      signal: AbortSignal.timeout(10_000),
-    });
+    let linkHeader: string | null = homepageLinkHeader ?? null;
 
-    const linkHeader = response.headers.get("Link");
+    if (linkHeader === null) {
+      const response = await fetch(url, {
+        method: "HEAD",
+        headers: {
+          "User-Agent": "CiteMeIn-AI-Legibility-Bot/1.0",
+        },
+        signal: AbortSignal.timeout(10_000),
+      });
+      linkHeader = response.headers.get("Link");
+    }
     const htmlSitemapLink = html.match(
       /<link[^>]+rel\s*=\s*["']sitemap["'][^>]*href\s*=\s*["']([^"']*)["']/i,
     );

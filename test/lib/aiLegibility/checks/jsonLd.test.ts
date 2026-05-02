@@ -183,7 +183,7 @@ describe("checkJsonLd", () => {
     expect(result.pageResults?.every((p) => p.passed)).toBe(true);
   });
 
-  it("should pass homepage but warn when sample pages lack JSON-LD", async () => {
+  it("should fail when sample pages lack JSON-LD", async () => {
     const result = await checkJsonLd({
       url: "https://acme.com/",
       html: HOMEPAGE_WITH_CONTENT,
@@ -195,13 +195,13 @@ describe("checkJsonLd", () => {
       ],
     });
 
-    expect(result.passed).toBe(true);
-    expect(result.message).toContain("no JSON-LD found");
+    expect(result.passed).toBe(false);
+    expect(result.message).toContain("No JSON-LD on https://acme.com/no-ld");
     expect(result.pageResults?.[0].passed).toBe(false);
     expect(result.pageResults?.[0].schemas).toHaveLength(0);
   });
 
-  it("should pass when sample page has invalid JSON-LD but homepage is valid", async () => {
+  it("should fail when sample page has invalid JSON-LD even though homepage is valid", async () => {
     const result = await checkJsonLd({
       url: "https://acme.com/",
       html: HOMEPAGE_WITH_CONTENT,
@@ -213,10 +213,8 @@ describe("checkJsonLd", () => {
       ],
     });
 
-    expect(result.passed).toBe(true);
-    expect(result.message).toContain("Warnings");
+    expect(result.passed).toBe(false);
     expect(result.message).toContain("Missing required field");
-    expect(result.details?.anyPageHasValidLd).toBe(true);
   });
 
   it("should handle sample pages without html field gracefully", async () => {
