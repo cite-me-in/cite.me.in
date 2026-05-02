@@ -8,7 +8,7 @@ export default async function checkHomepageContent({
 }): Promise<
   Omit<CheckResult, "category"> & {
     html: string;
-    responseHeaders: Record<string, string>;
+    responseHeaders: Headers;
   }
 > {
   const startTime = Date.now();
@@ -105,7 +105,7 @@ export default async function checkHomepageContent({
         timedOut: true,
         details: { elapsed },
         html: "",
-        responseHeaders: {},
+        responseHeaders: new Headers(),
       };
     }
     const errorMessage =
@@ -120,7 +120,7 @@ export default async function checkHomepageContent({
         : `Failed to fetch homepage: ${errorMessage}`,
       details: { elapsed, error: errorMessage },
       html: "",
-      responseHeaders: {},
+      responseHeaders: new Headers(),
     };
   }
 }

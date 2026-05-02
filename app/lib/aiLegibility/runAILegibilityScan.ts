@@ -154,7 +154,7 @@ export async function runScanSteps({
   await log("Checking JSON-LD...");
   const samplePagesWithHtml = samplePagesResult.pages
     .filter((p) => p.html)
-    .map((p) => ({ url: p.url, html: p.html }));
+    .map((p) => ({ url: p.url, html: p.html as string }));
   const pageLinkHeaders: Record<string, string | null | undefined> = {};
   const samplePageHeaders: {
     url: string;
@@ -162,12 +162,12 @@ export async function runScanSteps({
     xRobotsTag?: string | null;
   }[] = [];
   for (const p of samplePagesResult.pages) {
-    if (p.responseHeaders?.Link)
-      pageLinkHeaders[p.url] = p.responseHeaders.Link;
+    if (p.responseHeaders?.get("Link"))
+      pageLinkHeaders[p.url] = p.responseHeaders.get("Link");
     samplePageHeaders.push({
       url: p.url,
       html: p.html,
-      xRobotsTag: p.responseHeaders?.["X-Robots-Tag"] ?? null,
+      xRobotsTag: p.responseHeaders?.get("X-Robots-Tag") ?? null,
     });
   }
   const jsonLdResult = await checkJsonLd({
@@ -201,11 +201,19 @@ export async function runScanSteps({
 
   await log("Checking markdown alternate links...");
   const markdownAlternateResult = await checkMarkdownAlternateLinks({
-    url,
-    html: homepageResult.html,
-    pages: samplePagesWithHtml,
-    homepageLinkHeader: homepageResult.responseHeaders?.Link,
-    pageLinkHeaders,
+    pages: [
+      {
+        url,
+        html: homepageResult.html,
+        headers: homepageResult.responseHeaders,
+      },
+      ...samplePagesWithHtml.map((p) => ({
+        url: p.url,
+        html: p.html,
+        headers: samplePagesResult.pages.find((sp) => sp.url === p.url)
+          ?.responseHeaders,
+      })),
+    ],
   });
   checks.push(markdownAlternateResult);
   await log(
@@ -225,13 +233,13 @@ export async function runScanSteps({
   const pageXRobotsTags: Record<string, string | null | undefined> = {};
   for (const p of samplePagesResult.pages) {
     if (p.responseHeaders)
-      pageXRobotsTags[p.url] = p.responseHeaders["X-Robots-Tag"];
+      pageXRobotsTags[p.url] = p.responseHeaders.get("X-Robots-Tag");
   }
   const robotsDirectivesResult = await checkRobotsDirectives({
     html: homepageResult.html,
     url,
     pages: samplePagesWithHtml,
-    homepageXRobotsTag: homepageResult.responseHeaders?.["X-Robots-Tag"],
+    homepageXRobotsTag: homepageResult.responseHeaders?.get("X-Robots-Tag"),
     pageXRobotsTags,
   });
   checks.push(robotsDirectivesResult);

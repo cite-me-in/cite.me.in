@@ -12,7 +12,7 @@ type PageResult = {
   hasSentenceEndings: boolean;
   hasHeadings: boolean;
   html?: string;
-  responseHeaders?: Record<string, string>;
+  responseHeaders?: Headers;
 };
 
 export default async function checkSamplePages({

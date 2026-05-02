@@ -20,14 +20,14 @@ const SPA_PATTERNS = [
   /<div\s+class\s*=\s*["']app["']/i,
 ];
 
-export function extractHeaders(response: Response): Record<string, string> {
-  const headers: Record<string, string> = {};
+export function extractHeaders(response: Response): Headers {
+  const headers = new Headers();
   const link = response.headers.get("Link");
   const xRobots = response.headers.get("X-Robots-Tag");
   const contentType = response.headers.get("Content-Type");
-  if (link) headers["Link"] = link;
-  if (xRobots) headers["X-Robots-Tag"] = xRobots;
-  if (contentType) headers["Content-Type"] = contentType;
+  if (link) headers.set("Link", link);
+  if (xRobots) headers.set("X-Robots-Tag", xRobots);
+  if (contentType) headers.set("Content-Type", contentType);
   return headers;
 }
 
