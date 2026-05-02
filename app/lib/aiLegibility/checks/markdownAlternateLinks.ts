@@ -14,7 +14,7 @@ export default async function checkMarkdownAlternateLinks({
   pages,
 }: {
   pages: {
-    headers?: Headers;
+    headers?: Record<string, string>;
     html: string;
     url: string;
   }[];
@@ -27,7 +27,7 @@ export default async function checkMarkdownAlternateLinks({
 > {
   const pageResults = pages.map((page) => {
     const linkHeader =
-      page.headers?.get("Link") ?? page.headers?.get("link") ?? null;
+      page.headers?.Link ?? page.headers?.link ?? null;
     const headerUrls = extractMarkdownUrlsFromHeader(linkHeader);
     const htmlUrls = extractMarkdownUrlsFromHtml(page.html);
     return {

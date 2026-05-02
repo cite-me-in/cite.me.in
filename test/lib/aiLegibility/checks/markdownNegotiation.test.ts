@@ -20,11 +20,12 @@ describe("checkMarkdownNegotiation", () => {
       ),
     );
 
-    const result = await checkMarkdownNegotiation({ url: "https://acme.com/" });
+    const result = await checkMarkdownNegotiation({
+      pages: [{ url: "https://acme.com/" }],
+    });
 
     expect(result.passed).toBe(true);
-    expect(result.message).toContain("Homepage");
-    expect(result.message).toContain("chars");
+    expect(result.message).toContain("1/1 pages serve markdown");
   });
 
   it("should pass when sample page serves markdown but homepage doesn't", async () => {
@@ -48,12 +49,14 @@ describe("checkMarkdownNegotiation", () => {
     );
 
     const result = await checkMarkdownNegotiation({
-      url: "https://acme.com/",
-      pages: [{ url: "https://acme.com/about" }],
+      pages: [
+        { url: "https://acme.com/" },
+        { url: "https://acme.com/about" },
+      ],
     });
 
     expect(result.passed).toBe(true);
-    expect(result.message).toContain("1/1 sample pages");
+    expect(result.message).toContain("1/2 pages serve markdown");
   });
 
   it("should pass when some sample pages serve markdown", async () => {
@@ -79,15 +82,15 @@ describe("checkMarkdownNegotiation", () => {
     );
 
     const result = await checkMarkdownNegotiation({
-      url: "https://acme.com/",
       pages: [
+        { url: "https://acme.com/" },
         { url: "https://acme.com/about" },
         { url: "https://acme.com/contact" },
       ],
     });
 
     expect(result.passed).toBe(true);
-    expect(result.message).toContain("1/2 sample pages");
+    expect(result.message).toContain("1/3 pages serve markdown");
   });
 
   it("should fail when markdown has no meaningful content", async () => {
@@ -99,7 +102,9 @@ describe("checkMarkdownNegotiation", () => {
       ),
     );
 
-    const result = await checkMarkdownNegotiation({ url: "https://acme.com/" });
+    const result = await checkMarkdownNegotiation({
+      pages: [{ url: "https://acme.com/" }],
+    });
 
     expect(result.passed).toBe(false);
     expect(result.message).toContain("too short");
@@ -117,7 +122,9 @@ describe("checkMarkdownNegotiation", () => {
       ),
     );
 
-    const result = await checkMarkdownNegotiation({ url: "https://acme.com/" });
+    const result = await checkMarkdownNegotiation({
+      pages: [{ url: "https://acme.com/" }],
+    });
 
     expect(result.passed).toBe(false);
     expect(result.message).toContain("No page serves markdown");
@@ -130,19 +137,23 @@ describe("checkMarkdownNegotiation", () => {
       ),
     );
 
-    const result = await checkMarkdownNegotiation({ url: "https://acme.com/" });
+    const result = await checkMarkdownNegotiation({
+      pages: [{ url: "https://acme.com/" }],
+    });
 
     expect(result.passed).toBe(false);
     expect(result.message).toContain("406");
   });
 
-  it("should handle network errors on homepage", async () => {
+  it("should handle network errors gracefully", async () => {
     msw.use(http.get("https://acme.com/", () => HttpResponse.error()));
 
-    const result = await checkMarkdownNegotiation({ url: "https://acme.com/" });
+    const result = await checkMarkdownNegotiation({
+      pages: [{ url: "https://acme.com/" }],
+    });
 
     expect(result.passed).toBe(false);
-    expect(result.message).toContain("Failed to check");
+    expect(result.message).toContain("No page serves markdown");
   });
 
   it("should handle sample page fetch failure gracefully", async () => {
@@ -159,11 +170,13 @@ describe("checkMarkdownNegotiation", () => {
     );
 
     const result = await checkMarkdownNegotiation({
-      url: "https://acme.com/",
-      pages: [{ url: "https://acme.com/timeout" }],
+      pages: [
+        { url: "https://acme.com/" },
+        { url: "https://acme.com/timeout" },
+      ],
     });
 
     expect(result.passed).toBe(true);
-    expect(result.message).toContain("Homepage");
+    expect(result.message).toContain("1/2 pages serve markdown");
   });
 });
