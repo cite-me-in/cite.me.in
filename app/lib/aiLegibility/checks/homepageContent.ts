@@ -1,13 +1,5 @@
 import type { CheckResult } from "../types";
-import extractContent, {
-  MIN_CONTENT_LENGTH,
-  MIN_WORD_COUNT,
-  SPA_PATTERNS,
-  extractHeaders,
-  hasParagraphs,
-  hasSentenceEndings,
-  hasHeadings,
-} from "./extractContent";
+import { assessContent, extractHeaders } from "./extractContent";
 
 export default async function checkHomepageContent({
   url,
@@ -45,49 +37,34 @@ export default async function checkHomepageContent({
       };
     }
 
-    const { textContent, wordCount } = await extractContent(html, url);
-    const contentLength = textContent.length;
+    const content = await assessContent(html, url);
 
-    const isSpaShell = SPA_PATTERNS.some((pattern) => pattern.test(html));
-    const hasRealContent = contentLength >= MIN_CONTENT_LENGTH;
-    const enoughWords = wordCount >= MIN_WORD_COUNT;
-    const paragraphs = hasParagraphs(textContent);
-    const sentenceEndings = hasSentenceEndings(textContent);
-    const headings = hasHeadings(html);
-
-    if (isSpaShell && !hasRealContent) {
+    if (content.isSpaShell && !content.hasRealContent) {
       return {
         name: "Homepage content",
         passed: false,
-        message: `Homepage appears to be an empty SPA shell (${contentLength} characters after extraction)`,
-        details: { contentLength, isSpaShell: true, elapsed },
+        message: `Homepage appears to be an empty SPA shell (${content.contentLength} characters after extraction)`,
+        details: {
+          contentLength: content.contentLength,
+          isSpaShell: true,
+          elapsed,
+        },
         html,
         responseHeaders,
       };
     }
 
-    const usefulnessSignals: string[] = [];
-    if (!paragraphs) usefulnessSignals.push("no paragraph breaks");
-    if (!sentenceEndings) usefulnessSignals.push("no sentence structure");
-    if (!headings) usefulnessSignals.push("no headings");
-    if (!enoughWords)
-      usefulnessSignals.push(
-        `only ${wordCount} words (need ${MIN_WORD_COUNT})`,
-      );
-
-    const useful = hasRealContent && enoughWords;
-
-    if (!useful) {
+    if (!content.useful) {
       return {
         name: "Homepage content",
         passed: false,
-        message: `Homepage has minimal content (${contentLength} chars, ${wordCount} words)${usefulnessSignals.length > 0 ? `: ${usefulnessSignals.join(", ")}` : ""}`,
+        message: `Homepage has minimal content (${content.contentLength} chars, ${content.wordCount} words)${content.usefulnessSignals.length > 0 ? `: ${content.usefulnessSignals.join(", ")}` : ""}`,
         details: {
-          contentLength,
-          wordCount,
-          hasParagraphs: paragraphs,
-          hasSentenceEndings: sentenceEndings,
-          hasHeadings: headings,
+          contentLength: content.contentLength,
+          wordCount: content.wordCount,
+          hasParagraphs: content.paragraphs,
+          hasSentenceEndings: content.sentenceEndings,
+          hasHeadings: content.headings,
           elapsed,
         },
         html,
@@ -96,23 +73,23 @@ export default async function checkHomepageContent({
     }
 
     const details = [
-      `${contentLength.toLocaleString()} chars`,
-      `${wordCount} words`,
+      `${content.contentLength.toLocaleString()} chars`,
+      `${content.wordCount} words`,
     ];
-    if (paragraphs) details.push("paragraphs");
-    if (sentenceEndings) details.push("sentences");
-    if (headings) details.push("headings");
+    if (content.paragraphs) details.push("paragraphs");
+    if (content.sentenceEndings) details.push("sentences");
+    if (content.headings) details.push("headings");
 
     return {
       name: "Homepage content",
       passed: true,
       message: `Homepage has ${details.join(", ")}`,
       details: {
-        contentLength,
-        wordCount,
-        hasParagraphs: paragraphs,
-        hasSentenceEndings: sentenceEndings,
-        hasHeadings: headings,
+        contentLength: content.contentLength,
+        wordCount: content.wordCount,
+        hasParagraphs: content.paragraphs,
+        hasSentenceEndings: content.sentenceEndings,
+        hasHeadings: content.headings,
         elapsed,
       },
       html,

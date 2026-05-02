@@ -1,9 +1,9 @@
 import { Defuddle } from "defuddle/node";
 
-export const MIN_CONTENT_LENGTH = 100;
-export const MIN_WORD_COUNT = 25;
+const MIN_CONTENT_LENGTH = 100;
+const MIN_WORD_COUNT = 25;
 
-export const SPA_PATTERNS = [
+const SPA_PATTERNS = [
   /<div\s+id\s*=\s*["']root["']/i,
   /<div\s+id\s*=\s*["']app["']/i,
   /<div\s+id\s*=\s*["']__next["']/i,
@@ -31,24 +31,70 @@ export function extractHeaders(response: Response): Record<string, string> {
   return headers;
 }
 
-function countWords(text: string): number {
-  return text.split(/\s+/).filter(Boolean).length;
-}
-
-export function hasParagraphs(text: string): boolean {
+function hasParagraphs(text: string): boolean {
   return /\n\s*\n/.test(text);
 }
 
-export function hasSentenceEndings(text: string): boolean {
+function hasSentenceEndings(text: string): boolean {
   return /[.!?]\s+[A-Z]/.test(text.replace(/[^a-zA-Z0-9.!?]/g, " ").trim());
 }
 
-export function hasHeadings(html: string): boolean {
+function hasHeadings(html: string): boolean {
   const body = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i)?.[1] ?? html;
   return /<h[1-3][^>]*>/i.test(body);
 }
 
-export default async function extractContent(
+type ContentAssessment = {
+  isSpaShell: boolean;
+  contentLength: number;
+  wordCount: number;
+  hasRealContent: boolean;
+  enoughWords: boolean;
+  paragraphs: boolean;
+  sentenceEndings: boolean;
+  headings: boolean;
+  usefulnessSignals: string[];
+  useful: boolean;
+};
+
+export async function assessContent(
+  html: string,
+  url?: string,
+): Promise<ContentAssessment> {
+  const { textContent, wordCount } = await _extractContent(html, url);
+  const contentLength = textContent.length;
+
+  const isSpaShell = SPA_PATTERNS.some((pattern) => pattern.test(html));
+  const hasRealContent = contentLength >= MIN_CONTENT_LENGTH;
+  const enoughWords = wordCount >= MIN_WORD_COUNT;
+  const paragraphs = hasParagraphs(textContent);
+  const sentenceEndings = hasSentenceEndings(textContent);
+  const headings = hasHeadings(html);
+
+  const usefulnessSignals: string[] = [];
+  if (!paragraphs) usefulnessSignals.push("no paragraph breaks");
+  if (!sentenceEndings) usefulnessSignals.push("no sentence structure");
+  if (!headings) usefulnessSignals.push("no headings");
+  if (!enoughWords)
+    usefulnessSignals.push(`only ${wordCount} words (need ${MIN_WORD_COUNT})`);
+
+  const useful = hasRealContent && enoughWords;
+
+  return {
+    isSpaShell,
+    contentLength,
+    wordCount,
+    hasRealContent,
+    enoughWords,
+    paragraphs,
+    sentenceEndings,
+    headings,
+    usefulnessSignals,
+    useful,
+  };
+}
+
+async function _extractContent(
   html: string,
   url?: string,
 ): Promise<{

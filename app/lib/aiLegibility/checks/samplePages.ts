@@ -1,13 +1,5 @@
 import type { CheckResult } from "~/lib/aiLegibility/types";
-import extractContent, {
-  MIN_CONTENT_LENGTH,
-  MIN_WORD_COUNT,
-  SPA_PATTERNS,
-  extractHeaders,
-  hasParagraphs,
-  hasSentenceEndings,
-  hasHeadings,
-} from "./extractContent";
+import { assessContent, extractHeaders } from "./extractContent";
 
 type PageResult = {
   url: string;
@@ -95,75 +87,56 @@ export default async function checkSamplePages({
         continue;
       }
 
-      const { textContent, wordCount } = await extractContent(html, pageUrl);
-      const contentLength = textContent.length;
+      const content = await assessContent(html, pageUrl);
 
-      const isSpaShell = SPA_PATTERNS.some((pattern) => pattern.test(html));
-      const hasRealContent = contentLength >= MIN_CONTENT_LENGTH;
-      const enoughWords = wordCount >= MIN_WORD_COUNT;
-      const paragraphs = hasParagraphs(textContent);
-      const sentenceEndings = hasSentenceEndings(textContent);
-      const headings = hasHeadings(html);
-
-      if (isSpaShell && !hasRealContent) {
+      if (content.isSpaShell && !content.hasRealContent) {
         results.push({
           url: pageUrl,
           passed: false,
-          message: `Empty SPA shell (${contentLength} chars)`,
+          message: `Empty SPA shell (${content.contentLength} chars)`,
           timedOut: false,
-          contentLength,
-          wordCount,
-          hasParagraphs: paragraphs,
-          hasSentenceEndings: sentenceEndings,
-          hasHeadings: headings,
+          contentLength: content.contentLength,
+          wordCount: content.wordCount,
+          hasParagraphs: content.paragraphs,
+          hasSentenceEndings: content.sentenceEndings,
+          hasHeadings: content.headings,
         });
         continue;
       }
 
-      const usefulnessSignals: string[] = [];
-      if (!paragraphs) usefulnessSignals.push("no paragraph breaks");
-      if (!sentenceEndings) usefulnessSignals.push("no sentence structure");
-      if (!headings) usefulnessSignals.push("no headings");
-      if (!enoughWords)
-        usefulnessSignals.push(
-          `only ${wordCount} words (need ${MIN_WORD_COUNT})`,
-        );
-
-      const useful = hasRealContent && enoughWords;
-
-      if (!useful) {
+      if (!content.useful) {
         results.push({
           url: pageUrl,
           passed: false,
-          message: `Minimal content (${contentLength} chars, ${wordCount} words)${usefulnessSignals.length > 0 ? `: ${usefulnessSignals.join(", ")}` : ""}`,
+          message: `Minimal content (${content.contentLength} chars, ${content.wordCount} words)${content.usefulnessSignals.length > 0 ? `: ${content.usefulnessSignals.join(", ")}` : ""}`,
           timedOut: false,
-          contentLength,
-          wordCount,
-          hasParagraphs: paragraphs,
-          hasSentenceEndings: sentenceEndings,
-          hasHeadings: headings,
+          contentLength: content.contentLength,
+          wordCount: content.wordCount,
+          hasParagraphs: content.paragraphs,
+          hasSentenceEndings: content.sentenceEndings,
+          hasHeadings: content.headings,
         });
         continue;
       }
 
       const details = [
-        `${contentLength.toLocaleString()} chars`,
-        `${wordCount} words`,
+        `${content.contentLength.toLocaleString()} chars`,
+        `${content.wordCount} words`,
       ];
-      if (paragraphs) details.push("paragraphs");
-      if (sentenceEndings) details.push("sentences");
-      if (headings) details.push("headings");
+      if (content.paragraphs) details.push("paragraphs");
+      if (content.sentenceEndings) details.push("sentences");
+      if (content.headings) details.push("headings");
 
       results.push({
         url: pageUrl,
         passed: true,
         message: `${details.join(", ")}`,
         timedOut: false,
-        contentLength,
-        wordCount,
-        hasParagraphs: paragraphs,
-        hasSentenceEndings: sentenceEndings,
-        hasHeadings: headings,
+        contentLength: content.contentLength,
+        wordCount: content.wordCount,
+        hasParagraphs: content.paragraphs,
+        hasSentenceEndings: content.sentenceEndings,
+        hasHeadings: content.headings,
         html,
       });
     } catch (error) {

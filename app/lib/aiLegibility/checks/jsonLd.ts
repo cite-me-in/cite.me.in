@@ -1,13 +1,12 @@
 /**
  * Spec: schema.org
  * JSON-LD structured data embedded in <script type="application/ld+json"> tags.
- * Required: ALL pages (homepage AND sample pages) must have valid JSON-LD.
- *   - A page with no sample pages only needs homepage JSON-LD to pass.
- *   - A page with sample pages requires BOTH homepage AND all fetchable
- *     sample pages to have valid JSON-LD.
+ * Required: ALL reviewed pages must have valid JSON-LD. Passes only if every
+ * page has at least one valid JSON-LD schema with all required fields.
  * Per-schema required fields:
  */
 
+import { parseHTML } from "linkedom";
 import type { CheckResult } from "~/lib/aiLegibility/types";
 
 const KNOWN_SCHEMAS = [
@@ -38,13 +37,14 @@ type PageLdResult = {
 };
 
 function extractSchemas(html: string): JsonLdResult[] {
-  const scriptMatches = html.matchAll(
-    /<script\s+type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi,
-  );
+  const { document } = parseHTML(html);
+  const scripts = [
+    ...document.querySelectorAll('script[type="application/ld+json"]'),
+  ] as HTMLScriptElement[];
   const schemas: JsonLdResult[] = [];
 
-  for (const match of scriptMatches) {
-    const jsonContent = match[1].trim();
+  for (const script of scripts) {
+    const jsonContent = (script.textContent ?? "").trim();
     if (!jsonContent) continue;
 
     try {
@@ -57,16 +57,15 @@ function extractSchemas(html: string): JsonLdResult[] {
           schemas.push({
             type: typeof type === "string" ? type : "unknown",
             valid: true,
-            error: "Unknown schema type",
           });
           continue;
         }
-        const validation = validateSchema(type, node);
-        schemas.push({
-          type,
-          valid: validation.valid,
-          error: validation.error,
-        });
+        const validationError = validateSchema(type, node);
+        schemas.push(
+          validationError
+            ? { type, valid: false, error: validationError }
+            : { type, valid: true },
+        );
       }
     } catch (error) {
       schemas.push({
@@ -81,13 +80,12 @@ function extractSchemas(html: string): JsonLdResult[] {
 }
 
 export default async function checkJsonLd({
-  html,
-  url,
   pages,
 }: {
-  html: string;
-  url: string;
-  pages?: { url: string; html?: string }[];
+  pages: {
+    url: string;
+    html: string;
+  }[];
 }): Promise<
   Omit<CheckResult, "category"> & {
     schemas: JsonLdResult[];
@@ -95,39 +93,22 @@ export default async function checkJsonLd({
   }
 > {
   const startTime = Date.now();
-  const homepageSchemas = extractSchemas(html);
 
   const pageResults: PageLdResult[] = [];
-  const pagesRequested = pages?.length ?? 0;
-  if (pages) {
-    for (const page of pages) {
-      if (!page.html) continue;
-      const schemas = extractSchemas(page.html);
-      const allValid = schemas.length > 0 && schemas.every((s) => s.valid);
-      pageResults.push({ url: page.url, passed: allValid, schemas });
-    }
+  for (const page of pages) {
+    const schemas = extractSchemas(page.html);
+    const allValid = schemas.length > 0 && schemas.every((s) => s.valid);
+    pageResults.push({ url: page.url, passed: allValid, schemas });
   }
 
   const elapsed = Date.now() - startTime;
 
-  const allPageResults = [
-    { url: "homepage", schemas: homepageSchemas },
-    ...pageResults,
-  ];
-
-  const homepageValid =
-    homepageSchemas.length > 0 && homepageSchemas.every((s) => s.valid);
-
-  // ALL pages must have valid JSON-LD — a page with zero schemas fails
-  const allPagesValid = allPageResults.every(
+  const passed = pageResults.every(
     (p) => p.schemas.length > 0 && p.schemas.every((s) => s.valid),
   );
 
-  // Pass only if homepage is valid AND all fetchable sample pages have valid JSON-LD
-  const passed = pagesRequested === 0 ? homepageValid : allPagesValid;
-
   const allErrors: string[] = [];
-  for (const result of allPageResults) {
+  for (const result of pageResults) {
     const invalid = result.schemas.filter((s) => !s.valid);
     if (invalid.length > 0) {
       allErrors.push(
@@ -138,65 +119,44 @@ export default async function checkJsonLd({
     }
   }
 
+  const pagesWithValidLd = pageResults.filter(
+    (p) => p.schemas.length > 0,
+  ).length;
+  const pagesPassing = pageResults.filter((p) => p.passed).length;
+
   const parts: string[] = [];
+  parts.push(`${pagesPassing}/${pageResults.length} pages have valid JSON-LD`);
 
-  if (homepageSchemas.length > 0) {
-    const uniqueTypes = [...new Set(homepageSchemas.map((s) => s.type))];
-    parts.push(`Homepage: valid JSON-LD (${uniqueTypes.join(", ")})`);
-  } else if (pageResults.some((p) => p.schemas.length > 0)) {
-    parts.push("Homepage: no JSON-LD, found on sample pages");
-  } else {
-    parts.push("Homepage: no JSON-LD");
+  if (pagesWithValidLd > 0) {
+    const uniqueTypes = [
+      ...new Set(pageResults.flatMap((p) => p.schemas.map((s) => s.type))),
+    ];
+    parts.push(`schemas found: ${uniqueTypes.join(", ")}`);
   }
 
-  if (pagesRequested > 0 && pageResults.length === 0) {
-    parts.push("Sample pages: none could be fetched");
-  } else if (pageResults.length > 0) {
-    const withLd = pageResults.filter((p) => p.schemas.length > 0).length;
-    const validPages = pageResults.filter((p) => p.passed);
-    if (withLd === 0) {
-      parts.push("Sample pages: no JSON-LD found");
-    } else {
-      parts.push(
-        `Sample pages: ${validPages.length}/${pageResults.length} have valid JSON-LD`,
-      );
-    }
-  }
-
-  const noLdAnywhere = allPageResults.every((p) => p.schemas.length === 0);
-  const pagesWithNoLd = allPageResults
+  const pagesWithoutLD = pageResults
     .filter((p) => p.schemas.length === 0)
-    .map((p) => (p.url === "homepage" ? "homepage" : p.url));
+    .map((p) => p.url);
 
-  let message: string;
-  if (noLdAnywhere) {
-    message = "No JSON-LD found on homepage or sample pages";
-  } else if (pagesWithNoLd.length > 0) {
-    message = `No JSON-LD on ${pagesWithNoLd.join(", ")}`;
-  } else if (!passed) {
-    message = ["JSON-LD found but all schemas are invalid", ...allErrors].join(
-      " | ",
-    );
-  } else {
-    message = parts.join("; ");
-    if (allErrors.length > 0) {
-      message += ` | Warnings: ${allErrors.join("; ")}`;
-    }
-  }
-
+  const message =
+    pageResults.length === 0
+      ? "No pages to check"
+      : pagesWithoutLD.length > 0 && !passed
+        ? `No JSON-LD found on ${pagesWithoutLD.join(", ")}`
+        : pagesPassing === pageResults.length
+          ? `${pagesPassing}/${pageResults.length} pages have valid JSON-LD`
+          : `${pagesPassing}/${pageResults.length} pages have valid JSON-LD, watch for:\n${allErrors.join("\n")}`;
   return {
     name: "JSON-LD",
     passed,
     message,
     details: {
-      url,
       elapsed,
-      homepageSchemaCount: homepageSchemas.length,
-      pagesRequested,
+      pagesRequested: pages.length,
       pagesChecked: pageResults.length,
       anyPageHasValidLd: passed,
     },
-    schemas: homepageSchemas,
+    schemas: pageResults[0].schemas,
     pageResults,
   };
 }
@@ -208,94 +168,66 @@ function flattenNodes(data: unknown): Record<string, unknown>[] {
   const obj = data as Record<string, unknown>;
   const nodes: Record<string, unknown>[] = [];
 
-  if (obj["@graph"] && Array.isArray(obj["@graph"])) {
+  if (obj["@graph"] && Array.isArray(obj["@graph"]))
     nodes.push(...flattenNodes(obj["@graph"]));
-  } else if (obj["@type"]) {
-    nodes.push(obj);
-  }
+  else if (obj["@type"]) nodes.push(obj);
 
   return nodes;
 }
 
-function validateSchema(
-  type: string,
-  data: unknown,
-): { valid: boolean; error?: string } {
+function validateSchema(type: string, data: unknown): string | null {
   const obj = data as Record<string, unknown>;
 
   switch (type) {
     case "Article":
     case "NewsArticle":
     case "BlogPosting": {
-      if (!obj.headline && !obj.name) {
-        return {
-          valid: false,
-          error: "Missing required field 'headline' or 'name'",
-        };
-      }
-      return { valid: true };
+      return obj.headline || obj.name
+        ? null
+        : "Missing required field 'headline' or 'name' in Article, NewsArticle, or BlogPosting schemas";
     }
     case "Organization": {
-      if (!obj.name) {
-        return { valid: false, error: "Missing required field 'name'" };
-      }
-      return { valid: true };
+      return obj.name
+        ? null
+        : "Missing required field 'name' in Organization schema";
     }
     case "WebSite": {
-      if (!obj.name && !obj.url) {
-        return {
-          valid: false,
-          error: "Missing required field 'name' or 'url'",
-        };
-      }
-      return { valid: true };
+      return obj.name || obj.url
+        ? null
+        : "Missing required field 'name' or 'url' in WebSite schema";
     }
     case "BreadcrumbList": {
-      if (!obj.itemListElement && !obj.itemList) {
-        return {
-          valid: false,
-          error: "Missing required field 'itemListElement'",
-        };
-      }
-      return { valid: true };
+      return obj.itemListElement || obj.itemList
+        ? null
+        : "Missing required field 'itemListElement' or 'itemList' in BreadcrumbList schema";
     }
     case "Product": {
-      if (!obj.name) {
-        return { valid: false, error: "Missing required field 'name'" };
-      }
-      return { valid: true };
+      return obj.name
+        ? null
+        : "Missing required field 'name' in Product schema";
     }
     case "Person": {
-      if (!obj.name) {
-        return { valid: false, error: "Missing required field 'name'" };
-      }
-      return { valid: true };
+      return obj.name ? null : "Missing required field 'name' in Person schema";
     }
     case "FAQPage": {
-      if (!obj.mainEntity) {
-        return { valid: false, error: "Missing required field 'mainEntity'" };
-      }
-      return { valid: true };
+      return obj.mainEntity
+        ? null
+        : "Missing required field 'mainEntity' in FAQPage schema";
     }
     case "HowTo": {
-      if (!obj.name) {
-        return { valid: false, error: "Missing required field 'name'" };
-      }
-      return { valid: true };
+      return obj.name ? null : "Missing required field 'name' in HowTo schema";
     }
     case "LocalBusiness": {
-      if (!obj.name) {
-        return { valid: false, error: "Missing required field 'name'" };
-      }
-      return { valid: true };
+      return obj.name
+        ? null
+        : "Missing required field 'name' in LocalBusiness schema";
     }
     case "SoftwareApplication": {
-      if (!obj.name) {
-        return { valid: false, error: "Missing required field 'name'" };
-      }
-      return { valid: true };
+      return obj.name
+        ? null
+        : "Missing required field 'name' in SoftwareApplication schema";
     }
     default:
-      return { valid: true };
+      return null;
   }
 }

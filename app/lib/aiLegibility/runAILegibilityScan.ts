@@ -171,9 +171,7 @@ export async function runScanSteps({
     });
   }
   const jsonLdResult = await checkJsonLd({
-    html: homepageResult.html,
-    url,
-    pages: samplePagesWithHtml,
+    pages: [{ url, html: homepageResult.html }, ...samplePagesWithHtml],
   });
   checks.push(jsonLdResult);
   await log(`${jsonLdResult.passed ? "✓" : "✗"} ${jsonLdResult.message}`);
