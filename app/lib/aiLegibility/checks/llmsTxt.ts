@@ -14,11 +14,11 @@ export default async function checkLlmsTxt({
 }: {
   url: string;
 }): Promise<Omit<CheckResult, "category">> {
-  const llmsUrl = new URL("/llms.txt", url).href;
+  const llmsURL = new URL("/llms.txt", url).href;
   const startTime = Date.now();
 
   try {
-    const response = await fetch(llmsUrl, {
+    const response = await fetch(llmsURL, {
       headers: {
         "User-Agent": "CiteMeIn-AI-Legibility-Bot/1.0",
         Accept: "text/plain",
@@ -26,20 +26,20 @@ export default async function checkLlmsTxt({
       signal: AbortSignal.timeout(10_000),
     });
 
+    if (response.status === 404) {
+      return {
+        name: "llms.txt",
+        passed: false,
+        message: "llms.txt not found (HTTP 404) — AI discoverability limited",
+        details: { statusCode: response.status, url: llmsURL },
+      };
+    }
     if (!response.ok) {
-      if (response.status === 404) {
-        return {
-          name: "llms.txt",
-          passed: false,
-          message: "llms.txt not found (HTTP 404) — AI discoverability limited",
-          details: { statusCode: response.status, url: llmsUrl },
-        };
-      }
       return {
         name: "llms.txt",
         passed: false,
         message: `llms.txt returned HTTP ${response.status}`,
-        details: { statusCode: response.status, url: llmsUrl },
+        details: { statusCode: response.status, url: llmsURL },
       };
     }
 
@@ -55,7 +55,7 @@ export default async function checkLlmsTxt({
         passed: false,
         message:
           "llms.txt exists but is empty — needs at least an H1 title per spec",
-        details: { url: llmsUrl, elapsed },
+        details: { url: llmsURL, elapsed },
       };
     }
 
@@ -76,17 +76,12 @@ export default async function checkLlmsTxt({
     // Always pass — structure notes are informative
     const notes: string[] = [];
 
-    if (!hasH1) {
-      notes.push("no H1 title (recommended)");
-    }
+    if (!hasH1) notes.push("no H1 title (recommended)");
 
-    if (h2Sections.length === 0) {
-      notes.push("no H2 sections (recommended)");
-    }
+    if (h2Sections.length === 0) notes.push("no H2 sections (recommended)");
 
-    if (!hasFileLinks) {
+    if (!hasFileLinks)
       notes.push("no file links in [name](url) format (recommended)");
-    }
 
     if (hasOptionalSection) {
       const optionalIndex = lines.findIndex(
@@ -96,11 +91,9 @@ export default async function checkLlmsTxt({
       const contentAfterOptional = lines
         .slice(optionalIndex + 1)
         .filter((line) => line.trim() && !line.trim().startsWith("#"));
-      if (contentAfterOptional.length > 0) {
+      if (contentAfterOptional.length > 0)
         notes.push("content under 'Optional' section should be moved above it");
-      } else {
-        notes.push("has 'Optional' section — content below is skip-able");
-      }
+      else notes.push("has 'Optional' section — content below is skip-able");
     }
 
     const message =
@@ -113,7 +106,7 @@ export default async function checkLlmsTxt({
       passed: true,
       message,
       details: {
-        url: llmsUrl,
+        url: llmsURL,
         elapsed,
         lineCount: nonEmptyLines.length,
         hasH1,
@@ -132,14 +125,14 @@ export default async function checkLlmsTxt({
         passed: false,
         message: "llms.txt request timed out (10s limit)",
         timedOut: true,
-        details: { url: llmsUrl },
+        details: { url: llmsURL },
       };
     }
     return {
       name: "llms.txt",
       passed: false,
       message: `Failed to fetch llms.txt: ${errorMessage}`,
-      details: { url: llmsUrl, error: errorMessage },
+      details: { url: llmsURL, error: errorMessage },
     };
   }
 }
