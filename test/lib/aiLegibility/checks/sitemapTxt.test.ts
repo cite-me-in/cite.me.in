@@ -98,26 +98,6 @@ Also not a URL`;
     expect(result.urls).toHaveLength(2);
   });
 
-  it("should fail when sitemap.txt has wrong MIME type", async () => {
-    vi.stubGlobal(
-      "fetch",
-      mockFetch({
-        "https://acme.com/sitemap.txt": {
-          ok: true,
-          status: 200,
-          headers: { get: () => "text/html; charset=utf-8" },
-          text: async () => "<html><body>Not a sitemap</body></html>",
-        },
-      }),
-    );
-
-    const result = await checkSitemapTxt({ url: "https://acme.com/" });
-
-    expect(result.passed).toBe(false);
-    expect(result.message).toContain("incorrect MIME type");
-    expect(result.urls).toHaveLength(0);
-  });
-
   it("should handle network errors", async () => {
     vi.stubGlobal("fetch", async () => {
       throw new Error("ECONNREFUSED");

@@ -71,17 +71,6 @@ async function fetchSitemapTxt(
       };
     }
 
-    const contentType = response.headers.get("content-type") ?? "";
-    if (!contentType.startsWith("text/plain")) {
-      return {
-        name: "sitemap.txt",
-        passed: false,
-        message: `sitemap.txt has incorrect MIME type: ${contentType}`,
-        details: { contentType, url: sitemapUrl, expected: "text/plain" },
-        urls: [],
-      };
-    }
-
     const content = await response.text();
     const elapsed = Date.now() - startTime;
 
@@ -104,8 +93,9 @@ async function fetchSitemapTxt(
     if (urls.length === 0) {
       return {
         name: "sitemap.txt",
-        passed: false,
-        message: "sitemap.txt exists but contains no valid URLs",
+        passed: true,
+        message:
+          "sitemap.txt exists but no valid URLs found (AI agents will skip it)",
         details: {
           url: sitemapUrl,
           lineCount: lines.length,

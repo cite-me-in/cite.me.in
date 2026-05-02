@@ -76,26 +76,8 @@ async function fetchSitemapXml(
       };
     }
 
-    const contentType = response.headers.get("content-type") ?? "";
-    const isTextXml = contentType.includes("text/xml");
-    const isAppXml = contentType.includes("application/xml");
-    const isReadable = isTextXml || isAppXml;
-
-    if (!isReadable) {
-      return {
-        name: "sitemap.xml",
-        passed: false,
-        message: `sitemap.xml has incorrect MIME type: ${contentType}`,
-        details: {
-          contentType,
-          url: sitemapUrl,
-          expected: "text/xml or application/xml",
-        },
-        urls: [],
-      };
-    }
-
     const xml = await response.text();
+    const contentType = response.headers.get("content-type") ?? "";
     const elapsed = Date.now() - baseElapsed;
 
     try {
@@ -144,7 +126,7 @@ async function fetchSitemapXml(
       return {
         name: "sitemap.xml",
         passed: true,
-        message: `sitemap.xml has ${urls.length} URLs (${contentType})`,
+        message: `sitemap.xml has ${urls.length} URLs`,
         details: {
           url: sitemapUrl,
           validUrls: urls.length,
@@ -189,7 +171,6 @@ async function handleSitemapIndex(
   sitemapindex: { sitemap: { loc: string } | { loc: string }[] },
   sitemapUrl: string,
   startTime: number,
-  contentType: string,
 ): Promise<Omit<CheckResult, "category"> & { urls: string[] }> {
   const sitemapNodes = Array.isArray(sitemapindex.sitemap)
     ? sitemapindex.sitemap
@@ -204,7 +185,6 @@ async function handleSitemapIndex(
       details: {
         url: sitemapUrl,
         elapsed: Date.now() - startTime,
-        mimeType: contentType,
       },
       urls: [],
     };

@@ -35,25 +35,6 @@ describe("checkSitemapXml", () => {
     expect(result.urls).toHaveLength(3);
   });
 
-  it("should pass with text/xml MIME type", async () => {
-    vi.stubGlobal(
-      "fetch",
-      mockFetch({
-        "https://acme.com/sitemap.xml": {
-          ok: true,
-          status: 200,
-          headers: { get: () => "text/xml" },
-          text: async () => SITEMAP_XML,
-        },
-      }),
-    );
-
-    const result = await checkSitemapXml({ url: "https://acme.com/" });
-
-    expect(result.passed).toBe(true);
-    expect(result.message).toContain("text/xml");
-  });
-
   it("should fail when sitemap.xml returns 404", async () => {
     vi.stubGlobal(
       "fetch",
@@ -72,24 +53,6 @@ describe("checkSitemapXml", () => {
     expect(result.passed).toBe(false);
     expect(result.message).toContain("not found");
     expect(result.urls).toHaveLength(0);
-  });
-
-  it("should fail when sitemap.xml has incorrect MIME type", async () => {
-    vi.stubGlobal(
-      "fetch",
-      mockFetch({
-        "https://acme.com/sitemap.xml": {
-          ok: true,
-          status: 200,
-          headers: { get: () => "text/html" },
-          text: async () => SITEMAP_XML,
-        },
-      }),
-    );
-
-    const result = await checkSitemapXml({ url: "https://acme.com/" });
-    expect(result.passed).toBe(false);
-    expect(result.message).toContain("incorrect MIME type");
   });
 
   it("should fail when sitemap.xml has invalid XML", async () => {
