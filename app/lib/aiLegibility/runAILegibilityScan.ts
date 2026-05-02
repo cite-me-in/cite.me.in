@@ -174,8 +174,7 @@ export async function runScanSteps({
 
   await log("Checking meta tags...");
   const metaTagsResult = await checkMetaTags({
-    html: homepageResult.html,
-    url,
+    pages: [{ url, html: homepageResult.html }],
   });
   checks.push(metaTagsResult);
   await log(`${metaTagsResult.passed ? "✓" : "✗"} ${metaTagsResult.message}`);

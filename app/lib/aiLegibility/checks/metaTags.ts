@@ -8,25 +8,17 @@ import type { CheckResult } from "~/lib/aiLegibility/types";
 
 const OG_PROPERTIES = ["og:title", "og:type", "og:image", "og:url"] as const;
 
-export default async function checkMetaTags({
+function checkPage({
   html,
-  url,
 }: {
   html: string;
-  url: string;
-}): Promise<
-  Omit<CheckResult, "category"> & {
-    description?: string;
-    ogTitle?: string;
-    ogType?: string;
-    ogImage?: string;
-    ogUrl?: string;
-    ogDescription?: string;
-    canonical?: string;
-  }
-> {
-  const startTime = Date.now();
-
+}): {
+  hasDescription: boolean;
+  description: string | undefined;
+  canonical: string | undefined;
+  ogMatches: Record<string, string | undefined>;
+  hasCanonical: boolean;
+} {
   const descriptionMatch = html.match(
     /<meta\s+name\s*=\s*["']description["']\s+content\s*=\s*["']([^"']*)["']/i,
   );
@@ -44,75 +36,67 @@ export default async function checkMetaTags({
     );
     ogMatches[prop] = match?.[1];
   }
-  const ogDescriptionMatch = html.match(
-    /<meta\s+property\s*=\s*["']og:description["']\s+content\s*=\s*["']([^"']*)["']/i,
-  );
 
   const description = descriptionMatch?.[1];
   const canonical = canonicalMatch?.[1];
-  const ogTitle = ogMatches["og:title"];
-  const ogType = ogMatches["og:type"];
-  const ogImage = ogMatches["og:image"];
-  const ogUrl = ogMatches["og:url"];
-  const ogDescription = ogDescriptionMatch?.[1];
-
-  const elapsed = Date.now() - startTime;
-
   const hasDescription = !!description && description.length > 0;
   const hasCanonical = !!canonical;
 
-  const foundOg: string[] = [];
-  if (ogTitle) foundOg.push("og:title");
-  if (ogType) foundOg.push("og:type");
-  if (ogImage) foundOg.push("og:image");
-  if (ogUrl) foundOg.push("og:url");
+  return { hasDescription, description, canonical, ogMatches, hasCanonical };
+}
 
-  const allRequiredOg = OG_PROPERTIES.every((p) => ogMatches[p]);
-  const anyOg = foundOg.length > 0;
+export default async function checkMetaTags({
+  pages,
+}: {
+  pages: { url: string; html: string }[];
+}): Promise<Omit<CheckResult, "category">> {
+  const startTime = Date.now();
 
-  if (!hasDescription && !anyOg && !hasCanonical) {
+  const pageResults = pages.map((page) => {
+    const result = checkPage({ html: page.html });
+    const allRequiredOg = OG_PROPERTIES.every((p) => result.ogMatches[p]);
+    return { url: page.url, ...result, allRequiredOg };
+  });
+
+  const elapsed = Date.now() - startTime;
+
+  const allPassed = pageResults.every(
+    (p) => p.hasDescription || p.allRequiredOg || p.hasCanonical,
+  );
+
+  if (pageResults.length === 1) {
+    const p = pageResults[0];
+    const foundOg = OG_PROPERTIES.filter((prop) => p.ogMatches[prop]);
+
+    const found: string[] = [];
+    if (p.hasDescription) found.push("description");
+    if (p.allRequiredOg) {
+      found.push("all 4 required OG tags (title, type, image, url)");
+    } else if (foundOg.length > 0) {
+      found.push(`partial OG tags (${foundOg.join(", ")})`);
+    }
+    if (p.hasCanonical) found.push("canonical");
+
     return {
       name: "Meta tags",
-      passed: false,
-      message: "No meta description, Open Graph tags, or canonical URL found",
-      details: { url, elapsed },
+      passed: allPassed,
+      message: allPassed
+        ? `Found: ${found.join(", ")}`
+        : `No meta description, Open Graph tags, or canonical URL found`,
+      details: { url: p.url, elapsed },
     };
   }
 
-  const found: string[] = [];
-  if (hasDescription) found.push("description");
-  if (allRequiredOg) {
-    found.push("all 4 required OG tags (title, type, image, url)");
-  } else if (anyOg) {
-    found.push(`partial OG tags (${foundOg.join(", ")})`);
-  }
-  if (hasCanonical) found.push("canonical");
-
-  const passed = allRequiredOg || hasDescription || hasCanonical;
+  const passedCount = pageResults.filter(
+    (p) => p.hasDescription || p.allRequiredOg || p.hasCanonical,
+  ).length;
 
   return {
     name: "Meta tags",
-    passed,
-    message: passed
-      ? `Found: ${found.join(", ")}`
-      : `Missing required Open Graph tags (found ${foundOg.length}/4): ${OG_PROPERTIES.filter((p) => !ogMatches[p]).join(", ")}`,
-    details: {
-      url,
-      elapsed,
-      ogProperties: {
-        title: !!ogTitle,
-        type: !!ogType,
-        image: !!ogImage,
-        url: !!ogUrl,
-        description: !!ogDescription,
-      },
-    },
-    description,
-    ogTitle,
-    ogType,
-    ogImage,
-    ogUrl,
-    ogDescription,
-    canonical,
+    passed: allPassed,
+    message: allPassed
+      ? `All ${pageResults.length} pages have meta tags`
+      : `${passedCount}/${pageResults.length} pages have meta tags`,
+    details: { elapsed, pagesChecked: pageResults.length },
   };
 }

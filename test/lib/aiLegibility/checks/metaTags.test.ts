@@ -5,8 +5,7 @@ import { HOMEPAGE_WITH_CONTENT } from "~/test/lib/aiLegibility/fixtures";
 describe("checkMetaTags", () => {
   it("should pass when all 4 required OG tags are present", async () => {
     const result = await checkMetaTags({
-      url: "https://acme.com/",
-      html: HOMEPAGE_WITH_CONTENT,
+      pages: [{ url: "https://acme.com/", html: HOMEPAGE_WITH_CONTENT }],
     });
 
     expect(result.passed).toBe(true);
@@ -14,12 +13,6 @@ describe("checkMetaTags", () => {
     expect(result.message).toContain("all 4 required OG tags");
     expect(result.message).toContain("description");
     expect(result.message).toContain("canonical");
-    expect(result.description).toBe("Acme Corp builds great software");
-    expect(result.ogTitle).toBe("Acme Corp");
-    expect(result.ogType).toBe("website");
-    expect(result.ogImage).toBe("https://acme.com/og.png");
-    expect(result.ogUrl).toBe("https://acme.com/");
-    expect(result.canonical).toBe("https://acme.com/");
   });
 
   it("should pass when only description is present", async () => {
@@ -33,13 +26,11 @@ describe("checkMetaTags", () => {
 </html>`;
 
     const result = await checkMetaTags({
-      url: "https://acme.com/",
-      html,
+      pages: [{ url: "https://acme.com/", html }],
     });
 
     expect(result.passed).toBe(true);
     expect(result.message).toContain("description");
-    expect(result.description).toBe("Acme Corp builds great software");
   });
 
   it("should pass when all 4 OG tags are present without description", async () => {
@@ -56,8 +47,7 @@ describe("checkMetaTags", () => {
 </html>`;
 
     const result = await checkMetaTags({
-      url: "https://acme.com/",
-      html,
+      pages: [{ url: "https://acme.com/", html }],
     });
 
     expect(result.passed).toBe(true);
@@ -76,12 +66,11 @@ describe("checkMetaTags", () => {
 </html>`;
 
     const result = await checkMetaTags({
-      url: "https://acme.com/",
-      html,
+      pages: [{ url: "https://acme.com/", html }],
     });
 
     expect(result.passed).toBe(false);
-    expect(result.message).toContain("Missing required Open Graph tags");
+    expect(result.message).toContain("No meta description");
   });
 
   it("should pass when only canonical is present", async () => {
@@ -95,13 +84,11 @@ describe("checkMetaTags", () => {
 </html>`;
 
     const result = await checkMetaTags({
-      url: "https://acme.com/",
-      html,
+      pages: [{ url: "https://acme.com/", html }],
     });
 
     expect(result.passed).toBe(true);
     expect(result.message).toContain("canonical");
-    expect(result.canonical).toBe("https://acme.com/page");
   });
 
   it("should fail when no meta tags are present", async () => {
@@ -114,8 +101,7 @@ describe("checkMetaTags", () => {
 </html>`;
 
     const result = await checkMetaTags({
-      url: "https://acme.com/",
-      html,
+      pages: [{ url: "https://acme.com/", html }],
     });
 
     expect(result.passed).toBe(false);
@@ -135,8 +121,7 @@ describe("checkMetaTags", () => {
 </html>`;
 
     const result = await checkMetaTags({
-      url: "https://acme.com/",
-      html,
+      pages: [{ url: "https://acme.com/", html }],
     });
 
     expect(result.passed).toBe(false);

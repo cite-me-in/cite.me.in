@@ -6,11 +6,6 @@ type PageResult = {
   passed: boolean;
   message: string;
   timedOut: boolean;
-  contentLength: number;
-  wordCount: number;
-  hasParagraphs: boolean;
-  hasSentenceEndings: boolean;
-  hasHeadings: boolean;
   html?: string;
   responseHeaders?: Record<string, string>;
 };
@@ -41,11 +36,6 @@ export default async function checkSamplePages({
         passed: false,
         message: "Timed out (10s limit)",
         timedOut: true,
-        contentLength: 0,
-        wordCount: 0,
-        hasParagraphs: false,
-        hasSentenceEndings: false,
-        hasHeadings: false,
       });
       continue;
     }
@@ -56,11 +46,6 @@ export default async function checkSamplePages({
         passed: false,
         message: page.error ?? `HTTP ${page.status}`,
         timedOut: false,
-        contentLength: 0,
-        wordCount: 0,
-        hasParagraphs: false,
-        hasSentenceEndings: false,
-        hasHeadings: false,
         responseHeaders: page.headers,
       });
       continue;
@@ -74,11 +59,6 @@ export default async function checkSamplePages({
         passed: false,
         message: `Empty SPA shell (${content.contentLength} chars)`,
         timedOut: false,
-        contentLength: content.contentLength,
-        wordCount: content.wordCount,
-        hasParagraphs: content.paragraphs,
-        hasSentenceEndings: content.sentenceEndings,
-        hasHeadings: content.headings,
         responseHeaders: page.headers,
       });
       continue;
@@ -90,11 +70,6 @@ export default async function checkSamplePages({
         passed: false,
         message: `Minimal content (${content.contentLength} chars, ${content.wordCount} words)${content.usefulnessSignals.length > 0 ? `: ${content.usefulnessSignals.join(", ")}` : ""}`,
         timedOut: false,
-        contentLength: content.contentLength,
-        wordCount: content.wordCount,
-        hasParagraphs: content.paragraphs,
-        hasSentenceEndings: content.sentenceEndings,
-        hasHeadings: content.headings,
         responseHeaders: page.headers,
       });
       continue;
@@ -113,11 +88,6 @@ export default async function checkSamplePages({
       passed: true,
       message: `${details.join(", ")}`,
       timedOut: false,
-      contentLength: content.contentLength,
-      wordCount: content.wordCount,
-      hasParagraphs: content.paragraphs,
-      hasSentenceEndings: content.sentenceEndings,
-      hasHeadings: content.headings,
       html: page.html,
       responseHeaders: page.headers,
     });

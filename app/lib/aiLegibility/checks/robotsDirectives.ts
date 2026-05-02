@@ -30,29 +30,15 @@ export default async function checkRobotsDirectives({
 }: {
   pages: FetchedPage[];
 }): Promise<Omit<CheckResult, "category">> {
-  const homepage = pages[0];
-
-  const homepageMetaTag = hasNoindexInHtml(homepage.html);
-  const homepageXRobotsTag = hasNoindexInHeader(
-    homepage.headers["X-Robots-Tag"] ?? homepage.headers["x-robots-tag"] ?? null,
-  );
-
-  const noindexPages: { url: string; metaTag: boolean; xRobotsTag: boolean }[] = [];
-  if (homepageMetaTag || homepageXRobotsTag)
-    noindexPages.push({
-      url: homepage.url,
-      metaTag: homepageMetaTag,
-      xRobotsTag: homepageXRobotsTag,
-    });
-
-  for (const page of pages) {
+  const noindexPages = pages.flatMap((page) => {
     const metaTag = hasNoindexInHtml(page.html);
     const xRobotsTag = hasNoindexInHeader(
       page.headers["X-Robots-Tag"] ?? page.headers["x-robots-tag"] ?? null,
     );
-    if (metaTag || xRobotsTag)
-      noindexPages.push({ url: page.url, metaTag, xRobotsTag });
-  }
+    return metaTag || xRobotsTag
+      ? [{ url: page.url, metaTag, xRobotsTag }]
+      : [];
+  });
 
   if (noindexPages.length === 0) {
     const sampleCount = pages.length;
@@ -61,8 +47,6 @@ export default async function checkRobotsDirectives({
       passed: true,
       message: `No noindex directives found on any of ${sampleCount} reviewed page${sampleCount === 1 ? "" : "s"}`,
       details: {
-        homepageMetaTag,
-        homepageXRobotsTag,
         pagesChecked: pages.length,
       },
     };
@@ -80,8 +64,6 @@ export default async function checkRobotsDirectives({
     passed: false,
     message: `noindex found on ${noindexPages.length} page${noindexPages.length === 1 ? "" : "s"}: ${parts.join("; ")}`,
     details: {
-      homepageMetaTag,
-      homepageXRobotsTag,
       noindexPages,
       pagesChecked: pages.length,
     },
