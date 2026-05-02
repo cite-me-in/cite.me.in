@@ -26,13 +26,13 @@ describe("checkLinkHeaders", () => {
     });
 
     expect(result.passed).toBe(true);
+    expect(result.name).toBe("Sitemap link headers");
     expect(result.message).toContain("HTTP header");
-    const headerLinks = result.details?.headerLinks as
-      | { uri: string; rel: string }[]
+    const headerLinks = result.details?.headerSitemapLinks as
+      | { uri: string }[]
       | undefined;
     expect(headerLinks).toHaveLength(1);
     expect(headerLinks?.[0].uri).toBe("/sitemap.xml");
-    expect(headerLinks?.[0].rel).toBe("sitemap");
   });
 
   it("should parse multiple Link header entries per RFC 8288", async () => {
@@ -52,7 +52,10 @@ describe("checkLinkHeaders", () => {
     });
 
     expect(result.passed).toBe(true);
-    expect(result.details?.headerLinks).toHaveLength(2);
+    const headerLinks = result.details?.headerSitemapLinks as
+      | { uri: string }[]
+      | undefined;
+    expect(headerLinks).toHaveLength(2);
   });
 
   it("should pass when HTML has sitemap link tag", async () => {
@@ -109,7 +112,7 @@ describe("checkLinkHeaders", () => {
     });
 
     expect(result.passed).toBe(false);
-    expect(result.message).toContain("no sitemap");
+    expect(result.message).toContain("no rel='sitemap'");
   });
 
   it("should fail when no sitemap reference exists", async () => {

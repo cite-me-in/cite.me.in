@@ -92,7 +92,7 @@ const CATEGORIES: Category[] = [
         },
       },
       {
-        name: "Link headers",
+        name: "Sitemap link headers",
         desc: "HTTP Link headers and HTML link tags pointing to sitemaps",
         detail: {
           goal: "Provide sitemap references via Link response headers and HTML link tags so AI agents can discover all your content",

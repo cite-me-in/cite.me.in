@@ -155,7 +155,7 @@ export async function runScanSteps({
   checks.push(llmsTxtResult);
   await log(`${llmsTxtResult.passed ? "✓" : "✗"} ${llmsTxtResult.message}`);
 
-  await log("Checking Link headers (sitemap)...");
+  await log("Checking sitemap link headers...");
   const linkHeadersResult = await checkLinkHeaders({
     url,
     html: homepageResult.html,

@@ -122,7 +122,7 @@ describe("runScan", () => {
       "JSON-LD",
       "Meta tags",
       "llms.txt",
-      "Link headers",
+      "Sitemap link headers",
       "Markdown alternate links",
       ".md routes",
       "Markdown content negotiation",
@@ -260,7 +260,9 @@ describe("runScan", () => {
       true,
     );
     expect(logs.some((l) => l.includes("Checking sitemap.txt"))).toBe(true);
-    expect(logs.some((l) => l.includes("Checking Link headers"))).toBe(true);
+    expect(logs.some((l) => l.includes("Checking sitemap link headers"))).toBe(
+      true,
+    );
     expect(
       logs.some((l) => l.includes("Checking markdown alternate links")),
     ).toBe(true);
@@ -336,7 +338,7 @@ describe("runScan", () => {
         "sitemap.xml",
         "sitemap.txt",
         "llms.txt",
-        "Link headers",
+        "Sitemap link headers",
         "Markdown alternate links",
       ]),
     );

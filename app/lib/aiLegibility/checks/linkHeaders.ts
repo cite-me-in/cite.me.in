@@ -1,8 +1,7 @@
 /**
  * Spec: RFC 8288 (Web Linking)
- * Format: Link: <URI>; rel="relation-type"; param="value"
- * The rel parameter MUST be present. Extension relation types should use absolute URIs.
- * Sitemaps are discovered via rel="sitemap" links.
+ * Sitemaps should be advertised via Link: </sitemap.xml>; rel="sitemap"
+ * or HTML <link rel="sitemap" href="/sitemap.xml"> for AI agent discovery.
  */
 
 import type { CheckResult } from "~/lib/aiLegibility/types";
@@ -30,14 +29,10 @@ export default async function checkLinkHeaders({
       /<link[^>]+rel\s*=\s*["']sitemap["'][^>]*href\s*=\s*["']([^"']*)["']/i,
     );
 
-    const parsedLinks: {
-      uri: string;
-      rel: string;
-      params: Record<string, string>;
-    }[] = [];
+    const headerSitemapLinks: { uri: string }[] = [];
 
     if (linkHeader) {
-      const linkRegex = /<([^>]+)>\s*;\s*(.+?)(?=,\s*<|$)/g;
+      const linkRegex = /<([^>]+)>\s*;\s*(.*?)(?=,\s*<|$)/g;
       let match;
       while ((match = linkRegex.exec(linkHeader)) !== null) {
         const uri = match[1];
@@ -48,13 +43,11 @@ export default async function checkLinkHeaders({
         while ((pm = paramRegex.exec(paramsStr)) !== null) {
           params[pm[1]] = pm[2];
         }
-        parsedLinks.push({ uri, rel: params["rel"] || "", params });
+        if (params["rel"] === "sitemap") {
+          headerSitemapLinks.push({ uri });
+        }
       }
     }
-
-    const headerSitemapLinks = parsedLinks.filter(
-      (link) => link.rel === "sitemap",
-    );
 
     if (headerSitemapLinks.length > 0 || htmlSitemapLink) {
       const sources: string[] = [];
@@ -65,53 +58,45 @@ export default async function checkLinkHeaders({
       if (htmlSitemapLink)
         sources.push(`HTML <link> tag (${htmlSitemapLink[1]})`);
       return {
-        name: "Link headers",
+        name: "Sitemap link headers",
         passed: true,
         message: `Sitemap referenced via ${sources.join(" and ")}`,
         details: {
-          headerLinks: headerSitemapLinks,
+          headerSitemapLinks,
           htmlSitemapHref: htmlSitemapLink?.[1],
-          allParsedLinks: parsedLinks,
         },
       };
     }
 
-    const headerIssues: string[] = [];
-    if (linkHeader && parsedLinks.length === 0) {
-      headerIssues.push("Link header present but could not parse any links");
-    } else if (parsedLinks.length > 0 && headerSitemapLinks.length === 0) {
-      const rels = parsedLinks.map((l) => l.rel).join(", ");
-      headerIssues.push(`Link header found with rel="${rels}" but no sitemap`);
-    }
+    const hasOtherLinks = linkHeader ? /<[^>]+>/g.test(linkHeader) : false;
 
     return {
-      name: "Link headers",
+      name: "Sitemap link headers",
       passed: false,
-      message:
-        headerIssues.length > 0
-          ? headerIssues.join("; ")
-          : "No sitemap reference found in Link header or HTML <link rel='sitemap'> tag",
+      message: hasOtherLinks
+        ? "HTTP Link header exists but no rel='sitemap' reference found"
+        : "No sitemap reference found in HTTP Link header or HTML <link rel='sitemap'> tag",
       details: {
         linkHeader,
         htmlSitemapHref: htmlSitemapLink?.[1] || null,
-        parsedLinks,
+        headerSitemapLinks,
       },
     };
   } catch (error) {
     const elapsed = Date.now() - startTime;
     if (error instanceof Error && error.name === "TimeoutError") {
       return {
-        name: "Link headers",
+        name: "Sitemap link headers",
         passed: false,
-        message: "Link headers check timed out (10s limit)",
+        message: "Sitemap link header check timed out (10s limit)",
         timedOut: true,
         details: { elapsed },
       };
     }
     return {
-      name: "Link headers",
+      name: "Sitemap link headers",
       passed: false,
-      message: `Failed to check Link headers: ${error instanceof Error ? error.message : "Unknown error"}`,
+      message: `Failed to check sitemap link headers: ${error instanceof Error ? error.message : "Unknown error"}`,
       details: { elapsed },
     };
   }

@@ -28,7 +28,9 @@ describe("checkMarkdownAlternateLinks", () => {
     expect(result.message).toContain("Link header");
     expect(result.details?.homepageFound).toBe(true);
     expect(result.details?.homepageFromHeader).toBe(true);
-    expect(result.details?.alternateUrls).toContain("https://acme.com/index.md");
+    expect(result.details?.alternateUrls).toContain(
+      "https://acme.com/index.md",
+    );
   });
 
   it("should pass when homepage has HTML <link> tag for markdown", async () => {
@@ -42,7 +44,9 @@ describe("checkMarkdownAlternateLinks", () => {
     expect(result.passed).toBe(true);
     expect(result.message).toContain("HTML <link> tag");
     expect(result.details?.homepageFromHtml).toBe(true);
-    expect(result.details?.alternateUrls).toContain("https://acme.com/index.md");
+    expect(result.details?.alternateUrls).toContain(
+      "https://acme.com/index.md",
+    );
   });
 
   it("should pass when homepage fails to fetch but HTML has markdown link", async () => {
