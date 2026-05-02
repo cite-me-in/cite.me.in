@@ -61,7 +61,7 @@ export async function assessContent(
   html: string,
   url?: string,
 ): Promise<ContentAssessment> {
-  const { textContent, wordCount } = await _extractContent(html, url);
+  const { textContent, wordCount } = await extractContent(html, url);
   const contentLength = textContent.length;
 
   const isSpaShell = SPA_PATTERNS.some((pattern) => pattern.test(html));
@@ -94,7 +94,7 @@ export async function assessContent(
   };
 }
 
-async function _extractContent(
+async function extractContent(
   html: string,
   url?: string,
 ): Promise<{

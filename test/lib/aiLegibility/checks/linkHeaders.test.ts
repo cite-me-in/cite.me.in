@@ -2,11 +2,17 @@ import { describe, expect, it } from "vite-plus/test";
 import checkLinkHeaders from "~/lib/aiLegibility/checks/linkHeaders";
 import { HOMEPAGE_WITH_CONTENT } from "~/test/lib/aiLegibility/fixtures";
 
+function makeHeaders(headers: Record<string, string>): Headers {
+  const h = new Headers();
+  for (const [key, value] of Object.entries(headers)) h.set(key, value);
+  return h;
+}
+
 describe("checkLinkHeaders", () => {
   it("should pass when Link header contains sitemap reference with correct RFC 8288 format", async () => {
     const result = await checkLinkHeaders({
       html: "<html><head></head><body></body></html>",
-      links: { Link: '</sitemap.xml>; rel="sitemap"' },
+      links: makeHeaders({ Link: '</sitemap.xml>; rel="sitemap"' }),
     });
 
     expect(result.passed).toBe(true);
@@ -22,9 +28,9 @@ describe("checkLinkHeaders", () => {
   it("should parse multiple Link header entries per RFC 8288", async () => {
     const result = await checkLinkHeaders({
       html: "<html></html>",
-      links: {
+      links: makeHeaders({
         Link: '</sitemap.xml>; rel="sitemap", </sitemap.txt>; rel="sitemap"',
-      },
+      }),
     });
 
     expect(result.passed).toBe(true);
@@ -46,7 +52,7 @@ describe("checkLinkHeaders", () => {
   it("should pass when both Link header and HTML link tag exist", async () => {
     const result = await checkLinkHeaders({
       html: '<html><head><link rel="sitemap" type="application/xml" href="/sitemap.xml"></head><body></body></html>',
-      links: { Link: '</sitemap.xml>; rel="sitemap"' },
+      links: makeHeaders({ Link: '</sitemap.xml>; rel="sitemap"' }),
     });
 
     expect(result.passed).toBe(true);
@@ -57,9 +63,9 @@ describe("checkLinkHeaders", () => {
   it("should report when Link header exists but has no sitemap rel", async () => {
     const result = await checkLinkHeaders({
       html: "<html></html>",
-      links: {
+      links: makeHeaders({
         Link: '</style.css>; rel="stylesheet", </script.js>; rel="preload"',
-      },
+      }),
     });
 
     expect(result.passed).toBe(false);

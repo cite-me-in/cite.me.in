@@ -12,15 +12,12 @@ export default async function checkLinkHeaders({
   links,
 }: {
   html: string;
-  links?: Headers | Record<string, string> | null;
+  links: Headers;
 }): Promise<Omit<CheckResult, "category">> {
   const startTime = Date.now();
 
   try {
-    const linkHeader =
-      links instanceof Headers
-        ? links.get("Link") ?? links.get("link") ?? null
-        : links?.Link ?? links?.link ?? null;
+    const linkHeader = links.get("link");
     const { document } = parseHTML(html);
     const htmlSitemapHref =
       document.querySelector('link[rel="sitemap"]')?.getAttribute("href") ??
