@@ -4,35 +4,24 @@
  * or HTML <link rel="sitemap" href="/sitemap.xml"> for AI agent discovery.
  */
 
+import { parseHTML } from "linkedom";
 import type { CheckResult } from "~/lib/aiLegibility/types";
 
 export default async function checkLinkHeaders({
-  url,
   html,
-  homepageLinkHeader,
+  links,
 }: {
-  url: string;
   html: string;
-  homepageLinkHeader?: string | null;
+  links?: Record<string, string> | null;
 }): Promise<Omit<CheckResult, "category">> {
   const startTime = Date.now();
 
   try {
-    let linkHeader: string | null = homepageLinkHeader ?? null;
-
-    if (linkHeader === null) {
-      const response = await fetch(url, {
-        method: "HEAD",
-        headers: {
-          "User-Agent": "CiteMeIn-AI-Legibility-Bot/1.0",
-        },
-        signal: AbortSignal.timeout(10_000),
-      });
-      linkHeader = response.headers.get("Link");
-    }
-    const htmlSitemapLink = html.match(
-      /<link[^>]+rel\s*=\s*["']sitemap["'][^>]*href\s*=\s*["']([^"']*)["']/i,
-    );
+    const linkHeader = links?.Link ?? links?.link ?? null;
+    const { document } = parseHTML(html);
+    const htmlSitemapHref =
+      document.querySelector('link[rel="sitemap"]')?.getAttribute("href") ??
+      null;
 
     const headerSitemapLinks: { uri: string }[] = [];
 
@@ -45,30 +34,26 @@ export default async function checkLinkHeaders({
         const params: Record<string, string> = {};
         const paramRegex = /(\w+)\s*=\s*"([^"]*)"/g;
         let pm;
-        while ((pm = paramRegex.exec(paramsStr)) !== null) {
+        while ((pm = paramRegex.exec(paramsStr)) !== null)
           params[pm[1]] = pm[2];
-        }
-        if (params["rel"] === "sitemap") {
-          headerSitemapLinks.push({ uri });
-        }
+        if (params["rel"] === "sitemap") headerSitemapLinks.push({ uri });
       }
     }
 
-    if (headerSitemapLinks.length > 0 || htmlSitemapLink) {
+    if (headerSitemapLinks.length > 0 || htmlSitemapHref) {
       const sources: string[] = [];
       if (headerSitemapLinks.length > 0)
         sources.push(
           `HTTP header (${headerSitemapLinks.map((l) => l.uri).join(", ")})`,
         );
-      if (htmlSitemapLink)
-        sources.push(`HTML <link> tag (${htmlSitemapLink[1]})`);
+      if (htmlSitemapHref) sources.push(`HTML <link> tag (${htmlSitemapHref})`);
       return {
         name: "Sitemap link headers",
         passed: true,
         message: `Sitemap referenced via ${sources.join(" and ")}`,
         details: {
           headerSitemapLinks,
-          htmlSitemapHref: htmlSitemapLink?.[1],
+          htmlSitemapHref,
         },
       };
     }
@@ -83,7 +68,7 @@ export default async function checkLinkHeaders({
         : "No sitemap reference found in HTTP Link header or HTML <link rel='sitemap'> tag",
       details: {
         linkHeader,
-        htmlSitemapHref: htmlSitemapLink?.[1] || null,
+        htmlSitemapHref: htmlSitemapHref || null,
         headerSitemapLinks,
       },
     };

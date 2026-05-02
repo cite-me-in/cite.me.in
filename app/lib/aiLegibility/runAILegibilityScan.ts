@@ -191,9 +191,8 @@ export async function runScanSteps({
 
   await log("Checking sitemap link headers...");
   const linkHeadersResult = await checkLinkHeaders({
-    url,
     html: homepageResult.html,
-    homepageLinkHeader: homepageResult.responseHeaders?.Link,
+    links: homepageResult.responseHeaders,
   });
   checks.push(linkHeadersResult);
   await log(

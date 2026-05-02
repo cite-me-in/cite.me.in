@@ -82,18 +82,6 @@ const handlers = [
       ),
     ];
   }),
-  // HEAD handler for example.com homepage (used by checkLinkHeaders)
-  http.head(
-    "https://example.com/",
-    () =>
-      new HttpResponse(null, {
-        headers: {
-          "Content-Type": "text/html",
-          Link: '</sitemap.xml>; rel="sitemap"',
-        },
-      }),
-  ),
-
   // Legibility scan mocks for acme.com (used by /try page test)
   http.get(
     "https://acme.com/",
