@@ -230,15 +230,15 @@ const CATEGORIES: Category[] = [
       },
       {
         name: ".md routes",
-        desc: "Clean Markdown versions of pages at .md URLs",
+        desc: "Advertised markdown URLs serve valid content",
         detail: {
-          goal: "Provide a clean Markdown version of each page at the same URL with .md appended",
+          goal: "Verify that URLs advertised via <link rel='alternate' type='text/markdown'> actually serve valid Markdown content",
           issue:
-            "When AI agents or users paste your URL into ChatGPT/Claude, the model has to parse HTML to extract content. A .md route serves clean Markdown directly — reducing token count by ~80% and eliminating navigation/script noise.",
+            "AI agents discover Markdown versions of your pages through <link rel='alternate' type='text/markdown'> tags. If those URLs return errors, HTML, or empty content, agents can't use them — defeating the purpose of the alternate link.",
           howToImplement:
-            "Serve a Markdown version of every page at {path}.md. For the homepage, serve /index.md or /page.md (where /page is the homepage path). Use Content-Type: text/markdown. If your content is authored in Markdown, serve the source directly. If in a CMS, convert on the fly.",
+            "Ensure every URL you advertise via <link rel='alternate' type='text/markdown'> responds with Content-Type: text/markdown and meaningful Markdown content (>50 chars). The URL path can be anything (e.g., .md, .markdown, -for-ai) — the link tag tells agents where to find it.",
           fixExample:
-            '# Route handler for /blog/:slug\napp.get("/blog/:slug.md", (req, res) => {\n  const post = getPost(req.params.slug)\n  res.type("text/markdown").send(post.markdownContent)\n})',
+            '# In your HTML <head>:\n<link rel="alternate" type="text/markdown" href="/page.md">\n\n# The URL /page.md must respond:\nHTTP/1.1 200 OK\nContent-Type: text/markdown\n\n# Page content in Markdown format (>50 chars)',
           effort: "1 hour",
           resourceLinks: [
             {

@@ -120,8 +120,25 @@ export async function runScanSteps({
   );
   checks.push(sitemapTxtResult);
 
+  await log("Checking sample pages...");
+  const sampleURLs = shuffle([
+    ...new Set([...sitemmapXmlResult.urls, ...sitemapTxtResult.urls]).values(),
+  ]).slice(0, 10);
+  const samplePagesResult = await checkSamplePages({ url, sampleURLs });
+  checks.push(samplePagesResult);
+  await log(
+    `${samplePagesResult.passed ? "✓" : "✗"} ${samplePagesResult.message}`,
+  );
+
   await log("Checking JSON-LD...");
-  const jsonLdResult = await checkJsonLd({ html: homepageResult.html, url });
+  const samplePagesWithHtml = samplePagesResult.pages
+    .filter((p) => p.html)
+    .map((p) => ({ url: p.url, html: p.html }));
+  const jsonLdResult = await checkJsonLd({
+    html: homepageResult.html,
+    url,
+    pages: samplePagesWithHtml,
+  });
   checks.push(jsonLdResult);
   await log(`${jsonLdResult.passed ? "✓" : "✗"} ${jsonLdResult.message}`);
 
@@ -138,16 +155,6 @@ export async function runScanSteps({
   checks.push(llmsTxtResult);
   await log(`${llmsTxtResult.passed ? "✓" : "✗"} ${llmsTxtResult.message}`);
 
-  await log("Checking sample pages...");
-  const sampleURLs = shuffle([
-    ...new Set([...sitemmapXmlResult.urls, ...sitemapTxtResult.urls]).values(),
-  ]).slice(0, 10);
-  const samplePagesResult = await checkSamplePages({ url, sampleURLs });
-  checks.push(samplePagesResult);
-  await log(
-    `${samplePagesResult.passed ? "✓" : "✗"} ${samplePagesResult.message}`,
-  );
-
   await log("Checking Link headers (sitemap)...");
   const linkHeadersResult = await checkLinkHeaders({
     url,
@@ -162,19 +169,27 @@ export async function runScanSteps({
   const markdownAlternateResult = await checkMarkdownAlternateLinks({
     url,
     html: homepageResult.html,
+    pages: samplePagesWithHtml,
   });
   checks.push(markdownAlternateResult);
   await log(
     `${markdownAlternateResult.passed ? "✓" : "✗"} ${markdownAlternateResult.message}`,
   );
 
+  const alternateUrls = markdownAlternateResult.details?.alternateUrls as
+    | string[]
+    | undefined;
+
   await log("Checking .md routes...");
-  const mdRoutesResult = await checkMdRoutes({ url });
+  const mdRoutesResult = await checkMdRoutes({ urls: alternateUrls ?? [] });
   checks.push(mdRoutesResult);
   await log(`${mdRoutesResult.passed ? "✓" : "✗"} ${mdRoutesResult.message}`);
 
   await log("Checking markdown content negotiation...");
-  const markdownResult = await checkMarkdownNegotiation({ url });
+  const markdownResult = await checkMarkdownNegotiation({
+    url,
+    pages: samplePagesWithHtml,
+  });
   checks.push(markdownResult);
   await log(`${markdownResult.passed ? "✓" : "✗"} ${markdownResult.message}`);
 

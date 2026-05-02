@@ -10,7 +10,7 @@ import {
 } from "~/test/lib/aiLegibility/fixtures";
 
 describe("checkJsonLd", () => {
-  it("should pass when JSON-LD Organization schema is valid", async () => {
+  it("should pass when homepage has valid JSON-LD Organization schema", async () => {
     const result = await checkJsonLd({
       url: "https://acme.com/",
       html: HOMEPAGE_WITH_CONTENT,
@@ -36,7 +36,7 @@ describe("checkJsonLd", () => {
     expect(result.schemas[0].valid).toBe(true);
   });
 
-  it("should pass when multiple JSON-LD schemas are valid", async () => {
+  it("should pass when multiple JSON-LD schemas are valid on homepage", async () => {
     const result = await checkJsonLd({
       url: "https://acme.com/",
       html: JSON_LD_MULTIPLE,
@@ -70,7 +70,7 @@ describe("checkJsonLd", () => {
     });
 
     expect(result.passed).toBe(false);
-    expect(result.message).toContain("No JSON-LD structured data found");
+    expect(result.message).toContain("No JSON-LD found");
     expect(result.schemas).toHaveLength(0);
   });
 
@@ -158,5 +158,87 @@ describe("checkJsonLd", () => {
 
     expect(result.passed).toBe(false);
     expect(result.schemas.filter((s) => !s.valid)).toHaveLength(2);
+  });
+
+  it("should pass when homepage and sample pages all have valid JSON-LD", async () => {
+    const result = await checkJsonLd({
+      url: "https://acme.com/",
+      html: HOMEPAGE_WITH_CONTENT,
+      pages: [
+        {
+          url: "https://acme.com/about",
+          html: `<!DOCTYPE html><html><head><script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"About"}</script></head><body><main><h1>About</h1></main></body></html>`,
+        },
+        {
+          url: "https://acme.com/contact",
+          html: `<!DOCTYPE html><html><head><script type="application/ld+json">{"@context":"https://schema.org","@type":"ContactPage","name":"Contact"}</script></head><body><main><h1>Contact</h1></main></body></html>`,
+        },
+      ],
+    });
+
+    expect(result.passed).toBe(true);
+    expect(result.message).toContain("Homepage");
+    expect(result.message).toContain("Sample pages");
+    expect(result.pageResults).toHaveLength(2);
+    expect(result.pageResults?.every((p) => p.passed)).toBe(true);
+  });
+
+  it("should pass homepage but warn when sample pages lack JSON-LD", async () => {
+    const result = await checkJsonLd({
+      url: "https://acme.com/",
+      html: HOMEPAGE_WITH_CONTENT,
+      pages: [
+        {
+          url: "https://acme.com/no-ld",
+          html: "<html><head><title>No LD</title></head><body><p>Content</p></body></html>",
+        },
+      ],
+    });
+
+    expect(result.passed).toBe(true);
+    expect(result.message).toContain("no JSON-LD found");
+    expect(result.pageResults?.[0].passed).toBe(false);
+    expect(result.pageResults?.[0].schemas).toHaveLength(0);
+  });
+
+  it("should pass when sample page has invalid JSON-LD but homepage is valid", async () => {
+    const result = await checkJsonLd({
+      url: "https://acme.com/",
+      html: HOMEPAGE_WITH_CONTENT,
+      pages: [
+        {
+          url: "https://acme.com/bad-ld",
+          html: `<!DOCTYPE html><html><head><script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization"}</script></head><body><p>Missing name</p></body></html>`,
+        },
+      ],
+    });
+
+    expect(result.passed).toBe(true);
+    expect(result.message).toContain("Warnings");
+    expect(result.message).toContain("Missing required field");
+    expect(result.details?.anyPageHasValidLd).toBe(true);
+  });
+
+  it("should handle sample pages without html field gracefully", async () => {
+    const result = await checkJsonLd({
+      url: "https://acme.com/",
+      html: HOMEPAGE_WITH_CONTENT,
+      pages: [{ url: "https://acme.com/timeout" }],
+    });
+
+    expect(result.passed).toBe(true);
+    expect(result.details?.pagesRequested).toBe(1);
+    expect(result.details?.pagesChecked).toBe(0);
+  });
+
+  it("should report no pagesChecked when pages param is empty", async () => {
+    const result = await checkJsonLd({
+      url: "https://acme.com/",
+      html: HOMEPAGE_WITH_CONTENT,
+      pages: [],
+    });
+
+    expect(result.passed).toBe(true);
+    expect(result.details?.pagesChecked).toBe(0);
   });
 });

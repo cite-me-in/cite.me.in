@@ -1,4 +1,10 @@
-import type { CheckResult } from "~/lib/aiLegibility/types";
+/**
+ * Spec: Heuristic — homepage must return meaningful HTML content
+ * AI agents parse homepage content for entity extraction and citation context
+ * Fails on: empty shells, SPA wrappers (div#root), insufficient text (<100 chars), HTTP errors, timeouts
+ */
+
+import type { CheckResult } from "../types";
 
 const MIN_CONTENT_LENGTH = 100;
 const SPA_PATTERNS = [

@@ -248,6 +248,22 @@ const SAMPLE_PAGE_CONTENT = `<!DOCTYPE html>
 </body>
 </html>`;
 
+const SAMPLE_PAGE_WITH_LD = `<!DOCTYPE html>
+<html>
+<head>
+  <title>Acme Corp</title>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebPage","name":"About Acme"}
+  </script>
+</head>
+<body>
+  <main>
+    <h1>About Acme</h1>
+    <p>This page has enough content to pass the sample pages check. We need at least 100 characters of text content here.</p>
+  </main>
+</body>
+</html>`;
+
 export function passingSite(): Record<
   string,
   {
@@ -269,7 +285,11 @@ export function passingSite(): Record<
     "https://acme.com/sitemap.txt": text(SITEMAP_TXT, "text/plain"),
     "https://acme.com/sitemap.xml": text(SITEMAP_XML, "application/xml"),
     "https://acme.com/llms.txt": text(LLMS_TXT, "text/plain"),
-    "https://acme.com/about": text(SAMPLE_PAGE_CONTENT),
+    "https://acme.com/index.md": text(
+      "# Acme Corp\n\nWelcome to Acme Corp. We build great software products for businesses of all sizes around the world. Our team is dedicated to delivering quality solutions that help our customers succeed.",
+      "text/markdown",
+    ),
+    "https://acme.com/about": text(SAMPLE_PAGE_WITH_LD),
     "https://acme.com/pricing": text(SAMPLE_PAGE_CONTENT),
     "https://acme.com/blog": text(SAMPLE_PAGE_CONTENT),
     "https://acme.com.md": text(

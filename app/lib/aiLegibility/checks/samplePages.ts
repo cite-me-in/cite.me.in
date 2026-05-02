@@ -1,3 +1,11 @@
+/**
+ * Spec: Heuristic — sample pages must return meaningful HTML content
+ * AI agents parse page content for entity extraction, citation context,
+ * and to understand site structure. Pages with only SPA shells or
+ * minimal content fail this check.
+ * Minimum: 100 characters of visible text content.
+ */
+
 import type { CheckResult } from "~/lib/aiLegibility/types";
 
 const MIN_CONTENT_LENGTH = 100;
@@ -12,6 +20,7 @@ type PageResult = {
   message: string;
   timedOut: boolean;
   contentLength: number;
+  html?: string;
 };
 
 export default async function checkSamplePages({
@@ -113,6 +122,7 @@ export default async function checkSamplePages({
         message: `${contentLength.toLocaleString()} chars`,
         timedOut: false,
         contentLength,
+        html,
       });
     } catch (error) {
       if (error instanceof Error && error.name === "TimeoutError") {

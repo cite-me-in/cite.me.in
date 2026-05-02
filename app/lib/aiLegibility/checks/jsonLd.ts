@@ -1,3 +1,20 @@
+/**
+ * Spec: schema.org
+ * JSON-LD structured data embedded in <script type="application/ld+json"> tags.
+ * Required: at least one page (homepage or sample page) must have valid JSON-LD.
+ * Per-schema required fields:
+ *   - Article/NewsArticle/BlogPosting: headline or name
+ *   - Organization: name
+ *   - WebSite: name or url
+ *   - BreadcrumbList: itemListElement
+ *   - Product: name
+ *   - Person: name
+ *   - FAQPage: mainEntity
+ *   - HowTo: name
+ *   - LocalBusiness: name
+ *   - SoftwareApplication: name
+ */
+
 import type { CheckResult } from "~/lib/aiLegibility/types";
 
 const KNOWN_SCHEMAS = [
@@ -21,18 +38,17 @@ type JsonLdResult = {
   error?: string;
 };
 
-export default async function checkJsonLd({
-  html,
-  url,
-}: {
-  html: string;
+type PageLdResult = {
   url: string;
-}): Promise<Omit<CheckResult, "category"> & { schemas: JsonLdResult[] }> {
+  passed: boolean;
+  schemas: JsonLdResult[];
+};
+
+function extractSchemas(html: string): JsonLdResult[] {
   const scriptMatches = html.matchAll(
     /<script\s+type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi,
   );
   const schemas: JsonLdResult[] = [];
-  const startTime = Date.now();
 
   for (const match of scriptMatches) {
     const jsonContent = match[1].trim();
@@ -68,44 +84,116 @@ export default async function checkJsonLd({
     }
   }
 
+  return schemas;
+}
+
+export default async function checkJsonLd({
+  html,
+  url,
+  pages,
+}: {
+  html: string;
+  url: string;
+  pages?: { url: string; html?: string }[];
+}): Promise<
+  Omit<CheckResult, "category"> & {
+    schemas: JsonLdResult[];
+    pageResults?: PageLdResult[];
+  }
+> {
+  const startTime = Date.now();
+  const homepageSchemas = extractSchemas(html);
+
+  const pageResults: PageLdResult[] = [];
+  const pagesRequested = pages?.length ?? 0;
+  if (pages) {
+    for (const page of pages) {
+      if (!page.html) continue;
+      const schemas = extractSchemas(page.html);
+      const allValid = schemas.length > 0 && schemas.every((s) => s.valid);
+      pageResults.push({ url: page.url, passed: allValid, schemas });
+    }
+  }
+
   const elapsed = Date.now() - startTime;
 
-  if (schemas.length === 0) {
-    return {
-      name: "JSON-LD",
+  const allPageResults = [
+    { url: "homepage", schemas: homepageSchemas },
+    ...pageResults,
+  ];
 
-      passed: false,
-      message: "No JSON-LD structured data found",
-      details: { url, elapsed },
-      schemas: [],
-    };
+  const anyHasValidLd = allPageResults.some(
+    (p) => p.schemas.length > 0 && p.schemas.every((s) => s.valid),
+  );
+
+  const allErrors: string[] = [];
+  for (const result of allPageResults) {
+    const invalid = result.schemas.filter((s) => !s.valid);
+    if (invalid.length > 0) {
+      allErrors.push(
+        `${result.url}: ${invalid
+          .map((s) => `${s.type}: ${s.error}`)
+          .join("; ")}`,
+      );
+    }
   }
 
-  const validCount = schemas.filter((s) => s.valid).length;
-  const invalidSchemas = schemas.filter((s) => !s.valid);
+  const parts: string[] = [];
 
-  if (invalidSchemas.length > 0) {
-    const errors = invalidSchemas
-      .map((s) => `${s.type}: ${s.error}`)
-      .join("; ");
-    return {
-      name: "JSON-LD",
-
-      passed: false,
-      message: `${validCount}/${schemas.length} schemas valid (${errors})`,
-      details: { url, validCount, totalCount: schemas.length, elapsed },
-      schemas,
-    };
+  if (homepageSchemas.length > 0) {
+    const uniqueTypes = [...new Set(homepageSchemas.map((s) => s.type))];
+    parts.push(`Homepage: valid JSON-LD (${uniqueTypes.join(", ")})`);
+  } else if (pageResults.some((p) => p.schemas.length > 0)) {
+    parts.push("Homepage: no JSON-LD, found on sample pages");
+  } else {
+    parts.push("Homepage: no JSON-LD");
   }
 
-  const uniqueTypes = [...new Set(schemas.map((s) => s.type))];
+  if (pagesRequested > 0 && pageResults.length === 0) {
+    parts.push("Sample pages: none could be fetched");
+  } else if (pageResults.length > 0) {
+    const withLd = pageResults.filter((p) => p.schemas.length > 0).length;
+    const validPages = pageResults.filter((p) => p.passed);
+    if (withLd === 0) {
+      parts.push("Sample pages: no JSON-LD found");
+    } else {
+      parts.push(
+        `Sample pages: ${validPages.length}/${pageResults.length} have valid JSON-LD`,
+      );
+    }
+  }
+
+  const noLdAnywhere = allPageResults.every((p) => p.schemas.length === 0);
+  const passed = anyHasValidLd;
+
+  let message: string;
+  if (noLdAnywhere) {
+    message = "No JSON-LD found on homepage or sample pages";
+  } else if (!passed) {
+    message = ["JSON-LD found but all schemas are invalid", ...allErrors].join(
+      " | ",
+    );
+  } else {
+    message = parts.join("; ");
+    if (allErrors.length > 0) {
+      message += ` | Warnings: ${allErrors.join("; ")}`;
+    }
+  }
+
   return {
     name: "JSON-LD",
-
-    passed: true,
-    message: `Valid JSON-LD: ${uniqueTypes.join(", ")}`,
-    details: { url, validCount, totalCount: schemas.length, elapsed },
-    schemas,
+    passed,
+    message,
+    details: {
+      url,
+      elapsed,
+      homepageSchemaCount: homepageSchemas.length,
+      pagesRequested,
+      pagesChecked: pageResults.length,
+      anyPageHasValidLd: anyHasValidLd,
+    },
+    schemas: homepageSchemas,
+    pageResults,
   };
 }
 
