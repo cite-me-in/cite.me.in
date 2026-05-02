@@ -121,9 +121,29 @@ export async function runScanSteps({
   checks.push(sitemapTxtResult);
 
   await log("Checking sample pages...");
-  const sampleURLs = shuffle([
-    ...new Set([...sitemmapXmlResult.urls, ...sitemapTxtResult.urls]).values(),
+  const urlsFrom = (result: { urls: string[] }) => result.urls;
+  let sampleURLs = shuffle([
+    ...new Set([
+      ...urlsFrom(sitemmapXmlResult),
+      ...urlsFrom(sitemapTxtResult),
+    ]).values(),
   ]).slice(0, 10);
+
+  if (sampleURLs.length === 0 && homepageResult.html) {
+    const links = homepageResult.html.matchAll(
+      /<a[^>]+href\s*=\s*["']([^"']+)["'][^>]*>/gi,
+    );
+    const resolved: string[] = [];
+    for (const match of links) {
+      try {
+        const href = match[1];
+        if (href.startsWith("/") || href.startsWith(url)) {
+          resolved.push(new URL(href, url).href);
+        }
+      } catch {}
+    }
+    sampleURLs = shuffle([...new Set(resolved)]).slice(0, 10);
+  }
   const samplePagesResult = await checkSamplePages({ url, sampleURLs });
   checks.push(samplePagesResult);
   await log(
