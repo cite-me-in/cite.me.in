@@ -115,9 +115,9 @@ describe("runScan", () => {
     const checkNames = result?.checks.map((c) => c.name);
     expect(checkNames).toEqual([
       "Homepage content",
+      "robots.txt",
       "sitemap.xml",
       "sitemap.txt",
-      "robots.txt",
       "JSON-LD",
       "Meta tags",
       "llms.txt",

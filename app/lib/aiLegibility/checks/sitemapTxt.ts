@@ -1,11 +1,55 @@
+/**
+ * Per the sitemaps.org protocol:
+ *
+ *   "You can specify the location of the Sitemap using a robots.txt file...
+ *    Sitemap: http://www.example.com/sitemap.xml"
+ *
+ * The spec says robots.txt is the primary discovery mechanism. Text sitemaps
+ * are also supported ("one URL per line"). This function:
+ *
+ * 1. Tries URLs specified via robots.txt Sitemap directives first
+ * 2. Falls back to /sitemap.txt if no robot-provided URLs work
+ */
+
 import type { CheckResult } from "~/lib/aiLegibility/types";
 
 export default async function checkSitemapTxt({
   url,
+  robotsSitemapUrls,
 }: {
   url: string;
+  robotsSitemapUrls?: string[];
 }): Promise<Omit<CheckResult, "category"> & { urls: string[] }> {
-  const sitemapUrl = new URL("/sitemap.txt", url).href;
+  const urlsToTry = robotsSitemapUrls ?? [new URL("/sitemap.txt", url).href];
+
+  if (urlsToTry.length === 1) {
+    return fetchSitemapTxt(urlsToTry[0]);
+  }
+
+  let lastError:
+    | (Omit<CheckResult, "category"> & { urls: string[] })
+    | undefined;
+
+  for (const sitemapUrl of urlsToTry) {
+    const result = await fetchSitemapTxt(sitemapUrl);
+    if (result.passed) return result;
+    lastError = result;
+  }
+
+  return (
+    lastError ?? {
+      name: "sitemap.txt",
+      passed: false,
+      message: "No sitemap found at locations from robots.txt",
+      details: { triedUrls: urlsToTry },
+      urls: [],
+    }
+  );
+}
+
+async function fetchSitemapTxt(
+  sitemapUrl: string,
+): Promise<Omit<CheckResult, "category"> & { urls: string[] }> {
   const startTime = Date.now();
 
   try {
@@ -33,16 +77,14 @@ export default async function checkSitemapTxt({
         name: "sitemap.txt",
         passed: false,
         message: `sitemap.txt has incorrect MIME type: ${contentType}`,
-        details: {
-          contentType,
-          url: sitemapUrl,
-          expected: "text/plain",
-        },
+        details: { contentType, url: sitemapUrl, expected: "text/plain" },
         urls: [],
       };
     }
 
     const content = await response.text();
+    const elapsed = Date.now() - startTime;
+
     const lines = content.split("\n").filter((line) => line.trim());
     const urls: string[] = [];
     const invalidLines: string[] = [];
@@ -58,8 +100,6 @@ export default async function checkSitemapTxt({
         invalidLines.push(trimmed);
       }
     }
-
-    const elapsed = Date.now() - startTime;
 
     if (urls.length === 0) {
       return {
@@ -110,7 +150,6 @@ export default async function checkSitemapTxt({
         urls: [],
       };
     }
-
     return {
       name: "sitemap.txt",
       passed: false,

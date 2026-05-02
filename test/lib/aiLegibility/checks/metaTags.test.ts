@@ -3,7 +3,7 @@ import checkMetaTags from "~/lib/aiLegibility/checks/metaTags";
 import { HOMEPAGE_WITH_CONTENT } from "~/test/lib/aiLegibility/fixtures";
 
 describe("checkMetaTags", () => {
-  it("should pass when all meta tags are present", async () => {
+  it("should pass when all 4 required OG tags are present", async () => {
     const result = await checkMetaTags({
       url: "https://acme.com/",
       html: HOMEPAGE_WITH_CONTENT,
@@ -11,11 +11,14 @@ describe("checkMetaTags", () => {
 
     expect(result.passed).toBe(true);
     expect(result.name).toBe("Meta tags");
+    expect(result.message).toContain("all 4 required OG tags");
     expect(result.message).toContain("description");
-    expect(result.message).toContain("Open Graph");
     expect(result.message).toContain("canonical");
     expect(result.description).toBe("Acme Corp builds great software");
     expect(result.ogTitle).toBe("Acme Corp");
+    expect(result.ogType).toBe("website");
+    expect(result.ogImage).toBe("https://acme.com/og.png");
+    expect(result.ogUrl).toBe("https://acme.com/");
     expect(result.canonical).toBe("https://acme.com/");
   });
 
@@ -39,7 +42,29 @@ describe("checkMetaTags", () => {
     expect(result.description).toBe("Acme Corp builds great software");
   });
 
-  it("should pass when only Open Graph tags are present", async () => {
+  it("should pass when all 4 OG tags are present without description", async () => {
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+  <title>Acme Corp</title>
+  <meta property="og:title" content="Acme Corp">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://acme.com/og.png">
+  <meta property="og:url" content="https://acme.com/">
+</head>
+<body><main>Content</main></body>
+</html>`;
+
+    const result = await checkMetaTags({
+      url: "https://acme.com/",
+      html,
+    });
+
+    expect(result.passed).toBe(true);
+    expect(result.message).toContain("all 4 required OG tags");
+  });
+
+  it("should fail with partial OG tags and no fallback", async () => {
     const html = `<!DOCTYPE html>
 <html>
 <head>
@@ -55,10 +80,8 @@ describe("checkMetaTags", () => {
       html,
     });
 
-    expect(result.passed).toBe(true);
-    expect(result.message).toContain("Open Graph");
-    expect(result.ogTitle).toBe("Acme Corp");
-    expect(result.ogDescription).toBe("We build great software");
+    expect(result.passed).toBe(false);
+    expect(result.message).toContain("Missing required Open Graph tags");
   });
 
   it("should pass when only canonical is present", async () => {

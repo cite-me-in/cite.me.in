@@ -34,6 +34,9 @@ export const HOMEPAGE_WITH_CONTENT = `<!DOCTYPE html>
   <title>Acme Corp</title>
   <meta name="description" content="Acme Corp builds great software">
   <meta property="og:title" content="Acme Corp">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://acme.com/og.png">
+  <meta property="og:url" content="https://acme.com/">
   <meta property="og:description" content="We build great software">
   <link rel="canonical" href="https://acme.com/">
   <script type="application/ld+json">
@@ -220,13 +223,16 @@ export const JSON_LD_GRAPH = `<!DOCTYPE html>
 <body><main>Content</main></body>
 </html>`;
 
-export const LLMS_TXT = `# Acme Corp LLM Context
+export const LLMS_TXT = `# Acme Corp
 
-This is the main documentation for Acme Corp.
+> Acme Corp is a leading provider of software solutions.
 
 ## Products
-- Product A
-- Product B
+- [Product A](https://acme.com/products/a): Our flagship product
+- [Product B](https://acme.com/products/b): Enterprise solution
+
+## Docs
+- [Getting Started](https://acme.com/docs/getting-started): Quick start guide
 `;
 
 const SAMPLE_PAGE_CONTENT = `<!DOCTYPE html>

@@ -97,24 +97,28 @@ export async function runScanSteps({
   checks.push(homepageResult);
   await log(`${homepageResult.passed ? "✓" : "✗"} ${homepageResult.message}`);
 
+  await log("Checking robots.txt...");
+  const robotsTxtResult = await checkRobotsTxt({ url });
+  await log(`${robotsTxtResult.passed ? "✓" : "✗"} ${robotsTxtResult.message}`);
+  checks.push(robotsTxtResult);
+
+  const robotsSitemapUrls = robotsTxtResult.details?.sitemapUrls as
+    | string[]
+    | undefined;
+
   await log("Checking sitemap.xml...");
-  const sitemmapXmlResult = await checkSitemapXml({ url });
+  const sitemmapXmlResult = await checkSitemapXml({ url, robotsSitemapUrls });
   checks.push(sitemmapXmlResult);
   await log(
     `${sitemmapXmlResult.passed ? "✓" : "✗"} ${sitemmapXmlResult.message}`,
   );
 
   await log("Checking sitemap.txt...");
-  const sitemapTxtResult = await checkSitemapTxt({ url });
+  const sitemapTxtResult = await checkSitemapTxt({ url, robotsSitemapUrls });
   await log(
     `${sitemapTxtResult.passed ? "✓" : "✗"} ${sitemapTxtResult.message}`,
   );
   checks.push(sitemapTxtResult);
-
-  await log("Checking robots.txt...");
-  const robotsTxtResult = await checkRobotsTxt({ url });
-  await log(`${robotsTxtResult.passed ? "✓" : "✗"} ${robotsTxtResult.message}`);
-  checks.push(robotsTxtResult);
 
   await log("Checking JSON-LD...");
   const jsonLdResult = await checkJsonLd({ html: homepageResult.html, url });

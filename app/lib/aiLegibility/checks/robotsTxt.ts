@@ -1,4 +1,11 @@
-import type { CheckResult } from "~/lib/aiLegibility/types";
+/**
+ * Spec: RFC 9309 (Robots Exclusion Protocol)
+ * Format: User-agent: <bot-name> / Disallow: <path> / Allow: <path>
+ * Sitemap discovery: Sitemap: <url> (per sitemaps.org protocol)
+ * AI bot detection checks known crawler user agents (GPTBot, ClaudeBot, etc.)
+ */
+
+import type { CheckResult } from "../types";
 
 const AI_BOT_USER_AGENTS = [
   { pattern: "gptbot", name: "GPTBot (OpenAI/ChatGPT)" },
@@ -20,6 +27,15 @@ const AI_BOT_USER_AGENTS = [
   { pattern: "duckduckbot", name: "DuckDuckBot" },
   { pattern: "yandex", name: "YandexBot" },
 ] as const;
+
+function parseSitemapUrls(content: string): string[] {
+  return content
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => /^sitemap:/i.test(line))
+    .map((line) => line.slice(line.indexOf(":") + 1).trim())
+    .filter(Boolean);
+}
 
 function parseRobotsTxt(content: string) {
   const groups: { agents: string[]; rules: string[] }[] = [];
@@ -124,6 +140,7 @@ export default async function checkRobotsTxt({
       /allow|disallow/i.test(line),
     );
     const hasSitemap = lines.some((line) => /sitemap/i.test(line));
+    const sitemapUrls = parseSitemapUrls(content);
 
     if (!hasUserAgent && !hasAllowOrDisallow) {
       return {
@@ -134,6 +151,7 @@ export default async function checkRobotsTxt({
           url: robotsUrl,
           lineCount: lines.length,
           hasSitemap,
+          sitemapUrls,
           elapsed,
         },
       };
@@ -150,6 +168,7 @@ export default async function checkRobotsTxt({
           url: robotsUrl,
           lineCount: lines.length,
           hasSitemap,
+          sitemapUrls,
           elapsed,
           blockedAiBots,
           suggestedFix: generateRobotsFix(blockedAiBots),
@@ -161,7 +180,13 @@ export default async function checkRobotsTxt({
       name: "robots.txt",
       passed: true,
       message: `robots.txt found with ${lines.length} lines${hasSitemap ? " (includes sitemap reference)" : ""}`,
-      details: { url: robotsUrl, lineCount: lines.length, hasSitemap, elapsed },
+      details: {
+        url: robotsUrl,
+        lineCount: lines.length,
+        hasSitemap,
+        sitemapUrls,
+        elapsed,
+      },
     };
   } catch (error) {
     const errorMessage =
