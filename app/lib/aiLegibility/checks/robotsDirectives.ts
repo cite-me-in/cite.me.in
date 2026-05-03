@@ -8,16 +8,20 @@
  * Required: ALL reviewed pages must NOT return noindex.
  */
 
+import { parseHTML } from "linkedom";
 import type { CheckResult } from "~/lib/aiLegibility/types";
 
 const NOINDEX_PATTERNS = [/\bnoindex\b/i, /\bnone\b/i];
 
 function hasNoindexInHtml(html: string): boolean {
-  const metaMatch = html.match(
-    /<meta\s+name\s*=\s*["']robots["'][^>]*content\s*=\s*["']([^"']*)["']/i,
-  );
-  if (!metaMatch) return false;
-  return NOINDEX_PATTERNS.some((p) => p.test(metaMatch[1]));
+  const { document } = parseHTML(html);
+  const meta = document.querySelector(
+    'meta[name="robots"], meta[name="ROBOTS"]',
+  ) as HTMLMetaElement | null;
+  if (!meta) return false;
+  const content = meta.getAttribute("content");
+  if (!content) return false;
+  return NOINDEX_PATTERNS.some((p) => p.test(content));
 }
 
 function hasNoindexInHeader(xRobotsTag: string | null): boolean {

@@ -1,23 +1,13 @@
 import { Defuddle } from "defuddle/node";
+import { parseHTML } from "linkedom";
 
 const MIN_CONTENT_LENGTH = 100;
 const MIN_WORD_COUNT = 25;
 
-const SPA_PATTERNS = [
-  /<div\s+id\s*=\s*["']root["']/i,
-  /<div\s+id\s*=\s*["']app["']/i,
-  /<div\s+id\s*=\s*["']__next["']/i,
-  /<div\s+id\s*=\s*["']__nuxt["']/i,
-  /<div\s+id\s*=\s*["']___gatsby["']/i,
-  /<div\s+id\s*=\s*["']svelte["']/i,
-  /<div\s+id\s*=\s*["']__svelte["']/i,
-  /<div\s+id\s*=\s*["']react-root["']/i,
-  /<div\s+id\s*=\s*["']app-root["']/i,
-  /<div\s+id\s*=\s*["']application-root["']/i,
-  /<div\s+id\s*=\s*["']__remix["']/i,
-  /<div\s+id\s*=\s*["']app-shell["']/i,
-  /<div\s+id\s*=\s*["']page-mount["']/i,
-  /<div\s+class\s*=\s*["']app["']/i,
+const SPA_ROOT_IDS = [
+  "root", "app", "__next", "__nuxt", "___gatsby", "svelte", "__svelte",
+  "react-root", "app-root", "application-root", "__remix", "app-shell",
+  "page-mount",
 ];
 
 function hasParagraphs(text: string): boolean {
@@ -28,9 +18,23 @@ function hasSentenceEndings(text: string): boolean {
   return /[.!?]\s+[A-Z]/.test(text.replace(/[^a-zA-Z0-9.!?]/g, " ").trim());
 }
 
+function isSpaShell(html: string): boolean {
+  const { document } = parseHTML(html);
+  return SPA_ROOT_IDS.some((id) => {
+    const div = document.querySelector(`[id="${id}"]`);
+    return div !== null;
+  }) || (() => {
+    const appDiv = document.querySelector('div[class="app"]');
+    return appDiv !== null;
+  })();
+}
+
 function hasHeadings(html: string): boolean {
-  const body = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i)?.[1] ?? html;
-  return /<h[1-3][^>]*>/i.test(body);
+  const { document } = parseHTML(html);
+  const body = document.querySelector("body");
+  if (!body) return /<h[1-3][^>]*>/i.test(html);
+  const bodyHtml = body.innerHTML;
+  return /<h[1-3][^>]*>/i.test(bodyHtml);
 }
 
 type ContentAssessment = {
@@ -53,7 +57,7 @@ export async function assessContent(
   const { textContent, wordCount } = await extractContent(html, url);
   const contentLength = textContent.length;
 
-  const isSpaShell = SPA_PATTERNS.some((pattern) => pattern.test(html));
+  const isSpaShellResult = isSpaShell(html);
   const hasRealContent = contentLength >= MIN_CONTENT_LENGTH;
   const enoughWords = wordCount >= MIN_WORD_COUNT;
   const paragraphs = hasParagraphs(textContent);
@@ -70,7 +74,7 @@ export async function assessContent(
   const useful = hasRealContent && enoughWords;
 
   return {
-    isSpaShell,
+    isSpaShell: isSpaShellResult,
     contentLength,
     wordCount,
     hasRealContent,
