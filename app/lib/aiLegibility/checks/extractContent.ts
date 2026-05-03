@@ -20,17 +20,6 @@ const SPA_PATTERNS = [
   /<div\s+class\s*=\s*["']app["']/i,
 ];
 
-export function extractHeaders(response: Response): Headers {
-  const headers = new Headers();
-  const link = response.headers.get("Link");
-  const xRobots = response.headers.get("X-Robots-Tag");
-  const contentType = response.headers.get("Content-Type");
-  if (link) headers.set("Link", link);
-  if (xRobots) headers.set("X-Robots-Tag", xRobots);
-  if (contentType) headers.set("Content-Type", contentType);
-  return headers;
-}
-
 function hasParagraphs(text: string): boolean {
   return /\n\s*\n/.test(text);
 }

@@ -28,7 +28,7 @@ const AI_BOT_USER_AGENTS = [
   { pattern: "yandex", name: "YandexBot" },
 ] as const;
 
-function parseSitemapUrls(content: string): string[] {
+function parseSitemapURLs(content: string): string[] {
   return content
     .split("\n")
     .map((line) => line.trim())
@@ -57,9 +57,8 @@ function parseRobotsTxt(content: string) {
     }
 
     const ruleMatch = trimmed.match(/^(allow|disallow):\s*(.*)/i);
-    if (ruleMatch && current) {
+    if (ruleMatch && current)
       current.rules.push(`${ruleMatch[1]}: ${ruleMatch[2].trim()}`);
-    }
   }
 
   return groups;
@@ -111,27 +110,26 @@ export default async function checkRobotsTxt({
 }: {
   url: string;
   robotsContent?: string;
-}): Promise<Omit<CheckResult, "category"> & { robotsContent?: string }> {
-  const robotsUrl = new URL("/robots.txt", url).href;
+}): Promise<
+  Omit<CheckResult, "category"> & {
+    sitemapURLs?: string[];
+  }
+> {
+  const robotsURL = new URL("/robots.txt", url).href;
   const startTime = Date.now();
 
   try {
     const content =
       externalContent ??
       (await (async () => {
-        const response = await fetch(robotsUrl, {
+        const response = await fetch(robotsURL, {
           headers: {
             "User-Agent": "CiteMeIn-AI-Legibility-Bot/1.0",
             Accept: "text/plain",
           },
           signal: AbortSignal.timeout(10_000),
         });
-
-        if (!response.ok) {
-          return null;
-        }
-
-        return await response.text();
+        return response.ok ? await response.text() : null;
       })());
 
     if (content === null) {
@@ -139,7 +137,7 @@ export default async function checkRobotsTxt({
         name: "robots.txt",
         passed: false,
         message: `robots.txt not found (HTTP ${404})`,
-        details: { statusCode: 404, url: robotsUrl },
+        details: { statusCode: 404, url: robotsURL },
       };
     }
 
@@ -151,18 +149,18 @@ export default async function checkRobotsTxt({
       /allow|disallow/i.test(line),
     );
     const hasSitemap = lines.some((line) => /sitemap/i.test(line));
-    const sitemapUrls = parseSitemapUrls(content);
+    const sitemapURLs = parseSitemapURLs(content);
 
     if (!hasUserAgent && !hasAllowOrDisallow) {
       return {
         name: "robots.txt",
         passed: true,
         message: "robots.txt exists but has no crawl rules",
+        sitemapURLs,
         details: {
-          url: robotsUrl,
+          url: robotsURL,
           lineCount: lines.length,
           hasSitemap,
-          sitemapUrls,
           elapsed,
           robotsContent: content,
         },
@@ -176,11 +174,11 @@ export default async function checkRobotsTxt({
         name: "robots.txt",
         passed: false,
         message: `robots.txt blocks AI bots: ${botNames}`,
+        sitemapURLs,
         details: {
-          url: robotsUrl,
+          url: robotsURL,
           lineCount: lines.length,
           hasSitemap,
-          sitemapUrls,
           elapsed,
           blockedAiBots,
           suggestedFix: generateRobotsFix(blockedAiBots),
@@ -193,11 +191,11 @@ export default async function checkRobotsTxt({
       name: "robots.txt",
       passed: true,
       message: `robots.txt found with ${lines.length} lines${hasSitemap ? " (includes sitemap reference)" : ""}`,
+      sitemapURLs,
       details: {
-        url: robotsUrl,
+        url: robotsURL,
         lineCount: lines.length,
         hasSitemap,
-        sitemapUrls,
         elapsed,
         robotsContent: content,
       },
@@ -211,14 +209,14 @@ export default async function checkRobotsTxt({
         passed: false,
         message: "robots.txt request timed out (10s limit)",
         timedOut: true,
-        details: { url: robotsUrl },
+        details: { url: robotsURL },
       };
     }
     return {
       name: "robots.txt",
       passed: false,
       message: `Failed to fetch robots.txt: ${errorMessage}`,
-      details: { url: robotsUrl, error: errorMessage },
+      details: { url: robotsURL, error: errorMessage },
     };
   }
 }

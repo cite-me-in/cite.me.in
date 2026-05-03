@@ -43,6 +43,7 @@ describe("checkLinkHeaders", () => {
   it("should pass when HTML has sitemap link tag", async () => {
     const result = await checkLinkHeaders({
       html: '<html><head><link rel="sitemap" type="application/xml" href="/sitemap.xml"></head><body></body></html>',
+      links: new Headers(),
     });
 
     expect(result.passed).toBe(true);
@@ -75,6 +76,7 @@ describe("checkLinkHeaders", () => {
   it("should fail when no sitemap reference exists", async () => {
     const result = await checkLinkHeaders({
       html: HOMEPAGE_WITH_CONTENT,
+      links: new Headers(),
     });
 
     expect(result.passed).toBe(false);

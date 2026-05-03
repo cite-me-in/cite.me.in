@@ -8,9 +8,9 @@ describe("checkMarkdownAlternateLinks", () => {
         {
           url: "https://acme.com/",
           html: "<html><head></head><body></body></html>",
-          headers: {
+          headers: new Headers({
             Link: '</index.md>; rel="alternate"; type="text/markdown"',
-          },
+          }),
         },
       ],
     });
@@ -49,9 +49,9 @@ describe("checkMarkdownAlternateLinks", () => {
         {
           url: "https://acme.com/about",
           html: "<html><head></head><body>About</body></html>",
-          headers: {
+          headers: new Headers({
             Link: '</about.md>; rel="alternate"; type="text/markdown"',
-          },
+          }),
         },
       ],
     });
@@ -70,9 +70,9 @@ describe("checkMarkdownAlternateLinks", () => {
         {
           url: "https://acme.com/about",
           html: "<html><head></head><body>About</body></html>",
-          headers: {
+          headers: new Headers({
             Link: '</about.md>; rel="alternate"; type="text/markdown"',
-          },
+          }),
         },
         {
           url: "https://acme.com/contact",

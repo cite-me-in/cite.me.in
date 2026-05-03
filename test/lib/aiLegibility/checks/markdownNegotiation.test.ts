@@ -49,10 +49,7 @@ describe("checkMarkdownNegotiation", () => {
     );
 
     const result = await checkMarkdownNegotiation({
-      pages: [
-        { url: "https://acme.com/" },
-        { url: "https://acme.com/about" },
-      ],
+      pages: [{ url: "https://acme.com/" }, { url: "https://acme.com/about" }],
     });
 
     expect(result.passed).toBe(true);

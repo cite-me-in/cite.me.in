@@ -147,7 +147,7 @@ const CATEGORIES: Category[] = [
     description: "Does my content present well when cited?",
     checks: [
       {
-        name: "Homepage content",
+        name: "Page content",
         desc: "Homepage returns real content, not an empty SPA shell",
         detail: {
           goal: "Return rich HTML content from your homepage without requiring JavaScript execution",

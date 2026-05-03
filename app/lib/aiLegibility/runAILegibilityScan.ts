@@ -9,8 +9,8 @@ import captureAndLogError from "~/lib/captureAndLogError.server";
 import { normalizeURL } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
 import { getCheckCategory, getCheckDetail } from "./checkDetails";
+import assessPages from "./checks/assessPages";
 import checkContentSignals from "./checks/contentSignals";
-import checkHomepageContent from "./checks/homepageContent";
 import checkJsonLd from "./checks/jsonLd";
 import checkLinkHeaders from "./checks/linkHeaders";
 import checkLlmsTxt from "./checks/llmsTxt";
@@ -20,7 +20,6 @@ import checkMdRoutes from "./checks/mdRoutes";
 import checkMetaTags from "./checks/metaTags";
 import checkRobotsDirectives from "./checks/robotsDirectives";
 import checkRobotsTxt from "./checks/robotsTxt";
-import checkSamplePages from "./checks/samplePages";
 import checkSitemapTxt from "./checks/sitemapTxt";
 import checkSitemapXml from "./checks/sitemapXml";
 import type {
@@ -93,9 +92,15 @@ export async function runScanSteps({
   const url = normalizeURL(domain);
   const checks: Omit<CheckResult, "category">[] = [];
 
-  await log("Checking homepage content...");
-  const homepageResult = await checkHomepageContent({ url });
-  checks.push(homepageResult);
+  await log("Checking page content...");
+  const [homepageResult] = await assessPages({ urls: [url] });
+  const homepageCheck: Omit<CheckResult, "category"> = {
+    name: "Page content",
+    passed: homepageResult.passed,
+    message: homepageResult.message,
+    details: { url },
+  };
+  checks.push(homepageCheck);
   await log(`${homepageResult.passed ? "✓" : "✗"} ${homepageResult.message}`);
 
   await log("Checking robots.txt...");
@@ -103,19 +108,21 @@ export async function runScanSteps({
   await log(`${robotsTxtResult.passed ? "✓" : "✗"} ${robotsTxtResult.message}`);
   checks.push(robotsTxtResult);
 
-  const robotsSitemapUrls = robotsTxtResult.details?.sitemapUrls as
-    | string[]
-    | undefined;
-
   await log("Checking sitemap.xml...");
-  const sitemmapXmlResult = await checkSitemapXml({ url, robotsSitemapUrls });
+  const sitemmapXmlResult = await checkSitemapXml({
+    url,
+    robotsSitemapUrls: robotsTxtResult.sitemapURLs,
+  });
   checks.push(sitemmapXmlResult);
   await log(
     `${sitemmapXmlResult.passed ? "✓" : "✗"} ${sitemmapXmlResult.message}`,
   );
 
   await log("Checking sitemap.txt...");
-  const sitemapTxtResult = await checkSitemapTxt({ url, robotsSitemapUrls });
+  const sitemapTxtResult = await checkSitemapTxt({
+    url,
+    robotsSitemapUrls: robotsTxtResult.sitemapURLs,
+  });
   await log(
     `${sitemapTxtResult.passed ? "✓" : "✗"} ${sitemapTxtResult.message}`,
   );
@@ -147,23 +154,34 @@ export async function runScanSteps({
   }
 
   const pagesToFetch = sampleURLs.filter((u) => u !== url);
-  const fetchedPages = await fetchPages(pagesToFetch);
-  const samplePagesResult = await checkSamplePages({ pages: fetchedPages });
+  const fetchedPages = await assessPages({ urls: pagesToFetch });
+  const fetchedPassed = fetchedPages.filter((p) => p.passed).length;
+  const fetchedTimedOut = fetchedPages.filter((p) => p.timedOut).length;
+  const samplePagesResult: Omit<CheckResult, "category"> = {
+    name: "Sample pages",
+    passed: fetchedPages.every((p) => p.passed),
+    message:
+      fetchedPages.length === 0
+        ? "No sample URLs found in sitemap"
+        : fetchedPassed === fetchedPages.length
+          ? `All ${fetchedPages.length} sample pages have meaningful content`
+          : `${fetchedPassed}/${fetchedPages.length} pages have meaningful content${fetchedTimedOut > 0 ? ` (${fetchedTimedOut} timed out)` : ""}`,
+    details: {
+      passedCount: fetchedPassed,
+      totalCount: fetchedPages.length,
+      timedOutCount: fetchedTimedOut,
+    },
+  };
   checks.push(samplePagesResult);
   await log(
     `${samplePagesResult.passed ? "✓" : "✗"} ${samplePagesResult.message}`,
   );
 
-  const reviewedPages = [
-    {
-      url,
-      html: homepageResult.html,
-      headers: Object.fromEntries(
-        homepageResult.responseHeaders?.entries() ?? [],
-      ),
-    },
-    ...fetchedPages,
-  ];
+  const reviewedPages: {
+    url: string;
+    html: string;
+    headers: Headers;
+  }[] = [homepageResult, ...fetchedPages];
 
   await log("Checking JSON-LD...");
   const jsonLdResult = await checkJsonLd({
@@ -174,7 +192,7 @@ export async function runScanSteps({
 
   await log("Checking meta tags...");
   const metaTagsResult = await checkMetaTags({
-    pages: [{ url, html: homepageResult.html }],
+    pages: reviewedPages.map((p) => ({ url: p.url, html: p.html })),
   });
   checks.push(metaTagsResult);
   await log(`${metaTagsResult.passed ? "✓" : "✗"} ${metaTagsResult.message}`);
@@ -187,7 +205,7 @@ export async function runScanSteps({
   await log("Checking sitemap link headers...");
   const linkHeadersResult = await checkLinkHeaders({
     html: homepageResult.html,
-    links: homepageResult.responseHeaders,
+    links: new Headers(homepageResult.headers ?? {}),
   });
   checks.push(linkHeadersResult);
   await log(
@@ -203,12 +221,10 @@ export async function runScanSteps({
     `${markdownAlternateResult.passed ? "✓" : "✗"} ${markdownAlternateResult.message}`,
   );
 
-  const alternateUrls = markdownAlternateResult.details?.alternateUrls as
-    | string[]
-    | undefined;
-
   await log("Checking .md routes...");
-  const mdRoutesResult = await checkMdRoutes({ urls: alternateUrls ?? [] });
+  const mdRoutesResult = await checkMdRoutes({
+    urls: (markdownAlternateResult.details?.alternateUrls as string[]) ?? [],
+  });
   checks.push(mdRoutesResult);
   await log(`${mdRoutesResult.passed ? "✓" : "✗"} ${mdRoutesResult.message}`);
 
@@ -331,55 +347,4 @@ async function summarize({
   );
 
   return summary;
-}
-
-async function fetchPages(
-  urls: string[],
-): Promise<
-  {
-    url: string;
-    html: string;
-    ok: boolean;
-    status: number;
-    timedOut: boolean;
-    error?: string;
-    headers: Record<string, string>;
-  }[]
-> {
-  const results: {
-    url: string;
-    html: string;
-    ok: boolean;
-    status: number;
-    timedOut: boolean;
-    error?: string;
-    headers: Record<string, string>;
-  }[] = [];
-  for (const pageUrl of urls) {
-    try {
-      const response = await fetch(pageUrl, {
-        headers: {
-          "User-Agent": "CiteMeIn-AI-Legibility-Bot/1.0",
-          Accept: "text/html,application/xhtml+xml",
-        },
-        signal: AbortSignal.timeout(10_000),
-      });
-      const html = await response.text();
-      const headers: Record<string, string> = {};
-      const link = response.headers.get("Link");
-      const xRobots = response.headers.get("X-Robots-Tag");
-      const contentType = response.headers.get("Content-Type");
-      if (link) headers["Link"] = link;
-      if (xRobots) headers["X-Robots-Tag"] = xRobots;
-      if (contentType) headers["Content-Type"] = contentType;
-      results.push({ url: pageUrl, html, ok: response.ok, status: response.status, timedOut: false, headers });
-    } catch (error) {
-      if (error instanceof Error && error.name === "TimeoutError") {
-        results.push({ url: pageUrl, html: "", ok: false, status: 0, timedOut: true, error: "Timed out (10s limit)", headers: {} });
-      } else {
-        results.push({ url: pageUrl, html: "", ok: false, status: 0, timedOut: false, error: error instanceof Error ? error.message : "Unknown error", headers: {} });
-      }
-    }
-  }
-  return results;
 }

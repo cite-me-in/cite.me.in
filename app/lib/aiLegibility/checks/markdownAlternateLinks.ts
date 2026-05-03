@@ -14,40 +14,38 @@ export default async function checkMarkdownAlternateLinks({
   pages,
 }: {
   pages: {
-    headers?: Record<string, string>;
+    headers?: Headers;
     html: string;
     url: string;
   }[];
 }): Promise<
   Omit<CheckResult, "category"> & {
-    pagesChecked?: number;
-    pagesWithLink?: number;
-    alternateUrls?: string[];
+    alternateURLs: string[];
   }
 > {
   const pageResults = pages.map((page) => {
-    const linkHeader =
-      page.headers?.Link ?? page.headers?.link ?? null;
-    const headerUrls = extractMarkdownUrlsFromHeader(linkHeader);
-    const htmlUrls = extractMarkdownUrlsFromHtml(page.html);
+    const linkHeader = page.headers?.get("Link") ?? null;
+    const headerURLs = extractMarkdownUrlsFromHeader(linkHeader);
+    const htmlURLs = extractMarkdownUrlsFromHtml(page.html);
     return {
       url: page.url,
-      found: headerUrls.length > 0 || htmlUrls.length > 0,
-      header: headerUrls.length > 0,
-      htmlTag: htmlUrls.length > 0,
-      headerUrls,
-      htmlUrls,
+      header: headerURLs.length > 0,
+      htmlTag: htmlURLs.length > 0,
+      headerUrls: headerURLs,
+      htmlUrls: htmlURLs,
     };
   });
 
   const pagesChecked = pages.length;
-  const pagesWithLink = pageResults.filter((r) => r.found).length;
+  const pagesWithLink = pageResults.filter(
+    (result) => result.header || result.htmlTag,
+  ).length;
 
   const alternateURLs: string[] = [];
-  for (const pr of pageResults)
-    if (pr.found)
-      for (const h of [...pr.headerUrls, ...pr.htmlUrls])
-        alternateURLs.push(resolveURL(pr.url, h));
+  for (const result of pageResults)
+    if (result.header || result.htmlTag)
+      for (const h of [...result.headerUrls, ...result.htmlUrls])
+        alternateURLs.push(resolveURL(result.url, h));
 
   let message: string;
   if (pagesWithLink === 0) {
@@ -55,12 +53,12 @@ export default async function checkMarkdownAlternateLinks({
       "No <link rel='alternate' type='text/markdown'> found on any reviewed page";
   } else {
     const parts: string[] = pageResults
-      .filter((pr) => pr.found)
-      .map((pr) => {
+      .filter((result) => result.header || result.htmlTag)
+      .map((result) => {
         const sources: string[] = [];
-        if (pr.header) sources.push("Link header");
-        if (pr.htmlTag) sources.push("HTML <link> tag");
-        return `${pr.url}: ${sources.join(" + ")}`;
+        if (result.header) sources.push("Link header");
+        if (result.htmlTag) sources.push("HTML <link> tag");
+        return `${result.url}: ${sources.join(" + ")}`;
       });
     message = `Markdown alternate version advertised: ${pagesWithLink}/${pagesChecked} pages; ${parts.join("; ")}`;
   }
@@ -69,10 +67,10 @@ export default async function checkMarkdownAlternateLinks({
     name: "Markdown alternate links",
     passed: pagesWithLink > 0,
     message,
+    alternateURLs,
     details: {
       pagesChecked,
       pagesWithLink,
-      alternateUrls: alternateURLs,
     },
   };
 }

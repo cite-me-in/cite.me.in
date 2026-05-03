@@ -8,7 +8,7 @@
  * Required: ALL reviewed pages must NOT return noindex.
  */
 
-import type { CheckResult, FetchedPage } from "~/lib/aiLegibility/types";
+import type { CheckResult } from "~/lib/aiLegibility/types";
 
 const NOINDEX_PATTERNS = [/\bnoindex\b/i, /\bnone\b/i];
 
@@ -28,12 +28,16 @@ function hasNoindexInHeader(xRobotsTag: string | null): boolean {
 export default async function checkRobotsDirectives({
   pages,
 }: {
-  pages: FetchedPage[];
+  pages: {
+    headers?: Headers;
+    html: string;
+    url: string;
+  }[];
 }): Promise<Omit<CheckResult, "category">> {
   const noindexPages = pages.flatMap((page) => {
     const metaTag = hasNoindexInHtml(page.html);
     const xRobotsTag = hasNoindexInHeader(
-      page.headers["X-Robots-Tag"] ?? page.headers["x-robots-tag"] ?? null,
+      page.headers?.get("X-Robots-Tag") ?? null,
     );
     return metaTag || xRobotsTag
       ? [{ url: page.url, metaTag, xRobotsTag }]
@@ -52,11 +56,11 @@ export default async function checkRobotsDirectives({
     };
   }
 
-  const parts = noindexPages.map((p) => {
+  const parts = noindexPages.map((page) => {
     const sources: string[] = [];
-    if (p.metaTag) sources.push("meta robots");
-    if (p.xRobotsTag) sources.push("X-Robots-Tag");
-    return `${p.url}: ${sources.join(" + ")}`;
+    if (page.metaTag) sources.push("meta robots");
+    if (page.xRobotsTag) sources.push("X-Robots-Tag");
+    return `${page.url}: ${sources.join(" + ")}`;
   });
 
   return {

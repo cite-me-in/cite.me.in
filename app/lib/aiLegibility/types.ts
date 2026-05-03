@@ -66,16 +66,3 @@ export type ScanProgress = {
   nextOffset: number;
   result?: ScanResult;
 };
-
-/**
- * A page fetched and cached during a scan, shared across checks.
- */
-export type FetchedPage = {
-  html: string;
-  ok: boolean;
-  status: number;
-  timedOut: boolean;
-  url: string;
-  error?: string;
-  headers: Record<string, string>;
-};

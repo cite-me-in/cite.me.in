@@ -8,10 +8,7 @@ describe("checkRobotsDirectives", () => {
         {
           url: "https://acme.com/",
           html: "<html><head><title>Test</title></head><body>Content</body></html>",
-          headers: {},
-          ok: true,
-          status: 200,
-          timedOut: false,
+          headers: new Headers(),
         },
       ],
     });
@@ -26,10 +23,7 @@ describe("checkRobotsDirectives", () => {
         {
           url: "https://acme.com/",
           html: '<html><head><meta name="robots" content="noindex"></head><body>Content</body></html>',
-          headers: {},
-          ok: true,
-          status: 200,
-          timedOut: false,
+          headers: new Headers(),
         },
       ],
     });
@@ -44,10 +38,7 @@ describe("checkRobotsDirectives", () => {
         {
           url: "https://acme.com/",
           html: "<html><head></head><body>Content</body></html>",
-          headers: { "X-Robots-Tag": "noindex" },
-          ok: true,
-          status: 200,
-          timedOut: false,
+          headers: new Headers({ "X-Robots-Tag": "noindex" }),
         },
       ],
     });
@@ -62,18 +53,12 @@ describe("checkRobotsDirectives", () => {
         {
           url: "https://acme.com/",
           html: "<html><head></head><body>Content</body></html>",
-          headers: {},
-          ok: true,
-          status: 200,
-          timedOut: false,
+          headers: new Headers(),
         },
         {
           url: "https://acme.com/blog",
           html: "<html><head></head><body>Blog</body></html>",
-          headers: { "X-Robots-Tag": "noindex" },
-          ok: true,
-          status: 200,
-          timedOut: false,
+          headers: new Headers({ "X-Robots-Tag": "noindex" }),
         },
       ],
     });
@@ -88,26 +73,17 @@ describe("checkRobotsDirectives", () => {
         {
           url: "https://acme.com/",
           html: "<html><head></head><body>Content</body></html>",
-          headers: {},
-          ok: true,
-          status: 200,
-          timedOut: false,
+          headers: new Headers(),
         },
         {
           url: "https://acme.com/about",
           html: "<html><body>About</body></html>",
-          headers: {},
-          ok: true,
-          status: 200,
-          timedOut: false,
+          headers: new Headers(),
         },
         {
           url: "https://acme.com/contact",
           html: "<html><body>Contact</body></html>",
-          headers: {},
-          ok: true,
-          status: 200,
-          timedOut: false,
+          headers: new Headers(),
         },
       ],
     });

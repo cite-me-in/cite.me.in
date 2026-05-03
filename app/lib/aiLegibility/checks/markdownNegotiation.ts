@@ -22,26 +22,9 @@ export default async function checkMarkdownNegotiation({
   pages,
 }: {
   pages: { url: string }[];
-}): Promise<
-  Omit<CheckResult, "category"> & {
-    pageResults?: PageResult[];
-  }
-> {
+}): Promise<Omit<CheckResult, "category">> {
   try {
-    const pageResults = await map(pages, async (page) => {
-      try {
-        return await checkPage(page.url);
-      } catch {
-        return {
-          url: page.url,
-          ok: false,
-          isMarkdown: false,
-          contentType: "",
-          contentLength: 0,
-          status: 0,
-        };
-      }
-    });
+    const pageResults = await map(pages, ({ url }) => checkPage(url));
     const anyValidMarkdown = pageResults.some(
       (result) => result.ok && result.isMarkdown && result.contentLength > 50,
     );
@@ -61,7 +44,6 @@ export default async function checkMarkdownNegotiation({
           pagesChecked: pages.length,
           pagesWithMarkdown: validPages.length,
         },
-        pageResults,
       };
     }
 
@@ -79,7 +61,6 @@ export default async function checkMarkdownNegotiation({
         details: {
           pagesChecked: pages.length,
         },
-        pageResults,
       };
     }
 
@@ -93,7 +74,6 @@ export default async function checkMarkdownNegotiation({
           pagesChecked: pages.length,
           notAcceptablePages: notAcceptable.length,
         },
-        pageResults,
       };
     }
 
@@ -102,7 +82,6 @@ export default async function checkMarkdownNegotiation({
       passed: false,
       message: "No page serves markdown content",
       details: { pagesChecked: pages.length },
-      pageResults,
     };
   } catch (error) {
     if (error instanceof Error && error.name === "TimeoutError") {
@@ -122,27 +101,38 @@ export default async function checkMarkdownNegotiation({
 }
 
 async function checkPage(url: string): Promise<PageResult> {
-  const response = await fetch(url, {
-    headers: {
-      "User-Agent": "CiteMeIn-AI-Legibility-Bot/1.0",
-      Accept: "text/markdown",
-    },
-    signal: AbortSignal.timeout(10_000),
-  });
+  try {
+    const response = await fetch(url, {
+      headers: {
+        "User-Agent": "CiteMeIn-AI-Legibility-Bot/1.0",
+        Accept: "text/markdown",
+      },
+      signal: AbortSignal.timeout(10_000),
+    });
 
-  const contentType = response.headers.get("Content-Type") ?? "";
-  const isMarkdown =
-    contentType.startsWith("text/markdown") ||
-    contentType.startsWith("text/plain");
-  const text = response.ok ? await response.text() : "";
-  const contentLength = text.trim().length;
+    const contentType = response.headers.get("Content-Type") ?? "";
+    const isMarkdown =
+      contentType.startsWith("text/markdown") ||
+      contentType.startsWith("text/plain");
+    const text = response.ok ? await response.text() : "";
+    const contentLength = text.trim().length;
 
-  return {
-    url,
-    ok: response.ok,
-    isMarkdown,
-    contentType,
-    contentLength,
-    status: response.status,
-  };
+    return {
+      url,
+      ok: response.ok,
+      isMarkdown,
+      contentType,
+      contentLength,
+      status: response.status,
+    };
+  } catch {
+    return {
+      url,
+      ok: false,
+      isMarkdown: false,
+      contentType: "",
+      contentLength: 0,
+      status: 0,
+    };
+  }
 }

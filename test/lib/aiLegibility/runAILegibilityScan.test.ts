@@ -114,7 +114,7 @@ describe("runScan", () => {
 
     const checkNames = result?.checks.map((c) => c.name);
     expect(checkNames).toEqual([
-      "Homepage content",
+      "Page content",
       "robots.txt",
       "sitemap.xml",
       "sitemap.txt",
@@ -178,7 +178,7 @@ describe("runScan", () => {
 
     expect(result?.summary.discovered.passed).toBe(2);
     expect(result?.summary.discovered.total).toBe(5);
-    expect(result?.summary.trusted.passed).toBe(3);
+    expect(result?.summary.trusted.passed).toBe(2);
     expect(result?.summary.welcomed.passed).toBe(2);
   });
 
@@ -257,9 +257,7 @@ describe("runScan", () => {
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
 
-    expect(logs.some((l) => l.includes("Checking homepage content"))).toBe(
-      true,
-    );
+    expect(logs.some((l) => l.includes("Checking page content"))).toBe(true);
     expect(logs.some((l) => l.includes("Checking sitemap.txt"))).toBe(true);
     expect(logs.some((l) => l.includes("Checking sitemap link headers"))).toBe(
       true,
@@ -345,7 +343,7 @@ describe("runScan", () => {
     );
     expect(trustedChecks?.map((c) => c.name)).toEqual(
       expect.arrayContaining([
-        "Homepage content",
+        "Page content",
         "Sample pages",
         "Meta tags",
         "Markdown content negotiation",

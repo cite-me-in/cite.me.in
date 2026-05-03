@@ -86,12 +86,7 @@ export default async function checkJsonLd({
     url: string;
     html: string;
   }[];
-}): Promise<
-  Omit<CheckResult, "category"> & {
-    schemas: JsonLdResult[];
-    pageResults?: PageLdResult[];
-  }
-> {
+}): Promise<Omit<CheckResult, "category">> {
   const startTime = Date.now();
 
   const pageResults: PageLdResult[] = [];
@@ -156,8 +151,6 @@ export default async function checkJsonLd({
       pagesChecked: pageResults.length,
       anyPageHasValidLd: passed,
     },
-    schemas: pageResults[0].schemas,
-    pageResults,
   };
 }
 
