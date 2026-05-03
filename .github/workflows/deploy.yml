@@ -16,6 +16,14 @@ env:
   POSTGRES_URL_NON_POOLING: "postgresql://postgres:postgres@localhost:5432/citeup_test"
   POSTGRES_URL: "postgresql://postgres:postgres@localhost:5432/citeup_test?pgbouncer=true"
   INDEXNOW_KEY: ""
+  ANTHROPIC_API_KEY: "sk-dummy"
+  TRACK_API_KEY: "dummy"
+  REDIS_URL: "redis://localhost:6379"
+  RESEND_API_KEY: "re_dummy"
+  SESSION_SECRET: "dummy-secret-at-least-32-chars-long-for-session"
+  VITE_APP_URL: "http://localhost:3000"
+  VITE_EMAIL_FROM: "test@cite.me.in"
+  ZHIPU_API_KEY: "dummy"
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
