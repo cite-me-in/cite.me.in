@@ -151,6 +151,8 @@ export default async function checkJsonLd({
       pagesChecked: pageResults.length,
       anyPageHasValidLd: passed,
     },
+    schemas: pageResults[0]?.schemas ?? [],
+    pageResults,
   };
 }
 

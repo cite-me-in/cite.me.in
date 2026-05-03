@@ -247,7 +247,7 @@ export async function runScanSteps({
   await log("Checking Content-Signal in robots.txt...");
   const contentSignalsResult = await checkContentSignals({
     url,
-    robotsContent: robotsTxtResult.details?.robotsContent as string | undefined,
+    robotsContent: (robotsTxtResult.details?.robotsContent as string) ?? null,
   });
   checks.push(contentSignalsResult);
   await log(

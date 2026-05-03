@@ -18,11 +18,7 @@ export default async function checkMarkdownAlternateLinks({
     html: string;
     url: string;
   }[];
-}): Promise<
-  Omit<CheckResult, "category"> & {
-    alternateURLs: string[];
-  }
-> {
+}): Promise<Omit<CheckResult, "category">> {
   const pageResults = pages.map((page) => {
     const linkHeader = page.headers?.get("Link") ?? null;
     const headerURLs = extractMarkdownUrlsFromHeader(linkHeader);
@@ -67,10 +63,10 @@ export default async function checkMarkdownAlternateLinks({
     name: "Markdown alternate links",
     passed: pagesWithLink > 0,
     message,
-    alternateURLs,
     details: {
       pagesChecked,
       pagesWithLink,
+      alternateUrls: alternateURLs,
     },
   };
 }

@@ -26,7 +26,7 @@ describe("checkJsonLd", () => {
     });
 
     expect(result.passed).toBe(true);
-    expect(result.details?.schemas).toHaveLength(1);
+    expect(result.schemas).toHaveLength(1);
   });
 
   it("should pass when multiple JSON-LD schemas are on a page", async () => {

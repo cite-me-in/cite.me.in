@@ -5,7 +5,7 @@
  * AI bot detection checks known crawler user agents (GPTBot, ClaudeBot, etc.)
  */
 
-import type { CheckResult } from "../types";
+import type { CheckResult } from "~/lib/aiLegibility/types";
 
 const AI_BOT_USER_AGENTS = [
   { pattern: "gptbot", name: "GPTBot (OpenAI/ChatGPT)" },
