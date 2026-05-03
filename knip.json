@@ -19,7 +19,7 @@
     "@secretlint/secretlint-rule-preset-recommend",
     "vercel"
   ],
-  "ignoreFiles": ["app/lib/truncateWords.ts"],
+  "ignoreFiles": ["app/lib/truncateWords.ts", "app/lib/relativeTime.ts"],
   "ignoreIssues": {
     "app/lib/api/schemas.ts": ["exports"],
     "app/lib/html/parseHTML.ts": ["exports"],

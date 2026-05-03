@@ -5,8 +5,18 @@ const MIN_CONTENT_LENGTH = 100;
 const MIN_WORD_COUNT = 25;
 
 const SPA_ROOT_IDS = [
-  "root", "app", "__next", "__nuxt", "___gatsby", "svelte", "__svelte",
-  "react-root", "app-root", "application-root", "__remix", "app-shell",
+  "root",
+  "app",
+  "__next",
+  "__nuxt",
+  "___gatsby",
+  "svelte",
+  "__svelte",
+  "react-root",
+  "app-root",
+  "application-root",
+  "__remix",
+  "app-shell",
   "page-mount",
 ];
 
@@ -20,13 +30,16 @@ function hasSentenceEndings(text: string): boolean {
 
 function isSpaShell(html: string): boolean {
   const { document } = parseHTML(html);
-  return SPA_ROOT_IDS.some((id) => {
-    const div = document.querySelector(`[id="${id}"]`);
-    return div !== null;
-  }) || (() => {
-    const appDiv = document.querySelector('div[class="app"]');
-    return appDiv !== null;
-  })();
+  return (
+    SPA_ROOT_IDS.some((id) => {
+      const div = document.querySelector(`[id="${id}"]`);
+      return div !== null;
+    }) ||
+    (() => {
+      const appDiv = document.querySelector('div[class="app"]');
+      return appDiv !== null;
+    })()
+  );
 }
 
 function hasHeadings(html: string): boolean {

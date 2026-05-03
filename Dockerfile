@@ -25,8 +25,6 @@ RUN pnpm build
 FROM node:24-slim AS runner
 ENV NODE_ENV=production
 
-RUN npm install -g @infisical/cli
-
 RUN corepack enable pnpm
 
 WORKDIR /app
@@ -40,10 +38,11 @@ COPY --from=builder /app/node_modules/.pnpm/node_modules/@prisma/engines ./build
 COPY --from=builder /app/prisma/generated ./prisma/generated
 COPY --from=builder /app/prisma/prod-ca-2021.crt ./prisma/prod-ca-2021.crt
 COPY --from=builder /app/app/data ./app/data
+COPY --from=builder /app/.env .env
 COPY package.json pnpm-lock.yaml ./
 
 RUN pnpm install --prod --frozen-lockfile 2>/dev/null || true
 
 USER node
 
-CMD ["infisical", "run", "--env", "prod", "--", "pnpm", "start"]
+CMD ["pnpm", "start"]

@@ -5,7 +5,6 @@ import { ROBOTS_TXT_WITH_SIGNAL } from "~/test/lib/aiLegibility/fixtures";
 describe("checkContentSignals", () => {
   it("should pass with valid Content-Signal (search=yes, ai-input=yes, ai-train=no)", async () => {
     const result = await checkContentSignals({
-      url: "https://acme.com/",
       robotsContent: ROBOTS_TXT_WITH_SIGNAL,
     });
 
@@ -20,7 +19,6 @@ describe("checkContentSignals", () => {
 
   it("should pass with single valid Content-Signal key", async () => {
     const result = await checkContentSignals({
-      url: "https://acme.com/",
       robotsContent: "User-agent: *\nDisallow:\n\nContent-Signal: search=yes\n",
     });
 
@@ -35,7 +33,6 @@ describe("checkContentSignals", () => {
 
   it("should fail when all Content-Signal keys are invalid", async () => {
     const result = await checkContentSignals({
-      url: "https://acme.com/",
       robotsContent: "User-agent: *\n\nContent-Signal: unknown-key=yes\n",
     });
 
@@ -45,7 +42,6 @@ describe("checkContentSignals", () => {
 
   it("should report warnings for invalid keys alongside valid ones", async () => {
     const result = await checkContentSignals({
-      url: "https://acme.com/",
       robotsContent:
         "User-agent: *\n\nContent-Signal: search=yes, unknown=maybe\n",
     });
@@ -56,7 +52,6 @@ describe("checkContentSignals", () => {
 
   it("should fail when a valid key has invalid value", async () => {
     const result = await checkContentSignals({
-      url: "https://acme.com/",
       robotsContent: "User-agent: *\n\nContent-Signal: search=maybe\n",
     });
 
@@ -66,7 +61,6 @@ describe("checkContentSignals", () => {
 
   it("should fail when robots.txt has no Content-Signal", async () => {
     const result = await checkContentSignals({
-      url: "https://acme.com/",
       robotsContent: "User-agent: *\nDisallow:\n",
     });
 
@@ -76,7 +70,6 @@ describe("checkContentSignals", () => {
 
   it("should fail when robotsContent is null (not found)", async () => {
     const result = await checkContentSignals({
-      url: "https://acme.com/",
       robotsContent: null,
     });
 
@@ -86,7 +79,6 @@ describe("checkContentSignals", () => {
 
   it("should handle malformed key=value pairs", async () => {
     const result = await checkContentSignals({
-      url: "https://acme.com/",
       robotsContent: "User-agent: *\n\nContent-Signal: justastring\n",
     });
 

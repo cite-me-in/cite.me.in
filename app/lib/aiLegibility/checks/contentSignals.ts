@@ -15,10 +15,8 @@ const VALID_KEYS = ["search", "ai-input", "ai-train"] as const;
 const VALID_VALUES = ["yes", "no"] as const;
 
 export default async function checkContentSignals({
-  url,
   robotsContent,
 }: {
-  url: string;
   robotsContent: string | null;
 }): Promise<Omit<CheckResult, "category">> {
   if (robotsContent === null) {
