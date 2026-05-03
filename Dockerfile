@@ -14,35 +14,18 @@ RUN pnpm install --frozen-lockfile
 FROM base AS builder
 WORKDIR /app
 
-# Install Infisical CLI for secret injection during build
-RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
-    && rm -rf /var/lib/apt/lists/* \
-    && curl -fsSL https://dl.infisical.com/cli/install.sh -o /tmp/install.sh \
-    && sh /tmp/install.sh --no-modify-path \
-    && rm /tmp/install.sh \
-    && infisical --version
-
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-ARG INFISICAL_ENV=prod
+COPY .env.docker .env
 
-# Export secrets to .env for VITE_ inlining, then build
-RUN --mount=type=secret,id=infisical_token \
-    export INFISICAL_TOKEN=$(cat /run/secrets/infisical_token) && \
-    infisical export --env "$INFISICAL_ENV" --format=dotenv --output-file=.env && \
-    pnpm build
+RUN pnpm build
 
 # --- RUNNER ---
 FROM node:24-slim AS runner
 ENV NODE_ENV=production
 
-RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
-    && rm -rf /var/lib/apt/lists/* \
-    && curl -fsSL https://dl.infisical.com/cli/install.sh -o /tmp/install.sh \
-    && sh /tmp/install.sh --no-modify-path \
-    && rm /tmp/install.sh \
-    && infisical --version
+RUN npm install -g @infisical/cli
 
 RUN corepack enable pnpm
 
