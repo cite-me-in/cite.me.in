@@ -11,7 +11,6 @@
     "__screenshots__/**",
     ".claude",
     ".github",
-    ".vercel",
     ".vscode",
     "build/**",
     "docs/**",

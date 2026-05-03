@@ -15,10 +15,7 @@
     "test/**/*.ts",
     "!__screenshots__"
   ],
-  "ignoreDependencies": [
-    "@secretlint/secretlint-rule-preset-recommend",
-    "vercel"
-  ],
+  "ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend"],
   "ignoreFiles": ["app/lib/truncateWords.ts", "app/lib/relativeTime.ts"],
   "ignoreIssues": {
     "app/lib/api/schemas.ts": ["exports"],

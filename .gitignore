@@ -13,10 +13,6 @@ opencode.json
 /.react-router/
 /build/
 
-# Vercel
-.vercel
-deploy.log
-
 # Ignore test results
 .test-server.json
 __screenshots__/**/*.diff.png

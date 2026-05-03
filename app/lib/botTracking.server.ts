@@ -48,6 +48,7 @@ const BOT_PATTERNS: {
   { botClass: "other", pattern: /exabot/i, type: "Exabot" },
   { botClass: "other", pattern: /facebookexternalhit/i, type: "Facebook" },
   { botClass: "other", pattern: /findfiles.net/i, type: "FindFiles" },
+  { botClass: "search_indexing", pattern: /geminibot/i, type: "Gemini" },
   { botClass: "search_indexing", pattern: /googlebot/i, type: "Google" },
   { botClass: "training", pattern: /gptbot/i, type: "GPT Bot" },
   { botClass: "other", pattern: /headlesschrome/i, type: "Headless Chrome" },
