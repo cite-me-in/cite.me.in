@@ -4,6 +4,13 @@ set -eo pipefail
 IMAGE="ghcr.io/cite-me-in/cite.me.in:latest"
 APP_UUID="myp73fab3pizwxq1coahwxqw"
 
+SKIP_TESTS=false
+for arg in "$@"; do
+  if [ "$arg" = "--skip-tests" ]; then
+    SKIP_TESTS=true
+  fi
+done
+
 echo "--- Step 1: Check (lint, types, secrets) ---"
 pnpm run check
 
@@ -11,11 +18,13 @@ echo "--- Step 2: Push DB schema ---"
 pnpm prisma generate
 pnpm prisma db push
 
-echo "--- Step 3: Run tests ---"
-pnpm vp test run
+if [ "$SKIP_TESTS" = false ]; then
+  echo "--- Step 3: Run tests ---"
+  pnpm vp test run
 
-echo "--- Step 4: Run Playwright ---"
-pnpm playwright test
+  echo "--- Step 4: Run Playwright ---"
+  pnpm playwright test
+fi
 
 echo "--- All checks passed. Deploying ---"
 

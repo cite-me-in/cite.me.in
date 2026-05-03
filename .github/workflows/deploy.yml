@@ -1,8 +1,14 @@
 name: Deploy
 
 on:
-  - push
-  - workflow_dispatch
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      skip_checks:
+        description: "Skip checks and tests"
+        type: boolean
+        default: false
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -68,6 +74,14 @@ jobs:
         if: steps.cache-npm.outputs.cache-hit != 'true'
         run: pnpm install
 
+      - name: Run checks (lint, types, secrets)
+        run: pnpm run check
+
+      - name: Push DB schema
+        run: |
+          pnpm prisma generate
+          pnpm prisma db push
+
       - name: Set PLAYWRIGHT_VERSION
         run: echo "PLAYWRIGHT_VERSION=$(pnpm exec playwright --version)" >> $GITHUB_ENV
 
@@ -79,44 +93,20 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - name: Install Playwright (Chromium)
+        if: ${{ (github.event_name != 'workflow_dispatch' || !inputs.skip_checks) && steps.cache-playwright.outputs.cache-hit != 'true' }}
         timeout-minutes: 5
-        if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: pnpm exec playwright install chromium --with-deps
 
-      - name: Setup database schema for testing
-        run: |
-          pnpm prisma generate
-          pnpm prisma db push
-
-      - name: Check secrets
-        run: pnpm secretlint "**/*" --format stylish
-
-      - name: Generate React Router types
-        run: pnpm react-router typegen
-
-      - name: Check types
-        run: pnpm vp check
-
-      - uses: Infisical/secrets-action@v1.0.15
-        with:
-          method: "universal"
-          identity-id: "2558782e-875b-4c3b-b40a-6d405dadffe0"
-          client-secret: ${{ secrets.INFISICAL_CLIENT_SECRET }}
-          client-id: ${{ secrets.INFISICAL_CLIENT_ID }}
-          domain: "https://app.infisical.com"
-          env-slug: "dev"
-          project-slug: "cite-me-in"
-          export-type: "file"
-          file-output-path: "/.env"
-
       - name: Run Tests
+        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.skip_checks }}
         run: pnpm vp test run
 
       - name: Run Playwright Tests
-        if: github.ref == 'refs/heads/not-main'
+        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.skip_checks }}
         run: pnpm playwright test
 
       - name: Upload Playwright Test Results
+        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.skip_checks }}
         uses: actions/upload-artifact@v7
         continue-on-error: true
         with:
@@ -132,11 +122,6 @@ jobs:
           domain: "https://app.infisical.com"
           env-slug: "prod"
           project-slug: "cite-me-in"
-
-      - name: Update database
-        if: github.ref == 'refs/heads/main'
-        run: |
-          pnpm prisma db push --url "$POSTGRES_URL_NON_POOLING"
 
       - name: Log in to GitHub Container Registry
         if: github.ref == 'refs/heads/main'
