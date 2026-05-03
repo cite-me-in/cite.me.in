@@ -29,6 +29,7 @@ env:
   GOOGLE_GENERATIVE_AI_API_KEY: "AIza-dummy"
   SERPAPI_API_KEY: "dummy"
   STRIPE_SECRET_KEY: "sk_test_dummy"
+  CRON_SECRET: "test-cron-secret"
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
