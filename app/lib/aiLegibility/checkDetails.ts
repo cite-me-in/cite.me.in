@@ -92,6 +92,30 @@ const CATEGORIES: Category[] = [
         },
       },
       {
+        name: "llms-full.txt",
+        desc: "Full-site content file for AI ingestion in one fetch",
+        detail: {
+          goal: "Create /llms-full.txt containing your site's full content so AI tools like ChatGPT can ingest everything in one request",
+          issue:
+            "Without /llms-full.txt, AI agents must crawl multiple pages to understand your full content. A single full-content file makes it dramatically easier for agents to consume your entire site. Mintlify reports 3-4x more visits on llms-full.txt than llms.txt.",
+          howToImplement:
+            "Create /llms-full.txt as a comprehensive Markdown file with all your site's content concatenated. For small sites, include the full content inline. For larger sites, redirect to /index.md or your most comprehensive page. Reference it from robots.txt and your HTML <head>.",
+          fixExample:
+            "# Site Name — Full Content\n\n## Homepage\nWelcome to our site...\n\n## About\nAbout us page content...\n\n## Blog\n### Post 1\nPost content...",
+          effort: "1 hour",
+          resourceLinks: [
+            {
+              label: "llms.txt spec",
+              url: "https://llmstxt.org/",
+            },
+            {
+              label: "Mintlify data on llms-full.txt",
+              url: "https://x.com/tmthm/status/1895940075914969405",
+            },
+          ],
+        },
+      },
+      {
         name: "Sitemap link headers",
         desc: "HTTP Link headers and HTML link tags pointing to sitemaps",
         detail: {
@@ -244,6 +268,46 @@ const CATEGORIES: Category[] = [
             {
               label: "Making agent-friendly pages (Vercel)",
               url: "https://vercel.com/blog/making-agent-friendly-pages-with-content-negotiation",
+            },
+          ],
+        },
+      },
+      {
+        name: "Semantic HTML",
+        desc: "Heading hierarchy and semantic elements for better AI extraction",
+        detail: {
+          goal: "Use proper heading hierarchy (h1→h6) and semantic HTML elements (main, nav, article) so AI agents can understand your page structure",
+          issue:
+            "AI agents rely on heading hierarchy and semantic landmarks to extract structured content. Without proper <h1> through <h6> nesting and semantic elements like <main> and <nav>, agents may misinterpret or miss sections of your content.",
+          howToImplement:
+            "Ensure each page has exactly one <h1> followed by proper <h2> through <h6> nesting. Use semantic elements like <main>, <nav>, <article>, <section>, <header>, and <footer> to provide structural landmarks. Ensure link text is descriptive (>3 chars, not 'click here' or 'read more').",
+          fixExample:
+            '<body>\n  <header>\n    <nav><a href="/">Home</a> <a href="/about">About</a></nav>\n  </header>\n  <main>\n    <h1>Page Title</h1>\n    <section>\n      <h2>Section Heading</h2>\n      <p>Content with <a href="/detail">descriptive link text</a></p>\n    </section>\n  </main>\n  <footer>&copy; 2025</footer>\n</body>',
+          effort: "15 min",
+          resourceLinks: [
+            {
+              label: "HTML semantic elements (MDN)",
+              url: "https://developer.mozilla.org/en-US/docs/Glossary/Semantics",
+            },
+          ],
+        },
+      },
+      {
+        name: "JS-rendered content",
+        desc: "Pages must not rely solely on client-side JavaScript",
+        detail: {
+          goal: "Ensure pages have static HTML content visible to AI agents without requiring JavaScript execution",
+          issue:
+            "AI agents do not execute JavaScript. Pages that render content entirely via client-side JS (SPA patterns, empty root divs, chunked bundles) appear empty to AI agents, preventing them from citing your content.",
+          howToImplement:
+            "Add server-side rendered or statically generated content to your HTML. If you use a framework like React, Vue, or Svelte, enable SSR or SSG. Ensure your HTML body contains meaningful text content (not just script tags and empty container divs).",
+          fixExample:
+            '<!-- Before: SPA shell (agents see nothing) -->\n<div id="root"></div>\n<script src="/main.a1b2c3.js"></script>\n\n<!-- After: SSR content (agents see this) -->\n<div id="root">\n  <h1>Page Title</h1>\n  <p>Visible content that AI agents can read and cite.</p>\n</div>\n<script src="/main.a1b2c3.js"></script>',
+          effort: "1 hour",
+          resourceLinks: [
+            {
+              label: "SPA SEO guide (Google)",
+              url: "https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics",
             },
           ],
         },
