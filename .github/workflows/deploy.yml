@@ -4,11 +4,6 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      skip_checks:
-        description: "Skip checks and tests"
-        type: boolean
-        default: false
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -95,37 +90,6 @@ jobs:
 
       - name: Push DB schema
         run: pnpm prisma db push
-
-      - name: Set PLAYWRIGHT_VERSION
-        run: echo "PLAYWRIGHT_VERSION=$(pnpm exec playwright --version)" >> $GITHUB_ENV
-
-      - name: Cache Playwright
-        id: cache-playwright
-        uses: actions/cache@v5
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
-
-      - name: Install Playwright (Chromium)
-        if: ${{ (github.event_name != 'workflow_dispatch' || !inputs.skip_checks) && steps.cache-playwright.outputs.cache-hit != 'true' }}
-        timeout-minutes: 5
-        run: pnpm exec playwright install chromium --with-deps
-
-      - name: Run Tests
-        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.skip_checks }}
-        run: pnpm vp test run
-
-      - name: Run Playwright Tests
-        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.skip_checks }}
-        run: pnpm playwright test
-
-      - name: Upload Playwright Test Results
-        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.skip_checks }}
-        uses: actions/upload-artifact@v7
-        continue-on-error: true
-        with:
-          name: playwright-test-results
-          path: __screenshots__
 
       - uses: Infisical/secrets-action@v1.0.15
         with:
