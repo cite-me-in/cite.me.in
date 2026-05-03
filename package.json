@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "prisma generate && react-router build --force",
-    "check": "secretlint **/* --format stylish && vp check --fix && react-router typegen && knip",
+    "check": "secretlint **/* --format stylish && react-router typegen && vp check --fix && knip",
     "clean": "pnpm install --force && rm -rf node_modules/.vite .react-router build",
     "dev": "react-router dev",
     "promote": "./scripts/promote.ts",
