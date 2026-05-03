@@ -74,13 +74,14 @@ jobs:
         if: steps.cache-npm.outputs.cache-hit != 'true'
         run: pnpm install
 
+      - name: Generate Prisma client
+        run: pnpm prisma generate
+
       - name: Run checks (lint, types, secrets)
         run: pnpm run check
 
       - name: Push DB schema
-        run: |
-          pnpm prisma generate
-          pnpm prisma db push
+        run: pnpm prisma db push
 
       - name: Set PLAYWRIGHT_VERSION
         run: echo "PLAYWRIGHT_VERSION=$(pnpm exec playwright --version)" >> $GITHUB_ENV
