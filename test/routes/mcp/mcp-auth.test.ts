@@ -110,7 +110,7 @@ describe("MCP Authorization Flow", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           client_name: "Test MCP Client",
-          redirect_uris: ["http://localhost:3000/callback"],
+          redirect_uris: [`http://localhost:${port}/callback`],
           grant_types: ["authorization_code", "refresh_token"],
           response_types: ["code"],
           token_endpoint_auth_method: "none",
@@ -128,7 +128,7 @@ describe("MCP Authorization Flow", () => {
       };
       expect(data.client_id).toBeDefined();
       expect(data.client_name).toBe("Test MCP Client");
-      expect(data.redirect_uris).toContain("http://localhost:3000/callback");
+      expect(data.redirect_uris).toContain(`http://localhost:${port}/callback`);
       expect(data.token_endpoint_auth_method).toBe("none");
       expect(data.client_secret).toBeUndefined();
     });
@@ -139,7 +139,7 @@ describe("MCP Authorization Flow", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           client_name: "Confidential Client",
-          redirect_uris: ["https://example.com/callback"],
+          redirect_uris: [`https://example.com/callback`],
           grant_types: ["authorization_code", "refresh_token"],
           response_types: ["code"],
           token_endpoint_auth_method: "client_secret_post",
@@ -162,7 +162,7 @@ describe("MCP Authorization Flow", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           client_name: "Bad Client",
-          redirect_uris: ["http://evil.com/callback"],
+          redirect_uris: [`http://evil.com/callback`],
           token_endpoint_auth_method: "none",
         }),
       });
@@ -175,7 +175,7 @@ describe("MCP Authorization Flow", () => {
 
   describe("Authorization Code Flow with PKCE", () => {
     let clientId: string;
-    const redirectUri = "http://localhost:3000/callback";
+    const redirectUri = `http://localhost:${port}/callback`;
 
     beforeAll(async () => {
       const res = await fetch(`${baseUrl}/oauth/register`, {
@@ -183,7 +183,7 @@ describe("MCP Authorization Flow", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           client_name: "E2E Test Client",
-          redirect_uris: [redirectUri],
+          redirect_uris: [`${redirectUri}`],
           grant_types: ["authorization_code", "refresh_token"],
           response_types: ["code"],
           token_endpoint_auth_method: "none",
@@ -340,7 +340,7 @@ describe("MCP Authorization Flow", () => {
   describe("Refresh Token Flow", () => {
     let clientId: string;
     let refreshToken: string;
-    const redirectUri = "http://localhost:3000/callback";
+    const redirectUri = `http://localhost:${port}/callback`;
 
     beforeAll(async () => {
       const res = await fetch(`${baseUrl}/oauth/register`, {
@@ -445,7 +445,7 @@ describe("MCP Authorization Flow", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           client_name: "MCP Access Test Client",
-          redirect_uris: ["http://localhost:3000/callback"],
+          redirect_uris: [`http://localhost:${port}/callback`],
           token_endpoint_auth_method: "none",
           scope: "mcp:tools",
         }),
@@ -457,7 +457,7 @@ describe("MCP Authorization Flow", () => {
       const formData = new URLSearchParams();
       formData.set("client_id", clientId);
       formData.set("user_id", user.id);
-      formData.set("redirect_uri", "http://localhost:3000/callback");
+      formData.set("redirect_uri", `http://localhost:${port}/callback`);
       formData.set("scope", "mcp:tools");
       formData.set("code_challenge", pkce.challenge);
       formData.set("allow", "1");
@@ -485,7 +485,7 @@ describe("MCP Authorization Flow", () => {
           grant_type: "authorization_code",
           client_id: clientId,
           code: code,
-          redirect_uri: "http://localhost:3000/callback",
+          redirect_uri: `http://localhost:${port}/callback`,
           code_verifier: pkce.verifier,
         }),
       });
@@ -599,7 +599,7 @@ describe("MCP Authorization Flow", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           client_name: "Rate Limit Test Client",
-          redirect_uris: ["http://localhost:3000/callback"],
+          redirect_uris: [`http://localhost:${port}/callback`],
           token_endpoint_auth_method: "none",
           scope: "mcp:tools",
         }),
@@ -611,7 +611,7 @@ describe("MCP Authorization Flow", () => {
       const formData = new URLSearchParams();
       formData.set("client_id", clientId);
       formData.set("user_id", user.id);
-      formData.set("redirect_uri", "http://localhost:3000/callback");
+      formData.set("redirect_uri", `http://localhost:${port}/callback`);
       formData.set("scope", "mcp:tools");
       formData.set("code_challenge", pkce.challenge);
       formData.set("allow", "1");
@@ -639,7 +639,7 @@ describe("MCP Authorization Flow", () => {
           grant_type: "authorization_code",
           client_id: clientId,
           code,
-          redirect_uri: "http://localhost:3000/callback",
+          redirect_uri: `http://localhost:${port}/callback`,
           code_verifier: pkce.verifier,
         }),
       });

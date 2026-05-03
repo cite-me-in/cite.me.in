@@ -34,7 +34,7 @@ describe("extractDomain", () => {
   });
 
   it("should return null for localhost", () => {
-    expect(extractDomain("http://localhost:3000")).toBeNull();
+    expect(extractDomain("http://localhost")).toBeNull();
   });
 
   it("should return null for bare IP address", () => {
