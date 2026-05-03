@@ -7,8 +7,7 @@
     "app/global.css",
     "scripts/*",
     "test/**/*.ts",
-    "test/helpers/serverWorker.ts",
-    "vercel.ts"
+    "test/helpers/serverWorker.ts"
   ],
   "project": [
     "app/**/*.ts",

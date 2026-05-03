@@ -9,11 +9,9 @@ env:
   NODE_OPTIONS: "--max-old-space-size=3096"
   POSTGRES_URL_NON_POOLING: "postgresql://postgres:postgres@localhost:5432/citeup_test"
   POSTGRES_URL: "postgresql://postgres:postgres@localhost:5432/citeup_test?pgbouncer=true"
-  # These are populated during the workflow by the Infisical action.
   INDEXNOW_KEY: ""
-  VERCEL_ORG_ID: ""
-  VERCEL_PROJECT_ID: ""
-  VERCEL_TOKEN: ""
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   deploy:
@@ -30,7 +28,6 @@ jobs:
           POSTGRES_DB: citeup_test
         ports:
           - 5432:5432
-        # needed because the postgres container does not provide a healthcheck
         options:
           --health-cmd pg_isready --health-interval 10s --health-timeout 5s
           --health-retries 5
@@ -84,7 +81,7 @@ jobs:
 
       - name: Setup database schema for testing
         run: |
-          pnpm prisma generate 
+          pnpm prisma generate
           pnpm prisma db push
 
       - name: Check secrets
@@ -137,16 +134,35 @@ jobs:
         run: |
           pnpm prisma db push --url ${{ env.POSTGRES_URL_NON_POOLING }}
 
-      - name: Deploy to Vercel
-        uses: nexterias/actions-vercel@v1.2.3
+      - name: Log in to GitHub Container Registry
         if: github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          org-id: ${{ env.VERCEL_ORG_ID }}
-          prebuilt: true
-          production: false
-          project-id: ${{ env.VERCEL_PROJECT_ID }}
-          token: ${{ env.VERCEL_TOKEN }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          secrets: |
+            infisical_token=${{ secrets.INFISICAL_TOKEN }}
+          build-args: |
+            INFISICAL_ENV=prod
+
+      - name: Trigger Coolify deployment
+        if: github.ref == 'refs/heads/main'
+        env:
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+          COOLIFY_URL: "https://coolify.labnotes.org"
+          APP_UUID: ${{ secrets.COOLIFY_APP_UUID }}
+        run: |
+          curl -s -X POST "$COOLIFY_URL/api/v1/deploy?type=application&uuid=$APP_UUID" \
+            -H "Authorization: Bearer $COOLIFY_TOKEN" | jq
 
       - name: Upload IndexNow file
         uses: bojieyang/indexnow-action@v2

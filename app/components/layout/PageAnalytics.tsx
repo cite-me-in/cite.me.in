@@ -1,14 +1,5 @@
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/react";
-
 export default function PageAnalytics() {
-  return (
-    <>
-      <GoogleAnalytics />
-      <Analytics />
-      <SpeedInsights />
-    </>
-  );
+  return <GoogleAnalytics />;
 }
 
 function GoogleAnalytics() {
