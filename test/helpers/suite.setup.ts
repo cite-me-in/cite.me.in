@@ -2,6 +2,7 @@
  * NOTE: Setup code to run before every test suite.
  */
 
+import { execSync } from "node:child_process";
 import * as Sentry from "@sentry/react-router";
 import { afterAll, beforeAll, vi } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
@@ -18,6 +19,13 @@ beforeAll(async () => {
   // Cleanup database
   await prisma.user.deleteMany();
   await prisma.oAuthClient.deleteMany();
+
+  // Flush Redis to avoid stale scan state
+  try {
+    execSync("redis-cli FLUSHDB", { stdio: "ignore", timeout: 5_000 });
+  } catch {
+    // Redis might not be running — skip
+  }
 
   // Freeze time at a fixed timestamp for deterministic visual and time-based tests
   vi.setSystemTime(fixedTime.getTime());
