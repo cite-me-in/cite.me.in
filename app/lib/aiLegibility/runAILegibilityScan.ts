@@ -12,7 +12,6 @@ import { getCheckCategory, getCheckDetail } from "./checkDetails";
 import assessPages from "./checks/assessPages";
 import checkContentSignals from "./checks/contentSignals";
 import checkJsonLd from "./checks/jsonLd";
-import checkJsRenderedContent from "./checks/jsRenderedContent";
 import checkLinkHeaders from "./checks/linkHeaders";
 import checkLlmsFullTxt from "./checks/llmsFullTxt";
 import checkLlmsTxt from "./checks/llmsTxt";
@@ -22,7 +21,6 @@ import checkMdRoutes from "./checks/mdRoutes";
 import checkMetaTags from "./checks/metaTags";
 import checkRobotsDirectives from "./checks/robotsDirectives";
 import checkRobotsTxt from "./checks/robotsTxt";
-import checkSemanticHtml from "./checks/semanticHtml";
 import checkSitemapTxt from "./checks/sitemapTxt";
 import checkSitemapXml from "./checks/sitemapXml";
 import type {
@@ -256,29 +254,11 @@ export async function runScanSteps({
     `${contentSignalsResult.passed ? "✓" : "✗"} ${contentSignalsResult.message}`,
   );
 
-  await log("Checking semantic HTML...");
-  const semanticHtmlResult = await checkSemanticHtml({
-    pages: reviewedPages.map((p) => ({ url: p.url, html: p.html })),
-  });
-  checks.push(semanticHtmlResult);
-  await log(
-    `${semanticHtmlResult.passed ? "✓" : "✗"} ${semanticHtmlResult.message}`,
-  );
-
   await log("Checking llms-full.txt...");
   const llmsFullTxtResult = await checkLlmsFullTxt({ url });
   checks.push(llmsFullTxtResult);
   await log(
     `${llmsFullTxtResult.passed ? "✓" : "✗"} ${llmsFullTxtResult.message}`,
-  );
-
-  await log("Checking JS-rendered content...");
-  const jsRenderedResult = await checkJsRenderedContent({
-    pages: reviewedPages.map((p) => ({ url: p.url, html: p.html })),
-  });
-  checks.push(jsRenderedResult);
-  await log(
-    `${jsRenderedResult.passed ? "✓" : "✗"} ${jsRenderedResult.message}`,
   );
 
   const withCategory = checks.map((check) => ({

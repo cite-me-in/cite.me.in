@@ -1,20 +1,45 @@
 #!/usr/bin/env bash
-
 set -eo pipefail
 
 IMAGE="ghcr.io/cite-me-in/cite.me.in:latest"
-COOLIFY_URL="https://coolify.labnotes.org"
-APP_UUID=""
+APP_UUID="myp73fab3pizwxq1coahwxqw"
 
-echo "Pushing to git..."
-git push origin main
+echo "--- Step 1: Check (lint, types, secrets) ---"
+pnpm run check
+
+echo "--- Step 2: Push DB schema ---"
+pnpm prisma generate
+pnpm prisma db push
+
+echo "--- Step 3: Run tests ---"
+pnpm vp test run
+
+echo "--- Step 4: Run Playwright ---"
+pnpm playwright test
+
+echo "--- All checks passed. Deploying ---"
+
+
+COLIMA_WAS_RUNNING=true
+if ! colima status &>/dev/null; then
+  COLIMA_WAS_RUNNING=false
+  echo "Starting colima..."
+  colima start
+fi
+cleanup() {
+  if [ "$COLIMA_WAS_RUNNING" = false ]; then
+    echo "Stopping colima..."
+    colima stop
+  fi
+}
+trap cleanup EXIT
 
 echo "Building and pushing Docker image..."
 docker buildx build --platform linux/amd64 --push -t "$IMAGE" .
 
 echo "Triggering Coolify deployment..."
 TOKEN=$(jq -r '.instances[0].token' ~/.config/coolify/config.json)
-curl -s -X POST "$COOLIFY_URL/api/v1/deploy?type=application&uuid=$APP_UUID" \
+curl -s -X POST "https://coolify.labnotes.org/api/v1/deploy?type=application&uuid=$APP_UUID" \
   -H "Authorization: Bearer $TOKEN" | jq
 
 echo "Deployed to https://cite.me.in"

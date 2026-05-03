@@ -146,7 +146,7 @@ describe("runScan", () => {
     });
 
     expect(result?.summary.discovered.passed).toBeGreaterThan(0);
-    expect(result?.summary.discovered.total).toBe(5);
+    expect(result?.summary.discovered.total).toBe(6);
     expect(result?.summary.trusted.total).toBe(5);
     expect(result?.summary.welcomed.total).toBe(4);
   });
@@ -163,7 +163,7 @@ describe("runScan", () => {
     });
 
     expect(result?.summary.discovered.passed).toBe(0);
-    expect(result?.summary.discovered.total).toBe(5);
+    expect(result?.summary.discovered.total).toBe(6);
     expect(result?.summary.trusted.total).toBe(5);
     expect(result?.summary.welcomed.total).toBe(4);
   });
@@ -180,7 +180,7 @@ describe("runScan", () => {
     });
 
     expect(result?.summary.discovered.passed).toBe(2);
-    expect(result?.summary.discovered.total).toBe(5);
+    expect(result?.summary.discovered.total).toBe(6);
     expect(result?.summary.trusted.passed).toBe(2);
     expect(result?.summary.welcomed.passed).toBe(2);
   });
@@ -308,7 +308,7 @@ describe("runScan", () => {
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
 
-    expect(result?.checks.length).toBe(14);
+    expect(result?.checks.length).toBe(15);
     expect(result?.checks.every((c) => c.name && c.category && c.message)).toBe(
       true,
     );
