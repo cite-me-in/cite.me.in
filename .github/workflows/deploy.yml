@@ -120,6 +120,21 @@ jobs:
             infisical_token=${{ secrets.INFISICAL_TOKEN }}
           build-args: |
             INFISICAL_ENV=prod
+            POSTGRES_URL_NON_POOLING=${{ env.POSTGRES_URL_NON_POOLING }}
+            ANTHROPIC_API_KEY=${{ env.ANTHROPIC_API_KEY }}
+            TRACK_API_KEY=${{ env.TRACK_API_KEY }}
+            REDIS_URL=${{ env.REDIS_URL }}
+            RESEND_API_KEY=${{ env.RESEND_API_KEY }}
+            SESSION_SECRET=${{ env.SESSION_SECRET }}
+            VITE_APP_URL=${{ env.VITE_APP_URL }}
+            VITE_EMAIL_FROM=${{ env.VITE_EMAIL_FROM }}
+            ZHIPU_API_KEY=${{ env.ZHIPU_API_KEY }}
+            OPENAI_API_KEY=${{ env.OPENAI_API_KEY }}
+            PERPLEXITY_API_KEY=${{ env.PERPLEXITY_API_KEY }}
+            GOOGLE_GENERATIVE_AI_API_KEY=${{ env.GOOGLE_GENERATIVE_AI_API_KEY }}
+            SERPAPI_API_KEY=${{ env.SERPAPI_API_KEY }}
+            STRIPE_SECRET_KEY=${{ env.STRIPE_SECRET_KEY }}
+            INDEXNOW_KEY=${{ env.INDEXNOW_KEY }}
 
       - name: Trigger Coolify deployment
         if: github.ref == 'refs/heads/main'
