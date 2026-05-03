@@ -30,6 +30,7 @@ env:
   SERPAPI_API_KEY: "dummy"
   STRIPE_SECRET_KEY: "sk_test_dummy"
   CRON_SECRET: "test-cron-secret"
+  STRIPE_WEBHOOK_SECRET: "whsec_dummy_test_secret"
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
@@ -172,6 +173,7 @@ jobs:
             GOOGLE_GENERATIVE_AI_API_KEY=${{ env.GOOGLE_GENERATIVE_AI_API_KEY }}
             SERPAPI_API_KEY=${{ env.SERPAPI_API_KEY }}
             STRIPE_SECRET_KEY=${{ env.STRIPE_SECRET_KEY }}
+            STRIPE_WEBHOOK_SECRET=${{ env.STRIPE_WEBHOOK_SECRET }}
             INDEXNOW_KEY=${{ env.INDEXNOW_KEY }}
 
       - name: Trigger Coolify deployment
