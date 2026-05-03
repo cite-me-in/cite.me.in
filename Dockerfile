@@ -18,6 +18,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 ARG INFISICAL_ENV
+ARG POSTGRES_URL_NON_POOLING=postgresql://dummy:dummy@localhost:5432/dummy
+ENV POSTGRES_URL_NON_POOLING=$POSTGRES_URL_NON_POOLING
 RUN pnpm build
 
 # --- RUNNER ---
