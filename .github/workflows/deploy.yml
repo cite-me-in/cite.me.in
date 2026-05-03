@@ -28,6 +28,7 @@ env:
   PERPLEXITY_API_KEY: "pplx-dummy"
   GOOGLE_GENERATIVE_AI_API_KEY: "AIza-dummy"
   SERPAPI_API_KEY: "dummy"
+  STRIPE_SECRET_KEY: "sk_test_dummy"
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
