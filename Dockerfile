@@ -17,7 +17,10 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-COPY .env.docker .env
+ARG INFISICAL_ENV
+RUN --mount=type=secret,id=infisical_token \
+  INFISICAL_TOKEN=$(cat /run/secrets/infisical_token) \
+  ./node_modules/.bin/infisical export --env="$INFISICAL_ENV" --token="$INFISICAL_TOKEN" > .env
 
 RUN pnpm build
 

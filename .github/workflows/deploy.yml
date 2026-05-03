@@ -132,7 +132,7 @@ jobs:
       - name: Update database
         if: github.ref == 'refs/heads/main'
         run: |
-          pnpm prisma db push --url ${{ env.POSTGRES_URL_NON_POOLING }}
+          pnpm prisma db push --url "$POSTGRES_URL_NON_POOLING"
 
       - name: Log in to GitHub Container Registry
         if: github.ref == 'refs/heads/main'

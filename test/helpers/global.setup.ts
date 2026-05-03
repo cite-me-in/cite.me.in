@@ -3,11 +3,11 @@
  */
 
 import { execFile } from "node:child_process";
+import { execSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
 import { rm } from "node:fs/promises";
 import { resolve } from "node:path";
 import { promisify } from "node:util";
-import { execSync } from "node:child_process";
 import prisma from "~/lib/prisma.server";
 import "~/test/mocks/msw";
 import { closeServer, launchServer } from "./launchServer";
