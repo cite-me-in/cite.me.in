@@ -24,6 +24,10 @@ env:
   VITE_APP_URL: "http://localhost:3000"
   VITE_EMAIL_FROM: "test@cite.me.in"
   ZHIPU_API_KEY: "dummy"
+  OPENAI_API_KEY: "sk-dummy"
+  PERPLEXITY_API_KEY: "pplx-dummy"
+  GOOGLE_GENERATIVE_AI_API_KEY: "AIza-dummy"
+  SERPAPI_API_KEY: "dummy"
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
