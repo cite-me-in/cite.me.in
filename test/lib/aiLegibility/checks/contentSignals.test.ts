@@ -46,7 +46,8 @@ describe("checkContentSignals", () => {
   it("should report warnings for invalid keys alongside valid ones", async () => {
     const result = await checkContentSignals({
       url: "https://acme.com/",
-      robotsContent: "User-agent: *\n\nContent-Signal: search=yes, unknown=maybe\n",
+      robotsContent:
+        "User-agent: *\n\nContent-Signal: search=yes, unknown=maybe\n",
     });
 
     expect(result.passed).toBe(true);

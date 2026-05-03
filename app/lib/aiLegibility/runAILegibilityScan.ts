@@ -12,7 +12,6 @@ import { getCheckCategory, getCheckDetail } from "./checkDetails";
 import assessPages from "./checks/assessPages";
 import checkContentSignals from "./checks/contentSignals";
 import checkJsonLd from "./checks/jsonLd";
-import checkJsRenderedContent from "./checks/jsRenderedContent";
 import checkLinkHeaders from "./checks/linkHeaders";
 import checkLlmsFullTxt from "./checks/llmsFullTxt";
 import checkLlmsTxt from "./checks/llmsTxt";
@@ -22,7 +21,6 @@ import checkMdRoutes from "./checks/mdRoutes";
 import checkMetaTags from "./checks/metaTags";
 import checkRobotsDirectives from "./checks/robotsDirectives";
 import checkRobotsTxt from "./checks/robotsTxt";
-import checkSemanticHtml from "./checks/semanticHtml";
 import checkSitemapTxt from "./checks/sitemapTxt";
 import checkSitemapXml from "./checks/sitemapXml";
 import type {

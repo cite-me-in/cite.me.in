@@ -128,6 +128,9 @@ describe("runScan", () => {
       "Robots directives",
       "Markdown content negotiation",
       "Content Signals",
+      "Semantic HTML",
+      "llms-full.txt",
+      "JS-rendered content",
     ]);
   });
 

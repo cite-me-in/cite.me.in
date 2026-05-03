@@ -17,9 +17,7 @@ export function parseLinkHeader(
   return results;
 }
 
-export async function fetchMarkdownPage(
-  url: string,
-): Promise<{
+export async function fetchMarkdownPage(url: string): Promise<{
   ok: boolean;
   contentType: string;
   contentLength: number;
