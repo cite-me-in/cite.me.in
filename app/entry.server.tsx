@@ -42,6 +42,16 @@ export default Sentry.wrapSentryHandleRequest(
     const start = Date.now();
     logger("%s %s", request.method, request.url);
 
+    const forwardedProto = request.headers.get("x-forwarded-proto");
+    if (forwardedProto === "http") {
+      const url = new URL(request.url);
+      url.protocol = "https:";
+      return new Response(null, {
+        status: 301,
+        headers: { Location: url.toString() },
+      });
+    }
+
     const response = await new Promise<Response>((resolve, reject) => {
       const { pipe } = renderToPipeableStream(
         <ServerRouter
