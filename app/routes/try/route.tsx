@@ -135,10 +135,13 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
 
   useEffect(() => {
     if (scanStatus === "complete") {
+      const isTest = !!import.meta.env.VITE_TEST_MODE;
+      const hold = isTest ? 300 : 2500;
+      const fade = isTest ? 100 : 500;
       fadeTimerRef.current = setTimeout(() => {
         setProgressVisible(false);
-        setTimeout(() => setResultVisible(true), 500);
-      }, 2500);
+        setTimeout(() => setResultVisible(true), fade);
+      }, hold);
     }
     return () => {
       if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
@@ -167,11 +170,12 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
         const data = (await res.json()) as {
           lines?: string[];
           status: string;
+          result?: ScanResult;
         };
         if (data.lines) setLines(data.lines);
         setScanStatus(data.status as typeof scanStatus);
         if (data.status === "complete") {
-          setResultVisible(true);
+          setResult(data.result);
         }
       } catch {
         // network hiccup

@@ -1,2 +1,3 @@
-#!/bin/bash
-opencode 
+#!/usr/bin/env bash
+
+ocx opencode --profile ws

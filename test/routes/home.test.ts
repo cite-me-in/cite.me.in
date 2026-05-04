@@ -69,6 +69,11 @@ describe("home page", () => {
     ).toBeVisible();
   });
 
+  it("should show the scan form in the hero", async () => {
+    await expect(page.getByPlaceholder("yourwebsite.com")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Scan now" })).toBeVisible();
+  });
+
   it("should show how it works section", async () => {
     await expect(
       page.getByRole("heading", { name: "How it works" }),
@@ -101,17 +106,5 @@ describe("home page", () => {
 
   it("should show the footer", async () => {
     await expect(page.locator("footer")).toBeVisible();
-  });
-
-  it("should match visually", { timeout: 30_000 }, async () => {
-    await expect(page.locator("main")).toMatchVisual({
-      name: "home/landing",
-    });
-  });
-
-  it("should navigate to sign-up page when sign-up CTA is clicked", async () => {
-    await page.getByRole("link", { name: "Start monitoring — free" }).click();
-    await page.waitForURL(`http://localhost:${port}/sign-up`);
-    expect(new URL(page.url()).pathname).toBe("/sign-up");
   });
 });

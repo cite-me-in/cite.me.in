@@ -1,42 +1,37 @@
 import test, { type Page, expect } from "@playwright/test";
 import { goto } from "~/test/helpers/launchBrowser";
-import { startScreencast, stopScreencast } from "~/test/helpers/screencast";
 import "~/test/helpers/toMatchVisual";
 
 let page: Page;
 
-test.beforeAll(async () => {
-  page = await goto("/try?domain=acme.com");
-  await startScreencast(page, "legibility-scan/screencast", {
-    size: { width: 1024, height: 2500 },
-  });
-});
-
-test("shows scan page with domain badge", async () => {
+test("shows the scan form on /try", async () => {
+  page = await goto("/try");
   await expect(page.locator("main")).toBeVisible({ timeout: 10_000 });
   await expect(page.locator("main")).toMatchVisual({
-    name: `legibility-scan/1.scanning`,
+    name: "e2e/legibility-scan/1.form",
   });
 });
 
-test("displays scan progress and results", async () => {
-  // Wait for scan to complete by checking for a UI element indicating scan result (adapt selector as needed)
-  await expect(
-    page.getByText(/scan complete|scan finished|results/i),
-  ).toBeVisible({ timeout: 20_000 });
+test("shows scan results with passing and failing checks", async () => {
+  page = await goto("/try?domain=acme.com");
+
+  await expect(page.getByText("Page content")).toBeVisible({
+    timeout: 20_000,
+  });
+
   await expect(page.locator("main")).toMatchVisual({
-    name: `legibility-scan/2.result`,
+    name: "e2e/legibility-scan/2.checks",
   });
 });
 
-test("shows CTA section after scrolling", async () => {
-  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-  await page.waitForTimeout(100);
+test("shows the full scan result including CTA", async () => {
+  page = await goto("/try?domain=acme.com");
+  await expect(page.getByText(/AI Legibility Score/)).toBeVisible({
+    timeout: 40_000,
+  });
+  await page.locator("#scan-results").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(500);
   await expect(page.locator("main")).toMatchVisual({
-    name: `legibility-scan/3.cta`,
+    name: "e2e/legibility-scan/3.final",
   });
-});
-
-test.afterAll(async () => {
-  await stopScreencast(page);
 });

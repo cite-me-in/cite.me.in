@@ -56,7 +56,10 @@ const TAG_MAP_EXTENDED = {
   div: <div />,
   span: <span />,
   button: <button />,
-  a: ({ href = "", ...props }: React.HTMLAttributes<HTMLElement> & { href?: string }) => (
+  a: ({
+    href = "",
+    ...props
+  }: React.HTMLAttributes<HTMLElement> & { href?: string }) => (
     <Link to={href} {...props} />
   ),
 } as const;

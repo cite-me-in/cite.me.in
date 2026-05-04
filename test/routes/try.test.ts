@@ -11,6 +11,8 @@ describe("try page hero and nav", () => {
     page = await goto("/try");
   });
 
+  // Note: May need re-snapshotting if the button text change ("Check" → "Scan now")
+  // or other layout updates cause a visual diff with the stored try/hero snapshot.
   it("should render the hero visually", async () => {
     await expect(
       page.getByRole("heading", { name: "Is your site ready for AI?" }),
@@ -22,7 +24,7 @@ describe("try page hero and nav", () => {
 
   it("should show the domain input and check button", async () => {
     await expect(page.getByPlaceholder("yourwebsite.com")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Check" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Scan now" })).toBeVisible();
   });
 
   it("should show sign in and get started nav links", async () => {
@@ -36,17 +38,15 @@ describe("try page hero and nav", () => {
 
   it("should show the benefits section", async () => {
     await expect(
-      page.getByRole("heading", { name: "After your scan, you'll get" }),
+      page.getByRole("heading", { name: "How it works" }),
     ).toBeVisible();
     await expect(
-      page.getByText("13 free checks", { exact: true }),
+      page.getByText("Scan your site", { exact: true }),
     ).toBeVisible();
     await expect(
-      page.getByText("Know your gaps", { exact: true }),
+      page.getByText("See what matters", { exact: true }),
     ).toBeVisible();
-    await expect(
-      page.getByText("One-click monitoring", { exact: true }),
-    ).toBeVisible();
+    await expect(page.getByText("Fix with AI", { exact: true })).toBeVisible();
   });
 
   it("should show the sign-up CTA section", async () => {
@@ -76,7 +76,7 @@ describe("try page form validation", () => {
   });
 
   it("should show error when submitting empty domain", async () => {
-    await page.getByRole("button", { name: "Check" }).click();
+    await page.getByRole("button", { name: "Scan now" }).click();
     await expect(page.getByText("Enter a website URL")).toBeVisible();
   });
 });
@@ -95,7 +95,7 @@ describe("try page scan flow", () => {
   });
 
   it("should show the scanning progress", async () => {
-    await expect(page.getByText(`Checking ${TEST_DOMAIN}...`)).toBeVisible();
+    await expect(page.getByText(`Checking ${TEST_DOMAIN}`)).toBeVisible();
   });
 
   it("should show scan results", async () => {

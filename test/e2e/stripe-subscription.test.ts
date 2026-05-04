@@ -31,13 +31,13 @@ test("should sign up for a new account", async () => {
     .getByRole("textbox", { name: "Confirm password", exact: true })
     .fill(TEST_PASSWORD);
   await expect(page.locator("main")).toMatchVisual({
-    name: "e2e-stripe/1.sign-up",
+    name: "e2e/stripe/1.sign-up",
   });
 
   await page.getByRole("button", { name: "Create account" }).click();
   await page.waitForURL("/sites");
   await expect(page.locator("main")).toMatchVisual({
-    name: "e2e-stripe/2.sites",
+    name: "e2e/stripe/2.sites",
   });
 
   const user = await prisma.user.findUniqueOrThrow({
@@ -151,6 +151,6 @@ test("should show pro state on sites page after subscribing", async () => {
     page.getByRole("button", { name: /subscribe/i }),
   ).not.toBeVisible();
   await expect(page.locator("main")).toMatchVisual({
-    name: "e2e-stripe/3.sites-pro",
+    name: "e2e/stripe/3.sites-pro",
   });
 });
