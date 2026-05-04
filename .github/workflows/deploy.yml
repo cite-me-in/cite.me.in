@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   workflow_dispatch:
     inputs:
       skip_checks:
@@ -53,8 +53,7 @@ jobs:
           POSTGRES_DB: citeup_test
         ports:
           - 5432:5432
-        options:
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s
           --health-retries 5
 
       redis:
@@ -129,15 +128,21 @@ jobs:
           name: playwright-test-results
           path: __screenshots__
 
-      - uses: Infisical/secrets-action@v1.0.15
-        with:
-          method: "universal"
-          identity-id: "2558782e-875b-4c3b-b40a-6d405dadffe0"
-          client-secret: ${{ secrets.INFISICAL_CLIENT_SECRET }}
-          client-id: ${{ secrets.INFISICAL_CLIENT_ID }}
-          domain: "https://app.infisical.com"
-          env-slug: "prod"
-          project-slug: "cite-me-in"
+      - name: Write .env.prod from Infisical and validate
+        env:
+          INFISICAL_TOKEN: ${{ secrets.INFISICAL_TOKEN }}
+        run: |
+          npm install -g @infisical/cli
+          INFISICAL_TOKEN="$INFISICAL_TOKEN" infisical export --env prod --format=dotenv > .env.prod
+
+          # Validate required runtime secrets
+          source .env.prod
+          if [ -z "$POSTGRES_URL" ]; then
+            echo "::error::POSTGRES_URL is empty or not set"
+            rm .env.prod
+            exit 1
+          fi
+          echo "All required secrets are set"
 
       - name: Log in to GitHub Container Registry
         if: github.ref == 'refs/heads/main'
@@ -155,26 +160,7 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           secrets: |
-            infisical_token=${{ secrets.INFISICAL_TOKEN }}
-          build-args: |
-            INFISICAL_ENV=prod
-            POSTGRES_URL_NON_POOLING=${{ env.POSTGRES_URL_NON_POOLING }}
-            POSTGRES_URL=${{ env.POSTGRES_URL }}
-            ANTHROPIC_API_KEY=${{ env.ANTHROPIC_API_KEY }}
-            TRACK_API_KEY=${{ env.TRACK_API_KEY }}
-            REDIS_URL=${{ env.REDIS_URL }}
-            RESEND_API_KEY=${{ env.RESEND_API_KEY }}
-            SESSION_SECRET=${{ env.SESSION_SECRET }}
-            VITE_APP_URL=${{ env.VITE_APP_URL }}
-            VITE_EMAIL_FROM=${{ env.VITE_EMAIL_FROM }}
-            ZHIPU_API_KEY=${{ env.ZHIPU_API_KEY }}
-            OPENAI_API_KEY=${{ env.OPENAI_API_KEY }}
-            PERPLEXITY_API_KEY=${{ env.PERPLEXITY_API_KEY }}
-            GOOGLE_GENERATIVE_AI_API_KEY=${{ env.GOOGLE_GENERATIVE_AI_API_KEY }}
-            SERPAPI_API_KEY=${{ env.SERPAPI_API_KEY }}
-            STRIPE_SECRET_KEY=${{ env.STRIPE_SECRET_KEY }}
-            STRIPE_WEBHOOK_SECRET=${{ env.STRIPE_WEBHOOK_SECRET }}
-            INDEXNOW_KEY=${{ env.INDEXNOW_KEY }}
+            dotenv=.env.prod
 
       - name: Trigger Coolify deployment
         if: github.ref == 'refs/heads/main'
