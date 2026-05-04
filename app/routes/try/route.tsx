@@ -167,16 +167,11 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
         const data = (await res.json()) as {
           lines?: string[];
           status: string;
-          result?: ScanResult;
-          error?: string;
         };
-        setLines(data.lines ?? []);
+        if (data.lines) setLines(data.lines);
+        setScanStatus(data.status as typeof scanStatus);
         if (data.status === "complete") {
-          setScanStatus("complete");
-          setResult(data.result);
-        } else if (data.status === "error") {
-          setScanStatus("error");
-          setScanError(data.error ?? "Scan failed");
+          setResultVisible(true);
         }
       } catch {
         // network hiccup
@@ -185,82 +180,117 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
     scanStatus === "running" ? 1500 : null,
   );
 
+  useEffect(() => {
+    if (domain) {
+      const timer = setTimeout(() => {
+        document
+          .getElementById("scan-results")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [domain]);
+
   return (
     <Main className="w-full bg-[hsl(60,100%,99%)]">
       <PageNav />
 
-      <section className="border-b-2 border-black bg-amber-400 px-6 py-16 md:py-24">
-        <div className="mx-auto max-w-3xl text-center">
-          <h1 className="mb-4 text-4xl font-bold text-black md:text-5xl">
-            Is your site ready for AI?
-          </h1>
-          <p className="mx-auto mb-10 max-w-xl text-lg font-medium text-black/80">
-            Enter any URL. We scan your site's AI legibility in seconds and give
-            you step-by-step prompts to fix what's missing. See how your site
-            stacks up against the competition.
-          </p>
+      {domain ? (
+        <section className="border-b-2 border-black bg-amber-400 px-6 py-4">
+          <div className="mx-auto max-w-3xl">
+            <span className="text-sm font-bold text-black/60">{domain}</span>
+          </div>
+        </section>
+      ) : (
+        <section className="border-b-2 border-black bg-amber-400 px-6 py-16 md:py-24">
+          <div className="mx-auto max-w-3xl text-center">
+            <h1 className="mb-4 text-4xl font-bold text-black md:text-5xl">
+              Is your site ready for AI?
+            </h1>
+            <p className="mx-auto mb-10 max-w-xl text-lg font-medium text-black/80">
+              Enter any URL. We scan your site's AI legibility in seconds and
+              give you step-by-step prompts to fix what's missing. See how your
+              site stacks up against the competition.
+            </p>
 
-          <DomainForm
-            domain={domain}
-            actionError={
-              actionData && "error" in actionData ? actionData.error : null
-            }
-          />
-        </div>
-      </section>
+            <DomainForm
+              domain={domain}
+              actionError={
+                actionData && "error" in actionData ? actionData.error : null
+              }
+            />
+          </div>
+        </section>
+      )}
 
       {domain ? (
-        <section className="border-b-2 border-black px-6 py-16">
-          <div className="mx-auto max-w-3xl">
-            <div className="mb-6 flex flex-wrap items-center gap-3">
-              <div className="rounded-base inline-flex items-center gap-2 border-2 border-black bg-white px-3 py-1.5 text-sm font-bold shadow-[2px_2px_0px_0px_black]">
-                <GlobeIcon className="h-4 w-4 shrink-0 text-amber-500" />
-                {domain}
+        <>
+          <section
+            id="scan-results"
+            className="border-b-2 border-black px-6 py-16"
+          >
+            <div className="mx-auto max-w-3xl">
+              <div className="mb-6 flex flex-wrap items-center gap-3">
+                <div className="rounded-base inline-flex items-center gap-2 border-2 border-black bg-white px-3 py-1.5 text-sm font-bold shadow-[2px_2px_0px_0px_black]">
+                  <GlobeIcon className="h-4 w-4 shrink-0 text-amber-500" />
+                  {domain}
+                </div>
+                {scanStatus === "complete" && (
+                  <div className="rounded-base inline-flex items-center gap-2 border-2 border-black bg-green-100 px-3 py-1.5 text-sm font-bold shadow-[2px_2px_0px_0px_black]">
+                    <CheckIcon className="h-4 w-4 shrink-0 text-green-600" />
+                    Scan complete
+                  </div>
+                )}
               </div>
-              {scanStatus === "complete" && (
-                <div className="rounded-base inline-flex items-center gap-2 border-2 border-black bg-green-100 px-3 py-1.5 text-sm font-bold shadow-[2px_2px_0px_0px_black]">
-                  <CheckIcon className="h-4 w-4 shrink-0 text-green-600" />
-                  Scan complete
+
+              {scanStatus !== "idle" && scanStatus !== "error" && (
+                <div
+                  className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                    progressVisible
+                      ? "max-h-[3000px] opacity-100"
+                      : "max-h-0 opacity-0"
+                  }`}
+                >
+                  <LiveScanProgress checkStates={checkStates} lines={lines} />
+                </div>
+              )}
+
+              {scanStatus === "error" && (
+                <Card variant="yellow" className="border-red-400">
+                  <CardContent>
+                    <p className="font-bold text-red-600">
+                      {scanError || "Something went wrong. Try again."}
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {scanStatus === "complete" && result && (
+                <div
+                  className={`transition-all duration-500 ease-in-out ${
+                    resultVisible
+                      ? "translate-y-0 opacity-100"
+                      : "translate-y-4 opacity-0"
+                  }`}
+                  style={{ pointerEvents: resultVisible ? "auto" : "none" }}
+                >
+                  <ScanResults result={result} user={user} />
                 </div>
               )}
             </div>
-
-            {scanStatus !== "idle" && scanStatus !== "error" && (
-              <div
-                className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                  progressVisible
-                    ? "max-h-[3000px] opacity-100"
-                    : "max-h-0 opacity-0"
-                }`}
+          </section>
+          {scanStatus === "complete" && (
+            <div className="mt-6 text-center">
+              <a
+                href="/try"
+                className="rounded-base inline-flex items-center gap-2 border-2 border-black bg-white px-6 py-3 text-sm font-bold shadow-[3px_3px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_black]"
               >
-                <LiveScanProgress checkStates={checkStates} lines={lines} />
-              </div>
-            )}
-
-            {scanStatus === "error" && (
-              <Card variant="yellow" className="border-red-400">
-                <CardContent>
-                  <p className="font-bold text-red-600">
-                    {scanError || "Something went wrong. Try again."}
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-
-            {scanStatus === "complete" && result && (
-              <div
-                className={`transition-all duration-500 ease-in-out ${
-                  resultVisible
-                    ? "translate-y-0 opacity-100"
-                    : "translate-y-4 opacity-0"
-                }`}
-                style={{ pointerEvents: resultVisible ? "auto" : "none" }}
-              >
-                <ScanResults result={result} user={user} />
-              </div>
-            )}
-          </div>
-        </section>
+                <SearchIcon className="h-4 w-4" />
+                Check another site
+              </a>
+            </div>
+          )}
+        </>
       ) : (
         <BenefitsSection />
       )}

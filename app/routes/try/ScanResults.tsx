@@ -172,7 +172,7 @@ function UpgradeCard({ user }: { user: unknown }) {
         </a>
       ) : (
         <a
-          href="/sign-up"
+          href="/sign-up?source=try"
           className="rounded-base inline-flex w-full items-center justify-center gap-2 border-2 border-black bg-amber-400 px-8 py-4 text-lg font-bold shadow-[4px_4px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_black]"
         >
           Start monitoring — free

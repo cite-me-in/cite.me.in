@@ -14,7 +14,11 @@ export default function SignUpSection({ domain }: { domain: string }) {
         </p>
         <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <a
-            href={`/sign-up${domain ? `?next=/try?domain=${encodeURIComponent(domain)}` : ""}`}
+            href={
+              domain
+                ? `/sign-up?source=try&next=/try?domain=${encodeURIComponent(domain)}`
+                : "/sign-up?source=try"
+            }
             className="rounded-base inline-flex items-center gap-2 border-2 border-black bg-amber-400 px-8 py-4 text-lg font-bold shadow-[4px_4px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_black]"
           >
             <SparklesIcon className="h-5 w-5" />

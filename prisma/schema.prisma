@@ -393,6 +393,7 @@ model User {
   sentEmails              SentEmail[]
   sentInvitations         SiteInvitation[]         @relation("SentInvitations")
   sessions                Session[]
+  signupSource            String?                 @map("signup_source")
   siteUsers               SiteUser[]
   unsubscribed            Boolean                  @map("unsubscribed")      @default(false)
   updatedAt               DateTime                 @map("updated_at")        @updatedAt

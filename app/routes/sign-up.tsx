@@ -20,6 +20,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   return {
     inviteToken: url.searchParams.get("invite") ?? "",
     next: url.searchParams.get("next") ?? "",
+    source: url.searchParams.get("source") ?? "",
   };
 }
 
@@ -30,6 +31,8 @@ export async function action({ request }: Route.ActionArgs) {
   const confirm = form.get("confirm") as string;
   const inviteToken = ((form.get("inviteToken") as string | null) ?? "").trim();
   const next = (form.get("next") as string | null) ?? "";
+  const source =
+    ((form.get("source") as string | null) ?? "").trim() || undefined;
 
   const errors: Record<string, string> = {};
 
@@ -50,7 +53,7 @@ export async function action({ request }: Route.ActionArgs) {
   const passwordHash = await hashPassword(password);
 
   const user = await prisma.user.create({
-    data: { email, passwordHash },
+    data: { email, passwordHash, signupSource: source },
   });
 
   await emitWebhookEvent("user.created", {
@@ -88,6 +91,9 @@ export default function SignUp({
           )}
           {loaderData.next && (
             <input type="hidden" name="next" value={loaderData.next} />
+          )}
+          {loaderData.source && (
+            <input type="hidden" name="source" value={loaderData.source} />
           )}
           <FieldSet>
             <FieldGroup>

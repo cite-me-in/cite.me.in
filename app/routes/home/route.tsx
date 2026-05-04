@@ -80,7 +80,7 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
   return (
     <Main className="w-full bg-[hsl(60,100%,99%)]">
       <LandingNav isSignedIn={!!user} />
-      <HeroSection isSignedIn={!!user} />
+      <HeroSection />
       <HowItWorksSection />
       <ForWhoSection />
     </Main>
@@ -113,7 +113,7 @@ function LandingNav({ isSignedIn }: { isSignedIn: boolean }) {
   );
 }
 
-function HeroSection({ isSignedIn }: { isSignedIn: boolean }) {
+function HeroSection() {
   return (
     <section className="border-b-2 border-black bg-[#F59E0B] px-6 py-20 md:py-32">
       <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2">
@@ -129,28 +129,42 @@ function HeroSection({ isSignedIn }: { isSignedIn: boolean }) {
             your brand?
           </h1>
 
-          <p className="mb-10 max-w-2xl text-xl leading-relaxed font-medium text-black md:text-2xl">
+          <p className="mb-8 max-w-2xl text-xl leading-relaxed font-medium text-black md:text-2xl">
             Most founders are running blind on AI visibility. Cite.me.in runs
             your queries across ChatGPT, Claude, and Gemini and records every
             time they cite your website. See what's working. Fix what's not.
           </p>
 
-          <div className="flex flex-col gap-4 sm:flex-row">
-            {isSignedIn ? (
-              <ActiveLink variant="button" bg="blue" to="/sites" size="xl">
-                Add a site
-              </ActiveLink>
-            ) : (
-              <>
-                <ActiveLink variant="button" bg="blue" to="/sign-up" size="xl">
-                  Start monitoring — free
-                </ActiveLink>
-                <ActiveLink variant="button" bg="white" to="/sign-in" size="xl">
-                  Sign in
-                </ActiveLink>
-              </>
-            )}
-          </div>
+          <form
+            method="get"
+            action="/try"
+            className="mb-6"
+            onSubmit={(e) => {
+              const form = e.currentTarget;
+              const raw = (new FormData(form).get("domain") as string)?.trim();
+              if (!raw) {
+                e.preventDefault();
+              }
+            }}
+          >
+            <div className="flex gap-3">
+              <div className="relative flex-1">
+                <GlobeIcon className="pointer-events-none absolute top-1/2 left-4 z-10 h-5 w-5 -translate-y-1/2 text-black/40" />
+                <input
+                  name="domain"
+                  placeholder="yourwebsite.com"
+                  className="rounded-base h-14 w-full border-2 border-black bg-white pr-4 pl-12 text-lg font-bold shadow-[4px_4px_0px_0px_black] transition-all outline-none focus:translate-x-[-2px] focus:translate-y-[-2px] focus:shadow-[6px_6px_0px_0px_black]"
+                />
+              </div>
+              <button
+                type="submit"
+                className="rounded-base inline-flex h-14 shrink-0 items-center gap-2 border-2 border-black bg-blue-500 px-6 text-lg font-bold text-white shadow-[4px_4px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_black]"
+              >
+                <SearchIcon className="h-5 w-5" />
+                Scan now
+              </button>
+            </div>
+          </form>
         </div>
 
         <div className="rounded-base overflow-hidden border-2 border-black shadow-[8px_8px_0px_0px_black]">
