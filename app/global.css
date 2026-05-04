@@ -34,3 +34,12 @@
     transform: translateY(-15px);
   }
 }
+
+.prose * {
+  @apply text-pretty;
+}
+h1,
+h2,
+h3 {
+  @apply text-balance;
+}

@@ -155,7 +155,13 @@ export async function runScanSteps({
   }
 
   const pagesToFetch = sampleURLs.filter((u) => u !== url);
-  const fetchedPages = await assessPages({ urls: pagesToFetch });
+  await log(`Checking sample pages... (0/${pagesToFetch.length})`);
+  const fetchedPages: (typeof homepageResult)[] = [];
+  for (let i = 0; i < pagesToFetch.length; i++) {
+    const results = await assessPages({ urls: [pagesToFetch[i]] });
+    fetchedPages.push(results[0]);
+    await log(`Checking sample pages... (${i + 1}/${pagesToFetch.length})`);
+  }
   const fetchedPassed = fetchedPages.filter((p) => p.passed).length;
   const fetchedTimedOut = fetchedPages.filter((p) => p.timedOut).length;
   const samplePagesResult: Omit<CheckResult, "category"> = {

@@ -1,31 +1,20 @@
-import { Dialog } from "@base-ui/react/dialog";
-import {
-  Building2Icon,
-  CheckCircleIcon,
-  CheckIcon,
-  ChevronDownIcon,
-  CopyIcon,
-  GlobeIcon,
-  LayoutDashboardIcon,
-  SearchIcon,
-  SparklesIcon,
-  XCircleIcon,
-  XIcon,
-} from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { CheckIcon, GlobeIcon, SearchIcon } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Form, redirect, useActionData } from "react-router";
 import { useInterval } from "usehooks-ts";
 import CiteMeInLogo from "~/components/layout/CiteMeInLogo";
 import { Button } from "~/components/ui/Button";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
+import { Card, CardContent } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
-import buildPrompt from "~/lib/aiLegibility/buildPrompt";
-import CATEGORIES from "~/lib/aiLegibility/checkDetails";
-import type { CheckResult, ScanResult } from "~/lib/aiLegibility/types";
+import type { ScanResult } from "~/lib/aiLegibility/types";
 import { requireUserAccess } from "~/lib/auth.server";
 import { extractDomain } from "~/lib/sites.server";
 import { getScanStatus } from "~/lib/tryScan.server";
 import type { Route } from "./+types/route";
+import BenefitsSection from "./BenefitsSection";
+import LiveScanProgress, { LOG_TO_CHECK } from "./LiveScanProgress";
+import ScanResults from "./ScanResults";
+import SignUpSection from "./SignUpSection";
 
 export const handle = { hideHeader: true };
 
@@ -71,7 +60,68 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
     loaderData.scanStatus?.error ?? null,
   );
   const startedRef = useRef(false);
-  const logRef = useRef<HTMLDivElement>(null);
+  const [progressVisible, setProgressVisible] = useState(true);
+  const [resultVisible, setResultVisible] = useState(false);
+  const fadeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const checkStates = useMemo(() => {
+    const states: Record<
+      string,
+      {
+        status: "pending" | "running" | "passed" | "failed";
+        message?: string;
+        current?: number;
+        total?: number;
+      }
+    > = {};
+    for (const name of Object.values(LOG_TO_CHECK))
+      states[name] = { status: "pending" };
+
+    let currentCheck: string | null = null;
+    for (const line of lines) {
+      const checkMatch = line.match(/^Checking ([a-z0-9 \-/()]+?)\.\.\./i);
+      if (checkMatch) {
+        const normalized = checkMatch[1].toLowerCase().trim();
+        currentCheck = LOG_TO_CHECK[normalized];
+        if (currentCheck) {
+          const pageCountMatch = line.match(/\.\.\. \((\d+)\/(\d+)\)$/);
+          if (pageCountMatch) {
+            states[currentCheck] = {
+              status: "running",
+              current: parseInt(pageCountMatch[1]),
+              total: parseInt(pageCountMatch[2]),
+            };
+          } else {
+            states[currentCheck] = { status: "running" };
+          }
+        }
+        continue;
+      }
+
+      const resultMatch = line.match(/^([✓✗]) (.+)$/);
+      if (resultMatch && currentCheck) {
+        const isPassed = resultMatch[1] === "✓";
+        states[currentCheck] = {
+          status: isPassed ? "passed" : "failed",
+          message: resultMatch[2],
+        };
+        currentCheck = null;
+      }
+    }
+
+    if (result) {
+      for (const check of result.checks) {
+        if (states[check.name]) {
+          states[check.name] = {
+            status: check.passed ? "passed" : "failed",
+            message: check.message,
+          };
+        }
+      }
+    }
+
+    return states;
+  }, [lines, result]);
 
   useEffect(() => {
     startedRef.current = false;
@@ -79,7 +129,21 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
     setScanStatus(loaderData.scanStatus?.status ?? "idle");
     setResult(loaderData.scanStatus?.result ?? undefined);
     setScanError(loaderData.scanStatus?.error ?? null);
+    setProgressVisible(true);
+    setResultVisible(false);
   }, [loaderData.domain]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (scanStatus === "complete") {
+      fadeTimerRef.current = setTimeout(() => {
+        setProgressVisible(false);
+        setTimeout(() => setResultVisible(true), 500);
+      }, 2500);
+    }
+    return () => {
+      if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
+    };
+  }, [scanStatus]);
 
   useEffect(() => {
     if (startedRef.current) return;
@@ -121,13 +185,6 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
     scanStatus === "running" ? 1500 : null,
   );
 
-  useEffect(() => {
-    logRef.current?.scrollTo({
-      top: logRef.current.scrollHeight,
-      behavior: "smooth",
-    });
-  }, [lines]);
-
   return (
     <Main className="w-full bg-[hsl(60,100%,99%)]">
       <PageNav />
@@ -138,8 +195,9 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
             Is your site ready for AI?
           </h1>
           <p className="mx-auto mb-10 max-w-xl text-lg font-medium text-black/80">
-            Enter any website. We'll run 13 free checks to see if AI agents can
-            find, trust, and cite your content.
+            Enter any URL. We scan your site's AI legibility in seconds and give
+            you step-by-step prompts to fix what's missing. See how your site
+            stacks up against the competition.
           </p>
 
           <DomainForm
@@ -151,7 +209,7 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
         </div>
       </section>
 
-      {domain && (
+      {domain ? (
         <section className="border-b-2 border-black px-6 py-16">
           <div className="mx-auto max-w-3xl">
             <div className="mb-6 flex flex-wrap items-center gap-3">
@@ -167,37 +225,16 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
               )}
             </div>
 
-            {scanStatus === "running" && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-black/20 border-t-black" />
-                    Checking {domain}...
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div
-                    ref={logRef}
-                    className="max-h-64 space-y-1 overflow-y-auto font-mono text-sm text-black/60"
-                  >
-                    {lines.length === 0 && (
-                      <div className="text-black/40">Starting scan...</div>
-                    )}
-                    {lines.map((line, i) => (
-                      <div
-                        key={i}
-                        className={
-                          i === lines.length - 1
-                            ? "animate-pulse text-black"
-                            : ""
-                        }
-                      >
-                        {line}
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+            {scanStatus !== "idle" && scanStatus !== "error" && (
+              <div
+                className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                  progressVisible
+                    ? "max-h-[3000px] opacity-100"
+                    : "max-h-0 opacity-0"
+                }`}
+              >
+                <LiveScanProgress checkStates={checkStates} lines={lines} />
+              </div>
             )}
 
             {scanStatus === "error" && (
@@ -211,13 +248,22 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
             )}
 
             {scanStatus === "complete" && result && (
-              <ResultDisplay result={result} user={user} />
+              <div
+                className={`transition-all duration-500 ease-in-out ${
+                  resultVisible
+                    ? "translate-y-0 opacity-100"
+                    : "translate-y-4 opacity-0"
+                }`}
+                style={{ pointerEvents: resultVisible ? "auto" : "none" }}
+              >
+                <ScanResults result={result} user={user} />
+              </div>
             )}
           </div>
         </section>
+      ) : (
+        <BenefitsSection />
       )}
-
-      {!domain && <BenefitsSection />}
 
       {!user && <SignUpSection domain={domain} />}
     </Main>
@@ -260,12 +306,17 @@ function DomainForm({
         </div>
         <Button type="submit" size="xl" className="h-14 shrink-0">
           <SearchIcon className="h-5 w-5" />
-          Check
+          Scan now
         </Button>
       </div>
       {displayedError && (
         <p className="mt-3 text-left text-sm font-bold text-red-600">
           {displayedError}
+        </p>
+      )}
+      {!displayedError && domain && (
+        <p className="mt-3 text-left text-xs font-medium text-black/40">
+          Scan takes ~15 seconds
         </p>
       )}
     </Form>
@@ -291,367 +342,5 @@ function PageNav() {
         </a>
       </div>
     </nav>
-  );
-}
-
-function ResultDisplay({
-  result,
-  user,
-}: {
-  result: ScanResult;
-  user: unknown;
-}) {
-  const totalPassed = result.checks.filter((c) => c.passed).length;
-  const totalChecks = result.checks.length;
-  const showCelebration = totalPassed === totalChecks;
-
-  return (
-    <div className="space-y-8">
-      {showCelebration && (
-        <div className="rounded-base border-2 border-black bg-green-100 p-6 text-center shadow-[4px_4px_0px_0px_black]">
-          <CheckCircleIcon className="mx-auto mb-2 h-8 w-8 text-green-600" />
-          <h3 className="text-xl font-bold text-green-800">
-            All {totalChecks} checks passed!
-          </h3>
-          <p className="mt-1 text-green-700">
-            Your site is well-optimized for AI discovery.
-          </p>
-        </div>
-      )}
-
-      <Card variant="yellow">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Building2Icon className="h-5 w-5 text-amber-500" />
-            AI Legibility Report — {totalPassed}/{totalChecks} checks passed
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-3">
-            {CATEGORIES.map((cat) => {
-              const checks = result.summary[cat.key];
-              if (!checks) return null;
-              return (
-                <div
-                  key={cat.key}
-                  className="rounded-base border-2 border-black bg-white p-4 text-center shadow-[2px_2px_0px_0px_black]"
-                >
-                  <div className={`text-base font-bold ${cat.color}`}>
-                    {cat.title}
-                  </div>
-                  <div className="mt-1 text-2xl font-bold">
-                    {checks.passed}/{checks.total}
-                  </div>
-                  <div className="text-sm text-black/50">checks passed</div>
-                </div>
-              );
-            })}
-          </div>
-
-          {CATEGORIES.map((cat) => {
-            const checks = result.checks.filter((c) => c.category === cat.key);
-            if (checks.length === 0) return null;
-
-            const failed = checks.filter((c) => !c.passed);
-            const passed = checks.filter((c) => c.passed);
-
-            return (
-              <div key={cat.key}>
-                <h3 className={`mb-2 font-bold ${cat.color}`}>{cat.title}</h3>
-                <div className="space-y-2">
-                  {failed.map((check) => (
-                    <CheckRow key={check.name} check={check} />
-                  ))}
-                  {passed.length > 0 && <CollapsiblePassed passed={passed} />}
-                </div>
-              </div>
-            );
-          })}
-        </CardContent>
-      </Card>
-
-      {totalPassed < totalChecks && (
-        <ImproveSiteModal
-          failedChecks={result.checks.filter((c) => !c.passed)}
-        />
-      )}
-
-      <UpgradeCard user={user} />
-    </div>
-  );
-}
-
-function CheckRow({
-  check,
-}: {
-  check: { name: string; message: string; passed: boolean };
-}) {
-  return (
-    <div
-      className={`rounded-base flex items-start gap-3 border-2 border-black p-3 text-sm shadow-[2px_2px_0px_0px_black] ${
-        check.passed ? "bg-green-50" : "bg-red-50"
-      }`}
-    >
-      {check.passed ? (
-        <CheckCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-green-600" />
-      ) : (
-        <XCircleIcon className="mt-0.5 h-4 w-4 shrink-0 text-red-600" />
-      )}
-      <div>
-        <span className="font-bold">{check.name}</span>
-        <span className="ml-1 text-black/60">{check.message}</span>
-      </div>
-    </div>
-  );
-}
-
-function CollapsiblePassed({
-  passed,
-}: {
-  passed: { name: string; message: string }[];
-}) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div>
-      <button
-        onClick={() => setOpen(!open)}
-        className="rounded-base flex w-full items-center gap-2 border-2 border-dashed border-black bg-green-50/50 px-3 py-2 text-left text-sm font-medium text-green-700 transition-all hover:bg-green-50"
-      >
-        <ChevronDownIcon
-          className={`h-4 w-4 transition-transform ${open ? "rotate-0" : "-rotate-90"}`}
-        />
-        {passed.length} check{passed.length > 1 ? "s" : ""} passed
-      </button>
-      {open && (
-        <div className="mt-2 space-y-2">
-          {passed.map((check) => (
-            <CheckRow key={check.name} check={{ ...check, passed: true }} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function UpgradeCard({ user }: { user: unknown }) {
-  return (
-    <div className="rounded-base border-2 border-black bg-white p-6 shadow-[6px_6px_0px_0px_black]">
-      <h3 className="mb-4 flex items-center gap-2 text-xl font-bold">
-        <SparklesIcon className="h-5 w-5 text-amber-500" />
-        See if AI actually cites your site
-      </h3>
-      <p className="mb-6 font-medium text-black/70">
-        Legibility is one thing. Our weekly scans run{" "}
-        <strong>9 targeted queries</strong> across all{" "}
-        <strong>5 AI platforms</strong> — ChatGPT, Claude, Gemini, Copilot, and
-        Perplexity — to find every citation, track trends, and measure your AI
-        visibility over time.
-      </p>
-
-      {user ? (
-        <a
-          href="/sites"
-          className="rounded-base inline-flex w-full items-center justify-center gap-2 border-2 border-black bg-amber-400 px-8 py-4 text-lg font-bold shadow-[4px_4px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_black]"
-        >
-          <LayoutDashboardIcon className="h-5 w-5" />
-          Go to your dashboard
-        </a>
-      ) : (
-        <a
-          href="/sign-up"
-          className="rounded-base inline-flex w-full items-center justify-center gap-2 border-2 border-black bg-amber-400 px-8 py-4 text-lg font-bold shadow-[4px_4px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_black]"
-        >
-          Start monitoring — free
-        </a>
-      )}
-    </div>
-  );
-}
-
-function BenefitsSection() {
-  return (
-    <section className="border-b-2 border-black px-6 py-20">
-      <div className="mx-auto max-w-5xl">
-        <h2 className="mb-12 text-center text-3xl font-bold md:text-4xl">
-          After your scan, you'll get
-        </h2>
-        <div className="grid gap-6 md:grid-cols-3">
-          <BenefitCard
-            icon={SearchIcon}
-            title="13 free checks"
-            body="We test sitemaps, robots.txt, JSON-LD, meta tags, content quality, and more — all for free."
-          />
-          <BenefitCard
-            icon={BarChartIcon}
-            title="Know your gaps"
-            body="See exactly which checks pass and which need fixing, with clear explanations for each."
-          />
-          <BenefitCard
-            icon={ArrowRightIcon}
-            title="One-click monitoring"
-            body="Sign up to run 9 queries across all 5 AI platforms every week. Track trends over time."
-          />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function BenefitCard({
-  icon: Icon,
-  title,
-  body,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  body: string;
-}) {
-  return (
-    <div className="rounded-base flex flex-col gap-4 border-2 border-black bg-white p-6 text-base text-black shadow-[4px_4px_0px_0px_black]">
-      <div className="rounded-base flex h-12 w-12 items-center justify-center border-2 border-black bg-amber-400 shadow-[2px_2px_0px_0px_black]">
-        <Icon className="h-6 w-6" />
-      </div>
-      <h3 className="text-xl font-bold">{title}</h3>
-      <p className="leading-relaxed font-medium text-black/70">{body}</p>
-    </div>
-  );
-}
-
-function SignUpSection({ domain }: { domain: string }) {
-  return (
-    <section className="border-b-2 border-black bg-[hsl(47,100%,95%)] px-6 py-20">
-      <div className="mx-auto max-w-3xl text-center">
-        <h2 className="mb-4 text-3xl font-bold md:text-4xl">
-          Turn this into weekly monitoring
-        </h2>
-        <p className="mb-10 text-lg font-medium text-black/70">
-          Create a free account. We'll add your site, run 9 queries across all 5
-          platforms, and send you a weekly digest with what changed.
-        </p>
-        <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-          <a
-            href={`/sign-up${domain ? `?next=/try?domain=${encodeURIComponent(domain)}` : ""}`}
-            className="rounded-base inline-flex items-center gap-2 border-2 border-black bg-amber-400 px-8 py-4 text-lg font-bold shadow-[4px_4px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_black]"
-          >
-            <SparklesIcon className="h-5 w-5" />
-            Start monitoring — free
-          </a>
-          <a
-            href="/pricing"
-            className="rounded-base border-2 border-black bg-white px-8 py-4 text-lg font-bold shadow-[4px_4px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_black]"
-          >
-            See pricing
-          </a>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ImproveSiteModal({ failedChecks }: { failedChecks: CheckResult[] }) {
-  const allPrompts = failedChecks.map(buildPrompt).join("\n\n---\n\n");
-  const [open, setOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
-
-  const handleCopyAll = async () => {
-    await navigator.clipboard.writeText(allPrompts);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger
-        className="rounded-base inline-flex w-full items-center justify-center gap-2 border-2 border-black bg-emerald-400 px-8 py-4 text-lg font-bold shadow-[4px_4px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_black]"
-        onClick={() => setOpen(true)}
-      >
-        <SparklesIcon className="h-5 w-5" />
-        Improve Your Site
-      </Dialog.Trigger>
-      <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/50 transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0" />
-        <Dialog.Popup className="rounded-base fixed top-[50%] left-[50%] z-50 flex max-h-[80vh] w-full max-w-2xl translate-x-[-50%] translate-y-[-50%] flex-col gap-4 border-2 border-black bg-white p-6 shadow-[8px_8px_0px_0px_black] transition-all duration-200 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
-          <Dialog.Title className="font-heading pr-8 text-xl font-bold">
-            Improve Your Site
-          </Dialog.Title>
-          <Dialog.Description className="font-base text-sm text-black/60">
-            Use the prompts below with your coding agent to fix the issues found
-            during the scan.
-          </Dialog.Description>
-
-          <div className="min-h-0 flex-1 overflow-y-auto">
-            <textarea
-              className="rounded-base min-h-[30vh] w-full resize-none border-2 border-black bg-[hsl(60,100%,97%)] p-4 font-mono text-sm"
-              value={allPrompts}
-              readOnly
-            />
-          </div>
-
-          <div className="flex items-center justify-between border-t-2 border-black pt-4">
-            <span className="text-sm font-medium text-black/50">
-              {failedChecks.length} issue
-              {failedChecks.length > 1 ? "s" : ""} to fix
-            </span>
-            <button
-              onClick={handleCopyAll}
-              className="rounded-base inline-flex items-center gap-2 border-2 border-black bg-amber-400 px-6 py-3 text-sm font-bold shadow-[3px_3px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_black]"
-            >
-              {copied ? (
-                <>
-                  <CheckIcon className="size-4" />
-                  Copied!
-                </>
-              ) : (
-                <>
-                  <CopyIcon className="size-4" />
-                  Copy all instructions
-                </>
-              )}
-            </button>
-          </div>
-
-          <Dialog.Close className="rounded-base absolute top-4 right-4 p-1 transition-colors hover:bg-black/5">
-            <XIcon className="size-5" />
-            <span className="sr-only">Close</span>
-          </Dialog.Close>
-        </Dialog.Popup>
-      </Dialog.Portal>
-    </Dialog.Root>
-  );
-}
-
-function BarChartIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <line x1="12" y1="20" x2="12" y2="10" />
-      <line x1="18" y1="20" x2="18" y2="4" />
-      <line x1="6" y1="20" x2="6" y2="16" />
-    </svg>
-  );
-}
-
-function ArrowRightIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <line x1="5" y1="12" x2="19" y2="12" />
-      <polyline points="12 5 19 12 12 19" />
-    </svg>
   );
 }
