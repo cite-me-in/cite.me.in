@@ -25,7 +25,12 @@ export default function LiveScanProgress({
 }: {
   checkStates: Record<
     string,
-    { status: string; message?: string; current?: number; total?: number }
+    {
+      status: "pending" | "running" | "passed" | "failed";
+      message?: string;
+      current?: number;
+      total?: number;
+    }
   >;
   lines: string[];
 }) {
@@ -44,26 +49,14 @@ export default function LiveScanProgress({
       <div className="grid gap-3 sm:grid-cols-2">
         {Object.values(LOG_TO_CHECK).map((name) => {
           const state = checkStates[name];
-          if (!state || state.status === "pending") {
-            return (
-              <div
-                key={name}
-                className="rounded-base flex items-center gap-3 border-2 border-black/20 bg-white p-3 text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]"
-              >
-                <div className="h-4 w-4 shrink-0 rounded-full border-2 border-black/20" />
-                <span className="text-black/40">{name}</span>
-              </div>
-            );
-          }
-          if (state.status === "running") {
-            return (
-              <div
-                key={name}
-                className="rounded-base flex items-center gap-3 border-2 border-amber-500 bg-amber-50 p-3 text-sm shadow-[2px_2px_0px_0px_#D97706]"
-              >
-                <span className="inline-block h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-amber-500 border-t-transparent" />
-                <span className="font-bold text-amber-800">{name}</span>
-                {state.current !== undefined && state.total !== undefined ? (
+          return (
+            <CheckStatus
+              key={name}
+              name={name}
+              status={state?.status || "pending"}
+            >
+              {state?.status === "running" ? (
+                state.current !== undefined && state.total !== undefined ? (
                   <span className="ml-auto text-xs text-amber-600">
                     {state.current}/{state.total} pages
                   </span>
@@ -71,38 +64,77 @@ export default function LiveScanProgress({
                   <span className="ml-auto animate-pulse text-xs text-amber-600">
                     Checking...
                   </span>
-                )}
-              </div>
-            );
-          }
-          const isPassed = state.status === "passed";
-          return (
-            <div
-              key={name}
-              className={`rounded-base flex items-center gap-3 border-2 p-3 text-sm shadow-[2px_2px_0px_0px_black] ${
-                isPassed
-                  ? "border-green-600 bg-green-50"
-                  : "border-red-600 bg-red-50"
-              }`}
-            >
-              {isPassed ? (
-                <CheckCircleIcon className="h-4 w-4 shrink-0 text-green-600" />
+                )
               ) : (
-                <XCircleIcon className="h-4 w-4 shrink-0 text-red-600" />
+                state?.message ||
+                (state?.status === "passed" ? "Passed" : "Failed")
               )}
-              <span
-                className={`font-bold ${isPassed ? "text-green-800" : "text-red-800"}`}
-              >
-                {name}
-              </span>
-              <span
-                className={`ml-auto text-xs ${isPassed ? "text-green-600" : "text-red-600"}`}
-              >
-                {state.message || (isPassed ? "Passed" : "Failed")}
-              </span>
-            </div>
+            </CheckStatus>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+function CheckStatus({
+  name,
+  status,
+  children,
+}: {
+  name: string;
+  status: "pending" | "running" | "passed" | "failed";
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={`rounded-base flex items-start gap-3 border-2 p-3 text-base shadow-[2px_2px_0px_0px_black] ${
+        status === "pending"
+          ? "border-black/20 bg-white p-3 text-base shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]"
+          : status === "running"
+            ? "border-amber-500 bg-amber-50 shadow-[2px_2px_0px_0px_#D97706]"
+            : status === "passed"
+              ? "border-green-600 bg-green-50"
+              : "border-red-600 bg-red-50"
+      }`}
+    >
+      <div className="pt-1">
+        {status === "pending" ? (
+          <span className="h-4 w-4 shrink-0 rounded-full border-2 border-black/20" />
+        ) : status === "running" ? (
+          <div className="inline-block h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-amber-500 border-t-transparent" />
+        ) : status === "passed" ? (
+          <CheckCircleIcon className="h-4 w-4 shrink-0 text-green-600" />
+        ) : (
+          <XCircleIcon className="h-4 w-4 shrink-0 text-red-600" />
+        )}
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <div
+          className={`text-base font-bold ${
+            status === "pending"
+              ? "text-black/40"
+              : status === "running"
+                ? "text-amber-800"
+                : status === "passed"
+                  ? "text-green-800"
+                  : "text-red-800"
+          }`}
+        >
+          {name}
+        </div>
+        <div
+          className={`ml-auto text-sm ${
+            status === "running"
+              ? "text-amber-600"
+              : status === "passed"
+                ? "text-green-600"
+                : "text-red-600"
+          }`}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );

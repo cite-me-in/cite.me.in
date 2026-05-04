@@ -6,14 +6,12 @@ import {
   LayoutDashboardIcon,
   SparklesIcon,
   XCircleIcon,
-  XIcon,
   ZapIcon,
 } from "lucide-react";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogOverlay,
@@ -70,13 +68,11 @@ export default function ScanResults({
                   key={cat.key}
                   className="rounded-base border-2 border-black bg-white p-4 text-center shadow-[2px_2px_0px_0px_black]"
                 >
-                  <div className={`text-base font-bold ${cat.color}`}>
-                    {cat.title}
-                  </div>
+                  <div className={`font-bold ${cat.color}`}>{cat.title}</div>
                   <div className="mt-1 text-2xl font-bold">
                     {checks.passed}/{checks.total}
                   </div>
-                  <div className="text-sm text-black/50">checks passed</div>
+                  <div className="text-black/50">checks passed</div>
                 </div>
               );
             })}
@@ -131,7 +127,7 @@ function CollapsiblePassed({
     <div>
       <button
         onClick={() => setOpen(!open)}
-        className="rounded-base flex w-full items-center gap-2 border-2 border-dashed border-black bg-green-50/50 px-3 py-2 text-left text-sm font-medium text-green-700 transition-all hover:bg-green-50"
+        className="rounded-base flex w-full items-center gap-2 border-2 border-dashed border-black bg-green-50/50 px-3 py-2 text-left font-medium text-green-700 transition-all hover:bg-green-50"
       >
         <ChevronDownIcon
           className={`h-4 w-4 transition-transform ${open ? "rotate-0" : "-rotate-90"}`}
@@ -208,7 +204,7 @@ function ImproveSiteModal({ failedChecks }: { failedChecks: CheckResult[] }) {
           <DialogTitle className="font-heading pr-8 text-xl">
             Fix in minutes with your coding agent
           </DialogTitle>
-          <DialogDescription className="font-base text-sm text-black/60">
+          <DialogDescription className="font-base text-black/60">
             Copy the prompts below and paste them into Cursor, Copilot, or
             Claude. Each one includes an example fix — just paste and let your
             AI handle it.
@@ -216,20 +212,20 @@ function ImproveSiteModal({ failedChecks }: { failedChecks: CheckResult[] }) {
 
           <div className="min-h-0 flex-1 overflow-y-auto">
             <textarea
-              className="rounded-base min-h-[30vh] w-full resize-none border-2 border-black bg-[hsl(60,100%,97%)] p-4 font-mono text-sm"
+              className="rounded-base min-h-[30vh] w-full resize-none border-2 border-black bg-[hsl(60,100%,97%)] p-4 font-mono"
               value={allPrompts}
               readOnly
             />
           </div>
 
           <div className="flex items-center justify-between border-t-2 border-black pt-4">
-            <span className="text-sm font-medium text-black/50">
+            <span className="font-medium text-black/50">
               {failedChecks.length} issue
               {failedChecks.length > 1 ? "s" : ""} to fix
             </span>
             <button
               onClick={handleCopyAll}
-              className="rounded-base inline-flex items-center gap-2 border-2 border-black bg-amber-400 px-6 py-3 text-sm font-bold shadow-[3px_3px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_black]"
+              className="rounded-base inline-flex items-center gap-2 border-2 border-black bg-amber-400 px-6 py-3 font-bold shadow-[3px_3px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_black]"
             >
               {copied ? (
                 <>
@@ -244,11 +240,6 @@ function ImproveSiteModal({ failedChecks }: { failedChecks: CheckResult[] }) {
               )}
             </button>
           </div>
-
-          <DialogClose className="rounded-base absolute top-4 right-4 p-1 transition-colors hover:bg-black/5">
-            <XIcon className="size-5" />
-            <span className="sr-only">Close</span>
-          </DialogClose>
         </DialogContent>
       </DialogPortal>
     </Dialog>
@@ -262,7 +253,7 @@ function CheckRow({
 }) {
   return (
     <div
-      className={`rounded-base flex items-start gap-3 border-2 border-black p-3 text-sm shadow-[2px_2px_0px_0px_black] ${
+      className={`rounded-base flex items-start gap-3 border-2 border-black p-3 shadow-[2px_2px_0px_0px_black] ${
         check.passed ? "bg-green-50" : "bg-red-50"
       }`}
     >
@@ -297,9 +288,7 @@ function ScoreGauge({ score }: { score: number }) {
     <div className="rounded-base border-2 border-black bg-white p-6 shadow-[4px_4px_0px_0px_black]">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <div className="text-sm font-medium text-black/50">
-            AI Legibility Score
-          </div>
+          <div className="font-medium text-black/50">AI Legibility Score</div>
           <div className="text-5xl font-black">{score}</div>
         </div>
         <div className="text-6xl font-black">{grade}</div>
@@ -310,7 +299,7 @@ function ScoreGauge({ score }: { score: number }) {
           style={{ width: `${score}%` }}
         />
       </div>
-      <p className="mt-3 text-sm font-medium text-black/50">
+      <p className="mt-3 font-medium text-black/50">
         Most sites score 45-65.{" "}
         {score >= 65 ? "You're above average!" : "There's room to improve."}
       </p>
@@ -354,34 +343,34 @@ function QuickWinCard({ failedChecks }: { failedChecks: CheckResult[] }) {
           <ZapIcon className="h-5 w-5" />
           Quick win
         </h3>
-        <span className="rounded-base border-2 border-emerald-500 bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
+        <span className="rounded-base border-2 border-emerald-500 bg-emerald-100 px-3 py-1 font-bold text-emerald-700">
           {quickWin.detail.effort} fix
         </span>
       </div>
 
-      <p className="mb-3 text-sm font-medium text-emerald-800">
+      <p className="mb-3 font-medium text-emerald-800">
         <strong>{quickWin.message}</strong>
       </p>
 
-      <p className="mb-3 text-xs font-medium text-emerald-700">
+      <p className="mb-3 font-medium text-emerald-700">
         {quickWin.detail.issue}
       </p>
 
       <textarea
-        className="rounded-base mb-3 w-full resize-none border-2 border-emerald-400 bg-white p-3 font-mono text-xs text-emerald-900"
+        className="rounded-base mb-3 w-full resize-none border-2 border-emerald-400 bg-white p-3 font-mono text-emerald-900"
         value={prompt}
         readOnly
         rows={6}
       />
 
       <div className="flex items-center justify-between gap-4">
-        <span className="text-xs font-medium text-emerald-700">
+        <span className="max-w-md font-medium text-emerald-700">
           Copy this prompt and paste it into your AI coding agent (Claude Code,
           Cursor, Copilot, Codex) — it will fix the code in minutes.
         </span>
         <button
           onClick={handleCopy}
-          className="rounded-base inline-flex shrink-0 items-center gap-2 border-2 border-emerald-600 bg-emerald-400 px-4 py-2 text-xs font-bold shadow-[3px_3px_0px_0px_#059669] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_#059669]"
+          className="rounded-base inline-flex shrink-0 items-center gap-2 border-2 border-emerald-600 bg-emerald-400 px-4 py-2 font-bold shadow-[3px_3px_0px_0px_#059669] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_#059669]"
         >
           {copied ? (
             <>

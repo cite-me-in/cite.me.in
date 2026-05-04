@@ -197,9 +197,10 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
 
       {domain ? (
         <section className="border-b-2 border-black bg-amber-400 px-6 py-4">
-          <div className="mx-auto max-w-3xl">
-            <span className="text-sm font-bold text-black/60">{domain}</span>
-          </div>
+          <h1 className="mx-auto max-w-3xl text-4xl font-bold">
+            <GlobeIcon className="h-4 w-4 shrink-0 text-amber-500" /> Checking{" "}
+            {domain}
+          </h1>
         </section>
       ) : (
         <section className="border-b-2 border-black bg-amber-400 px-6 py-16 md:py-24">
@@ -268,7 +269,7 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
               {scanStatus === "complete" && result && (
                 <div
                   className={`transition-all duration-500 ease-in-out ${
-                    resultVisible
+                    !progressVisible && resultVisible
                       ? "translate-y-0 opacity-100"
                       : "translate-y-4 opacity-0"
                   }`}
