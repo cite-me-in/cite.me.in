@@ -1,6 +1,7 @@
 import { useRender } from "@base-ui/react";
 import { type VariantProps, cva } from "class-variance-authority";
 import { forwardRef } from "react";
+import { Link } from "react-router";
 import { twMerge } from "tailwind-merge";
 
 const buttonVariants = cva(
@@ -42,28 +43,43 @@ const buttonVariants = cva(
   },
 );
 
-const TAG_MAP = { div: <div />, span: <span />, button: <button /> } as const;
-
 export interface ButtonProps
   extends
     React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   render?: React.ReactElement;
-  as?: keyof typeof TAG_MAP;
+  as?: "a" | "button" | "div" | "span";
+  href?: string;
 }
 
+const TAG_MAP_EXTENDED = {
+  div: <div />,
+  span: <span />,
+  button: <button />,
+  a: ({ href = "", ...props }: React.HTMLAttributes<HTMLElement> & { href?: string }) => (
+    <Link to={href} {...props} />
+  ),
+} as const;
+
 const Button = forwardRef<HTMLElement, ButtonProps>(
-  ({ className, variant, size, render, as, ...props }, ref) =>
-    useRender({
-      defaultTagName: "button",
-      render: render ?? (as ? TAG_MAP[as] : undefined),
+  ({ className, variant, size, render, as, href, ...props }, ref) => {
+    // Determine if we should render an anchor
+    const isAnchor = as === "a" || (!!href && !as);
+    const tagName = isAnchor ? "a" : (as ?? "button");
+    const renderElem = render ?? (TAG_MAP_EXTENDED[tagName] || undefined);
+
+    return useRender({
+      defaultTagName: tagName,
+      render: renderElem,
       state: {},
       props: {
         ...props,
+        ...(isAnchor ? { href } : {}),
         className: twMerge(buttonVariants({ variant, size, className })),
         ref,
       },
-    }),
+    });
+  },
 );
 Button.displayName = "Button";
 

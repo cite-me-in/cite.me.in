@@ -7,8 +7,7 @@ import {
   SparklesIcon,
   TrendingUpIcon,
 } from "lucide-react";
-import CiteMeInLogo from "~/components/layout/CiteMeInLogo";
-import { ActiveLink } from "~/components/ui/ActiveLink";
+import LandingPageNav from "~/components/layout/LandingPageNav";
 import Main from "~/components/ui/Main";
 import { requireUserAccess } from "~/lib/auth.server";
 import type { Route } from "./+types/route";
@@ -79,37 +78,11 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
 
   return (
     <Main className="w-full bg-[hsl(60,100%,99%)]">
-      <LandingNav isSignedIn={!!user} />
+      <LandingPageNav isSignedIn={!!user} />
       <HeroSection />
       <HowItWorksSection />
       <ForWhoSection />
     </Main>
-  );
-}
-
-function LandingNav({ isSignedIn }: { isSignedIn: boolean }) {
-  return (
-    <nav className="flex items-center justify-between border-b-2 border-black bg-[hsl(60,100%,99%)] px-6 py-3">
-      <CiteMeInLogo />
-      <div className="flex items-center gap-6">
-        <div className="flex items-center gap-3">
-          {isSignedIn ? (
-            <ActiveLink variant="button" to="/sites" size="sm" bg="yellow">
-              Dashboard
-            </ActiveLink>
-          ) : (
-            <>
-              <ActiveLink variant="button" to="/sign-in" size="sm">
-                Sign in
-              </ActiveLink>
-              <ActiveLink variant="button" to="/sign-up" size="sm" bg="yellow">
-                Get started
-              </ActiveLink>
-            </>
-          )}
-        </div>
-      </div>
-    </nav>
   );
 }
 

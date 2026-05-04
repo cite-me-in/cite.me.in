@@ -2,7 +2,7 @@ import { CheckIcon, GlobeIcon, SearchIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Form, redirect, useActionData } from "react-router";
 import { useInterval } from "usehooks-ts";
-import CiteMeInLogo from "~/components/layout/CiteMeInLogo";
+import LandingPageNav from "~/components/layout/LandingPageNav";
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
@@ -193,7 +193,7 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
 
   return (
     <Main className="w-full bg-[hsl(60,100%,99%)]">
-      <PageNav />
+      <LandingPageNav isSignedIn={!!user} />
 
       {domain ? (
         <section className="border-b-2 border-black bg-amber-400 px-6 py-4">
@@ -280,16 +280,14 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
               )}
             </div>
           </section>
+
           {scanStatus === "complete" && (
-            <div className="mt-6 text-center">
-              <a
-                href="/try"
-                className="rounded-base inline-flex items-center gap-2 border-2 border-black bg-white px-6 py-3 text-sm font-bold shadow-[3px_3px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_black]"
-              >
+            <section className="px-6 py-16 text-center">
+              <Button variant="secondary" as="a" href="/try" size="xl">
                 <SearchIcon className="h-4 w-4" />
                 Check another site
-              </a>
-            </div>
+              </Button>
+            </section>
           )}
         </>
       ) : (
@@ -351,27 +349,5 @@ function DomainForm({
         </p>
       )}
     </Form>
-  );
-}
-
-function PageNav() {
-  return (
-    <nav className="flex items-center justify-between border-b-2 border-black bg-[hsl(60,100%,99%)] px-6 py-3">
-      <CiteMeInLogo />
-      <div className="flex items-center gap-3">
-        <a
-          href="/sign-in"
-          className="rounded-base inline-flex items-center border-2 border-black bg-white px-4 py-2 text-sm font-bold shadow-[3px_3px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_black]"
-        >
-          Sign in
-        </a>
-        <a
-          href="/sign-up"
-          className="rounded-base inline-flex items-center border-2 border-black bg-amber-400 px-4 py-2 text-sm font-bold shadow-[3px_3px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_black]"
-        >
-          Get started
-        </a>
-      </div>
-    </nav>
   );
 }
