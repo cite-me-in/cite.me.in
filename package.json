@@ -7,7 +7,6 @@
     "check": "secretlint **/* --format stylish && react-router typegen && vp check --fix && knip",
     "clean": "pnpm install --force && rm -rf node_modules/.vite .react-router build",
     "dev": "react-router dev",
-    "promote": "./scripts/promote.ts",
     "start": "react-router-serve ./build/server/index.js",
     "test:db:push": "infisical --env dev run -- pnpm prisma db push",
     "prod:db:push": "infisical --env prod run -- pnpm prisma db push",
