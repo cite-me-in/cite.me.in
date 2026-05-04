@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
+
+# Deploy the application to Coolify without running tests.
+#
+# Usage:
+#   scripts/deploy
+#   SKIP_TESTS=true scripts/deploy
+
+
 set -eo pipefail
+
 
 IMAGE="ghcr.io/cite-me-in/cite.me.in:latest"
 APP_UUID="myp73fab3pizwxq1coahwxqw"
@@ -14,11 +23,13 @@ done
 echo "--- Step 1: Check (lint, types, secrets) ---"
 pnpm run check
 
+
 echo "--- Step 2: Push DB schema ---"
 pnpm prisma generate
 pnpm prisma db push
 
-if [ "$SKIP_TESTS" = false ]; then
+
+if [ -z "${SKIP_TESTS:-}" ]; then
   echo "--- Step 3: Run tests ---"
   pnpm vp test run
 
@@ -26,8 +37,8 @@ if [ "$SKIP_TESTS" = false ]; then
   pnpm playwright test
 fi
 
-echo "--- All checks passed. Deploying ---"
 
+echo "--- All checks passed. Deploying ---"
 
 COLIMA_WAS_RUNNING=true
 if ! colima status &>/dev/null; then
@@ -43,8 +54,13 @@ cleanup() {
 }
 trap cleanup EXIT
 
+echo "Fetching production secrets from Infisical..."
+infisical export --env prod --format=dotenv > .env.prod
+
 echo "Building and pushing Docker image..."
-docker buildx build --platform linux/amd64 --push -t "$IMAGE" .
+docker buildx build --platform linux/amd64 --secret id=dotenv,src=.env.prod --push -t "$IMAGE" .
+
+rm .env.prod
 
 echo "Triggering Coolify deployment..."
 TOKEN=$(jq -r '.instances[0].token' ~/.config/coolify/config.json)
