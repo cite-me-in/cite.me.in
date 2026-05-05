@@ -39,11 +39,13 @@ async function convertHTMLToMarkdown(response: Response): Promise<Response> {
 
   if (!markdown) return new Response("Not Found", { status: 404 });
 
+  const headers = new Headers();
+  for (const [key, value] of response.headers.entries())
+    if (key.toLowerCase() !== "content-type") headers.set(key, value);
+  headers.set("Content-Type", "text/markdown; charset=utf-8");
+
   return new Response(markdown, {
     status: response.status,
-    headers: {
-      ...Object.fromEntries(response.headers.entries()),
-      "Content-Type": "text/markdown; charset=utf-8",
-    },
+    headers: headers,
   });
 }
