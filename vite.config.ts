@@ -24,6 +24,7 @@ export default {
   },
   server: {
     allowedHosts: [".ngrok-free.app"],
+    cors: false, // Disable Vite's CORS middleware, let React Router handle it
   },
   staged: {
     "*.{ts,tsx}": "vp check --fix",
