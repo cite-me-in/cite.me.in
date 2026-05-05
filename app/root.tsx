@@ -6,11 +6,14 @@ import {
 } from "react-router";
 import { WaveLoading } from "respinner";
 import { requireUserAccess } from "~/lib/auth.server";
+import { markdownMiddleware } from "~/middleware/markdown";
 import type { Route } from "./+types/root";
+import "./global.css";
 import PageLayout from "./components/layout/PageLayout";
 import Main from "./components/ui/Main";
-import "./global.css";
 import socialLinks from "./lib/socialLinks";
+
+export const middleware: Route.MiddlewareFunction[] = [markdownMiddleware];
 
 export async function loader({ request }: Route.LoaderArgs) {
   const baseUrl = new URL(request.url).origin;

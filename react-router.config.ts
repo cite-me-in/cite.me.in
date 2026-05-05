@@ -1,7 +1,9 @@
 import type { Config } from "@react-router/dev/config";
 
 export default {
-  future: {},
+  future: {
+    v8_middleware: true,
+  },
   prerender: async () => [],
   ssr: true,
 } satisfies Config;
