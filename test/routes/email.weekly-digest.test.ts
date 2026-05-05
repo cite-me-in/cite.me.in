@@ -5,6 +5,10 @@ import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
 import getLastEmailSent from "~/test/helpers/getLastEmailSent";
 
+vi.mock("~/emails/generateUnsubscribeToken", () => ({
+  default: () => "test-token",
+}));
+
 describe("WeeklyDigestEmail", () => {
   let email: NonNullable<Awaited<ReturnType<typeof getLastEmailSent>>>;
 
