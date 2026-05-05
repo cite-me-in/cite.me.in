@@ -64,7 +64,7 @@ export default function LiveScanProgress({
                     ? state.current !== undefined && state.total !== undefined
                       ? `${state.current}/${state.total} pages`
                       : "Checking..."
-                    : "Pending"}
+                    : "Pending..."}
             </CheckStatus>
           );
         })}
@@ -125,7 +125,7 @@ function CheckStatus({
         </div>
         <div
           className={twMerge(
-            "ml-auto text-sm",
+            "text-sm",
             {
               passed: "text-green-600",
               failed: "text-red-600",

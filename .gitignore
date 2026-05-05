@@ -1,7 +1,6 @@
 .claude/
 .env
-.env.test
-.env.docker
+.env.*
 .infisical.json
 /node_modules
 backup.sql

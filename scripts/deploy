@@ -20,25 +20,25 @@ for arg in "$@"; do
   fi
 done
 
-echo "--- Step 1: Check (lint, types, secrets) ---"
+echo -e "\033[0;32m--- Step 1: Check (lint, types, secrets) ---\033[0m"
 pnpm run check
 
 
-echo "--- Step 2: Push DB schema ---"
+echo -e "\033[0;32m--- Step 2: Push DB schema ---\033[0m"
 pnpm prisma generate
 pnpm prisma db push
 
 
-if [ -z "${SKIP_TESTS:-}" ]; then
-  echo "--- Step 3: Run tests ---"
+if [ -z "${SKIP_TESTS+x}" ]; then
+  echo -e "\033[0;32m--- Step 3: Run tests ---\033[0m"
   pnpm vp test run
 
-  echo "--- Step 4: Run Playwright ---"
+  echo -e "\033[0;32m--- Step 4: Run Playwright ---\033[0m"
   pnpm playwright test
 fi
 
 
-echo "--- All checks passed. Deploying ---"
+echo -e "\033[0;32m--- All checks passed. Deploying ---\033[0m"
 
 COLIMA_WAS_RUNNING=true
 if ! colima status &>/dev/null; then
@@ -54,18 +54,18 @@ cleanup() {
 }
 trap cleanup EXIT
 
-echo "Fetching production secrets from Infisical..."
+echo -e "\033[0;32m--- Fetching production secrets from Infisical ---\033[0m"
 infisical export --env prod --format=dotenv > .env.prod
 
-echo "Building and pushing Docker image..."
+echo -e "\033[0;32m--- Building and pushing Docker image ---\033[0m"
 docker buildx build --platform linux/amd64 --secret id=dotenv,src=.env.prod --push -t "$IMAGE" .
 
 rm .env.prod
 
-echo "Triggering Coolify deployment..."
+echo -e "\033[0;32m--- Triggering Coolify deployment ---\033[0m"
 TOKEN=$(jq -r '.instances[0].token' ~/.config/coolify/config.json)
 curl -s -X POST "https://coolify.labnotes.org/api/v1/deploy?type=application&uuid=$APP_UUID" \
   -H "Authorization: Bearer $TOKEN" | jq
 
-echo "Deployed to https://cite.me.in"
+echo -e "\033[0;34m--- Deployed to https://cite.me.in ---\033[0m"
 open https://cite.me.in

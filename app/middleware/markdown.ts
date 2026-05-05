@@ -42,7 +42,7 @@ async function convertHTMLToMarkdown(response: Response): Promise<Response> {
   return new Response(markdown, {
     status: response.status,
     headers: {
-      ...response.headers,
+      ...Object.fromEntries(response.headers.entries()),
       "Content-Type": "text/markdown; charset=utf-8",
     },
   });

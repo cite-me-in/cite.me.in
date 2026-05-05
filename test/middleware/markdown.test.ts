@@ -9,16 +9,18 @@ import {
 import { markdownMiddleware } from "~/middleware/markdown";
 
 vi.mock("defuddle/node", () => ({
-  Defuddle: vi.fn().mockResolvedValue({
-    contentMarkdown:
-      "# Test\n\nMarkdown content here that is long enough to pass validation.",
-    content:
-      "<h1>Test</h1><p>Markdown content here that is long enough to pass validation.</p>",
-  }),
+  Defuddle: vi
+    .fn<() => { contentMarkdown: string; content: string }>()
+    .mockResolvedValue({
+      contentMarkdown:
+        "# Test\n\nMarkdown content here that is long enough to pass validation.",
+      content:
+        "<h1>Test</h1><p>Markdown content here that is long enough to pass validation.</p>",
+    }),
 }));
 
 vi.mock("linkedom", () => ({
-  parseHTML: vi.fn().mockReturnValue({ document: {} }),
+  parseHTML: vi.fn<() => { document: {} }>().mockReturnValue({ document: {} }),
 }));
 
 describe("markdownMiddleware", () => {
