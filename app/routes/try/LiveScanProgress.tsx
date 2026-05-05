@@ -64,7 +64,7 @@ export default function LiveScanProgress({
                     ? state.current !== undefined && state.total !== undefined
                       ? `${state.current}/${state.total} pages`
                       : "Checking..."
-                    : "Waiting..."}
+                    : "Preparing..."}
             </CheckStatus>
           );
         })}

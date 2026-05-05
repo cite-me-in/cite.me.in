@@ -15,6 +15,12 @@ export function meta(): Route.MetaDescriptors {
   ];
 }
 
+export function links(): Route.LinkDescriptors {
+  return [
+    { rel: "alternate", type: "text/markdown", title: "Markdown version", href: "/docs.md" },
+  ];
+}
+
 export async function loader() {
   return {
     markdown: generateApiDocsMarkdown(generateOpenApiSpec()),

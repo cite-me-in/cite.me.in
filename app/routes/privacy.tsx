@@ -12,6 +12,17 @@ export function meta(): Route.MetaDescriptors {
   ];
 }
 
+export function links(): Route.LinkDescriptors {
+  return [
+    {
+      rel: "alternate",
+      type: "text/markdown",
+      title: "Markdown version",
+      href: "/privacy.md",
+    },
+  ];
+}
+
 export default function PrivacyPolicy() {
   return (
     <Main variant="prose">

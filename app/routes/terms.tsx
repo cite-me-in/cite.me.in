@@ -12,6 +12,17 @@ export function meta(): Route.MetaDescriptors {
   ];
 }
 
+export function links(): Route.LinkDescriptors {
+  return [
+    {
+      rel: "alternate",
+      type: "text/markdown",
+      title: "Markdown version",
+      href: "/terms.md",
+    },
+  ];
+}
+
 export default function TermsOfService() {
   return (
     <Main variant="prose">

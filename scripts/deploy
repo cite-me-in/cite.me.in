@@ -23,22 +23,24 @@ done
 echo -e "\033[0;32m--- Step 1: Check (lint, types, secrets) ---\033[0m"
 pnpm run check
 
-
 echo -e "\033[0;32m--- Step 2: Push DB schema ---\033[0m"
 pnpm prisma generate
 pnpm prisma db push
 
-
-if [ -z "${SKIP_TESTS+x}" ]; then
+if [[ -z "$SKIP_TESTS" ]]; then
   echo -e "\033[0;32m--- Step 3: Run tests ---\033[0m"
   pnpm vp test run
 
   echo -e "\033[0;32m--- Step 4: Run Playwright ---\033[0m"
   pnpm playwright test
+else
+  echo -e "\033[0;32m--- Skipping tests ---\033[0m"
 fi
 
-
 echo -e "\033[0;32m--- All checks passed. Deploying ---\033[0m"
+
+echo -e "\033[0;32m--- Fetching production secrets from Infisical ---\033[0m"
+infisical export --env prod --format=dotenv > .env.prod
 
 COLIMA_WAS_RUNNING=true
 if ! colima status &>/dev/null; then
@@ -53,9 +55,6 @@ cleanup() {
   fi
 }
 trap cleanup EXIT
-
-echo -e "\033[0;32m--- Fetching production secrets from Infisical ---\033[0m"
-infisical export --env prod --format=dotenv > .env.prod
 
 echo -e "\033[0;32m--- Building and pushing Docker image ---\033[0m"
 docker buildx build --platform linux/amd64 --secret id=dotenv,src=.env.prod --push -t "$IMAGE" .
