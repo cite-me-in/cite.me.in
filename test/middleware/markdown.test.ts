@@ -1,4 +1,11 @@
-import { beforeEach, describe, expect, it, vi, type Mock } from "vite-plus/test";
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+  type Mock,
+} from "vite-plus/test";
 import { markdownMiddleware } from "~/middleware/markdown";
 
 vi.mock("defuddle/node", () => ({
@@ -43,9 +50,12 @@ describe("markdownMiddleware", () => {
 
   it("should return 404 for .md requests when HTML contains 404 title", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response("<html><head><title>404</title></head><body></body></html>", {
-        status: 200,
-      }),
+      new Response(
+        "<html><head><title>404</title></head><body></body></html>",
+        {
+          status: 200,
+        },
+      ),
     );
 
     const request = new Request("http://localhost:5173/missing.md");
@@ -68,9 +78,12 @@ describe("markdownMiddleware", () => {
 
   it("should convert HTML to markdown when Accept header includes text/markdown", async () => {
     mockNext.mockResolvedValue(
-      new Response("<html><head><title>Test</title></head><body>Content</body></html>", {
-        headers: { "Content-Type": "text/html" },
-      }),
+      new Response(
+        "<html><head><title>Test</title></head><body>Content</body></html>",
+        {
+          headers: { "Content-Type": "text/html" },
+        },
+      ),
     );
 
     const request = new Request("http://localhost:5173/page", {
@@ -126,7 +139,7 @@ describe("markdownMiddleware", () => {
       author: "",
       site: "",
       schemaOrgData: undefined,
-      wordCount: 0
+      wordCount: 0,
     });
 
     vi.spyOn(globalThis, "fetch").mockResolvedValue(

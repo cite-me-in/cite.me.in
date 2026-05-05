@@ -1,4 +1,5 @@
 import { CheckCircleIcon, XCircleIcon } from "lucide-react";
+import { twMerge } from "tailwind-merge";
 import { Card, CardHeader, CardTitle } from "~/components/ui/Card";
 
 export const LOG_TO_CHECK: Record<string, string> = {
@@ -48,27 +49,22 @@ export default function LiveScanProgress({
       )}
       <div className="grid gap-3 sm:grid-cols-2">
         {Object.values(LOG_TO_CHECK).map((name) => {
-          const state = checkStates[name];
+          const state = checkStates[name] ?? { status: "pending" };
           return (
             <CheckStatus
               key={name}
               name={name}
-              status={state?.status || "pending"}
+              status={state.status || "pending"}
             >
-              {state?.status === "running" ? (
-                state.current !== undefined && state.total !== undefined ? (
-                  <span className="ml-auto text-xs text-amber-600">
-                    {state.current}/{state.total} pages
-                  </span>
-                ) : (
-                  <span className="ml-auto animate-pulse text-xs text-amber-600">
-                    Checking...
-                  </span>
-                )
-              ) : (
-                state?.message ||
-                (state?.status === "passed" ? "Passed" : "Failed")
-              )}
+              {state.status === "passed"
+                ? state.message || "Passed"
+                : state.status === "failed"
+                  ? state.message || "Failed"
+                  : state.status === "running"
+                    ? state.current !== undefined && state.total !== undefined
+                      ? `${state.current}/${state.total} pages`
+                      : "Checking..."
+                    : "Pending"}
             </CheckStatus>
           );
         })}
@@ -88,50 +84,55 @@ function CheckStatus({
 }) {
   return (
     <div
-      className={`rounded-base flex items-start gap-3 border-2 p-3 text-base shadow-[2px_2px_0px_0px_black] ${
-        status === "pending"
-          ? "border-black/20 bg-white p-3 text-base shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]"
-          : status === "running"
-            ? "border-amber-500 bg-amber-50 shadow-[2px_2px_0px_0px_#D97706]"
-            : status === "passed"
-              ? "border-green-600 bg-green-50"
-              : "border-red-600 bg-red-50"
-      }`}
+      className={twMerge(
+        `rounded-base shadow-[2px_2px_0px_0px_black flex items-start gap-3 border-2 p-3 text-base`,
+        {
+          passed: "border-green-600 bg-green-50",
+          failed: "border-red-600 bg-red-50",
+          running:
+            "border-amber-500 bg-amber-50 shadow-[2px_2px_0px_0px_#D97706]",
+          pending:
+            "border-black/20 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]",
+        }[status] ||
+          "border-black/20 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]",
+      )}
     >
       <div className="pt-1">
-        {status === "pending" ? (
-          <span className="h-4 w-4 shrink-0 rounded-full border-2 border-black/20" />
+        {status === "passed" ? (
+          <CheckCircleIcon className="size-4 shrink-0 text-green-600" />
+        ) : status === "failed" ? (
+          <XCircleIcon className="size-4 shrink-0 text-red-600" />
         ) : status === "running" ? (
-          <div className="inline-block h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-amber-500 border-t-transparent" />
-        ) : status === "passed" ? (
-          <CheckCircleIcon className="h-4 w-4 shrink-0 text-green-600" />
+          <div className="inline-block size-4 shrink-0 animate-spin rounded-full border-2 border-amber-500 border-t-transparent" />
         ) : (
-          <XCircleIcon className="h-4 w-4 shrink-0 text-red-600" />
+          <span className="size-4 shrink-0 rounded-full border-2 border-black/20" />
         )}
       </div>
 
       <div className="flex flex-col gap-1">
         <div
-          className={`text-base font-bold ${
-            status === "pending"
-              ? "text-black/40"
-              : status === "running"
-                ? "text-amber-800"
-                : status === "passed"
-                  ? "text-green-800"
-                  : "text-red-800"
-          }`}
+          className={twMerge(
+            "text-base font-bold",
+            {
+              passed: "text-green-800",
+              failed: "text-red-800",
+              running: "text-amber-800",
+              pending: "text-black/40",
+            }[status] || "text-black/40",
+          )}
         >
           {name}
         </div>
         <div
-          className={`ml-auto text-sm ${
-            status === "running"
-              ? "text-amber-600"
-              : status === "passed"
-                ? "text-green-600"
-                : "text-red-600"
-          }`}
+          className={twMerge(
+            "ml-auto text-sm",
+            {
+              passed: "text-green-600",
+              failed: "text-red-600",
+              running: "text-amber-600",
+              pending: "text-black/40",
+            }[status] || "text-black/40",
+          )}
         >
           {children}
         </div>
