@@ -41,6 +41,18 @@ expect.extend({
     const doc = parseHTML(rawHtml).document;
     if (options?.modify) options.modify(doc);
 
+    // Normalize dynamic port in URLs to keep baselines stable
+    for (const el of doc.querySelectorAll("[src], [href]")) {
+      for (const attr of ["src", "href"]) {
+        const val = el.getAttribute(attr);
+        if (val)
+          el.setAttribute(
+            attr,
+            val.replace(/http:\/\/localhost:\d+\//g, "http://localhost:PORT/"),
+          );
+      }
+    }
+
     // Remove all scripts from the document (JSON-LD, etc.)
     for (const script of doc.querySelectorAll("script")) script.remove();
 
@@ -58,11 +70,16 @@ expect.extend({
     }
 
     const original = await readFile(filename, "utf-8");
-    if (formattedHtml !== original) {
+    // Normalize the baseline too, so port changes don't cause comparison failures
+    const normalizedOriginal = original.replace(
+      /http:\/\/localhost:\d+\//g,
+      "http://localhost:PORT/",
+    );
+    if (formattedHtml !== normalizedOriginal) {
       const newFilename = path.resolve(baseDir, `${name}.new.html`);
       await writeFile(newFilename, formattedHtml);
 
-      const diff = diffHTMLs(original, formattedHtml);
+      const diff = diffHTMLs(normalizedOriginal, formattedHtml);
       await writeFile(path.resolve(baseDir, `${name}.html.diff`), diff);
 
       return {
