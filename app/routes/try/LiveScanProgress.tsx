@@ -64,22 +64,15 @@ export default function LiveScanProgress({
               name={name}
               status={state.status || "pending"}
             >
-              {state.status === "passed" ? (
-                state.message || "Passed"
-              ) : state.status === "failed" ? (
-                <FailedDetails
-                  message={state.message || "Failed"}
-                  failedPages={state.details?.failedPages}
-                />
-              ) : state.status === "running" ? (
-                state.current !== undefined && state.total !== undefined ? (
-                  `${state.current}/${state.total} pages`
-                ) : (
-                  "Checking..."
-                )
-              ) : (
-                "Getting ready..."
-              )}
+              {state.status === "passed"
+                ? state.message || "Passed"
+                : state.status === "failed"
+                  ? state.message || "Failed"
+                  : state.status === "running"
+                    ? state.current !== undefined && state.total !== undefined
+                      ? `${state.current}/${state.total} pages`
+                      : "Checking..."
+                    : "Getting ready..."}
             </CheckStatus>
           );
         })}
@@ -152,33 +145,6 @@ function CheckStatus({
           {children}
         </div>
       </div>
-    </div>
-  );
-}
-
-function FailedDetails({
-  message,
-  failedPages,
-}: {
-  message: string;
-  failedPages?: Array<{
-    url: string;
-    message: string;
-    timedOut: boolean;
-  }>;
-}) {
-  return (
-    <div>
-      <div>{message || "Failed"}</div>
-      {failedPages && failedPages.length > 0 && (
-        <div className="mt-1 space-y-1 text-xs">
-          {failedPages.map((page: any, idx: number) => (
-            <div key={idx} className="opacity-75">
-              {page.timedOut ? "⏱" : "✗"} {page.url}: {page.message}
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

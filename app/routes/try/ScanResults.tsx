@@ -249,7 +249,18 @@ function ImproveSiteModal({ failedChecks }: { failedChecks: CheckResult[] }) {
 function CheckRow({
   check,
 }: {
-  check: { name: string; message: string; passed: boolean };
+  check: {
+    name: string;
+    message: string;
+    passed: boolean;
+    details?: {
+      failedPages?: Array<{
+        url: string;
+        message: string;
+        timedOut?: boolean;
+      }>;
+    };
+  };
 }) {
   return (
     <div
@@ -265,6 +276,19 @@ function CheckRow({
       <div>
         <span className="font-bold">{check.name}</span>
         <span className="ml-1 text-black/60">{check.message}</span>
+        {check.details?.failedPages && check.details.failedPages.length > 0 && (
+          <div className="mt-2 space-y-1">
+            {check.details.failedPages.map((page, i) => (
+              <div key={i} className="ml-4">
+                <span>{page.timedOut ? "⏱️" : "✗"}</span>{" "}
+                <span className="font-mono text-sm">{page.url}</span>
+                <span className="ml-1 text-sm text-black/60">
+                  {page.message}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
