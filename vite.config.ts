@@ -1,8 +1,9 @@
 import path from "node:path";
 import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "vite-plus";
 
-export default {
+export default defineConfig({
   build: {
     sourcemap: true,
   },
@@ -81,4 +82,4 @@ export default {
     sortImports: { newlinesBetween: false },
     sortTailwindcss: true,
   },
-} satisfies import("vite-plus").UserConfig;
+});
