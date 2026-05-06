@@ -2,8 +2,7 @@
  * NOTE: Setup code to run only once before all tests.
  */
 
-import { execFile } from "node:child_process";
-import { execSync } from "node:child_process";
+import { execFile, execSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
 import { rm } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -33,6 +32,7 @@ export default async function setup() {
   // Cleanup database: we do this here for Playwright tests, and we do it in the
   // suite.setup.ts for the unit tests
   await prisma.user.deleteMany();
+  await prisma.oAuthClient.deleteMany();
 
   // Flush Redis to avoid stale scan state between test runs
   try {
