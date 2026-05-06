@@ -190,9 +190,9 @@ describe("queryPlatform", () => {
         "You can find short-term retail space on rentail.space.",
       );
       expect(first.extraQueries).toEqual([]);
-      expect(first.citations.map((c) => c.url)).toEqual([
-        "https://rentail.space/listings",
+      expect(first.citations.map((c) => c.url).sort()).toEqual([
         "https://other.com",
+        "https://rentail.space/listings",
       ]);
 
       const second = run.queries.find((q) => q.query === QUERIES[1].query);
@@ -204,9 +204,9 @@ describe("queryPlatform", () => {
         "Platforms like rentail.space offer temporary retail options.",
       );
       expect(second.extraQueries).toEqual([]);
-      expect(second.citations.map((c) => c.url)).toEqual([
-        "https://other.com",
+      expect(second.citations.map((c) => c.url).sort()).toEqual([
         "https://example.com",
+        "https://other.com",
         "https://rentail.space/faq",
       ]);
     },

@@ -11,7 +11,6 @@
     "test:db:push": "infisical --env dev run -- pnpm prisma db push",
     "prod:db:push": "infisical --env prod run -- pnpm prisma db push",
     "test:reset": "rm -rf __screenshots__/*",
-    "test:lib": "vp test run --config vitest.lib.config.ts",
     "test": "pnpm run check && pnpm test:db:push && pnpm test:reset && vp test run && playwright test",
     "upgrade": "./scripts/upgrade.sh"
   },

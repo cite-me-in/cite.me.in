@@ -95,7 +95,8 @@ describe("try page scan flow", () => {
   });
 
   it("should show the scanning progress", async () => {
-    await expect(page.getByText(`Checking ${TEST_DOMAIN}`)).toBeVisible();
+    await expect(page.getByText("Page content")).toBeVisible();
+    await expect(page.getByText("robots.txt")).toBeVisible();
   });
 
   it("should show scan results", async () => {

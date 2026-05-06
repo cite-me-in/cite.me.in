@@ -8,11 +8,16 @@ export async function corsMiddleware(
   { request }: { request: Request },
   next: () => Promise<Response>,
 ) {
+  // If the route itself has a loader that handles OPTIONS, we defer to it by calling next().
   if (request.method === "OPTIONS") {
-    return new Response(null, {
-      status: 204,
-      headers: corsHeaders,
-    });
+    const response = await next();
+    // If the route didn't handle OPTIONS (i.e., responded with 404), fallback to generic 204 response.
+    return response.status === 404
+      ? new Response(null, {
+          status: 204,
+          headers: corsHeaders,
+        })
+      : response;
   }
 
   const response = await next();
