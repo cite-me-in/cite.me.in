@@ -185,14 +185,17 @@ export async function requireSiteAccess({
       select: { id: true, domain: true, summary: true },
     });
     if (site) return { site, user };
-    else throw new Response("Not found", { status: 404 });
   } else {
     const site =
       ownedSites.find((s) => s.domain === domain) ||
       siteUsers.find((s) => s.site.domain === domain)?.site;
     if (site) return { site, user };
-    else throw new Response("Not found", { status: 404 });
   }
+
+  throw new Response(JSON.stringify({ error: "Not found" }), {
+    status: 404,
+    headers: { "Content-Type": "application/json" },
+  });
 }
 
 /**
@@ -218,5 +221,9 @@ export async function requireSiteOwner({
   const { user, ownedSites } = await requireUserAccess(request);
   const site = ownedSites.find((s) => s.domain === domain);
   if (site) return { site, user };
-  else throw new Response("Not found", { status: 404 });
+
+  throw new Response(JSON.stringify({ error: "Not found" }), {
+    status: 404,
+    headers: { "Content-Type": "application/json" },
+  });
 }

@@ -9,7 +9,6 @@
 
 set -eo pipefail
 
-
 IMAGE="ghcr.io/cite-me-in/cite.me.in:latest"
 APP_UUID="myp73fab3pizwxq1coahwxqw"
 
@@ -20,7 +19,7 @@ echo -e "\033[0;32m--- Step 2: Push DB schema ---\033[0m"
 pnpm prisma generate
 pnpm prisma db push
 
-if [ "$arg" = "--skip-tests" ]; then
+if [ "$1" = "--skip-tests" ]; then
   echo -e "\033[0;32m--- Skipping tests ---\033[0m"
 else
   echo -e "\033[0;32m--- Step 3: Run tests ---\033[0m"
