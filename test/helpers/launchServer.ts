@@ -11,19 +11,19 @@ const logger = debug("server");
 const loopbackHosts = ["127.0.0.1", "::1"] as const;
 const serverStatePath = resolve(".test-server.json");
 
-export const port = await launchServer();
+// Fixed port for test server - simplifies Playwright config
+export const port = 9222;
 
 /**
  * Launch a new server instance.
  *
- * @returns The port the server was launched on.
+ * @returns The port the server was launched on (always 9222).
  */
 export async function launchServer(): Promise<number> {
   const running = readServerState();
   if (running && isProcessRunning(running.pid)) return running.port;
 
-  const availablePort = await findAvailablePort();
-  logger("Launching server on port %s", availablePort);
+  logger("Launching server on port %s", port);
 
   // Start the server as forked process, that way we don't share the same node
   // instance, which could cause issues with some libraries (eg Prisma)
@@ -42,16 +42,13 @@ export async function launchServer(): Promise<number> {
       ...process.env,
       CHOKIDAR_USEPOLLING: "1",
       NODE_ENV: "test",
-      PORT: availablePort.toString(),
-      VITE_APP_URL: `http://localhost:${availablePort}`,
+      PORT: port.toString(),
+      VITE_APP_URL: `http://localhost:${port}`,
       VITE_TEST_MODE: "1",
     },
   });
   if (worker.pid)
-    await writeFile(
-      serverStatePath,
-      JSON.stringify({ port: availablePort, pid: worker.pid }),
-    );
+    await writeFile(serverStatePath, JSON.stringify({ port, pid: worker.pid }));
 
   // Wait for the server to send ready message
   logger("Waiting for server to start...");
@@ -82,7 +79,7 @@ export async function launchServer(): Promise<number> {
   // Additional sleep to ensure HTTP server is fully bound
   await sleep(500);
 
-  return availablePort;
+  return port;
 }
 
 /**
@@ -108,17 +105,6 @@ export async function closeServer(): Promise<void> {
   }
 
   if (serverWorker.connected) serverWorker.disconnect();
-}
-
-async function findAvailablePort(): Promise<number> {
-  let availablePort = 9222;
-  // Check if the port is taken, increment by one and keep checking
-  let found = false;
-  while (!found) {
-    found = await isPortAvailable(availablePort);
-    if (!found) availablePort++;
-  }
-  return availablePort;
 }
 
 export async function isPortAvailable(port: number): Promise<boolean> {

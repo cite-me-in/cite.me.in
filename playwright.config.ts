@@ -2,6 +2,9 @@ import { defineConfig, devices } from "@playwright/test";
 
 process.env.NODE_ENV = "test";
 
+// Fixed port for test server (defined in test/helpers/launchServer.ts)
+const PORT = 9222;
+
 export default defineConfig({
   fullyParallel: false,
   globalSetup: "test/helpers/global.setup.ts",
@@ -14,6 +17,7 @@ export default defineConfig({
   testDir: "test/e2e",
   testMatch: /.*\.test\.ts$/,
   use: {
+    baseURL: `http://localhost:${PORT}`,
     screenshot: "only-on-failure",
     viewport: { width: 1280, height: 720 },
   },

@@ -1,27 +1,21 @@
-.claude/
 .env
 .env.*
 .infisical.json
-/node_modules
-backup.sql
+node_modules
 prisma/generated
 server.log
 opencode.json
+prisma/backup.sql
 
 # React Router
-/.react-router/
-/build/
+build/
 
 # Ignore test results
-.test-server.json
 __screenshots__/**/*.diff.png
 __screenshots__/**/*.new.png
 __screenshots__/**/*.new.html
 __screenshots__/**/*.html.diff
 test-results/
-
-# Ignore worktrees
-.worktrees/
 
 # Ignore scratch files
 scripts/scratch.ts
