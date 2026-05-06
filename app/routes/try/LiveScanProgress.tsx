@@ -78,7 +78,7 @@ export default function LiveScanProgress({
                   "Checking..."
                 )
               ) : (
-                "Preparing..."
+                "Getting ready..."
               )}
             </CheckStatus>
           );
