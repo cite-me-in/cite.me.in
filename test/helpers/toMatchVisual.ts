@@ -2,14 +2,14 @@
 
 import { readdirSync, unlinkSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
-import path from "node:path";
+import path, { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { expect } from "@playwright/test";
 import type { Locator, Page } from "playwright";
 import { sleep } from "radashi";
 import invariant from "tiny-invariant";
 import "~/test/helpers/toMatchInnerHTML";
 import "~/test/helpers/toMatchScreenshot";
-import vitestConfig from "../../vitest.config";
 
 declare global {
   namespace PlaywrightTest {
@@ -34,9 +34,9 @@ declare global {
   }
 }
 
-export const baseDir = path.resolve(
-  vitestConfig.test?.browser?.screenshotDirectory ?? "",
-);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+export const baseDir = resolve(__dirname, "../../__screenshots__");
 
 expect.extend({
   async toMatchVisual(

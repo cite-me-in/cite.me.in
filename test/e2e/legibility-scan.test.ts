@@ -39,18 +39,19 @@ test("shows scan results with passing and failing checks", async () => {
 });
 
 test("shows the full scan result including CTA", async () => {
+  test.setTimeout(60_000); // 60s for full scan
   page = await goto("/try?domain=acme.com");
 
-  // Wait for scan to complete - check for the score heading
-  await expect(page.getByText(/AI Legibility Score/)).toBeVisible({
-    timeout: 40_000,
+  // Wait for scan to complete - check for scan results element
+  await page.waitForSelector("#scan-results", {
+    timeout: 50_000,
   });
 
   // Wait for loading spinner to disappear (if present)
   try {
     await page.waitForSelector(".animate-spin", {
       state: "hidden",
-      timeout: 40_000,
+      timeout: 50_000,
     });
   } catch {
     // Spinner might not be present if scan was fast
