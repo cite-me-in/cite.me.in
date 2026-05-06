@@ -9,9 +9,9 @@ import { requireUserAccess } from "~/lib/auth.server";
 import { corsMiddleware } from "~/middleware/cors";
 import { markdownMiddleware } from "~/middleware/markdown";
 import type { Route } from "./+types/root";
-import "./global.css";
 import PageLayout from "./components/layout/PageLayout";
 import Main from "./components/ui/Main";
+import "./global.css";
 import socialLinks from "./lib/socialLinks";
 
 export const middleware: Route.MiddlewareFunction[] = [

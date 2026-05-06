@@ -3,7 +3,6 @@
  */
 
 import { execSync } from "node:child_process";
-import * as Sentry from "@sentry/react-router";
 import { afterAll, beforeAll, vi } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
 import "~/test/mocks/msw";
@@ -13,7 +12,11 @@ import "./toMatchVisual";
 import "./trimConsole";
 import { fixedTime } from "./worker.setup";
 
-Sentry.init({ enabled: false });
+// Sentry is disabled in tests, but stub it to avoid ESM import issues
+vi.mock("@sentry/react-router", () => ({
+  init: vi.fn<() => void>(),
+  captureException: vi.fn<() => void>(),
+}));
 
 beforeAll(async () => {
   // Cleanup database

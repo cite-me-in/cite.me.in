@@ -2,6 +2,7 @@ import path from "node:path";
 import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite-plus";
+import type { ParsedStack } from "vite-plus/test";
 
 export default defineConfig({
   build: {
@@ -81,5 +82,26 @@ export default defineConfig({
     printWidth: 80,
     sortImports: { newlinesBetween: false },
     sortTailwindcss: true,
+  },
+
+  test: {
+    fileParallelism: false,
+    setupFiles: ["test/helpers/suite.setup.ts"],
+    globalSetup: ["test/helpers/global.setup.ts"],
+    teardownTimeout: 5_000, // 5 seconds - Prisma disconnect will timeout anyway on macOS
+    testTimeout: 30_000, // 30 seconds
+    include: ["test/**/*.test.ts", "!test/e2e/*"],
+
+    onConsoleLog: (log: string, type: "stdout" | "stderr") => {
+      if (type === "stderr") process.stderr.write(log);
+      else process.stdout.write(log);
+    },
+
+    onStackTrace: (error: { name?: string }, { file }: ParsedStack) => {
+      // If we've encountered a ReferenceError, show the whole stack.
+      if (error.name === "ReferenceError") return true;
+      // Reject all frames from third party libraries.
+      return !file.includes("node_modules");
+    },
   },
 });

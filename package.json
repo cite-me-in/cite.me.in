@@ -84,7 +84,7 @@
     "tsx": "^4.21.0",
     "typescript": "^6.0.3",
     "vite": "npm:@voidzero-dev/vite-plus-core@^0.1.20",
-    "vite-plus": "catalog:"
+    "vite-plus": "^0.1.20"
   },
   "engines": {
     "node": ">=24.10.1"
