@@ -20,6 +20,12 @@ export function links(): Route.LinkDescriptors {
       title: "Markdown version",
       href: "/terms.md",
     },
+    {
+      rel: "alternate",
+      type: "text/plain",
+      title: "Full site content (llms-full.txt)",
+      href: "/llms-full.txt",
+    },
   ];
 }
 

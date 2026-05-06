@@ -18,6 +18,12 @@ export function meta(): Route.MetaDescriptors {
 export function links(): Route.LinkDescriptors {
   return [
     { rel: "alternate", type: "text/markdown", title: "Markdown version", href: "/docs.md" },
+    {
+      rel: "alternate",
+      type: "text/plain",
+      title: "Full site content (llms-full.txt)",
+      href: "/llms-full.txt",
+    },
   ];
 }
 

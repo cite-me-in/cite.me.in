@@ -21,6 +21,10 @@ const robots = [
   ["User-agent: OAI-SearchBot", "Allow: /"],
   ["User-agent: Perplexity-User", "Allow: /"],
   ["User-agent: PerplexityBot", "Allow: /"],
+  [`LLMs.txt: ${new URL("/llms.txt", envVars.VITE_APP_URL).toString()}`],
+  [
+    `LLMs-full.txt: ${new URL("/llms-full.txt", envVars.VITE_APP_URL).toString()}`,
+  ],
 ];
 
 export async function loader() {
