@@ -23,7 +23,9 @@ export async function corsMiddleware(
   const response = await next();
   const newHeaders = new Headers(response.headers);
   Object.entries(corsHeaders).forEach(([key, value]) => {
-    newHeaders.set(key, value);
+    if (!newHeaders.has(key)) {
+      newHeaders.set(key, value);
+    }
   });
 
   return new Response(response.body, {

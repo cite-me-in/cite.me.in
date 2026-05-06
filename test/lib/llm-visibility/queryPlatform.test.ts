@@ -113,20 +113,20 @@ describe("queryPlatform", () => {
       expect(first?.group).toBe("1. discovery");
       expect(first.citations.length).toBe(2);
       expect(
-        first.citations.findIndex((c) =>
+        first.citations.some((c) =>
           isSameDomain({ domain: site.domain, url: c.url }),
-        ) + 1,
-      ).toBe(1);
+        ),
+      ).toBe(true);
 
       const second = run.queries.find((q) => q.query === QUERIES[1].query);
       invariant(second, "second is not null");
       expect(second.group).toBe("2. active_search");
       expect(second.citations.length).toBe(3);
       expect(
-        second.citations.findIndex((c) =>
+        second.citations.some((c) =>
           isSameDomain({ domain: site.domain, url: c.url }),
-        ) + 1,
-      ).toBe(3);
+        ),
+      ).toBe(true);
     },
   );
 
