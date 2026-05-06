@@ -172,11 +172,18 @@ export async function runScanSteps({
         ? "No sample URLs found in sitemap"
         : fetchedPassed === fetchedPages.length
           ? `All ${fetchedPages.length} sample pages have meaningful content`
-          : `${fetchedPassed}/${fetchedPages.length} pages have meaningful content${fetchedTimedOut > 0 ? ` (${fetchedTimedOut} timed out)` : ""}`,
+          : `${fetchedPassed}/${fetchedPages.length} pages have meaningful content${fetchedTimedOut > 0 ? ` (${fetchedTimedOut} timed out)` : ""} (see details)`,
     details: {
       passedCount: fetchedPassed,
       totalCount: fetchedPages.length,
       timedOutCount: fetchedTimedOut,
+      failedPages: fetchedPages
+        .filter((p) => !p.passed)
+        .map((p) => ({
+          url: p.url,
+          message: p.message,
+          timedOut: p.timedOut,
+        })),
     },
   };
   checks.push(samplePagesResult);
