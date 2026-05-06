@@ -4,7 +4,7 @@
 #
 # Usage:
 #   scripts/deploy
-#   SKIP_TESTS=true scripts/deploy
+#   scripts/deploy --skip-tests
 
 
 set -eo pipefail
@@ -13,13 +13,6 @@ set -eo pipefail
 IMAGE="ghcr.io/cite-me-in/cite.me.in:latest"
 APP_UUID="myp73fab3pizwxq1coahwxqw"
 
-SKIP_TESTS=false
-for arg in "$@"; do
-  if [ "$arg" = "--skip-tests" ]; then
-    SKIP_TESTS=true
-  fi
-done
-
 echo -e "\033[0;32m--- Step 1: Check (lint, types, secrets) ---\033[0m"
 pnpm run check
 
@@ -27,14 +20,14 @@ echo -e "\033[0;32m--- Step 2: Push DB schema ---\033[0m"
 pnpm prisma generate
 pnpm prisma db push
 
-if [[ -z "$SKIP_TESTS" ]]; then
+if [ "$arg" = "--skip-tests" ]; then
+  echo -e "\033[0;32m--- Skipping tests ---\033[0m"
+else
   echo -e "\033[0;32m--- Step 3: Run tests ---\033[0m"
   pnpm vp test run
 
   echo -e "\033[0;32m--- Step 4: Run Playwright ---\033[0m"
   pnpm playwright test
-else
-  echo -e "\033[0;32m--- Skipping tests ---\033[0m"
 fi
 
 echo -e "\033[0;32m--- All checks passed. Deploying ---\033[0m"
