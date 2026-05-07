@@ -6,22 +6,18 @@
 #   scripts/deploy
 #   scripts/deploy --skip-tests
 
-
 set -eo pipefail
-
-IMAGE="ghcr.io/cite-me-in/cite.me.in:latest"
-APP_UUID="myp73fab3pizwxq1coahwxqw"
 
 echo -e "\033[0;32m--- Step 1: Check (lint, types, secrets) ---\033[0m"
 pnpm run check
 
-echo -e "\033[0;32m--- Step 2: Push DB schema ---\033[0m"
-pnpm prisma generate
-pnpm prisma db push
-
 if [ "$1" = "--skip-tests" ]; then
   echo -e "\033[0;32m--- Skipping tests ---\033[0m"
 else
+  echo -e "\033[0;32m--- Step 2: Generate Prisma client ---\033[0m"
+  pnpm prisma generate
+  pnpm test:db:push
+
   echo -e "\033[0;32m--- Step 3: Run tests ---\033[0m"
   pnpm vp test run
 
@@ -29,34 +25,14 @@ else
   pnpm playwright test
 fi
 
-echo -e "\033[0;32m--- Step 5: Update database ---\033[0m"
+echo -e "\033[0;32m--- Step 5: Update production database ---\033[0m"
 infisical --env prod run -- pnpm prisma db push
 
-COLIMA_WAS_RUNNING=true
-if ! colima status &>/dev/null; then
-  COLIMA_WAS_RUNNING=false
-  echo "Starting colima..."
-  colima start
-fi
-cleanup() {
-  if [ "$COLIMA_WAS_RUNNING" = false ]; then
-    echo "Stopping colima..."
-    colima stop
-  fi
-}
-trap cleanup EXIT
-
-echo -e "\033[0;32m--- Step 6: Building and pushing Docker image ---\033[0m"
-export ENV_PROD=$(infisical export --env prod --format=dotenv)
-docker buildx build \
-  --platform linux/amd64 \
-  --secret id=dotenv,src=<(echo "$ENV_PROD") \
-  --push -t "$IMAGE" .
-
-echo -e "\033[0;32m--- Step 7: Triggering Coolify deployment ---\033[0m"
-TOKEN=$(jq -r '.instances[0].token' ~/.config/coolify/config.json)
-curl -s -X POST "https://coolify.labnotes.org/api/v1/deploy?type=application&uuid=$APP_UUID" \
-  -H "Authorization: Bearer $TOKEN" | jq
+echo -e "\033[0;32m--- Step 6: Deploy to production ---\033[0m"
+tsx scripts/lib/deploy.ts \
+  --coolify https://coolify.labnotes.org \
+  --image ghcr.io/cite-me-in/cite.me.in:latest \
+  --app cite.me.in
 
 echo -e "\033[0;34m--- Deployed to https://cite.me.in ---\033[0m"
 open https://cite.me.in

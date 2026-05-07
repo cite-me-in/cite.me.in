@@ -1,4 +1,4 @@
-FROM node:22-slim AS base
+FROM node:24-slim AS base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -21,7 +21,7 @@ ARG INFISICAL_ENV
 RUN pnpm build
 
 # --- RUNNER ---
-FROM node:22-slim AS runner
+FROM node:24-slim AS runner
 ENV NODE_ENV=production
 
 RUN corepack enable pnpm
