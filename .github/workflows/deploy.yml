@@ -22,11 +22,29 @@ jobs:
           cache: "pnpm"
           node-version-file: "package.json"
 
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            ~/.pnpm-store
+          key: ${{ runner.os }}-build-cache-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-build-cache-
+
       - name: Install dependencies
         run: pnpm install
 
       - name: Prepare application
         run: pnpm prepare
+
+      - name: Save build cache
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            node_modules
+            ~/.pnpm-store
+          key: build-cache-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - name: Run checks
         run: pnpm run check
