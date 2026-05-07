@@ -128,6 +128,7 @@ describe("runScan", () => {
       "Robots directives",
       "Markdown content negotiation",
       "Content Signals",
+      "AI bot traffic",
       "llms-full.txt",
     ]);
   });
@@ -146,7 +147,7 @@ describe("runScan", () => {
     expect(result?.summary.discovered.passed).toBeGreaterThan(0);
     expect(result?.summary.discovered.total).toBe(6);
     expect(result?.summary.trusted.total).toBe(5);
-    expect(result?.summary.welcomed.total).toBe(4);
+    expect(result?.summary.welcomed.total).toBe(5);
   });
 
   it("should produce correct summary for failing site", async () => {
@@ -163,7 +164,7 @@ describe("runScan", () => {
     expect(result?.summary.discovered.passed).toBe(0);
     expect(result?.summary.discovered.total).toBe(6);
     expect(result?.summary.trusted.total).toBe(5);
-    expect(result?.summary.welcomed.total).toBe(4);
+    expect(result?.summary.welcomed.total).toBe(5);
   });
 
   it("should produce correct summary for partial site", async () => {
@@ -180,7 +181,7 @@ describe("runScan", () => {
     expect(result?.summary.discovered.passed).toBe(2);
     expect(result?.summary.discovered.total).toBe(6);
     expect(result?.summary.trusted.passed).toBe(2);
-    expect(result?.summary.welcomed.passed).toBe(2);
+    expect(result?.summary.welcomed.passed).toBe(3);
   });
 
   it("should normalize URL without protocol", async () => {
@@ -306,7 +307,7 @@ describe("runScan", () => {
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
 
-    expect(result?.checks.length).toBe(15);
+    expect(result?.checks.length).toBe(16);
     expect(result?.checks.every((c) => c.name && c.category && c.message)).toBe(
       true,
     );
@@ -357,6 +358,7 @@ describe("runScan", () => {
         "Content Signals",
         "JSON-LD",
         "Robots directives",
+        "AI bot traffic",
       ]),
     );
   });
