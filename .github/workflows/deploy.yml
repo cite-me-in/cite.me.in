@@ -2,179 +2,62 @@ name: Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   workflow_dispatch:
-    inputs:
-      skip_checks:
-        description: "Skip checks and tests"
-        type: boolean
-        default: false
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-  NODE_OPTIONS: "--max-old-space-size=3096"
-  POSTGRES_URL_NON_POOLING: "postgresql://postgres:postgres@localhost:5432/citeup_test"
-  POSTGRES_URL: "postgresql://postgres:postgres@localhost:5432/citeup_test?pgbouncer=true"
-  INDEXNOW_KEY: ""
-  ANTHROPIC_API_KEY: "sk-dummy"
-  TRACK_API_KEY: "dummy"
-  REDIS_URL: "redis://localhost:6379"
-  RESEND_API_KEY: "re_dummy"
-  SESSION_SECRET: "dummy-secret-at-least-32-chars-long-for-session"
-  VITE_APP_URL: "http://localhost:3000"
-  VITE_EMAIL_FROM: "hello@cite.me.in"
-  ZHIPU_API_KEY: "dummy"
-  OPENAI_API_KEY: "sk-dummy"
-  PERPLEXITY_API_KEY: "pplx-dummy"
-  GOOGLE_GENERATIVE_AI_API_KEY: "AIza-dummy"
-  SERPAPI_API_KEY: "dummy"
-  STRIPE_SECRET_KEY: "sk_test_dummy"
-  CRON_SECRET: "test-cron-secret"
-  STRIPE_WEBHOOK_SECRET: "whsec_dummy_test_secret"
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   deploy:
-    name: Deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-
     permissions:
       contents: read
       packages: write
 
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: citeup_test
-        ports:
-          - 5432:5432
-        options:
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
-          --health-retries 5
-
-      redis:
-        image: redis:latest
-        ports:
-          - 6379:6379
-        options: --entrypoint redis-server
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v6
+      - uses: pnpm/action-setup@v6
         with:
-          cache: true
+          version: 9
 
-      - name: Install Node.js
-        uses: actions/setup-node@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version-file: "package.json"
+          node-version: "22"
           cache: "pnpm"
 
-      - name: Cache NPM dependencies
-        id: cache-npm
-        uses: actions/cache@v5
-        with:
-          path: ./node_modules
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/pnpm-lock.yaml') }}
-
-      - name: Install NPM dependencies
-        if: steps.cache-npm.outputs.cache-hit != 'true'
+      - name: Install dependencies
         run: pnpm install
 
-      - name: Generate Prisma client
-        run: pnpm prisma generate
-
-      - name: Run checks (lint, types, secrets)
+      - name: Run checks
         run: pnpm run check
 
-      - name: Push DB schema
-        run: pnpm prisma db push
-
-      - name: Set PLAYWRIGHT_VERSION
-        run: echo "PLAYWRIGHT_VERSION=$(pnpm exec playwright --version)" >> $GITHUB_ENV
-
-      - name: Cache Playwright
-        id: cache-playwright
-        uses: actions/cache@v5
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
-
-      - name: Install Playwright (Chromium)
-        if: steps.cache-playwright.outputs.cache-hit != 'true'
-        timeout-minutes: 5
-        run: pnpm exec playwright install chromium --with-deps
-
-      - name: Run Tests
-        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.skip_checks }}
+      - name: Run tests
         run: pnpm vp test run
 
-      - name: Run Playwright Tests
-        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.skip_checks }}
+      - name: Run Playwright
         run: pnpm playwright test
 
-      - name: Upload Playwright Test Results
-        if: failure()
-        uses: actions/upload-artifact@v7
-        continue-on-error: true
+      - name: Get Infisical secrets
+        uses: zerodays/action-infisical@v1
         with:
-          name: playwright-test-results
-          path: __screenshots__
+          environment: "prod"
+          infisical_token: ${{ secrets.INFISICAL_TOKEN }}
+          output_file: ".env"
+          workspace_id: "a89716e5-9232-4ee7-85ea-11977924fe95"
 
-      - name: Write .env.prod from Infisical and validate
-        env:
-          INFISICAL_TOKEN: ${{ secrets.INFISICAL_TOKEN }}
-        run: |
-          npm install -g @infisical/cli
-          INFISICAL_TOKEN="$INFISICAL_TOKEN" infisical export --env prod --format=dotenv > .env.prod
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
 
-          # Validate required runtime secrets
-          source .env.prod
-          if [ -z "$POSTGRES_URL" ]; then
-            echo "::error::POSTGRES_URL is empty or not set"
-            rm .env.prod
-            exit 1
-          fi
-          echo "All required secrets are set"
-
-      - name: Log in to GitHub Container Registry
-        if: github.ref == 'refs/heads/main'
-        uses: docker/login-action@v3
+      - name: Build
+        uses: docker/build-push-action@v7
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          platforms: linux/amd64
+          secret-files: env=.env
+          tags: ghcr.io/cite-me-in/cite.me.in:latest
 
-      - name: Build and push Docker image
-        if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v6
+      - name: Deploy to Coolify
+        uses: themarkwill/coolify-actions@v0.0.4
         with:
-          context: .
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          secrets: |
-            dotenv=.env.prod
-
-      - name: Trigger Coolify deployment
-        if: github.ref == 'refs/heads/main'
-        env:
-          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
-          COOLIFY_URL: "https://coolify.labnotes.org"
-          APP_UUID: ${{ secrets.COOLIFY_APP_UUID }}
-        run: |
-          curl -s -X POST "$COOLIFY_URL/api/v1/deploy?type=application&uuid=$APP_UUID" \
-            -H "Authorization: Bearer $COOLIFY_TOKEN" | jq
-
-      - name: Upload IndexNow file
-        uses: bojieyang/indexnow-action@v2
-        with:
-          sitemap-location: "https://cite.me.in/sitemap.xml"
-          key: ${{ env.INDEXNOW_KEY }}
+          coolify-app-id: "myp73fab3pizwxq1coahwxqw"
+          coolify-token: ${{ secrets.COOLIFY_TOKEN }}
+          coolify-url: https://coolify.labnotes.org
