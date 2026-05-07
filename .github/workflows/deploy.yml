@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -24,6 +24,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+
+      - name: Prepare application
+        run: pnpm prepare
 
       - name: Run checks
         run: pnpm run check

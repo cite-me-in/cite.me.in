@@ -12,7 +12,8 @@
     "prod:db:push": "infisical --env prod run -- pnpm prisma db push",
     "test:reset": "rm -rf __screenshots__/*",
     "test": "pnpm run check && pnpm test:db:push && pnpm test:reset && vp test run && playwright test",
-    "upgrade": "./scripts/upgrade.sh"
+    "upgrade": "./scripts/upgrade.sh",
+    "prepare": "pnpm prisma generate && pnpm prisma db push && pnpm react-router typegen"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.94.0",
