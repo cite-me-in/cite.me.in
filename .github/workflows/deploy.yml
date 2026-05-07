@@ -36,7 +36,7 @@ jobs:
         run: pnpm install
 
       - name: Prepare application
-        run: pnpm prepare
+        run: pnpm ready
 
       - name: Run checks
         run: pnpm run check
