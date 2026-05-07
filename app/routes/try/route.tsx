@@ -204,8 +204,11 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
       {domain ? (
         <section className="border-b-2 border-black bg-amber-400 px-6 py-4">
           <h1 className="mx-auto flex max-w-3xl items-center gap-2 text-4xl font-bold">
-            <GlobeIcon className="h-4 w-4 shrink-0 text-amber-500" />
-            <span>Scanning {domain}...</span>
+            <span>
+              {scanStatus === "complete"
+                ? `Scanned ${domain}`
+                : `Scanning ${domain}...`}
+            </span>
           </h1>
         </section>
       ) : (
