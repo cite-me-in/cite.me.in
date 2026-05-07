@@ -7,11 +7,13 @@ import {
   SparklesIcon,
   TrendingUpIcon,
 } from "lucide-react";
+import { useState } from "react";
 import { useNavigation } from "react-router";
 import LandingPageNav from "~/components/layout/LandingPageNav";
 import Main from "~/components/ui/Main";
 import Spinner from "~/components/ui/Spinner";
 import { requireUserAccess } from "~/lib/auth.server";
+import { validateDomainInput } from "~/lib/validation";
 import type { Route } from "./+types/route";
 
 const PERSONAS = [
@@ -90,6 +92,7 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
 
 function HeroSection() {
   const navigation = useNavigation();
+  const [error, setError] = useState<string | null>(null);
 
   return (
     <section className="border-b-2 border-black bg-[#F59E0B] px-6 py-20 md:py-32">
@@ -118,10 +121,14 @@ function HeroSection() {
             className="mb-6"
             onSubmit={(e) => {
               const form = e.currentTarget;
-              const raw = (new FormData(form).get("domain") as string)?.trim();
-              if (!raw) {
+              const raw = new FormData(form).get("domain") as string;
+              const validation = validateDomainInput(raw);
+              if (!validation.valid) {
                 e.preventDefault();
+                setError(validation.error ?? null);
+                return;
               }
+              setError(null);
             }}
           >
             <div className="flex gap-3">
@@ -146,6 +153,11 @@ function HeroSection() {
                 Scan now
               </button>
             </div>
+            {error && (
+              <p className="mt-3 text-left text-sm font-bold text-red-600">
+                {error}
+              </p>
+            )}
           </form>
         </div>
 

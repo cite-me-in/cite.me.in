@@ -11,6 +11,7 @@ import type { ScanResult } from "~/lib/aiLegibility/types";
 import { requireUserAccess } from "~/lib/auth.server";
 import { extractDomain } from "~/lib/sites.server";
 import { getScanStatus } from "~/lib/tryScan.server";
+import { validateDomainInput } from "~/lib/validation";
 import type { Route } from "./+types/route";
 import BenefitsSection from "./BenefitsSection";
 import LiveScanProgress, { LOG_TO_CHECK } from "./LiveScanProgress";
@@ -317,10 +318,11 @@ function DomainForm({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const form = e.currentTarget;
-    const raw = (new FormData(form).get("domain") as string)?.trim();
-    if (!raw) {
+    const raw = new FormData(form).get("domain") as string;
+    const validation = validateDomainInput(raw);
+    if (!validation.valid) {
       e.preventDefault();
-      setError("Enter a website URL");
+      setError(validation.error ?? null);
       return;
     }
     setError(null);
