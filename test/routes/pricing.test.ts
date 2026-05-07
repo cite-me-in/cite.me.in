@@ -21,8 +21,8 @@ async function fillSignUp(page: import("playwright").Page, email: string) {
 }
 
 describe("pricing user flows", () => {
-  describe("flow A: sign up → free tier → purchase subscription", () => {
-    it("should sign up and land on /sites as free-tier user", async () => {
+  describe("flow A: sign up, free tier, upgrade page", () => {
+    it("should sign up, land on /sites as free-tier user, and show upgrade page", async () => {
       const page = await goto("/sign-up");
       await fillSignUp(page, EMAIL_A);
       await page.waitForURL(`http://localhost:${port}/sites`);
@@ -36,26 +36,21 @@ describe("pricing user flows", () => {
         where: { userId: user.id },
       });
       expect(account).toBeNull();
-    });
 
-    it("should show the upgrade page after navigating to /upgrade", async () => {
-      const user = await prisma.user.findUniqueOrThrow({
-        where: { email: EMAIL_A },
-      });
       await signIn(user.id);
-      const page = await goto("/upgrade");
+      const upgradePage = await goto("/upgrade");
 
       await expect(
-        page.getByRole("heading", { name: "Upgrade to Pro" }),
+        upgradePage.getByRole("heading", { name: "Upgrade to Pro" }),
       ).toBeVisible();
       await expect(
-        page.getByRole("button", { name: /Subscribe — \$\d+\/month/ }),
+        upgradePage.getByRole("button", { name: /Subscribe — \$\d+\/month/ }),
       ).toBeVisible();
     });
 
     it("should show Subscribe buttons with correct form structure", async () => {
-      const user = await prisma.user.findUniqueOrThrow({
-        where: { email: EMAIL_A },
+      const user = await prisma.user.create({
+        data: { email: EMAIL_A, passwordHash: "testhash" },
       });
       await signIn(user.id);
       const page = await goto("/upgrade");
@@ -72,8 +67,8 @@ describe("pricing user flows", () => {
     });
 
     it("should redirect /upgrade to /sites once account is active", async () => {
-      const user = await prisma.user.findUniqueOrThrow({
-        where: { email: EMAIL_A },
+      const user = await prisma.user.create({
+        data: { email: EMAIL_A, passwordHash: "testhash" },
       });
       await prisma.user.update({
         where: { id: user.id },

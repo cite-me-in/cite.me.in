@@ -18,7 +18,7 @@
  *   --app-uuid myp73fab3pizwxq1coahwxqw
  */
 
-import { type SpawnOptions, spawn } from "node:child_process";
+import { spawn } from "node:child_process";
 
 const SPINNER_CHARS = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏";
 
@@ -120,13 +120,14 @@ function parseArgs(): {
  */
 async function getCoolifyToken(coolifyURL: string): Promise<string> {
   const response = JSON.parse(
-    await runCommand("coolify", [
+    await runCommand(
+      "coolify",
       "context",
       "list",
       "--show-sensitive",
       "--format",
       "json",
-    ]),
+    ),
   ) as {
     name: string;
     fqdn: string;
@@ -154,19 +155,19 @@ async function getCoolifyToken(coolifyURL: string): Promise<string> {
  * function was called.
  */
 async function ensureColimaRunning(): Promise<() => Promise<void>> {
-  const wasRunning = await runCommand("colima", ["status"])
+  const wasRunning = await runCommand("colima", "status")
     .then(() => true)
     .catch(() => false);
 
   if (!wasRunning) {
     console.info("Starting colima...");
-    await runCommand("colima", ["start"]);
+    await runCommand("colima", "start");
   }
 
   return async () => {
     if (!wasRunning) {
       console.info("Stopping colima...");
-      await runCommand("colima", ["stop"]);
+      await runCommand("colima", "stop");
     }
   };
 }
@@ -181,7 +182,7 @@ async function ensureColimaRunning(): Promise<() => Promise<void>> {
  */
 async function getRunTimeSecrets(env: string): Promise<string> {
   try {
-    return runCommand("infisical", ["export", "--env", env, "--format=dotenv"]);
+    return runCommand("infisical", "export", "--env", env, "--format=dotenv");
   } catch {
     throw new Error(
       "Failed to get environment variables from Infisical, please run `infisical init` first",
@@ -365,14 +366,9 @@ async function pollDeploymentStatus({
   }
 }
 
-function runCommand(
-  command: string,
-  args: string[],
-  options?: SpawnOptions,
-): Promise<string> {
+function runCommand(command: string, ...args: string[]): Promise<string> {
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, {
-      ...options,
       stdio: ["pipe", "pipe", "pipe"],
     });
     let stdout = "";

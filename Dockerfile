@@ -23,8 +23,14 @@ RUN pnpm build
 # --- RUNNER ---
 FROM node:24-slim AS runner
 ENV NODE_ENV=production
+ENV DEBIAN_FRONTEND=noninteractive
 
-RUN npx -y playwright@1.59.1 install --with-deps
+# Retry with timeout (workaround for Colima TCP connection drops to Azure CDN)
+RUN for i in $(seq 1 3); do \
+        timeout 600 npx -y playwright@1.59.1 install webkit --with-deps && break; \
+        echo "Attempt $i failed, retrying in 15s..."; \
+        sleep 15; \
+    done
 RUN corepack enable pnpm
 
 WORKDIR /app
