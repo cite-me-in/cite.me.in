@@ -1,11 +1,12 @@
 import { CheckIcon, GlobeIcon, SearchIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Form, redirect, useActionData } from "react-router";
+import { Form, redirect, useActionData, useNavigation } from "react-router";
 import { useInterval } from "usehooks-ts";
 import LandingPageNav from "~/components/layout/LandingPageNav";
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
+import Spinner from "~/components/ui/Spinner";
 import type { ScanResult } from "~/lib/aiLegibility/types";
 import { requireUserAccess } from "~/lib/auth.server";
 import { extractDomain } from "~/lib/sites.server";
@@ -312,6 +313,7 @@ function DomainForm({
 }) {
   const [error, setError] = useState<string | null>(null);
   const displayedError = error || actionError;
+  const navigation = useNavigation();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const form = e.currentTarget;
@@ -338,7 +340,11 @@ function DomainForm({
           />
         </div>
         <Button type="submit" size="xl" className="h-14 shrink-0">
-          <SearchIcon className="h-5 w-5" />
+          {navigation.state === "submitting" ? (
+            <Spinner white />
+          ) : (
+            <SearchIcon className="h-5 w-5" />
+          )}
           Scan now
         </Button>
       </div>

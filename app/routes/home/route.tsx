@@ -7,8 +7,10 @@ import {
   SparklesIcon,
   TrendingUpIcon,
 } from "lucide-react";
+import { useNavigation } from "react-router";
 import LandingPageNav from "~/components/layout/LandingPageNav";
 import Main from "~/components/ui/Main";
+import Spinner from "~/components/ui/Spinner";
 import { requireUserAccess } from "~/lib/auth.server";
 import type { Route } from "./+types/route";
 
@@ -87,6 +89,8 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
 }
 
 function HeroSection() {
+  const navigation = useNavigation();
+
   return (
     <section className="border-b-2 border-black bg-[#F59E0B] px-6 py-20 md:py-32">
       <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2">
@@ -133,7 +137,12 @@ function HeroSection() {
                 type="submit"
                 className="rounded-base inline-flex h-14 shrink-0 items-center gap-2 border-2 border-black bg-blue-500 px-6 text-lg font-bold text-white shadow-[4px_4px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_black]"
               >
-                <SearchIcon className="h-5 w-5" />
+                {navigation.state === "loading" &&
+                navigation.location?.pathname === "/try" ? (
+                  <Spinner white />
+                ) : (
+                  <SearchIcon className="h-5 w-5" />
+                )}
                 Scan now
               </button>
             </div>
