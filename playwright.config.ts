@@ -10,7 +10,12 @@ export default defineConfig({
   globalSetup: "test/helpers/global.setup.ts",
   globalTeardown: "test/helpers/global.teardown.ts",
   maxFailures: 5,
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  projects: [
+    {
+      name: "webkit",
+      use: devices["Desktop Safari"],
+    },
+  ],
   reporter: process.env.CI ? "github" : "list",
   retries: process.env.CI ? 2 : 0,
   snapshotDir: "__screenshots__",
@@ -20,5 +25,6 @@ export default defineConfig({
     baseURL: `http://localhost:${PORT}`,
     screenshot: "only-on-failure",
     viewport: { width: 1280, height: 720 },
+    video: process.env.CI ? "off" : "on",
   },
 });
