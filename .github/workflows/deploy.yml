@@ -23,28 +23,20 @@ jobs:
           node-version-file: "package.json"
 
       - name: Cache pnpm store
-        uses: actions/cache@v4
+        id: cache-install
+        uses: actions/cache@v5
         with:
           path: |
             node_modules
             ~/.pnpm-store
-          key: ${{ runner.os }}-build-cache-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-build-cache-
+          key: ${{ runner.os }}-cache-install-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - name: Install dependencies
+        if: steps.cache-install.outputs.cache-hit != 'true'
         run: pnpm install
 
       - name: Prepare application
         run: pnpm prepare
-
-      - name: Save build cache
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            node_modules
-            ~/.pnpm-store
-          key: build-cache-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - name: Run checks
         run: pnpm run check
