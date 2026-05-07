@@ -5,17 +5,46 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+env:
+  DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+  DIRECT_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+  NODE_ENV: "test"
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
+        options: --entrypoint redis-server
 
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout Repository
+        uses: actions/checkout@v6
 
-      - uses: pnpm/action-setup@v6
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          cache: true
 
       - uses: actions/setup-node@v6
         with:
@@ -34,6 +63,14 @@ jobs:
       - name: Install dependencies
         if: steps.cache-install.outputs.cache-hit != 'true'
         run: pnpm install
+
+      - name: Set PLAYWRIGHT_VERSION
+        run: echo "PLAYWRIGHT_VERSION=$(pnpm exec playwright --version)" >> $GITHUB_ENV
+
+      - name: Install Playwright (Chromium)
+        if: steps.cache-install.outputs.cache-hit != 'true'
+        timeout-minutes: 5
+        run: pnpm exec playwright install chromium --with-deps
 
       - name: Prepare application
         run: pnpm ready
