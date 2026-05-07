@@ -63,13 +63,9 @@ jobs:
 
       - name: Install dependencies
         if: steps.cache-install.outputs.cache-hit != 'true'
-        run: pnpm install
-
-      - name: Set PLAYWRIGHT_VERSION
-        run: echo "PLAYWRIGHT_VERSION=$(pnpm exec playwright --version)" >> $GITHUB_ENV
-
-      - name: Install Playwright (Chromium)
-        run: pnpm exec playwright install chromium --with-deps
+        run: |
+          pnpm install
+          pnpm exec playwright install chromium --with-deps
 
       - name: Prepare application
         run: pnpm ready
