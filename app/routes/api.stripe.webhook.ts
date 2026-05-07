@@ -4,7 +4,7 @@ import Stripe from "stripe";
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
-import stripe from "~/lib/stripe.server";
+import getStripe from "~/lib/stripe.server";
 import { emitWebhookEvent } from "~/lib/webhooks.server";
 import type { Route } from "./+types/api.stripe.webhook";
 
@@ -30,7 +30,7 @@ export async function action({ request }: Route.ActionArgs) {
 
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(
+    event = getStripe().webhooks.constructEvent(
       body,
       sig,
       envVars.STRIPE_WEBHOOK_SECRET,

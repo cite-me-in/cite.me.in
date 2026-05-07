@@ -5,7 +5,7 @@ import Main from "~/components/ui/Main";
 import prices from "~/data/stripe-prices.json";
 import { requireUserAccess } from "~/lib/auth.server";
 import envVars from "~/lib/envVars.server";
-import stripe from "~/lib/stripe.server";
+import getStripe from "~/lib/stripe.server";
 import type { Route } from "./+types/upgrade";
 
 export function meta(): Route.MetaDescriptors {
@@ -30,7 +30,7 @@ export async function action({ request }: Route.ActionArgs) {
       ? envVars.STRIPE_PRICE_ANNUAL_ID
       : envVars.STRIPE_PRICE_MONTHLY_ID;
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     mode: "subscription",
     payment_method_types: ["card"],
     line_items: [{ price: priceId, quantity: 1 }],

@@ -11,7 +11,7 @@ import {
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
-import stripe from "~/lib/stripe.server";
+import getStripe from "~/lib/stripe.server";
 import type { Route } from "./+types/route";
 import ProfileApiKeyForm from "./ProfileApiKeyForm";
 import ProfileEmailForm from "./ProfileEmailForm";
@@ -42,7 +42,7 @@ export async function action({ request }: Route.ActionArgs) {
     });
     if (!account) return { error: "No active subscription found" };
 
-    const session = await stripe.billingPortal.sessions.create({
+    const session = await getStripe().billingPortal.sessions.create({
       customer: account.stripeCustomerId,
       return_url: `${envVars.VITE_APP_URL}/profile`,
     });
