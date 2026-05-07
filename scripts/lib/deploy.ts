@@ -103,9 +103,9 @@ function parseArgs(): {
   if (!result.image)
     throw new Error("Missing required argument: --image <GHCR image name>");
   return {
-    coolifyURL: result.coolify,
-    image: result.image,
-    appName: result.app,
+    coolifyURL: result.coolify as string,
+    image: result.image as string,
+    appName: result.app as string,
   };
 }
 
