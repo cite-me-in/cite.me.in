@@ -24,6 +24,7 @@ RUN pnpm build
 FROM node:24-slim AS runner
 ENV NODE_ENV=production
 
+RUN npx -y playwright@1.59.1 install --with-deps
 RUN corepack enable pnpm
 
 WORKDIR /app

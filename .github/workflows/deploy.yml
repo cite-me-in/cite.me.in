@@ -65,7 +65,7 @@ jobs:
         if: steps.cache-install.outputs.cache-hit != 'true'
         run: |
           pnpm install
-          pnpm exec playwright install chromium --with-deps
+          pnpx -y playwright@1.59.1 install --with-deps
 
       - name: Prepare application
         run: pnpm ready
