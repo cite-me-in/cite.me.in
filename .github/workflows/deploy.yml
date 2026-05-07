@@ -2,12 +2,13 @@ name: Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   workflow_dispatch:
 
 env:
   POSTGRES_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
   POSTGRES_URL_NON_POOLING: "postgresql://postgres:postgres@localhost:5432/postgres"
+  REDIS_URL: "redis://localhost:6379"
   NODE_ENV: "test"
 
 jobs:
@@ -28,8 +29,7 @@ jobs:
         ports:
           - 5432:5432
         # needed because the postgres container does not provide a healthcheck
-        options:
-          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s
           --health-retries 5
 
       redis:
@@ -69,9 +69,7 @@ jobs:
         run: echo "PLAYWRIGHT_VERSION=$(pnpm exec playwright --version)" >> $GITHUB_ENV
 
       - name: Install Playwright (Chromium)
-        if: env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD != '1'
-        timeout-minutes: 5
-        run: pnpm exec playwright install chromium
+        run: pnpm exec playwright install chromium --with-deps
 
       - name: Prepare application
         run: pnpm ready
@@ -83,7 +81,6 @@ jobs:
         run: pnpm vp test run
 
       - name: Run Playwright
-        if: env.PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD != '1'
         run: pnpm playwright test
 
       - name: Get Infisical secrets
