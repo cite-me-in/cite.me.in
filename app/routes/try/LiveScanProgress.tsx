@@ -17,6 +17,7 @@ export const LOG_TO_CHECK: Record<string, string> = {
   "robots directives (noindex)": "Robots directives",
   "markdown content negotiation": "Markdown content negotiation",
   "Content-Signal in robots.txt": "Content Signals",
+  "ai bot traffic": "AI bot traffic",
   "llms-full.txt": "llms-full.txt",
 };
 

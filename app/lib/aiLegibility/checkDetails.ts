@@ -378,6 +378,24 @@ const CATEGORIES: Category[] = [
           ],
         },
       },
+      {
+        name: "AI bot traffic",
+        desc: "Real HTTP requests from AI crawlers succeed",
+        detail: {
+          goal: "Ensure AI crawler traffic reaches your server and gets real content responses, not block pages",
+          issue:
+            "Your robots.txt may allow AI bots, but your web server, CDN, or WAF (e.g., Cloudflare, AWS WAF, Akamai) might still block them. AI crawlers send identifiable User-Agent headers — if your infrastructure rejects or challenges these requests, your content won't appear in AI responses. Even if robots.txt says Allow, a WAF rule can still block the traffic upstream.",
+          howToImplement:
+            "Check your WAF/CDN firewall rules for any that target or block known AI bot User-Agents (GPTBot, ClaudeBot, PerplexityBot, etc.). Add explicit Allow rules for these User-Agents before any catch-all block rules. For Cloudflare, review the WAF custom rules and Security Level settings. For AWS WAF, check the rate-based rules and IP set rules that may block these bots. For server-level blocks, ensure your nginx/apache config isn't returning 403 based on User-Agent.",
+          fixExample:
+            '# Example: Cloudflare WAF Rule (Before block rules)\n# Field: User Agent\n# Operator: contains\n# Value: GPTBot\n# Action: Skip\n\n# Example: Remove server-level UA blocking (nginx)\n# Remove any lines like:\n# if ($http_user_agent ~* (GPTBot|ClaudeBot)) { return 403; }',
+          effort: "15 min",
+          resourceLinks: [
+            { label: "Cloudflare WAF docs", url: "https://developers.google.com/search/docs/crawling-indexing/robots/intro" },
+            { label: "AI crawler User-Agent list", url: "https://darkvisitors.com/agents" },
+          ],
+        },
+      },
     ],
   },
 ];

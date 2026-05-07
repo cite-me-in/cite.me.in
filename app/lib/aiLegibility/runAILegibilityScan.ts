@@ -10,6 +10,7 @@ import { normalizeURL } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
 import { getCheckCategory, getCheckDetail } from "./checkDetails";
 import assessPages from "./checks/assessPages";
+import checkAiBotTraffic from "./checks/aiBotTraffic";
 import checkContentSignals from "./checks/contentSignals";
 import checkJsonLd from "./checks/jsonLd";
 import checkLinkHeaders from "./checks/linkHeaders";
@@ -266,6 +267,18 @@ export async function runScanSteps({
   await log(
     `${contentSignalsResult.passed ? "✓" : "✗"} ${contentSignalsResult.message}`,
   );
+
+  await log("Checking AI bot traffic...");
+  const samplePageUrls = fetchedPages.map((p) => p.url);
+  const aiBotTrafficResult = await checkAiBotTraffic({
+    url,
+    sampleUrls: samplePageUrls.length > 0 ? samplePageUrls : undefined,
+    log,
+  });
+  await log(
+    `${aiBotTrafficResult.passed ? "✓" : "✗"} ${aiBotTrafficResult.message}`,
+  );
+  checks.push(aiBotTrafficResult);
 
   await log("Checking llms-full.txt...");
   const llmsFullTxtResult = await checkLlmsFullTxt({ url });
