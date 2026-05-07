@@ -3,12 +3,7 @@ import { resolve } from "node:path";
 import { URL as URLString } from "node:url";
 import { ms } from "convert";
 import debug from "debug";
-import {
-  type BrowserContext,
-  type Page,
-  type Route,
-  chromium,
-} from "playwright";
+import { type BrowserContext, type Page, type Route, webkit } from "playwright";
 import { port } from "./launchServer";
 import trimConsole from "./trimConsole";
 
@@ -51,7 +46,7 @@ export async function newContext(): Promise<BrowserContext> {
   if (context) return context;
 
   const headless = process.env.CI ? true : !logger.enabled;
-  const browser = await chromium.launch({
+  const browser = await webkit.launch({
     headless,
     slowMo: process.env.SLOW_MO ? Number(process.env.SLOW_MO) : undefined,
   });
