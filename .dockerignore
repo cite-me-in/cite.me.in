@@ -1,0 +1,5 @@
+__screenshots__/
+.env.test
+docs/
+scripts/
+test/
