@@ -18,6 +18,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 ARG INFISICAL_ENV
+# prisma generate only needs a valid URL format, not a real connection
+ARG POSTGRES_URL_NON_POOLING=postgresql://placeholder:placeholder@localhost:5432/placeholder
 RUN pnpm build
 
 # --- RUNNER ---
