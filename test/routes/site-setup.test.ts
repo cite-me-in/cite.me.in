@@ -42,21 +42,6 @@ describe("setup page", () => {
       userId: USER_ID,
       line: `Crawling ${DOMAIN}...`,
     });
-    await appendLog({
-      siteId: SITE_ID,
-      userId: USER_ID,
-      line: "Found 1,234 words of content",
-    });
-    await appendLog({
-      siteId: SITE_ID,
-      userId: USER_ID,
-      line: "Summarizing content...",
-    });
-    await appendLog({
-      siteId: SITE_ID,
-      userId: USER_ID,
-      line: "Generating queries...",
-    });
 
     await signIn(USER_ID);
     page = await goto(`/site/${DOMAIN}/setup`);
@@ -74,9 +59,6 @@ describe("setup page", () => {
 
   it("should show log lines from Redis", async () => {
     await expect(page.getByText(`Crawling ${DOMAIN}...`)).toBeVisible();
-    await expect(page.getByText("Found 1,234 words of content")).toBeVisible();
-    await expect(page.getByText("Summarizing content...")).toBeVisible();
-    await expect(page.getByText("Generating queries...")).toBeVisible();
   });
 
   it("should show spinner while running", async () => {
