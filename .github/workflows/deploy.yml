@@ -62,6 +62,10 @@ jobs:
             ~/.pnpm-store
           key: ${{ runner.os }}-cache-install-${{ hashFiles('**/pnpm-lock.yaml') }}
 
+      - name: Link ICU 72 for WebKit
+        run: |
+          sudo ln -sf /usr/lib/aarch64-linux-gnu/libicudata.so.74 /usr/lib/aarch64-linux-gnu/libicudata.so.72
+
       - name: Install dependencies
         if: steps.cache-install.outputs.cache-hit != 'true'
         run: |
