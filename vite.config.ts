@@ -86,10 +86,11 @@ export default defineConfig({
 
   test: {
     fileParallelism: false,
+    bail: 1,
     setupFiles: ["test/helpers/suite.setup.ts"],
     globalSetup: ["test/helpers/global.setup.ts"],
     teardownTimeout: 5_000, // 5 seconds - Prisma disconnect will timeout anyway on macOS
-    testTimeout: 30_000, // 30 seconds
+    testTimeout: 15_000, // 15 seconds
     include: ["test/**/*.test.ts", "!test/e2e/*"],
 
     onConsoleLog: (log: string, type: "stdout" | "stderr") => {
