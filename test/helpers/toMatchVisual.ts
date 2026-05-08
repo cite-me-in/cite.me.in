@@ -61,6 +61,16 @@ expect.extend({
     // Wait for all possible animations/transitions (tweak ms if needed for your UI)
     await sleep(200);
 
+    // Freeze CSS animations to ensure deterministic screenshots
+    await (locator as Page).evaluate(() => {
+      if (document.getElementById("pw-animation-freeze")) return;
+      const style = document.createElement("style");
+      style.id = "pw-animation-freeze";
+      style.textContent =
+        "*, *::before, *::after { animation: none !important; transition: none !important; }";
+      document.head.appendChild(style);
+    });
+
     // Run both matchers in parallel and fail if either fails.
     const [screenshot, html] = await Promise.allSettled([
       expect(locator).toMatchScreenshot({ name, ...options }),

@@ -49,9 +49,9 @@ export async function checkUsageLimits(siteId: string): Promise<void> {
   };
 
   const costLimits = {
-    hourly: envVars.USAGE_LIMIT_COST_USD_HOURLY ?? 0,
-    daily: envVars.USAGE_LIMIT_COST_USD_DAILY ?? 0,
-    monthly: envVars.USAGE_LIMIT_COST_USD_MONTHLY ?? 0,
+    hourly: envVars.USAGE_LIMIT_COST_USD_HOURLY ?? null,
+    daily: envVars.USAGE_LIMIT_COST_USD_DAILY ?? null,
+    monthly: envVars.USAGE_LIMIT_COST_USD_MONTHLY ?? null,
   };
 
   const hasAnyCostLimit = Object.values(costLimits).some((v) => v !== null);

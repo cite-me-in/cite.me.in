@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { describe, it } from "vite-plus/test";
+import { beforeEach, describe, it } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
 import { goto } from "~/test/helpers/launchBrowser";
 import { port } from "~/test/helpers/launchServer";
@@ -22,6 +22,12 @@ async function fillSignUp(page: import("playwright").Page, email: string) {
 
 describe("pricing user flows", () => {
   describe("flow A: sign up, free tier, upgrade page", () => {
+    beforeEach(async () => {
+      await prisma.user.deleteMany({
+        where: { email: { in: [EMAIL_A, EMAIL_B] } },
+      });
+    });
+
     it("should sign up, land on /sites as free-tier user, and show upgrade page", async () => {
       const page = await goto("/sign-up");
       await fillSignUp(page, EMAIL_A);

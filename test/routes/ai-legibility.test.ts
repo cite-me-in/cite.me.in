@@ -203,7 +203,8 @@ describe("ai-legibility page - with report", () => {
   });
 
   it("should match visually - results", async () => {
-    await reportPage.waitForTimeout(600);
+    // Wait for RadialGauge animation to reach final score
+    await expect(reportPage.getByText("86").first()).toBeVisible();
     await expect(reportPage.locator("main")).toMatchVisual({
       name: "ai-legibility/results",
     });
@@ -394,7 +395,8 @@ describe("ai-legibility page - accordion and flip card", () => {
   });
 
   it("should match visually - accordion open on failed check", async () => {
-    await page.waitForTimeout(600);
+    // Wait for RadialGauge animation to reach final score
+    await expect(page.getByText("50").first()).toBeVisible();
     await expect(page.locator("main")).toMatchVisual({
       name: "ai-legibility/detail-accordion-open",
     });
