@@ -1,4 +1,5 @@
 import { expect } from "@playwright/test";
+import { ms } from "convert";
 import { beforeEach, describe, it } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
 import { goto } from "~/test/helpers/launchBrowser";
@@ -43,14 +44,18 @@ describe("pricing user flows", () => {
       });
       expect(account).toBeNull();
 
-      await signIn(user.id);
-      const upgradePage = await goto("/upgrade");
+      await page.goto("/upgrade");
+      await page.reload({ waitUntil: "load" });
+      await page.waitForFunction(
+        () => document.body.getAttribute("data-hydrated") === "true",
+        { timeout: ms("15s") },
+      );
 
       await expect(
-        upgradePage.getByRole("heading", { name: "Upgrade to Pro" }),
+        page.getByRole("heading", { name: "Upgrade to Pro" }),
       ).toBeVisible();
       await expect(
-        upgradePage.getByRole("button", { name: /Subscribe — \$\d+\/month/ }),
+        page.getByRole("button", { name: /Subscribe — \$\d+\/month/ }),
       ).toBeVisible();
     });
 
@@ -58,8 +63,8 @@ describe("pricing user flows", () => {
       const user = await prisma.user.create({
         data: { email: EMAIL_A, passwordHash: "testhash" },
       });
-      await signIn(user.id);
-      const page = await goto("/upgrade");
+      const ctx = await signIn(user.id);
+      const page = await goto("/upgrade", ctx);
 
       await expect(
         page.getByRole("button", { name: /Subscribe — \$\d+\/month/ }),
@@ -91,8 +96,8 @@ describe("pricing user flows", () => {
         },
       });
 
-      await signIn(user.id);
-      const page = await goto("/upgrade");
+      const ctx = await signIn(user.id);
+      const page = await goto("/upgrade", ctx);
       await page.waitForURL(`http://localhost:${port}/sites`);
       expect(new URL(page.url()).pathname).toBe("/sites");
     });

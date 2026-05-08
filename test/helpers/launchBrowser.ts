@@ -3,24 +3,46 @@ import { resolve } from "node:path";
 import { URL as URLString } from "node:url";
 import { ms } from "convert";
 import debug from "debug";
-import { type BrowserContext, type Page, type Route, webkit } from "playwright";
+import {
+  type Browser,
+  type BrowserContext,
+  type Page,
+  type Route,
+  webkit,
+} from "playwright";
 import { port } from "./launchServer";
 import trimConsole from "./trimConsole";
 
-let context: BrowserContext | undefined;
+let browser: Browser | undefined;
 const logger = debug("browser");
+
+async function getBrowser(): Promise<Browser> {
+  if (browser) return browser;
+
+  const headless = process.env.CI ? true : !logger.enabled;
+  browser = await webkit.launch({
+    headless,
+    slowMo: process.env.SLOW_MO ? Number(process.env.SLOW_MO) : undefined,
+  });
+  return browser;
+}
 
 /**
  * Open a new page in the browser. This function will reload the page to ensure
  * that the page is fully loaded.
  *
  * @param path - The path to open.
+ * @param context - An optional browser context. If not provided, a new one is created.
  * @param headers - The headers to set on the page (optional).
  * @returns The page.
  */
-export async function goto(path: string, headers?: HeadersInit): Promise<Page> {
-  const context = await newContext();
-  const page = await context.newPage();
+export async function goto(
+  path: string,
+  context?: BrowserContext,
+  headers?: HeadersInit,
+): Promise<Page> {
+  const ctx = context ?? (await newContext());
+  const page = await ctx.newPage();
   await page.setExtraHTTPHeaders(Object.fromEntries(new Headers(headers)));
   await page.goto(path, { timeout: ms("30s") });
 
@@ -43,15 +65,8 @@ export async function goto(path: string, headers?: HeadersInit): Promise<Page> {
  * @returns The browser context.
  */
 export async function newContext(): Promise<BrowserContext> {
-  if (context) return context;
-
-  const headless = process.env.CI ? true : !logger.enabled;
-  const browser = await webkit.launch({
-    headless,
-    slowMo: process.env.SLOW_MO ? Number(process.env.SLOW_MO) : undefined,
-  });
-
-  context = await browser.newContext({
+  const browser = await getBrowser();
+  const context = await browser.newContext({
     baseURL: `http://localhost:${port}`,
     viewport: { width: 1024, height: 780 },
   });
@@ -108,7 +123,7 @@ async function blockOutgoingRequests(route: Route): Promise<void> {
 }
 
 function cleanup() {
-  void context?.browser()?.close();
+  void browser?.close();
 }
 
 process.on("exit", cleanup);

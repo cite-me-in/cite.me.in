@@ -1,3 +1,4 @@
+import type { BrowserContext } from "playwright";
 import { sessionCookie } from "~/lib/cookies.server";
 import prisma from "~/lib/prisma.server";
 import { newContext } from "./launchBrowser";
@@ -7,7 +8,7 @@ import { newContext } from "./launchBrowser";
  * session cookie into the shared Playwright browser context. Call this before
  * goto() so the browser is already authenticated.
  */
-export async function signIn(userId: string): Promise<void> {
+export async function signIn(userId: string): Promise<BrowserContext> {
   const token = crypto.randomUUID();
 
   await prisma.session.create({
@@ -22,8 +23,8 @@ export async function signIn(userId: string): Promise<void> {
     .slice(1)
     .join("=");
 
-  const context = await newContext();
-  await context.addCookies([
+  const ctx = await newContext();
+  await ctx.addCookies([
     {
       name: "session",
       value: cookieValue,
@@ -33,4 +34,5 @@ export async function signIn(userId: string): Promise<void> {
       sameSite: "Lax",
     },
   ]);
+  return ctx;
 }

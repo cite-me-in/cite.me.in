@@ -113,8 +113,8 @@ describe("ai-legibility page - no scan yet", () => {
       },
     });
 
-    await signIn(user.id);
-    page = await goto("/site/no-scan-example.com/ai-legibility");
+    const ctx = await signIn(user.id);
+    page = await goto("/site/no-scan-example.com/ai-legibility", ctx);
   });
 
   it("should show the main heading", async () => {
@@ -170,8 +170,8 @@ describe("ai-legibility page - with report", () => {
       },
     });
 
-    await signIn(user.id);
-    reportPage = await goto("/site/report-example.com/ai-legibility");
+    const ctx = await signIn(user.id);
+    reportPage = await goto("/site/report-example.com/ai-legibility", ctx);
   });
 
   it("should show overall score", async () => {
@@ -256,8 +256,8 @@ describe("ai-legibility page - scanning", () => {
       line: "Checking robots.txt...",
     });
 
-    await signIn(user.id);
-    scanningPage = await goto("/site/scanning-example.com/ai-legibility");
+    const ctx = await signIn(user.id);
+    scanningPage = await goto("/site/scanning-example.com/ai-legibility", ctx);
   });
 
   it("should show scanning indicator", async () => {
@@ -350,8 +350,8 @@ describe("ai-legibility page - accordion and flip card", () => {
       },
     });
 
-    await signIn(user.id);
-    page = await goto("/site/detail-example.com/ai-legibility");
+    const ctx = await signIn(user.id);
+    page = await goto("/site/detail-example.com/ai-legibility", ctx);
   });
 
   it("should show accordion open for failed check", async () => {
@@ -451,8 +451,8 @@ describe("ai-legibility page - improve score modal", () => {
       },
     });
 
-    await signIn(user.id);
-    page = await goto("/site/modal-example.com/ai-legibility");
+    const ctx = await signIn(user.id);
+    page = await goto("/site/modal-example.com/ai-legibility", ctx);
   });
 
   it("should show Improve your score button", async () => {

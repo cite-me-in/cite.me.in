@@ -1,4 +1,4 @@
-import { type Page, expect } from "@playwright/test";
+import { type BrowserContext, type Page, expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vite-plus/test";
 import { hashPassword, verifyPassword } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
@@ -22,6 +22,7 @@ describe("unauthenticated access", () => {
 
 describe("profile route", () => {
   let user: User;
+  let ctx: BrowserContext;
 
   beforeAll(async () => {
     user = await prisma.user.create({
@@ -31,14 +32,14 @@ describe("profile route", () => {
         passwordHash: await hashPassword(PASSWORD),
       },
     });
-    await signIn(user.id);
+    ctx = await signIn(user.id);
   });
 
   describe("email update", () => {
     let page: Page;
 
     beforeAll(async () => {
-      page = await goto("/profile");
+      page = await goto("/profile", ctx);
     });
 
     it("should show email tab with current email pre-filled", async () => {
@@ -110,7 +111,7 @@ describe("profile route", () => {
     let page: Page;
 
     beforeAll(async () => {
-      page = await goto("/profile");
+      page = await goto("/profile", ctx);
       await page.getByText("Password").click();
     });
 

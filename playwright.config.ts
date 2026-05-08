@@ -17,7 +17,7 @@ export default defineConfig({
     },
   ],
   reporter: process.env.CI ? "github" : "list",
-  retries: process.env.CI ? 2 : 0,
+  retries: 0,
   snapshotDir: "__screenshots__",
   testDir: "test/e2e",
   testMatch: /.*\.test\.ts$/,

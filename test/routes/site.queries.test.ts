@@ -51,8 +51,8 @@ describe("site queries page", () => {
     let page: Awaited<ReturnType<typeof goto>>;
 
     beforeAll(async () => {
-      await signIn(user.id);
-      page = await goto(`/site/${siteDomain}/queries`);
+      const ctx = await signIn(user.id);
+      page = await goto(`/site/${siteDomain}/queries`, ctx);
     });
 
     it("should show empty state message", async () => {
@@ -108,7 +108,8 @@ describe("site queries page", () => {
           },
         ],
       });
-      page = await goto(`/site/${siteDomain}/queries`);
+      const ctx = await signIn(user.id);
+      page = await goto(`/site/${siteDomain}/queries`, ctx);
     });
 
     it("should show group names", async () => {

@@ -1,4 +1,6 @@
 import { type Locator, type Page, expect } from "@playwright/test";
+import { ms } from "convert";
+import type { BrowserContext } from "playwright";
 import { afterAll, beforeAll, describe, it } from "vite-plus/test";
 import { hashPassword } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
@@ -16,6 +18,7 @@ describe("unauthenticated access", () => {
 describe("sites route", () => {
   let page: Page;
   let user: User;
+  let ctx: BrowserContext;
 
   beforeAll(async () => {
     user = await prisma.user.create({
@@ -34,13 +37,12 @@ describe("sites route", () => {
         },
       },
     });
-    await signIn(user.id);
-    page = await goto("/sites");
+    ctx = await signIn(user.id);
+    page = await goto("/sites", ctx);
   });
 
   describe("empty state", () => {
     it("should show URL input and descriptive text", async () => {
-      const page = await goto("/sites");
       await expect(
         page.getByRole("textbox", { name: "Website URL or domain" }),
       ).toBeVisible();
@@ -66,7 +68,12 @@ describe("sites route", () => {
 
   describe("when user enters invalid URL", () => {
     beforeAll(async () => {
-      page = await goto("/sites");
+      await page.goto("/sites", { timeout: ms("30s") });
+      await page.reload({ waitUntil: "load" });
+      await page.waitForFunction(
+        () => document.body.getAttribute("data-hydrated") === "true",
+        { timeout: ms("15s") },
+      );
       await page
         .getByRole("textbox", { name: "Website URL or domain" })
         .fill("http://192.168.1.1");
@@ -82,7 +89,12 @@ describe("sites route", () => {
 
   describe("when user enters localhost URL", () => {
     beforeAll(async () => {
-      page = await goto("/sites");
+      await page.goto("/sites", { timeout: ms("30s") });
+      await page.reload({ waitUntil: "load" });
+      await page.waitForFunction(
+        () => document.body.getAttribute("data-hydrated") === "true",
+        { timeout: ms("15s") },
+      );
       await page
         .getByRole("textbox", { name: "Website URL or domain" })
         .fill("localhost");
@@ -110,7 +122,13 @@ describe("sites route", () => {
           summary: "Test summary",
         },
       });
-      page = await goto("/sites");
+      page = await ctx.newPage();
+      await page.goto("/sites", { timeout: ms("30s") });
+      await page.reload({ waitUntil: "load" });
+      await page.waitForFunction(
+        () => document.body.getAttribute("data-hydrated") === "true",
+        { timeout: ms("15s") },
+      );
       await page.getByRole("button", { name: "Add Site" }).click();
       await page
         .getByRole("textbox", { name: "Website URL or domain" })
@@ -134,7 +152,13 @@ describe("sites route", () => {
     beforeAll(async () => {
       await prisma.site.deleteMany();
 
-      page = await goto("/sites");
+      page = await ctx.newPage();
+      await page.goto("/sites", { timeout: ms("30s") });
+      await page.reload({ waitUntil: "load" });
+      await page.waitForFunction(
+        () => document.body.getAttribute("data-hydrated") === "true",
+        { timeout: ms("15s") },
+      );
       await page
         .getByRole("textbox", { name: "Website URL or domain" })
         .fill("acme.com");
@@ -176,7 +200,12 @@ describe("sites route", () => {
           summary: "Test summary",
         },
       });
-      page = await goto("/sites");
+      await page.goto("/sites", { timeout: ms("30s") });
+      await page.reload({ waitUntil: "load" });
+      await page.waitForFunction(
+        () => document.body.getAttribute("data-hydrated") === "true",
+        { timeout: ms("15s") },
+      );
     });
 
     it("should show column headers", async () => {
@@ -210,7 +239,15 @@ describe("sites route", () => {
 
       beforeAll(async () => {
         count = await prisma.site.count();
-        settingsPage = await goto("/site/dashboard-test.com/settings");
+        settingsPage = await ctx.newPage();
+        await settingsPage.goto("/site/dashboard-test.com/settings", {
+          timeout: ms("30s"),
+        });
+        await settingsPage.reload({ waitUntil: "load" });
+        await settingsPage.waitForFunction(
+          () => document.body.getAttribute("data-hydrated") === "true",
+          { timeout: ms("15s") },
+        );
         await settingsPage.getByRole("button", { name: "Delete site" }).click();
 
         deleteConfirmBtn = settingsPage.getByRole("button", {
@@ -385,7 +422,13 @@ describe("sites route", () => {
             },
           ],
         });
-        page = await goto("/sites");
+        page = await ctx.newPage();
+        await page.goto("/sites", { timeout: ms("30s") });
+        await page.reload({ waitUntil: "load" });
+        await page.waitForFunction(
+          () => document.body.getAttribute("data-hydrated") === "true",
+          { timeout: ms("15s") },
+        );
       });
 
       it("should match visually", async () => {

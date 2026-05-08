@@ -128,8 +128,8 @@ describe("traffic page", () => {
     let page: Awaited<ReturnType<typeof goto>>;
 
     beforeAll(async () => {
-      await signIn(user.id);
-      page = await goto(`/site/${siteDomain}/traffic`);
+      const ctx = await signIn(user.id);
+      page = await goto(`/site/${siteDomain}/traffic`, ctx);
     });
 
     it("should show no visitors message", async () => {
@@ -167,8 +167,10 @@ describe("traffic page", () => {
           },
         });
       }
+      const ctx = await signIn(user.id);
       page = await goto(
         `/site/${siteDomain}/traffic?from=2026-01-27&until=2026-02-26`,
+        ctx,
       );
     });
 
@@ -232,8 +234,10 @@ describe("traffic page", () => {
           },
         });
       }
+      const ctx = await signIn(user.id);
       page = await goto(
         `/site/${siteDomain}/traffic?from=2026-01-27&until=2026-02-26`,
+        ctx,
       );
     });
 
@@ -269,8 +273,10 @@ describe("traffic page", () => {
           generatedAt: new Date("2026-02-26T12:00:00Z"),
         },
       });
+      const ctx = await signIn(user.id);
       page = await goto(
         `/site/${siteDomain}/traffic?from=2026-01-27&until=2026-02-26`,
+        ctx,
       );
     });
 

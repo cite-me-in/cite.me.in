@@ -10,6 +10,10 @@ import "~/test/helpers/toMatchVisual";
 const TEST_EMAIL = "stripe-e2e@example.com";
 const TEST_PASSWORD = "password123";
 
+// Skip if using the default fake Stripe key — CI doesn't inject real credentials
+const hasStripeCredentials = envVars.STRIPE_SECRET_KEY !== "sk_test_1234567890";
+test.skip(!hasStripeCredentials, "No real Stripe credentials configured");
+
 test.describe.configure({ mode: "serial" });
 
 let page: Page;

@@ -87,8 +87,8 @@ describe("single citation page", () => {
   });
 
   it("should show the query and platform info", async () => {
-    await signIn(user.id);
-    const page = await goto(`/site/${HOSTNAME}/citation/${QUERY_ID}`);
+    const ctx = await signIn(user.id);
+    const page = await goto(`/site/${HOSTNAME}/citation/${QUERY_ID}`, ctx);
     await expect(page.getByText(`Q: ${QUERY_TEXT}`)).toBeVisible();
     await expect(
       page.getByText(/chatgpt · gpt-4o · 1\. discovery/),
@@ -96,8 +96,8 @@ describe("single citation page", () => {
   });
 
   it("should list all citations with same-domain highlighted", async () => {
-    await signIn(user.id);
-    const page = await goto(`/site/${HOSTNAME}/citation/${QUERY_ID}`);
+    const ctx = await signIn(user.id);
+    const page = await goto(`/site/${HOSTNAME}/citation/${QUERY_ID}`, ctx);
     for (const url of CITATIONS) {
       await expect(page.getByRole("link", { name: url })).toBeVisible();
     }
@@ -110,8 +110,8 @@ describe("single citation page", () => {
   });
 
   it("should show the response text", async () => {
-    await signIn(user.id);
-    const page = await goto(`/site/${HOSTNAME}/citation/${QUERY_ID}`);
+    const ctx = await signIn(user.id);
+    const page = await goto(`/site/${HOSTNAME}/citation/${QUERY_ID}`, ctx);
     await expect(page.getByText("gpt-4o")).toBeVisible();
     await expect(
       page.getByText(/Short-term retail space in malls/),
@@ -119,8 +119,8 @@ describe("single citation page", () => {
   });
 
   it("should match visually", async () => {
-    await signIn(user.id);
-    const page = await goto(`/site/${HOSTNAME}/citation/${QUERY_ID}`);
+    const ctx = await signIn(user.id);
+    const page = await goto(`/site/${HOSTNAME}/citation/${QUERY_ID}`, ctx);
     await expect(page.locator("main")).toMatchVisual({
       name: "site/citations.query",
       modify: (doc) => {

@@ -210,8 +210,11 @@ describe("site page", () => {
   });
 
   it("should show positive sentiment for ChatGPT", async () => {
-    await signIn(user.id);
-    const page = await goto(`/site/${siteDomain}/citations?platform=chatgpt`);
+    const ctx = await signIn(user.id);
+    const page = await goto(
+      `/site/${siteDomain}/citations?platform=chatgpt`,
+      ctx,
+    );
     await expect(page.getByText("Positive", { exact: true })).toBeVisible();
     await expect(
       page.getByText(/Rentail\.space is cited positively/),
@@ -219,22 +222,28 @@ describe("site page", () => {
   });
 
   it("should show negative sentiment for Gemini", async () => {
-    await signIn(user.id);
-    const page = await goto(`/site/${siteDomain}/citations?platform=gemini`);
+    const ctx = await signIn(user.id);
+    const page = await goto(
+      `/site/${siteDomain}/citations?platform=gemini`,
+      ctx,
+    );
     await expect(page.getByText("Negative", { exact: true })).toBeVisible();
     await expect(page.getByText(/unfavorable mentions/)).toBeVisible();
   });
 
   it("should show neutral sentiment for Claude", async () => {
-    await signIn(user.id);
-    const page = await goto(`/site/${siteDomain}/citations?platform=claude`);
+    const ctx = await signIn(user.id);
+    const page = await goto(
+      `/site/${siteDomain}/citations?platform=claude`,
+      ctx,
+    );
     await expect(page.getByText("Neutral", { exact: true })).toBeVisible();
     await expect(page.getByText(/mentioned neutrally/)).toBeVisible();
   });
 
   it("should match visually", async () => {
-    await signIn(user.id);
-    const page = await goto(`/site/${siteDomain}/citations`);
+    const ctx = await signIn(user.id);
+    const page = await goto(`/site/${siteDomain}/citations`, ctx);
     // Strip chart SVGs: Recharts computes floating-point coordinates from
     // ResizeObserver measurements that drift slightly between runs. The
     // screenshot test covers visual regressions in charts.

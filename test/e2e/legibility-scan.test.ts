@@ -20,7 +20,7 @@ test("shows scan results with passing and failing checks", async () => {
   page = await goto("/try?domain=acme.com");
 
   // Wait for scan to start
-  await expect(page.getByText("Page content")).toBeVisible({
+  await expect(page.locator("div.grid").getByText("Page content")).toBeVisible({
     timeout: 20_000,
   });
 
@@ -42,20 +42,10 @@ test("shows the full scan result including CTA", async () => {
   test.setTimeout(60_000); // 60s for full scan
   page = await goto("/try?domain=acme.com");
 
-  // Wait for scan to complete - check for scan results element
-  await page.waitForSelector("#scan-results", {
+  // Wait for scan to complete
+  await page.waitForSelector("text=Scan complete", {
     timeout: 50_000,
   });
-
-  // Wait for loading spinner to disappear (if present)
-  try {
-    await page.waitForSelector(".animate-spin", {
-      state: "hidden",
-      timeout: 50_000,
-    });
-  } catch {
-    // Spinner might not be present if scan was fast
-  }
 
   // Wait for all animations to complete
   await page.waitForLoadState("networkidle");
