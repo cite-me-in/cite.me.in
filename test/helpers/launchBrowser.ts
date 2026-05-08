@@ -23,6 +23,7 @@ async function getBrowser(): Promise<Browser> {
   browser = await chromium.launch({
     headless,
     slowMo: process.env.SLOW_MO ? Number(process.env.SLOW_MO) : undefined,
+    ...(process.env.CI && { args: ["--no-sandbox", "--disable-setuid-sandbox"] }),
   });
   return browser;
 }

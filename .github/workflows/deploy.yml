@@ -68,7 +68,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install Playwright system dependencies
-        run: pnpm exec playwright install-deps chromium
+        run: sudo pnpm exec playwright install-deps chromium
 
       - name: Install Playwright browser
         run: pnpm exec playwright install chromium

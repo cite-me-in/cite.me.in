@@ -23,6 +23,9 @@ export default defineConfig({
   testMatch: /.*\.test\.ts$/,
   use: {
     baseURL: `http://localhost:${PORT}`,
+    ...(process.env.CI && {
+      launchOptions: { args: ["--no-sandbox", "--disable-setuid-sandbox"] },
+    }),
     screenshot: "only-on-failure",
     viewport: { width: 1280, height: 720 },
     video: process.env.CI ? "off" : "on",
