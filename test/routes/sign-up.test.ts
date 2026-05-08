@@ -122,7 +122,7 @@ describe("sign-up route", () => {
 
   it("should navigate to sign-in page when sign-in button is clicked", async () => {
     const page = await goto("/sign-up");
-    await page.getByRole("link", { name: "Sign in" }).click();
+    await page.getByRole("link", { name: "Go to sign in page" }).click();
     await page.waitForURL("**/sign-in");
     expect(new URL(page.url()).pathname).toBe("/sign-in");
   });

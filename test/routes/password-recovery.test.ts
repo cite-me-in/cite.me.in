@@ -54,11 +54,17 @@ describe("password recovery route", () => {
   });
 
   it("should sign user in and redirect to home when valid reset link is clicked", async () => {
-    const token = await prisma.passwordRecoveryToken.findFirstOrThrow({
-      where: { user: { email: EMAIL }, usedAt: null },
-      orderBy: { createdAt: "desc" },
+    const user = await prisma.user.findUniqueOrThrow({
+      where: { email: EMAIL },
     });
-    const page = await goto(`/reset-password/${token.token}`);
+    const { token } = await prisma.passwordRecoveryToken.create({
+      data: {
+        token: crypto.randomUUID(),
+        userId: user.id,
+        expiresAt: new Date(Date.now() + 60_000),
+      },
+    });
+    const page = await goto(`/reset-password/${token}`);
     expect(new URL(page.url()).pathname).toBe("/sites");
   });
 
