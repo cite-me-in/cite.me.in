@@ -57,7 +57,7 @@ jobs:
       - name: Install dependencies
         run: |
           pnpm install --frozen-lockfile
-          pnpm exec playwright install webkit --with-deps
+          pnpm exec playwright install chromium --with-deps
 
       - name: Prepare application
         run: pnpm ready
