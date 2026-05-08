@@ -91,6 +91,7 @@ export default defineConfig({
     globalSetup: ["test/helpers/global.setup.ts"],
     teardownTimeout: 5_000, // 5 seconds - Prisma disconnect will timeout anyway on macOS
     testTimeout: 15_000, // 15 seconds
+    hookTimeout: 15_000, // 15 seconds - Prisma cold-start in CI takes longer
     include: ["test/**/*.test.ts", "!test/e2e/*"],
 
     onConsoleLog: (log: string, type: "stdout" | "stderr") => {
