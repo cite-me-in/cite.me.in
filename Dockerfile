@@ -27,7 +27,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Retry with timeout (workaround for Colima TCP connection drops to Azure CDN)
 RUN for i in $(seq 1 3); do \
-        timeout 600 npx -y playwright@1.59.1 install webkit --with-deps && break; \
+        timeout 600 npx -y playwright@1.59.1 install chromium --with-deps && break; \
         echo "Attempt $i failed, retrying in 15s..."; \
         sleep 15; \
     done
