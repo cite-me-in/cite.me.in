@@ -81,7 +81,9 @@ jobs:
         run: pnpm run check
 
       - name: Run tests
-        run: pnpm vp test run
+        run: DEBUG=server,app:*,browser pnpm vp test run
+        env:
+          NODE_OPTIONS: --enable-source-maps
 
       - name: Run Playwright
         run: pnpm playwright test
