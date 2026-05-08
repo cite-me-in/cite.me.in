@@ -43,8 +43,8 @@ describe("setup page", () => {
       line: `Crawling ${DOMAIN}...`,
     });
 
-    await signIn(USER_ID);
-    page = await goto(`/site/${DOMAIN}/setup`);
+    const ctx = await signIn(USER_ID);
+    page = await goto(`/site/${DOMAIN}/setup`, ctx);
 
     // Wait for the first poll to render lines from Redis.
     await page.waitForSelector("pre div");
