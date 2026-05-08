@@ -23,7 +23,9 @@ async function getBrowser(): Promise<Browser> {
   browser = await chromium.launch({
     headless,
     slowMo: process.env.SLOW_MO ? Number(process.env.SLOW_MO) : undefined,
-    ...(process.env.CI && { args: ["--no-sandbox", "--disable-setuid-sandbox"] }),
+    ...(process.env.CI && {
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    }),
   });
   return browser;
 }
@@ -52,9 +54,7 @@ export async function goto(
   await page.reload({ waitUntil: "load" });
   await page.waitForFunction(
     () => document.body.getAttribute("data-hydrated") === "true",
-    {
-      timeout: ms("8s"),
-    },
+    { timeout: ms("8s") },
   );
 
   return page;
