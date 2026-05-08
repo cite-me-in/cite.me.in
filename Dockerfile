@@ -1,5 +1,7 @@
 FROM node:24-slim AS base
 
+RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
+
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable pnpm
@@ -46,7 +48,7 @@ COPY --from=builder /app/prisma/prod-ca-2021.crt ./prisma/prod-ca-2021.crt
 COPY --from=builder /app/app/data ./app/data
 COPY package.json pnpm-lock.yaml ./
 
-RUN --mount=type=secret,id=dotenv cp /run/secrets/dotenv .env && chmod 644 .env
+RUN --mount=type=secret,id=env cp /run/secrets/env .env && chmod 644 .env
 
 USER node
 
