@@ -54,8 +54,8 @@ export async function launchServer(): Promise<number> {
   logger("Waiting for server to start...");
   await new Promise<void>((resolve, reject) => {
     const timeout = setTimeout(() => {
-      reject(new Error("Server startup timeout after 30s"));
-    }, ms("30s"));
+      reject(new Error("Server startup timeout after 15s"));
+    }, ms("15s"));
 
     if (worker) {
       worker.on("message", (msg: { type: string; error?: string }) => {

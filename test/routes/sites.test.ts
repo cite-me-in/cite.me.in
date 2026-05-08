@@ -68,7 +68,7 @@ describe("sites route", () => {
 
   describe("when user enters invalid URL", () => {
     beforeAll(async () => {
-      await page.goto("/sites", { timeout: ms("30s") });
+      await page.goto("/sites", { timeout: ms("10s") });
       await page.reload({ waitUntil: "load" });
       await page.waitForFunction(
         () => document.body.getAttribute("data-hydrated") === "true",
@@ -89,7 +89,7 @@ describe("sites route", () => {
 
   describe("when user enters localhost URL", () => {
     beforeAll(async () => {
-      await page.goto("/sites", { timeout: ms("30s") });
+      await page.goto("/sites", { timeout: ms("10s") });
       await page.reload({ waitUntil: "load" });
       await page.waitForFunction(
         () => document.body.getAttribute("data-hydrated") === "true",
@@ -123,7 +123,7 @@ describe("sites route", () => {
         },
       });
       page = await ctx.newPage();
-      await page.goto("/sites", { timeout: ms("30s") });
+      await page.goto("/sites", { timeout: ms("10s") });
       await page.reload({ waitUntil: "load" });
       await page.waitForFunction(
         () => document.body.getAttribute("data-hydrated") === "true",
@@ -153,7 +153,7 @@ describe("sites route", () => {
       await prisma.site.deleteMany();
 
       page = await ctx.newPage();
-      await page.goto("/sites", { timeout: ms("30s") });
+      await page.goto("/sites", { timeout: ms("10s") });
       await page.reload({ waitUntil: "load" });
       await page.waitForFunction(
         () => document.body.getAttribute("data-hydrated") === "true",
@@ -200,7 +200,7 @@ describe("sites route", () => {
           summary: "Test summary",
         },
       });
-      await page.goto("/sites", { timeout: ms("30s") });
+      await page.goto("/sites", { timeout: ms("10s") });
       await page.reload({ waitUntil: "load" });
       await page.waitForFunction(
         () => document.body.getAttribute("data-hydrated") === "true",
@@ -241,7 +241,7 @@ describe("sites route", () => {
         count = await prisma.site.count();
         settingsPage = await ctx.newPage();
         await settingsPage.goto("/site/dashboard-test.com/settings", {
-          timeout: ms("30s"),
+          timeout: ms("10s"),
         });
         await settingsPage.reload({ waitUntil: "load" });
         await settingsPage.waitForFunction(
@@ -423,7 +423,7 @@ describe("sites route", () => {
           ],
         });
         page = await ctx.newPage();
-        await page.goto("/sites", { timeout: ms("30s") });
+        await page.goto("/sites", { timeout: ms("10s") });
         await page.reload({ waitUntil: "load" });
         await page.waitForFunction(
           () => document.body.getAttribute("data-hydrated") === "true",

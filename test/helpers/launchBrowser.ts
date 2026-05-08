@@ -45,7 +45,7 @@ export async function goto(
   const ctx = context ?? (await newContext());
   const page = await ctx.newPage();
   await page.setExtraHTTPHeaders(Object.fromEntries(new Headers(headers)));
-  await page.goto(path, { timeout: ms("30s") });
+  await page.goto(path, { timeout: ms("10s") });
 
   // NOTE: We need to reload the page otherwise React doesn't handle the form
   // submission correctly on Playwright.
@@ -53,7 +53,7 @@ export async function goto(
   await page.waitForFunction(
     () => document.body.getAttribute("data-hydrated") === "true",
     {
-      timeout: ms("15s"),
+      timeout: ms("8s"),
     },
   );
 
@@ -92,7 +92,7 @@ export async function newContext(): Promise<BrowserContext> {
     .on("weberror", (error) => logger("error: %s", error.error()));
 
   // Set navigation timeout to 5s less than hook timeout for better error messages
-  context.setDefaultNavigationTimeout(ms("10s"));
+  context.setDefaultNavigationTimeout(ms("8s"));
   // Ensure the __screenshots__ directory exists
   await mkdir(resolve("__screenshots__"), { recursive: true });
 

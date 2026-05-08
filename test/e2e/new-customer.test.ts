@@ -63,7 +63,7 @@ test("verifies site created in DB", async () => {
 });
 
 test("waits for setup pipeline to complete", async () => {
-  await page.waitForURL(/\/site\/[^/]+\/citations/, { timeout: 30_000 });
+  await page.waitForURL(/\/site\/[^/]+\/citations/, { timeout: 15_000 });
 });
 
 test("verifies queries saved in DB", async () => {

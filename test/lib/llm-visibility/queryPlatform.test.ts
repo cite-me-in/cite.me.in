@@ -91,7 +91,7 @@ describe("queryPlatform", () => {
   it(
     "should create a run and store citation queries for each query",
     {
-      timeout: 30_000,
+      timeout: 15_000,
     },
     async () => {
       const run = await prisma.citationQueryRun.findFirst({
@@ -133,7 +133,7 @@ describe("queryPlatform", () => {
   it(
     "should create Citation records for each cited URL",
     {
-      timeout: 30_000,
+      timeout: 15_000,
     },
     async () => {
       const citations = await prisma.citation.findMany({
@@ -160,7 +160,7 @@ describe("queryPlatform", () => {
   it(
     "should persist CitationQuery shape correctly",
     {
-      timeout: 30_000,
+      timeout: 15_000,
     },
     async () => {
       const runs = await prisma.citationQueryRun.findMany({

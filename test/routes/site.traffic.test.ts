@@ -140,7 +140,7 @@ describe("traffic page", () => {
       await expect(page.getByRole("link", { name: siteDomain })).toBeVisible();
     });
 
-    it("should match visually", { timeout: 30_000 }, async () => {
+    it("should match visually", { timeout: 15_000 }, async () => {
       await expect(page.locator("main")).toMatchVisual({
         name: "site/traffic-empty",
       });
@@ -196,7 +196,7 @@ describe("traffic page", () => {
       ).toBeVisible();
     });
 
-    it("should match visually", { timeout: 30_000 }, async () => {
+    it("should match visually", { timeout: 15_000 }, async () => {
       await expect(page.locator("main")).toMatchVisual({
         name: "site/traffic-with-visitors",
         modify: (doc) => {

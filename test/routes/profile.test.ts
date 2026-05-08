@@ -52,7 +52,7 @@ describe("profile route", () => {
       ).toBeVisible();
     });
 
-    it("should match visually", { timeout: 30_000 }, async () => {
+    it("should match visually", { timeout: 15_000 }, async () => {
       await expect(page.locator("main")).toMatchVisual({
         name: "account/email-update",
       });
@@ -130,7 +130,7 @@ describe("profile route", () => {
       ).toBeVisible();
     });
 
-    it("should match visually", { timeout: 30_000 }, async () => {
+    it("should match visually", { timeout: 15_000 }, async () => {
       await expect(page.locator("main")).toMatchVisual({
         name: "account/password-update",
       });
