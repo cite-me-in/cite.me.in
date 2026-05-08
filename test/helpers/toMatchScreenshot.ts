@@ -41,11 +41,7 @@ expect.extend({
     locator: Locator | Page,
     options?: { name?: string; tolerance?: number },
   ): Promise<{ message: () => string; pass: boolean }> {
-    if (process.env.CI)
-      return {
-        message: () => "Skipping screenshot comparison in CI",
-        pass: true,
-      };
+    const updateSnapshot = process.env.UPDATE_SNAPSHOT === "true";
 
     const name = options?.name || getTestName();
     const filename = path.resolve(baseDir, `${name}.png`);
@@ -58,11 +54,29 @@ expect.extend({
       mask: chartLocators,
     });
 
+    const createBaseline = async () => {
+      await mkdir(dirname(filename), { recursive: true });
+      await writeFile(filename, screenshot);
+    };
+
+    if (updateSnapshot) {
+      await createBaseline();
+      return {
+        message: () => `Baseline screenshot updated at ${filename}.`,
+        pass: true,
+      };
+    }
+
+    if (process.env.CI)
+      return {
+        message: () => "Skipping screenshot comparison in CI",
+        pass: true,
+      };
+
     try {
       await access(filename, constants.R_OK);
     } catch {
-      await mkdir(dirname(filename), { recursive: true });
-      await writeFile(filename, screenshot);
+      await createBaseline();
       return {
         message: () => `Baseline screenshot created at ${filename}.`,
         pass: true,

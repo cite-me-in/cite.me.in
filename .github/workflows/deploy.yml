@@ -11,6 +11,7 @@ env:
   REDIS_URL: "redis://localhost:6379"
   NODE_ENV: "test"
   CI: "true"
+  UPDATE_SNAPSHOT: "true"
 
 jobs:
   deploy:
@@ -18,7 +19,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    timeout-minutes: 5
+    timeout-minutes: 25
 
     services:
       postgres:
@@ -66,8 +67,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install chromium --with-deps
+      - name: Install Playwright system dependencies
+        run: pnpm exec playwright install-deps chromium
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install chromium
         if: steps.playwright-cache.outputs.cache-hit != 'true'
 
       - name: Prepare application

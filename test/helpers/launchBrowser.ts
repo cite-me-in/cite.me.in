@@ -84,7 +84,6 @@ export async function newContext(): Promise<BrowserContext> {
       )
         return;
       if (msg.text().startsWith("Successfully preconnected to")) return;
-      if (msg.text().startsWith("Web Inspector blocked")) return;
       if (msg.text().includes("was preloaded using link preload")) return;
 
       trimConsole(msg.text());

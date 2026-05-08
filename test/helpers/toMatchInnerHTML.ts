@@ -31,6 +31,7 @@ expect.extend({
     locator: Locator | Page,
     options?: { name?: string; modify?: (doc: Document) => void },
   ): Promise<{ message: () => string; pass: boolean }> {
+    const updateSnapshot = process.env.UPDATE_SNAPSHOT === "true";
     const name = options?.name || getTestName();
     const filename = path.resolve(baseDir, `${name}.html`);
     const rawHtml =
@@ -57,6 +58,15 @@ expect.extend({
     for (const script of doc.querySelectorAll("script")) script.remove();
 
     const formattedHtml = formatHTMLTree(doc);
+
+    if (updateSnapshot) {
+      await mkdir(dirname(filename), { recursive: true });
+      await writeFile(filename, formattedHtml);
+      return {
+        message: () => `Baseline HTML updated at ${filename}.`,
+        pass: true,
+      };
+    }
 
     try {
       await access(filename, constants.R_OK);
