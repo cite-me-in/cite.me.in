@@ -8,7 +8,7 @@ import {
   type BrowserContext,
   type Page,
   type Route,
-  webkit,
+  chromium,
 } from "playwright";
 import { port } from "./launchServer";
 import trimConsole from "./trimConsole";
@@ -20,7 +20,7 @@ async function getBrowser(): Promise<Browser> {
   if (browser) return browser;
 
   const headless = process.env.CI ? true : !logger.enabled;
-  browser = await webkit.launch({
+  browser = await chromium.launch({
     headless,
     slowMo: process.env.SLOW_MO ? Number(process.env.SLOW_MO) : undefined,
   });

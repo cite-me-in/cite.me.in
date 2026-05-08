@@ -35,35 +35,37 @@ async function startServer(this: void) {
       clearScreen: false,
       logLevel: "warn",
       root: process.cwd(),
-      optimizeDeps: {
-        // entries covers all route files so Vite crawls and discovers every
-        // transitive CJS dep (e.g. use-sync-external-store/shim) before the
-        // browser makes its first request. Combined with Vite's default
-        // holdUntilCrawlEnd:true, the browser waits for the single full
-        // optimization pass to finish — no mid-session re-optimization, no
-        // two-React-instances "Invalid hook call" errors, no need for
-        // noDiscovery:true or manually listing every transitive CJS dep.
-        //
-        // Do NOT use force: true — it triggers eager node_modules scanning on
-        // startup, hits macOS's open-file limit (EMFILE), and crashes before
-        // any test runs. The cache delete above already ensures a clean start.
-        entries: ["app/root.tsx", "app/routes/**/*.tsx", "app/routes/**/*.ts"],
-        include: [
-          "react",
-          "react/jsx-runtime",
-          "react/jsx-dev-runtime",
-          // Must be react-dom/client, not react-dom — the app imports the
-          // /client sub-path. Listing react-dom would leave react-dom/client
-          // undiscovered and trigger a second optimization pass.
-          "react-dom/client",
-          "react-router",
-          "recharts",
-          "usehooks-ts",
-          "lucide-react",
-          "@base-ui/react",
-          "@sentry/react-router",
-        ],
-      },
+      optimizeDeps: process.env.CI
+        ? { noDiscovery: true }
+        : {
+            // entries covers all route files so Vite crawls and discovers every
+            // transitive CJS dep (e.g. use-sync-external-store/shim) before the
+            // browser makes its first request. Combined with Vite's default
+            // holdUntilCrawlEnd:true, the browser waits for the single full
+            // optimization pass to finish — no mid-session re-optimization, no
+            // two-React-instances "Invalid hook call" errors, no need for
+            // noDiscovery:true or manually listing every transitive CJS dep.
+            //
+            // Do NOT use force: true — it triggers eager node_modules scanning on
+            // startup, hits macOS's open-file limit (EMFILE), and crashes before
+            // any test runs. The cache delete above already ensures a clean start.
+            entries: ["app/root.tsx", "app/routes/**/*.tsx", "app/routes/**/*.ts"],
+            include: [
+              "react",
+              "react/jsx-runtime",
+              "react/jsx-dev-runtime",
+              // Must be react-dom/client, not react-dom — the app imports the
+              // /client sub-path. Listing react-dom would leave react-dom/client
+              // undiscovered and trigger a second optimization pass.
+              "react-dom/client",
+              "react-router",
+              "recharts",
+              "usehooks-ts",
+              "lucide-react",
+              "@base-ui/react",
+              "@sentry/react-router",
+            ],
+          },
       server: {
         fs: { allow: ["."] },
         hmr: false,

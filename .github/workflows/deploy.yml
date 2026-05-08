@@ -10,6 +10,7 @@ env:
   POSTGRES_URL_NON_POOLING: "postgresql://postgres:postgres@localhost:5432/postgres"
   REDIS_URL: "redis://localhost:6379"
   NODE_ENV: "test"
+  CI: "true"
 
 jobs:
   deploy:
@@ -53,23 +54,9 @@ jobs:
           cache: "pnpm"
           node-version-file: "package.json"
 
-      - name: Cache pnpm store
-        id: cache-install
-        uses: actions/cache@v5
-        with:
-          path: |
-            node_modules
-            ~/.pnpm-store
-          key: ${{ runner.os }}-cache-install-${{ hashFiles('**/pnpm-lock.yaml') }}
-
-      - name: Link ICU 72 for WebKit
-        run: |
-          sudo ln -sf /usr/lib/aarch64-linux-gnu/libicudata.so.74 /usr/lib/aarch64-linux-gnu/libicudata.so.72
-
       - name: Install dependencies
-        if: steps.cache-install.outputs.cache-hit != 'true'
         run: |
-          pnpm install --ignore-scripts
+          pnpm install --frozen-lockfile
           pnpm exec playwright install webkit --with-deps
 
       - name: Prepare application
