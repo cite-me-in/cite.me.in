@@ -6,4 +6,7 @@ export default {
   },
   prerender: async () => [],
   ssr: true,
+  ...(process.env.VITE_TEST_MODE
+    ? { routeDiscovery: { mode: "initial" } as const }
+    : {}),
 } satisfies Config;
