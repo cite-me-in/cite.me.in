@@ -65,7 +65,7 @@ jobs:
       - name: Install dependencies
         if: steps.cache-install.outputs.cache-hit != 'true'
         run: |
-          pnpm install
+          pnpm install --ignore-scripts
           pnpm exec playwright install webkit --with-deps
 
       - name: Prepare application

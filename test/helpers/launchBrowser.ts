@@ -59,7 +59,21 @@ export async function newContext(): Promise<BrowserContext> {
   await context.setGeolocation({ latitude: 33.74901, longitude: -118.1956 });
   await context.route("**", blockOutgoingRequests);
   context
-    .on("console", (msg) => trimConsole(msg.text()))
+    .on("console", (msg) => {
+      if (
+        [
+          "Download the React DevTools",
+          "Failed to load resource",
+          "The width(-1) and height(-1) of chart",
+        ].includes(msg.text())
+      )
+        return;
+      if (msg.text().startsWith("Successfully preconnected to")) return;
+      if (msg.text().startsWith("Web Inspector blocked")) return;
+      if (msg.text().includes("was preloaded using link preload")) return;
+
+      trimConsole(msg.text());
+    })
     .on("weberror", (error) => logger("error: %s", error.error()));
 
   // Set navigation timeout to 5s less than hook timeout for better error messages
@@ -74,14 +88,23 @@ async function blockOutgoingRequests(route: Route): Promise<void> {
   const { hostname } = new URLString(route.request().url());
 
   // Allow local requests to pass through
-  if (hostname === "localhost" || hostname === "127.0.0.1")
-    return await route.continue();
-
-  // Abort non-local requests to prevent cookie handling interference
-  // (Playwright waits for all requests before completing navigation)
-  const resourceType = route.request().resourceType();
-  logger("blocking %s: %s", resourceType, hostname);
-  await route.abort();
+  if (
+    ["document", "script", "xhr", "fetch", "image"].includes(
+      route.request().resourceType(),
+    ) &&
+    ["localhost", "cite.me.in"].includes(hostname)
+  ) {
+    return await route.continue({
+      url: new URL(
+        route.request().url(),
+        `http://localhost:${port}`,
+      ).toString(),
+    });
+  } else {
+    const resourceType = route.request().resourceType();
+    logger("blocking %s: %s", resourceType, hostname);
+    return route.abort();
+  }
 }
 
 function cleanup() {

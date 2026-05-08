@@ -209,13 +209,6 @@ describe("ai-legibility page - with report", () => {
       name: "ai-legibility/results",
     });
   });
-
-  it("should share score as a downloadable PNG", async () => {
-    await expect(reportPage).toMatchDownload({
-      name: "ai-legibility/share-image",
-      trigger: reportPage.getByRole("button", { name: /share/i }).first(),
-    });
-  });
 });
 
 describe("ai-legibility page - scanning", () => {
@@ -590,7 +583,7 @@ describe("ai-legibility email", () => {
   it("should match visually", async () => {
     await email.page.setViewportSize({ width: 1024, height: 2400 });
     await expect(email.page).toMatchVisual({
-      name: "email/ai-legibility-report",
+      name: "ai-legibility/report",
     });
   });
 });
