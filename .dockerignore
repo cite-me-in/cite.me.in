@@ -3,3 +3,11 @@ __screenshots__/
 docs/
 scripts/
 test/
+
+# Prevent huge dev artifact from filling Docker build cache
+.pnpm-store/
+node_modules/
+.git/
+
+.env.local
+.env.production

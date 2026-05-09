@@ -1,6 +1,6 @@
 FROM node:24-slim AS base
 
-RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ && rm -rf /var/lib/apt/lists/*
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -20,7 +20,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 ARG INFISICAL_ENV
-RUN --mount=type=secret,id=env cp /run/secrets/env .env && pnpm build
+COPY .env .env
+RUN pnpm build
 
 # --- RUNNER ---
 FROM node:24-slim AS runner
