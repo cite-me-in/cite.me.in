@@ -28,6 +28,8 @@ FROM node:24-slim AS runner
 ENV NODE_ENV=production
 ENV DEBIAN_FRONTEND=noninteractive
 
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates && rm -rf /var/lib/apt/lists/*
+
 # Retry with timeout (workaround for Colima TCP connection drops to Azure CDN)
 RUN for i in $(seq 1 3); do \
         timeout 600 npx -y playwright@1.59.1 install chromium --with-deps && break; \
@@ -38,7 +40,7 @@ RUN corepack enable pnpm
 
 WORKDIR /app
 
-ENV HOSTNAME="0.0.0.0"
+ENV HOST="0.0.0.0"
 ENV PORT=3000
 EXPOSE 3000
 

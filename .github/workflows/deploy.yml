@@ -99,17 +99,48 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
-      - name: Build
+      - name: Build Docker image
         uses: docker/build-push-action@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           platforms: linux/amd64
-          secret-files: env=.env
           tags: ghcr.io/cite-me-in/cite.me.in:latest
 
       - name: Deploy to Coolify
-        uses: themarkwill/coolify-actions@v0.0.4
-        with:
-          coolify-app-id: "myp73fab3pizwxq1coahwxqw"
-          coolify-token: ${{ secrets.COOLIFY_TOKEN }}
-          coolify-url: https://coolify.labnotes.org
+        env:
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+          COOLIFY_URL: "https://coolify.labnotes.org"
+          APP_UUID: "myp73fab3pizwxq1coahwxqw"
+        run: |
+          set -e
+
+          echo "Triggering deployment..."
+          DEPLOY_URL="${COOLIFY_URL}/api/v1/deploy?type=application&uuid=${APP_UUID}"
+          RESPONSE=$(curl -sSf -X POST -H "Authorization: Bearer ${COOLIFY_TOKEN}" "$DEPLOY_URL")
+          DEPLOY_UUID=$(echo "$RESPONSE" | jq -r '.deployments[0].deployment_uuid // empty')
+          [ -n "$DEPLOY_UUID" ] || { echo "No deployment UUID in response: $RESPONSE"; exit 1; }
+          echo "Deployment UUID: ${DEPLOY_UUID}"
+
+          echo "Waiting for deployment to complete..."
+          ATTEMPT=0
+          MAX_ATTEMPTS=240
+          while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+            STATUS=$(curl -sS -H "Authorization: Bearer ${COOLIFY_TOKEN}" \
+              "${COOLIFY_URL}/api/v1/deployments/${DEPLOY_UUID}" | jq -r '.status // "unknown"')
+            echo "  [${ATTEMPT}] Status: ${STATUS}"
+            case "$STATUS" in
+              finished|success) echo "Deployment complete"; break ;;
+              failed|error) echo "Deployment failed"; exit 1 ;;
+            esac
+            ATTEMPT=$((ATTEMPT + 1))
+            sleep 5
+          done
+          [ $ATTEMPT -lt $MAX_ATTEMPTS ] || { echo "Deployment timed out"; exit 1; }
+
+          echo "Configuring healthcheck on port 3000..."
+          curl -sSf -X PATCH \
+            -H "Authorization: Bearer ${COOLIFY_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d '{"health_check_enabled":true,"health_check_path":"/","health_check_port":"3000","ports_exposes":"3000"}' \
+            "${COOLIFY_URL}/api/v1/applications/${APP_UUID}"
+          echo "Healthcheck configured"
