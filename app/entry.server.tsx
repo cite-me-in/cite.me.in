@@ -13,14 +13,6 @@ import "~/lib/logger.server";
 import captureAndLogError from "./lib/captureAndLogError.server";
 import { trackVisits } from "./lib/trackVisits.server";
 
-if (import.meta.env.MODE === "test") {
-  void import("~/test/helpers/worker.setup").then(
-    ({ default: setupTestServer }) => {
-      setupTestServer();
-    },
-  );
-}
-
 const logger = debug("server");
 
 export function getLoadContext() {

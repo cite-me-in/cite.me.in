@@ -12,8 +12,9 @@ import * as vite from "vite-plus";
 
 // Import and start the server
 async function startServer(this: void) {
-  // Initialize MSW for mocking HTTP requests during tests
-  if (process.env.NODE_ENV === "test") await import("~/test/mocks/msw");
+  // Patch Date/Temporal to fixed time and initialize MSW for tests
+  const { default: setupTestServer } = await import("~/test/helpers/worker.setup");
+  setupTestServer();
 
   const send = process.send?.bind(process);
   invariant(send, "process.send is not defined");
