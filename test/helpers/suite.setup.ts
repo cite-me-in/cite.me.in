@@ -10,7 +10,7 @@ import "./toMatchInnerHTML";
 import "./toMatchScreenshot";
 import "./toMatchVisual";
 import "./trimConsole";
-import { fixedTime } from "./worker.setup";
+import { fixedTime } from "./freezeDateTime";
 
 // Sentry is disabled in tests, but stub it to avoid ESM import issues
 vi.mock("@sentry/react-router", () => ({

@@ -13,8 +13,7 @@ import * as vite from "vite-plus";
 // Import and start the server
 async function startServer(this: void) {
   // Patch Date/Temporal to fixed time and initialize MSW for tests
-  const { default: setupTestServer } = await import("~/test/helpers/worker.setup");
-  setupTestServer();
+  await import("~/test/helpers/freezeDateTime");
 
   const send = process.send?.bind(process);
   invariant(send, "process.send is not defined");
