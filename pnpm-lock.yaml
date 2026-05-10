@@ -195,6 +195,9 @@ importers:
       playwright:
         specifier: ^1.59.1
         version: 1.59.1
+      portless:
+        specifier: ^0.13.0
+        version: 0.13.0
       secretlint:
         specifier: ^13.0.0
         version: 13.0.0
@@ -3983,8 +3986,8 @@ packages:
   leac@0.6.0:
     resolution: {integrity: sha512-y+SqErxb8h7nE/fiEX07jsbuhrpO9lL8eca7/Y1nuWV2moNlXhyd59iDGcRf6moVyDMbmTNzL40SUyrFU/yDpg==}
 
-  libpq@1.10.0:
-    resolution: {integrity: sha512-PHY+JGD3+9X5b2emXLh+WJEnz1jhczO1xs25ZH0xbMWvQi+Hd9X/mTZOrGA99Rcw/DvNjsBRlegroqigpNfaJA==}
+  libpq@1.11.0:
+    resolution: {integrity: sha512-mHoPlvMwYDMJV36bS2w3eSdFD4eDSm7P9FsvruUldQxzE23/W6qitT9VU/yD1+g2vpgpDktnk2iEYJyhy1RR5g==}
 
   lightningcss-android-arm64@1.32.0:
     resolution: {integrity: sha512-YK7/ClTt4kAK0vo6w3X+Pnm0D2cf2vPHbhOXdoNti1Ga0al1P4TBZhwjATvjNwLEBCnKvjJc2jQgHXH0NEwlAg==}
@@ -4390,8 +4393,8 @@ packages:
     resolution: {integrity: sha512-Tz09sEL2EEuv5fFowm419c1+a/jSMiBjI9gHxVLrVdbUkkNUUfjsVYs9pVZu5oCon/kmRh9TfLEObFtkVxmY0w==}
     engines: {node: '>=8.0.0'}
 
-  nan@2.23.1:
-    resolution: {integrity: sha512-r7bBUGKzlqk8oPBDYxt6Z0aEdF1G1rwlMcLk8LCOMbOzf0mG+JUfUzG4fIMWwHWP0iyaLWEQZJmtB7nOHEm/qw==}
+  nan@2.26.2:
+    resolution: {integrity: sha512-0tTvBTYkt3tdGw22nrAy50x7gpbGCCFH3AFcyS5WiUu7Eu4vWlri1woE6qHBSfy11vksDqkiwjOnlR7WV8G1Hw==}
 
   nanoid@3.3.12:
     resolution: {integrity: sha512-ZB9RH/39qpq5Vu6Y+NmUaFhQR6pp+M2Xt76XBnEwDaGcVAqhlvxrl3B2bKS5D3NH3QR76v3aSrKaF/Kiy7lEtQ==}
@@ -4687,6 +4690,12 @@ packages:
 
   points-on-path@0.2.1:
     resolution: {integrity: sha512-25ClnWWuw7JbWZcgqY/gJ4FQWadKxGWk+3kR/7kD0tCaDtPPMj7oHu2ToLaVhfpnHrZzYby2w6tUA0eOIuUg8g==}
+
+  portless@0.13.0:
+    resolution: {integrity: sha512-PxMZ5BHH+ZZi9rTq4T8m003aZxh56qI0aBdNsxLn7jrTtvNJYBWYD3lc5PuQrom/aVh6z8iLb+tKUI6b7QNYQw==}
+    engines: {node: '>=20'}
+    os: [darwin, linux, win32]
+    hasBin: true
 
   postal-mime@2.7.4:
     resolution: {integrity: sha512-0WdnFQYUrPGGTFu1uOqD2s7omwua8xaeYGdO6rb88oD5yJ/4pPHDA4sdWqfD8wQVfCny563n/HQS7zTFft+f/g==}
@@ -9307,10 +9316,10 @@ snapshots:
 
   leac@0.6.0: {}
 
-  libpq@1.10.0:
+  libpq@1.11.0:
     dependencies:
       bindings: 1.5.0
-      nan: 2.23.1
+      nan: 2.26.2
     optional: true
 
   lightningcss-android-arm64@1.32.0:
@@ -9909,7 +9918,7 @@ snapshots:
     dependencies:
       lru.min: 1.1.4
 
-  nan@2.23.1:
+  nan@2.26.2:
     optional: true
 
   nanoid@3.3.12: {}
@@ -10176,7 +10185,7 @@ snapshots:
 
   pg-native@3.7.0:
     dependencies:
-      libpq: 1.10.0
+      libpq: 1.11.0
       pg-types: 2.2.0
     optional: true
 
@@ -10247,6 +10256,8 @@ snapshots:
     dependencies:
       path-data-parser: 0.1.0
       points-on-curve: 0.2.0
+
+  portless@0.13.0: {}
 
   postal-mime@2.7.4: {}
 
