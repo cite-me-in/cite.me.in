@@ -3,7 +3,7 @@ import env from "env-var";
 
 dotenv.config({ path: ".env", quiet: true });
 if (process.env.NODE_ENV === "test")
-  dotenv.config({ path: ".env.test", quiet: true });
+  dotenv.config({ path: ".env.test", override: true, quiet: true });
 
 const envVars = {
   ANTHROPIC_API_KEY: env.get("ANTHROPIC_API_KEY").required().asString(),
