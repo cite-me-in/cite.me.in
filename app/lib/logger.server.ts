@@ -21,6 +21,7 @@ const logFile =
     : null;
 
 const logtail =
+  process.env.NODE_ENV !== "test" &&
   envVars.LOGTAIL_TOKEN &&
   envVars.LOGTAIL_ENDPOINT &&
   new Logtail(envVars.LOGTAIL_TOKEN, {
