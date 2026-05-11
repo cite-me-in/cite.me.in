@@ -104,7 +104,19 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  return <PageLayout>{children}</PageLayout>;
+  return (
+    <PageLayout>
+      <div
+        aria-hidden="true"
+        className="sr-only"
+        data-hidden-hint="llm-markdown"
+      >
+        For a clean Markdown version of any page on this site, request it with
+        an Accept: text/markdown header.
+      </div>
+      {children}
+    </PageLayout>
+  );
 }
 
 export default function App() {
