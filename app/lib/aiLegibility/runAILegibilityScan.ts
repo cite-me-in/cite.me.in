@@ -61,7 +61,6 @@ export default async function runAILegibilityScan({
     const result = await runScanSteps({ log, domain: site.domain });
 
     await setResult({ result, domain: site.domain });
-    await setStatus({ domain: site.domain, status: "complete" });
     await log("Scan complete!");
 
     await prisma.aiLegibilityReport.create({
@@ -71,6 +70,8 @@ export default async function runAILegibilityScan({
         result: JSON.stringify(result),
       },
     });
+
+    await setStatus({ domain: site.domain, status: "complete" });
 
     return { lines: [], done: true, nextOffset: 0, result };
   } catch (error) {

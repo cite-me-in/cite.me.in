@@ -71,4 +71,23 @@ const envVars = {
   ZHIPU_API_KEY: env.get("ZHIPU_API_KEY").required().asString(),
 };
 
+if (process.env.NODE_ENV === "test") {
+  const verifyLocalhost = (name: string, url: string) => {
+    if (new URL(url).hostname !== "localhost")
+      throw new Error(`${name} must point to localhost, got: ${url}`);
+  };
+
+  try {
+    verifyLocalhost("POSTGRES_URL", envVars.POSTGRES_URL);
+    verifyLocalhost(
+      "POSTGRES_URL_NON_POOLING",
+      envVars.POSTGRES_URL_NON_POOLING,
+    );
+    verifyLocalhost("REDIS_URL", envVars.REDIS_URL);
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    process.exit(1);
+  }
+}
+
 export default envVars;
