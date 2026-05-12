@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-ocx opencode --profile ws --continue --agent OpenAgent
+ocx opencode --agent OpenAgent --profile ws --model ollama/deepseek-4-pro --continue
