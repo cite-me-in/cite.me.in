@@ -84,7 +84,7 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
   // Redirect to citations after pipeline completes.
   useEffect(() => {
     if (!done) return;
-    setTimeout(() => navigate(`/site/${domain}/citations`), ms("2s"));
+    setTimeout(() => navigate(`/site/${domain}/citations`), 500);
   }, [done, domain, navigate]);
 
   return (
