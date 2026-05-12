@@ -5,10 +5,6 @@ import type { QueryFn } from "~/lib/llm-visibility/queryFn";
 import { queryPlatform } from "~/lib/llm-visibility/queryPlatform";
 import prisma from "~/lib/prisma.server";
 
-vi.mock("@sentry/node", () => ({
-  captureException: vi.fn<() => Promise<void>>(),
-}));
-
 vi.mock("radashi", async (importOriginal) => {
   const original = await importOriginal<typeof import("radashi")>();
   return {

@@ -6,8 +6,6 @@ import prisma from "~/lib/prisma.server";
 import { attemptDelivery } from "~/lib/webhooks.server";
 import type { Route } from "./+types/cron.webhook-retries";
 
-export const config = { maxDuration: 300 }; // 5 minutes in seconds
-
 export async function loader({ request }: Route.LoaderArgs) {
   if (request.headers.get("authorization") !== `Bearer ${envVars.CRON_SECRET}`)
     throw new Response("Unauthorized", { status: 401 });

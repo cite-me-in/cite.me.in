@@ -839,8 +839,6 @@ import prisma from "~/lib/prisma.server";
 import { sendCitedPageAlertEmail } from "~/emails/CitedPageAlert";
 import type { Route } from "./+types/cron.check-cited-pages";
 
-export const config = { maxDuration: 300 };
-
 const STALE_HOURS = 24;
 
 export async function loader({ request }: Route.LoaderArgs) {

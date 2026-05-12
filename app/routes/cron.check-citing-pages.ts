@@ -4,8 +4,6 @@ import envVars from "~/lib/envVars.server";
 import checkCitingPages from "~/lib/llm-visibility/checkCitingPages";
 import type { Route } from "./+types/cron.check-citing-pages";
 
-export const config = { maxDuration: 300 }; // 5 minutes in seconds
-
 export async function loader({ request }: Route.LoaderArgs) {
   if (request.headers.get("authorization") !== `Bearer ${envVars.CRON_SECRET}`)
     throw new Response("Unauthorized", { status: 401 });

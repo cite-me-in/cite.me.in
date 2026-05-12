@@ -274,7 +274,6 @@ import fetchAioResults from "~/lib/serp/dataForSeo.server";
 import queryGoogleAio from "~/lib/serp/queryGoogleAio.server";
 import prisma from "~/lib/prisma.server";
 
-vi.mock("@sentry/node", () => ({ captureException: vi.fn() }));
 vi.mock("~/lib/serp/dataForSeo.server");
 
 const QUERIES = [

@@ -6,8 +6,6 @@ import type { Route } from "./+types/site.$domain_.setup.run";
 
 const logger = debug("server:setup.run");
 
-export const config = { maxDuration: 300 }; // 5 minutes in seconds
-
 export async function action({ request, params }: Route.ActionArgs) {
   if (request.method !== "POST")
     throw new Response("Method not allowed", { status: 405 });
