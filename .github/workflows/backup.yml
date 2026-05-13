@@ -19,10 +19,15 @@ jobs:
           output_file: ".env"
           workspace_id: "a89716e5-9232-4ee7-85ea-11977924fe95"
 
-      - name: Install PostgreSQL client
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+      - name: Install pg_dump matching server version
+        run: |
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17
 
       - name: Dump and compress database
+        shell: bash -eo pipefail {0}
         run: |
           while IFS='=' read -r key value; do
             [[ -z "$key" || "$key" =~ ^# ]] && continue
@@ -37,7 +42,9 @@ jobs:
             [[ -z "$key" || "$key" =~ ^# ]] && continue
             export "$key=$value"
           done < .env
-          aws s3 cp backup-*.sql.gz "s3://$R2_BUCKET/" \
+          export AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID"
+          export AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY"
+          aws s3 cp "backup-$(date +%Y-%m-%d).sql.gz" "s3://$R2_BUCKET/" \
             --endpoint-url "https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com" \
             --no-progress
 
@@ -47,6 +54,8 @@ jobs:
             [[ -z "$key" || "$key" =~ ^# ]] && continue
             export "$key=$value"
           done < .env
+          export AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID"
+          export AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY"
           cutoff=$(date -d '7 days ago' +%s)
           endpoint="https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com"
           aws s3 ls "s3://$R2_BUCKET/" --endpoint-url "$endpoint" \
