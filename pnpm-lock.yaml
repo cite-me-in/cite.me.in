@@ -83,9 +83,6 @@ importers:
       openai:
         specifier: ^6.37.0
         version: 6.37.0(ws@8.20.0)(zod@4.4.3)
-      prisma:
-        specifier: ^7.8.0
-        version: 7.8.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@6.0.3)
       radashi:
         specifier: ^12.9.0
         version: 12.9.0
@@ -195,6 +192,9 @@ importers:
       portless:
         specifier: ^0.13.0
         version: 0.13.0
+      prisma:
+        specifier: ^7.8.0
+        version: 7.8.0(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(typescript@6.0.3)
       secretlint:
         specifier: ^13.0.0
         version: 13.0.0
