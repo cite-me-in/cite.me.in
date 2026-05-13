@@ -1,0 +1,55 @@
+name: Database Backup
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Get Infisical secrets
+        uses: zerodays/action-infisical@v1
+        with:
+          environment: "prod"
+          infisical_token: ${{ secrets.INFISICAL_TOKEN }}
+          output_file: ".env"
+          workspace_id: "a89716e5-9232-4ee7-85ea-11977924fe95"
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+
+      - name: Dump and compress database
+        run: |
+          set -a; source .env; set +a
+          pg_dump --no-owner --clean --if-exists "$POSTGRES_URL_NON_POOLING" \
+            | gzip > "backup-$(date +%Y-%m-%d).sql.gz"
+
+      - name: Upload to R2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_ENDPOINT_URL: "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com"
+        run: |
+          aws s3 cp backup-*.sql.gz "s3://${{ secrets.R2_BUCKET }}/" --endpoint-url "$AWS_ENDPOINT_URL" --no-progress
+
+      - name: Delete backups older than 7 days
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_ENDPOINT_URL: "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com"
+        run: |
+          cutoff=$(date -d '7 days ago' +%s)
+          aws s3 ls "s3://${{ secrets.R2_BUCKET }}/" --endpoint-url "$AWS_ENDPOINT_URL" \
+            | awk '/backup-/ {print $NF}' \
+            | while read -r key; do
+                datepart=$(echo "$key" | sed 's/backup-\(.*\)\.sql\.gz/\1/')
+                filesec=$(date -d "$datepart" +%s 2>/dev/null || true)
+                if [ -n "$filesec" ] && [ "$filesec" -lt "$cutoff" ]; then
+                  echo "Deleting $key"
+                  aws s3 rm "s3://${{ secrets.R2_BUCKET }}/$key" --endpoint-url "$AWS_ENDPOINT_URL" --no-progress
+                fi
+              done
