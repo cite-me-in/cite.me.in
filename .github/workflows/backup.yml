@@ -24,20 +24,29 @@ jobs:
 
       - name: Dump and compress database
         run: |
-          set -a; source .env; set +a
+          while IFS='=' read -r key value; do
+            [[ -z "$key" || "$key" =~ ^# ]] && continue
+            export "$key=$value"
+          done < .env
           pg_dump --no-owner --clean --if-exists "$POSTGRES_URL_NON_POOLING" \
             | gzip > "backup-$(date +%Y-%m-%d).sql.gz"
 
       - name: Upload to R2
         run: |
-          set -a; source .env; set +a
+          while IFS='=' read -r key value; do
+            [[ -z "$key" || "$key" =~ ^# ]] && continue
+            export "$key=$value"
+          done < .env
           aws s3 cp backup-*.sql.gz "s3://$R2_BUCKET/" \
             --endpoint-url "https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com" \
             --no-progress
 
       - name: Delete backups older than 7 days
         run: |
-          set -a; source .env; set +a
+          while IFS='=' read -r key value; do
+            [[ -z "$key" || "$key" =~ ^# ]] && continue
+            export "$key=$value"
+          done < .env
           cutoff=$(date -d '7 days ago' +%s)
           endpoint="https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com"
           aws s3 ls "s3://$R2_BUCKET/" --endpoint-url "$endpoint" \
