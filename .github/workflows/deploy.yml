@@ -104,7 +104,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy to Coolify
-        uses: assaf/coolify-deploy@v1.0.0
+        uses: assaf/coolify-deploy@115b5163ba3e10e116cd4ec0bfe100ce982ed658
         with:
           coolify-url: "https://coolify.labnotes.org"
           app-name: "cite.me.in"
