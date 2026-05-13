@@ -29,27 +29,24 @@ jobs:
             | gzip > "backup-$(date +%Y-%m-%d).sql.gz"
 
       - name: Upload to R2
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          AWS_ENDPOINT_URL: "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com"
         run: |
-          aws s3 cp backup-*.sql.gz "s3://${{ secrets.R2_BUCKET }}/" --endpoint-url "$AWS_ENDPOINT_URL" --no-progress
+          set -a; source .env; set +a
+          aws s3 cp backup-*.sql.gz "s3://$R2_BUCKET/" \
+            --endpoint-url "https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com" \
+            --no-progress
 
       - name: Delete backups older than 7 days
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          AWS_ENDPOINT_URL: "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com"
         run: |
+          set -a; source .env; set +a
           cutoff=$(date -d '7 days ago' +%s)
-          aws s3 ls "s3://${{ secrets.R2_BUCKET }}/" --endpoint-url "$AWS_ENDPOINT_URL" \
+          endpoint="https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com"
+          aws s3 ls "s3://$R2_BUCKET/" --endpoint-url "$endpoint" \
             | awk '/backup-/ {print $NF}' \
             | while read -r key; do
                 datepart=$(echo "$key" | sed 's/backup-\(.*\)\.sql\.gz/\1/')
                 filesec=$(date -d "$datepart" +%s 2>/dev/null || true)
                 if [ -n "$filesec" ] && [ "$filesec" -lt "$cutoff" ]; then
                   echo "Deleting $key"
-                  aws s3 rm "s3://${{ secrets.R2_BUCKET }}/$key" --endpoint-url "$AWS_ENDPOINT_URL" --no-progress
+                  aws s3 rm "s3://$R2_BUCKET/$key" --endpoint-url "$endpoint" --no-progress
                 fi
               done
