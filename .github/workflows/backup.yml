@@ -33,7 +33,7 @@ jobs:
             [[ -z "$key" || "$key" =~ ^# ]] && continue
             export "$key=$value"
           done < .env
-          pg_dump --no-owner --clean --if-exists "$POSTGRES_URL_NON_POOLING" \
+          /usr/lib/postgresql/17/bin/pg_dump --no-owner --clean --if-exists "$POSTGRES_URL_NON_POOLING" \
             | gzip > "backup-$(date +%Y-%m-%d).sql.gz"
 
       - name: Upload to R2
