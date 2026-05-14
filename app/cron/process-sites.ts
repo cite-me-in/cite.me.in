@@ -14,6 +14,7 @@ export const timeout = convert(10, "minutes").to("seconds");
 const logger = debug("server");
 
 async function main() {
+  console.info("Processing sites...");
   const sites = await prepareSites({ maxSites: 5, log: logger });
 
   const oneWeekAgo = daysAgo(7);
@@ -34,6 +35,10 @@ async function main() {
   await sendTrialEndedEmails();
   await sendTrialEndingEmails();
 
+  const emailCount = results.flatMap((r) => r.emailIds ?? []).length;
+  console.info(
+    `Done: processed ${sites.length} sites, sent ${emailCount} digest emails`,
+  );
   return { sites: results };
 }
 
