@@ -11,7 +11,7 @@
     "app/cron/*.ts"
   ],
   "project": ["app/**/*.ts", "app/**/*.tsx", "test/**/*.ts", "!__screenshots__"],
-  "ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend"],
+  "ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend", "portless"],
   "ignoreFiles": ["app/lib/truncateWords.ts"],
   "ignoreIssues": {
     "app/lib/api/schemas.ts": ["exports"],
