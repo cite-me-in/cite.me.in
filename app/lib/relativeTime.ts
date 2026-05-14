@@ -16,6 +16,10 @@
  * timeago(Date.now()  - 60 * 60 * 1000, Date.now()) // "1 hour ago"
  * timeago(Date.now() + 2 * 60 * 60 * 1000, Date.now()) // "in 2 hours"
  */
+function agoOrIn(phrase: string, isPast: boolean): string {
+  return isPast ? `${phrase} ago` : `in ${phrase}`;
+}
+
 export function timeago(
   timestamp: number | string | Date,
   reference?: number | string | Date,
@@ -28,33 +32,22 @@ export function timeago(
 
   // Thresholds and logic for past times
   if (absDiffSec < 45) return "just now";
-  if (absDiffSec < 90) return isPast ? "1 minute ago" : "in 1 minute";
-  if (absDiffSec < 45 * 60) {
-    const minutes = Math.round(absDiffSec / 60);
-    return isPast ? `${minutes} minutes ago` : `in ${minutes} minutes`;
-  }
-  if (absDiffSec < 90 * 60) return isPast ? "1 hour ago" : "in 1 hour";
-  if (absDiffSec < 22 * 3600) {
-    const hours = Math.round(absDiffSec / 3600);
-    return isPast ? `${hours} hours ago` : `in ${hours} hours`;
-  }
-  if (absDiffSec < 36 * 3600) return isPast ? "1 day ago" : "in 1 day";
-  if (absDiffSec < 26 * 86400) {
-    const days = Math.round(absDiffSec / 86400);
-    return isPast ? `${days} days ago` : `in ${days} days`;
-  }
-  if (absDiffSec < 46 * 86400) return isPast ? "1 month ago" : "in 1 month";
+  if (absDiffSec < 90) return agoOrIn("1 minute", isPast);
+  if (absDiffSec < 45 * 60) return agoOrIn(`${Math.round(absDiffSec / 60)} minutes`, isPast);
+  if (absDiffSec < 90 * 60) return agoOrIn("1 hour", isPast);
+  if (absDiffSec < 22 * 3600) return agoOrIn(`${Math.round(absDiffSec / 3600)} hours`, isPast);
+  if (absDiffSec < 36 * 3600) return agoOrIn("1 day", isPast);
+  if (absDiffSec < 26 * 86400) return agoOrIn(`${Math.round(absDiffSec / 86400)} days`, isPast);
+  if (absDiffSec < 46 * 86400) return agoOrIn("1 month", isPast);
   if (absDiffSec < 320 * 86400) {
-    // Calculate months - round but cap at reasonable values
-    // 319 days should give 10 months, not 11
     const days = absDiffSec / 86400;
     const months = Math.min(Math.round(days / 30), 10);
-    return isPast ? `${months} months ago` : `in ${months} months`;
+    return agoOrIn(`${months} months`, isPast);
   }
-  if (absDiffSec < 548 * 86400) return isPast ? "1 year ago" : "in 1 year";
+  if (absDiffSec < 548 * 86400) return agoOrIn("1 year", isPast);
 
   const years = Math.round(absDiffSec / (365 * 24 * 60 * 60));
-  return isPast ? `${years} years ago` : `in ${years} years`;
+  return agoOrIn(`${years} years`, isPast);
 }
 
 /**
