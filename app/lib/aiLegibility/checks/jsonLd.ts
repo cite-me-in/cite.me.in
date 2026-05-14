@@ -199,3 +199,6 @@ function validateSchema(type: string, data: unknown): string | null {
       return null;
   }
 }
+
+// Exported for testing
+export { extractSchemas, flattenNodes, validateSchema };
