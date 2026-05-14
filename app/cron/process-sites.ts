@@ -10,6 +10,7 @@ import { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
 
 export const schedule = "0 9 * * 1";
 export const timeout = convert(10, "minutes").to("seconds");
+export const skip = true;
 
 const logger = debug("server");
 

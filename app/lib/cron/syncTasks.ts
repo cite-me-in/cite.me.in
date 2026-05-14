@@ -156,9 +156,16 @@ async function main() {
     fs.readFileSync(configPath, "utf-8"),
   ) as CronTaskConfig[];
 
-  console.info(`Syncing ${tasks.length} cron tasks to ${appName}...`);
+  const skipped = tasks.filter((t) => t.skip);
+  if (skipped.length > 0)
+    console.info(
+      `Skipping ${skipped.length} disabled tasks: ${skipped.map((t) => t.name).join(", ")}`,
+    );
+  const active = tasks.filter((t) => !t.skip);
+
+  console.info(`Syncing ${active.length} cron tasks to ${appName}...`);
   const appUUID = await resolveAppUUID(coolifyURL!, token!, appName!);
-  await syncTasks(tasks, {
+  await syncTasks(active, {
     coolifyURL: coolifyURL!,
     token: token!,
     appUUID,

@@ -30,7 +30,12 @@ export async function loadCronTasks(): Promise<CronTaskConfig[]> {
     const timeout = timeoutExport(exports);
     assertDefaultExport(sourceFile);
 
-    return { name, schedule, timeout };
+    return {
+      name,
+      schedule,
+      timeout,
+      skip: boolExport(exports, "skip", false),
+    };
   });
 }
 
@@ -72,6 +77,18 @@ function strExport(map: Map<string, Expr>, name: string): string {
   if (entry.strValue === undefined)
     throw new Error(`app/cron/: export const ${name} must be a string literal`);
   return entry.strValue;
+}
+
+function boolExport(
+  map: Map<string, Expr>,
+  name: string,
+  defaultVal: boolean,
+): boolean {
+  const entry = map.get(name);
+  if (!entry) return defaultVal;
+  if (entry.kind === ts.SyntaxKind.TrueKeyword) return true;
+  if (entry.kind === ts.SyntaxKind.FalseKeyword) return false;
+  throw new Error(`app/cron/: export const ${name} must be a boolean literal`);
 }
 
 function timeoutExport(map: Map<string, Expr>): number {
