@@ -93,4 +93,3 @@ expect.extend({
     return { message: () => "Image matches baseline", pass: true };
   },
 });
-

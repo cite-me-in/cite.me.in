@@ -151,4 +151,3 @@ function multipleLines({ added, count, value }: { added: boolean; count: number;
     ...value.split("\n").map((line) => (added ? `+ ${line}` : `- ${line}`)),
   ].join("\n");
 }
-

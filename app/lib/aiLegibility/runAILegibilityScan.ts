@@ -77,53 +77,27 @@ export default async function runAILegibilityScan({
   }
 }
 
-export async function runScanSteps({
-  log,
-  domain,
-}: {
-  log: (line: string) => Promise<void> | void;
-  domain: string;
-}): Promise<ScanResult> {
-  const scannedAt = new Date().toISOString();
-  const url = normalizeURL(domain);
-  const checks: Omit<CheckResult, "category">[] = [];
+type AssessedPage = {
+  url: string;
+  html: string;
+  headers: Headers;
+  ok: boolean;
+  status: number;
+  timedOut: boolean;
+  passed: boolean;
+  message: string;
+  error?: string;
+};
 
-  await log("Checking page content...");
-  const [homepageResult] = await assessPages({ urls: [url] });
-  const homepageCheck: Omit<CheckResult, "category"> = {
-    name: "Page content",
-    passed: homepageResult.passed,
-    message: homepageResult.message,
-    details: { url },
-  };
-  checks.push(homepageCheck);
-  await log(`${homepageResult.passed ? "✓" : "✗"} ${homepageResult.message}`);
-
-  await log("Checking robots.txt...");
-  const robotsTxtResult = await checkRobotsTxt({ url });
-  await log(`${robotsTxtResult.passed ? "✓" : "✗"} ${robotsTxtResult.message}`);
-  checks.push(robotsTxtResult);
-
-  await log("Checking sitemap.xml...");
-  const sitemmapXmlResult = await checkSitemapXml({
-    url,
-    robotsSitemapUrls: robotsTxtResult.sitemapURLs,
-  });
-  checks.push(sitemmapXmlResult);
-  await log(`${sitemmapXmlResult.passed ? "✓" : "✗"} ${sitemmapXmlResult.message}`);
-
-  await log("Checking sitemap.txt...");
-  const sitemapTxtResult = await checkSitemapTxt({
-    url,
-    robotsSitemapUrls: robotsTxtResult.sitemapURLs,
-  });
-  await log(`${sitemapTxtResult.passed ? "✓" : "✗"} ${sitemapTxtResult.message}`);
-  checks.push(sitemapTxtResult);
-
-  await log("Checking sample pages...");
+async function collectSampleUrls(
+  sitemapXmlResult: { urls: string[] },
+  sitemapTxtResult: { urls: string[] },
+  homepageResult: { html?: string },
+  url: string,
+): Promise<string[]> {
   const urlsFrom = (result: { urls: string[] }) => result.urls;
   let sampleURLs = shuffle([
-    ...new Set([...urlsFrom(sitemmapXmlResult), ...urlsFrom(sitemapTxtResult)]).values(),
+    ...new Set([...urlsFrom(sitemapXmlResult), ...urlsFrom(sitemapTxtResult)]).values(),
   ]).slice(0, 10);
 
   if (sampleURLs.length === 0 && homepageResult.html) {
@@ -140,17 +114,24 @@ export async function runScanSteps({
     sampleURLs = shuffle([...new Set(resolved)]).slice(0, 10);
   }
 
-  const pagesToFetch = sampleURLs.filter((u) => u !== url);
+  return sampleURLs;
+}
+
+async function fetchSamplePages(
+  pagesToFetch: string[],
+  log: (line: string) => Promise<void> | void,
+): Promise<{ pages: AssessedPage[]; result: Omit<CheckResult, "category"> }> {
   await log(`Checking sample pages... (0/${pagesToFetch.length})`);
-  const fetchedPages: (typeof homepageResult)[] = [];
+  const fetchedPages: AssessedPage[] = [];
   for (let i = 0; i < pagesToFetch.length; i++) {
     const results = await assessPages({ urls: [pagesToFetch[i]] });
     fetchedPages.push(results[0]);
     await log(`Checking sample pages... (${i + 1}/${pagesToFetch.length})`);
   }
+
   const fetchedPassed = fetchedPages.filter((p) => p.passed).length;
   const fetchedTimedOut = fetchedPages.filter((p) => p.timedOut).length;
-  const samplePagesResult: Omit<CheckResult, "category"> = {
+  const result: Omit<CheckResult, "category"> = {
     name: "Sample pages",
     passed: fetchedPages.every((p) => p.passed),
     message:
@@ -172,91 +153,118 @@ export async function runScanSteps({
         })),
     },
   };
+
+  return { pages: fetchedPages, result };
+}
+
+export async function runScanSteps({
+  log,
+  domain,
+}: {
+  log: (line: string) => Promise<void> | void;
+  domain: string;
+}): Promise<ScanResult> {
+  const scannedAt = new Date().toISOString();
+  const url = normalizeURL(domain);
+  const checks: Omit<CheckResult, "category">[] = [];
+
+  async function runCheck<T extends { passed: boolean; message: string }>(
+    name: string,
+    fn: () => Promise<T>,
+  ): Promise<T> {
+    await log(`Checking ${name}...`);
+    const result = await fn();
+    checks.push(result);
+    await log(`${result.passed ? "✓" : "✗"} ${result.message}`);
+    return result;
+  }
+
+  // Homepage — special case, not wrapped in runCheck
+  await log("Checking page content...");
+  const [homepageResult] = await assessPages({ urls: [url] });
+  checks.push({
+    name: "Page content",
+    passed: homepageResult.passed,
+    message: homepageResult.message,
+    details: { url },
+  });
+  await log(`${homepageResult.passed ? "✓" : "✗"} ${homepageResult.message}`);
+
+  // Discovery checks
+  const robotsTxtResult = await runCheck("robots.txt", () => checkRobotsTxt({ url }));
+  const sitemapXmlResult = await runCheck("sitemap.xml", () =>
+    checkSitemapXml({ url, robotsSitemapUrls: robotsTxtResult.sitemapURLs }),
+  );
+  const sitemapTxtResult = await runCheck("sitemap.txt", () =>
+    checkSitemapTxt({ url, robotsSitemapUrls: robotsTxtResult.sitemapURLs }),
+  );
+
+  // Sample pages — special block, not wrapped in runCheck
+  const sampleURLs = await collectSampleUrls(
+    sitemapXmlResult,
+    sitemapTxtResult,
+    homepageResult,
+    url,
+  );
+  const pagesToFetch = sampleURLs.filter((u) => u !== url);
+  const { pages: fetchedPages, result: samplePagesResult } = await fetchSamplePages(
+    pagesToFetch,
+    log,
+  );
   checks.push(samplePagesResult);
   await log(`${samplePagesResult.passed ? "✓" : "✗"} ${samplePagesResult.message}`);
 
-  const reviewedPages: {
-    url: string;
-    html: string;
-    headers: Headers;
-  }[] = [homepageResult, ...fetchedPages];
+  const reviewedPages = [homepageResult, ...fetchedPages];
 
-  await log("Checking JSON-LD...");
-  const jsonLdResult = await checkJsonLd({
-    pages: reviewedPages.map((p) => ({ url: p.url, html: p.html })),
-  });
-  checks.push(jsonLdResult);
-  await log(`${jsonLdResult.passed ? "✓" : "✗"} ${jsonLdResult.message}`);
+  // Content checks
+  await runCheck("JSON-LD", () =>
+    checkJsonLd({ pages: reviewedPages.map((p) => ({ url: p.url, html: p.html })) }),
+  );
+  await runCheck("meta tags", () =>
+    checkMetaTags({ pages: reviewedPages.map((p) => ({ url: p.url, html: p.html })) }),
+  );
+  await runCheck("llms.txt", () => checkLlmsTxt({ url }));
+  await runCheck("sitemap link headers", () =>
+    checkLinkHeaders({
+      html: homepageResult.html,
+      links: new Headers(homepageResult.headers ?? {}),
+    }),
+  );
 
-  await log("Checking meta tags...");
-  const metaTagsResult = await checkMetaTags({
-    pages: reviewedPages.map((p) => ({ url: p.url, html: p.html })),
-  });
-  checks.push(metaTagsResult);
-  await log(`${metaTagsResult.passed ? "✓" : "✗"} ${metaTagsResult.message}`);
+  // .md checks — chained dependency, keep result from markdownAlternateLinks
+  const markdownAlternateResult = await runCheck("markdown alternate links", () =>
+    checkMarkdownAlternateLinks({ pages: reviewedPages }),
+  );
+  await runCheck(".md routes", () =>
+    checkMdRoutes({
+      urls:
+        ((markdownAlternateResult.details ?? {}) as { alternateUrls?: string[] }).alternateUrls ??
+        [],
+    }),
+  );
 
-  await log("Checking llms.txt...");
-  const llmsTxtResult = await checkLlmsTxt({ url });
-  checks.push(llmsTxtResult);
-  await log(`${llmsTxtResult.passed ? "✓" : "✗"} ${llmsTxtResult.message}`);
-
-  await log("Checking sitemap link headers...");
-  const linkHeadersResult = await checkLinkHeaders({
-    html: homepageResult.html,
-    links: new Headers(homepageResult.headers ?? {}),
-  });
-  checks.push(linkHeadersResult);
-  await log(`${linkHeadersResult.passed ? "✓" : "✗"} ${linkHeadersResult.message}`);
-
-  await log("Checking markdown alternate links...");
-  const markdownAlternateResult = await checkMarkdownAlternateLinks({
-    pages: reviewedPages,
-  });
-  checks.push(markdownAlternateResult);
-  await log(`${markdownAlternateResult.passed ? "✓" : "✗"} ${markdownAlternateResult.message}`);
-
-  await log("Checking .md routes...");
-  const mdRoutesResult = await checkMdRoutes({
-    urls: (markdownAlternateResult.details?.alternateUrls as string[]) ?? [],
-  });
-  checks.push(mdRoutesResult);
-  await log(`${mdRoutesResult.passed ? "✓" : "✗"} ${mdRoutesResult.message}`);
-
-  await log("Checking robots directives (noindex)...");
-  const robotsDirectivesResult = await checkRobotsDirectives({
-    pages: reviewedPages,
-  });
-  checks.push(robotsDirectivesResult);
-  await log(`${robotsDirectivesResult.passed ? "✓" : "✗"} ${robotsDirectivesResult.message}`);
-
-  await log("Checking markdown content negotiation...");
-  const markdownResult = await checkMarkdownNegotiation({
-    pages: [{ url }, ...fetchedPages.map((p) => ({ url: p.url }))],
-  });
-  checks.push(markdownResult);
-  await log(`${markdownResult.passed ? "✓" : "✗"} ${markdownResult.message}`);
-
-  await log("Checking Content-Signal in robots.txt...");
-  const contentSignalsResult = await checkContentSignals({
-    robotsContent: (robotsTxtResult.details?.robotsContent as string) ?? null,
-  });
-  checks.push(contentSignalsResult);
-  await log(`${contentSignalsResult.passed ? "✓" : "✗"} ${contentSignalsResult.message}`);
-
-  await log("Checking AI bot traffic...");
-  const samplePageUrls = fetchedPages.map((p) => p.url);
-  const aiBotTrafficResult = await checkAiBotTraffic({
-    url,
-    sampleUrls: samplePageUrls.length > 0 ? samplePageUrls : undefined,
-    log,
-  });
-  await log(`${aiBotTrafficResult.passed ? "✓" : "✗"} ${aiBotTrafficResult.message}`);
-  checks.push(aiBotTrafficResult);
-
-  await log("Checking llms-full.txt...");
-  const llmsFullTxtResult = await checkLlmsFullTxt({ url });
-  checks.push(llmsFullTxtResult);
-  await log(`${llmsFullTxtResult.passed ? "✓" : "✗"} ${llmsFullTxtResult.message}`);
+  // Trusted checks
+  await runCheck("robots directives (noindex)", () =>
+    checkRobotsDirectives({ pages: reviewedPages }),
+  );
+  await runCheck("markdown content negotiation", () =>
+    checkMarkdownNegotiation({
+      pages: [{ url }, ...fetchedPages.map((p) => ({ url: p.url }))],
+    }),
+  );
+  await runCheck("Content-Signal in robots.txt", () =>
+    checkContentSignals({
+      robotsContent: (robotsTxtResult.details?.robotsContent as string) ?? null,
+    }),
+  );
+  await runCheck("AI bot traffic", () =>
+    checkAiBotTraffic({
+      url,
+      sampleUrls: fetchedPages.length > 0 ? fetchedPages.map((p) => p.url) : undefined,
+      log,
+    }),
+  );
+  await runCheck("llms-full.txt", () => checkLlmsFullTxt({ url }));
 
   const withCategory = checks.map((check) => ({
     ...check,

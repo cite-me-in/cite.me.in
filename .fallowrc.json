@@ -1,6 +1,5 @@
 {
   "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
-  // Migrated from knip.json
   "entry": [
     "app/components/layout/PageLayout.tsx",
     "app/components/ui/*.tsx",
@@ -10,5 +9,8 @@
     "test/**/*.ts",
     "test/helpers/serverWorker.ts"
   ],
-  "ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend"]
+  "ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend"],
+  "duplicates": {
+    "ignore": ["test/**", "__screenshots__/**"]
+  }
 }
