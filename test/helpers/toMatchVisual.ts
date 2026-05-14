@@ -2,12 +2,11 @@
 
 import { readdirSync, unlinkSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
-import path, { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import path from "node:path";
 import { expect } from "@playwright/test";
 import type { Locator, Page } from "playwright";
 import { sleep } from "radashi";
-import invariant from "tiny-invariant";
+import { baseDir, getTestName } from "./shared";
 import "~/test/helpers/toMatchInnerHTML";
 import "~/test/helpers/toMatchScreenshot";
 
@@ -33,10 +32,6 @@ declare global {
     }
   }
 }
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-export const baseDir = resolve(__dirname, "../../__screenshots__");
 
 expect.extend({
   async toMatchVisual(
@@ -79,18 +74,6 @@ expect.extend({
     return { message: () => "Visual matches baseline", pass: true };
   },
 });
-
-function getTestName(): string {
-  const error = new Error();
-  const stackLines = error.stack?.split("\n") || [];
-  const callerLine = stackLines.find(
-    (line) => line.includes(".test.") && !line.includes("node_modules"),
-  );
-  invariant(callerLine, "Could not determine test file name");
-  const match = callerLine.match(/\/(.+?):\d+/);
-  const testFile = match ? path.basename(match[1]) : "unknown";
-  return testFile.replace(/\.test\.(ts|tsx)$/, "");
-}
 
 export async function removeTemporaryFiles() {
   await mkdir(baseDir, { recursive: true });

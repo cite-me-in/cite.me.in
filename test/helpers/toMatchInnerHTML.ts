@@ -6,8 +6,7 @@ import { expect } from "@playwright/test";
 import { diffLines } from "diff";
 import { parseHTML } from "linkedom";
 import type { Locator, Page } from "playwright";
-import invariant from "tiny-invariant";
-import { baseDir } from "./toMatchVisual";
+import { baseDir, getTestName } from "./shared";
 
 declare global {
   namespace PlaywrightTest {
@@ -153,14 +152,3 @@ function multipleLines({ added, count, value }: { added: boolean; count: number;
   ].join("\n");
 }
 
-function getTestName(): string {
-  const error = new Error();
-  const stackLines = error.stack?.split("\n") || [];
-  const callerLine = stackLines.find(
-    (line) => line.includes(".test.") && !line.includes("node_modules"),
-  );
-  invariant(callerLine, "Could not determine test file name");
-  const match = callerLine.match(/\/(.+?):\d+/);
-  const testFile = match ? path.basename(match[1]) : "unknown";
-  return testFile.replace(/\.test\.(ts|tsx)$/, "");
-}

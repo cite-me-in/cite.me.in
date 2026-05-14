@@ -5,7 +5,7 @@ import path, { dirname } from "node:path";
 import { expect } from "@playwright/test";
 import looksSame from "looks-same";
 import type { Locator, Page } from "playwright";
-import { baseDir } from "./toMatchVisual";
+import { baseDir } from "./shared";
 
 declare global {
   namespace PlaywrightTest {
