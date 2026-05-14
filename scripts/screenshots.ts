@@ -16,7 +16,7 @@ import {
   unlinkSync,
   writeFileSync,
 } from "node:fs";
-import { createServer } from "node:http";
+import { createServer, ServerResponse } from "node:http";
 import { extname, join, resolve } from "node:path";
 
 const screenshotsDir = resolve(import.meta.dirname, "..", "__screenshots__");
@@ -140,56 +140,63 @@ const html = `<!DOCTYPE html>
 
 writeFileSync(htmlPath, html);
 
-const server = createServer((req, res) => {
-  const url = new URL(req.url ?? "/", "http://localhost");
-
-  if (url.pathname === "/accept") {
-    const relPath = url.searchParams.get("path");
-    if (relPath) {
-      const newPath = join(screenshotsDir, relPath);
-      if (existsSync(newPath)) {
-        const oldPath = newPath.replace(".new.png", ".png");
-        const diffPath = newPath.replace(".new.png", ".diff.png");
-        const newHtmlPath = newPath.replace(".new.png", ".new.html");
-        const oldHtmlPath = newPath.replace(".new.png", ".html");
-        const diffHtmlPath = newPath.replace(".new.png", ".html.diff");
-
-        if (existsSync(oldPath)) unlinkSync(oldPath);
-        renameSync(newPath, oldPath);
-        if (existsSync(diffPath)) unlinkSync(diffPath);
-        if (existsSync(newHtmlPath)) {
-          if (existsSync(oldHtmlPath)) unlinkSync(oldHtmlPath);
-          renameSync(newHtmlPath, oldHtmlPath);
-        }
-        if (existsSync(diffHtmlPath)) unlinkSync(diffHtmlPath);
-
-        console.info(`Accepted: ${relPath.replace(".new.png", "")}`);
-      }
-    }
+function handleAccept(relPath: string, res: ServerResponse): void {
+  const newPath = join(screenshotsDir, relPath);
+  if (!existsSync(newPath)) {
     res.writeHead(200);
     res.end("ok");
     return;
   }
+  const oldPath = newPath.replace(".new.png", ".png");
+  const diffPath = newPath.replace(".new.png", ".diff.png");
+  const newHtmlPath = newPath.replace(".new.png", ".new.html");
+  const oldHtmlPath = newPath.replace(".new.png", ".html");
+  const diffHtmlPath = newPath.replace(".new.png", ".html.diff");
 
-  const filePath = join(screenshotsDir, url.pathname);
+  if (existsSync(oldPath)) unlinkSync(oldPath);
+  renameSync(newPath, oldPath);
+  if (existsSync(diffPath)) unlinkSync(diffPath);
+  if (existsSync(newHtmlPath)) {
+    if (existsSync(oldHtmlPath)) unlinkSync(oldHtmlPath);
+    renameSync(newHtmlPath, oldHtmlPath);
+  }
+  if (existsSync(diffHtmlPath)) unlinkSync(diffHtmlPath);
+
+  console.info(`Accepted: ${relPath.replace(".new.png", "")}`);
+  res.writeHead(200);
+  res.end("ok");
+}
+
+const MIME_TYPES: Record<string, string> = {
+  ".html": "text/html",
+  ".png": "image/png",
+  ".css": "text/css",
+  ".js": "application/javascript",
+};
+
+function serveStatic(filePath: string, res: ServerResponse): void {
   if (!existsSync(filePath)) {
     res.writeHead(404);
     res.end("Not found");
     return;
   }
-
   const ext = extname(filePath);
-  const mimeTypes: Record<string, string> = {
-    ".html": "text/html",
-    ".png": "image/png",
-    ".css": "text/css",
-    ".js": "application/javascript",
-  };
-
-  res.writeHead(200, {
-    "Content-Type": mimeTypes[ext] || "application/octet-stream",
-  });
+  res.writeHead(200, { "Content-Type": MIME_TYPES[ext] || "application/octet-stream" });
   res.end(readFileSync(filePath));
+}
+
+const server = createServer((req, res) => {
+  const url = new URL(req.url ?? "/", "http://localhost");
+  if (url.pathname === "/accept") {
+    const relPath = url.searchParams.get("path");
+    if (relPath) handleAccept(relPath, res);
+    else {
+      res.writeHead(200);
+      res.end("ok");
+    }
+    return;
+  }
+  serveStatic(join(screenshotsDir, url.pathname), res);
 });
 
 const port = 3456;

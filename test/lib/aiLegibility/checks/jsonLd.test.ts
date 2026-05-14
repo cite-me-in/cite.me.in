@@ -190,7 +190,9 @@ describe("validateSchema", () => {
   });
 
   it("returns error for Organization missing name", () => {
-    expect(validateSchema("Organization", {})).toBe("Missing required field 'name' in Organization schema");
+    expect(validateSchema("Organization", {})).toBe(
+      "Missing required field 'name' in Organization schema",
+    );
   });
 
   it("returns null for Organization with name", () => {
@@ -198,7 +200,9 @@ describe("validateSchema", () => {
   });
 
   it("returns error for WebSite missing both name and url", () => {
-    expect(validateSchema("WebSite", {})).toBe("Missing required field 'name' or 'url' in WebSite schema");
+    expect(validateSchema("WebSite", {})).toBe(
+      "Missing required field 'name' or 'url' in WebSite schema",
+    );
   });
 
   it("returns null for WebSite with name only", () => {
@@ -240,7 +244,9 @@ describe("validateSchema", () => {
   });
 
   it("returns error for FAQPage missing mainEntity", () => {
-    expect(validateSchema("FAQPage", {})).toBe("Missing required field 'mainEntity' in FAQPage schema");
+    expect(validateSchema("FAQPage", {})).toBe(
+      "Missing required field 'mainEntity' in FAQPage schema",
+    );
   });
 
   it("returns null for FAQPage with mainEntity", () => {
@@ -256,7 +262,9 @@ describe("validateSchema", () => {
   });
 
   it("returns error for LocalBusiness missing name", () => {
-    expect(validateSchema("LocalBusiness", {})).toBe("Missing required field 'name' in LocalBusiness schema");
+    expect(validateSchema("LocalBusiness", {})).toBe(
+      "Missing required field 'name' in LocalBusiness schema",
+    );
   });
 
   it("returns null for LocalBusiness with name", () => {
@@ -348,7 +356,10 @@ describe("flattenNodes", () => {
   });
 
   it("flattens array of objects", () => {
-    const data = [{ "@type": "Organization", name: "Acme" }, { "@type": "WebSite", url: "https://acme.com" }];
+    const data = [
+      { "@type": "Organization", name: "Acme" },
+      { "@type": "WebSite", url: "https://acme.com" },
+    ];
     const result = flattenNodes(data);
     expect(result).toHaveLength(2);
     expect(result[0]).toEqual({ "@type": "Organization", name: "Acme" });

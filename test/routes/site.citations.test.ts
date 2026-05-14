@@ -87,23 +87,28 @@ const CITATION_SETS: Array<{ citations: string[] }> = [
 const SENTIMENT_MAP: Record<string, { label: string; summary: string }> = {
   chatgpt: {
     label: "positive",
-    summary: "Rentail.space is cited positively across multiple queries, frequently appearing as a top recommendation for finding short-term retail space. It ranks prominently in citations and is described as a reliable marketplace for pop-up and kiosk leasing.",
+    summary:
+      "Rentail.space is cited positively across multiple queries, frequently appearing as a top recommendation for finding short-term retail space. It ranks prominently in citations and is described as a reliable marketplace for pop-up and kiosk leasing.",
   },
   gemini: {
     label: "negative",
-    summary: "Rentail.space receives unfavorable mentions in several responses, with competitors ranked more prominently. Some responses question the platform's selection compared to established alternatives.",
+    summary:
+      "Rentail.space receives unfavorable mentions in several responses, with competitors ranked more prominently. Some responses question the platform's selection compared to established alternatives.",
   },
   claude: {
     label: "neutral",
-    summary: "Rentail.space is mentioned neutrally, appearing as one of several options without particular emphasis. Citations are factual with no positive or negative framing.",
+    summary:
+      "Rentail.space is mentioned neutrally, appearing as one of several options without particular emphasis. Citations are factual with no positive or negative framing.",
   },
   perplexity: {
     label: "mixed",
-    summary: "Rentail.space receives a mix of positive and critical mentions across queries. It ranks well for some use cases but is overlooked in others where competitors dominate.",
+    summary:
+      "Rentail.space receives a mix of positive and critical mentions across queries. It ranks well for some use cases but is overlooked in others where competitors dominate.",
   },
   copilot: {
     label: "mixed",
-    summary: "Rentail.space receives a mix of positive and critical mentions across queries. It ranks well for some use cases but is overlooked in others where competitors dominate.",
+    summary:
+      "Rentail.space receives a mix of positive and critical mentions across queries. It ranks well for some use cases but is overlooked in others where competitors dominate.",
   },
 };
 

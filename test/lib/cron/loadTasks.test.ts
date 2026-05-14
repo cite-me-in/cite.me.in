@@ -72,9 +72,7 @@ describe("strExport", () => {
 
   it("throws when entry doesn't exist", () => {
     const map = new Map();
-    expect(() => strExport(map, "missing")).toThrow(
-      "app/cron/: missing export const missing",
-    );
+    expect(() => strExport(map, "missing")).toThrow("app/cron/: missing export const missing");
   });
 
   it("throws when entry exists but has no strValue", () => {
@@ -200,9 +198,7 @@ describe("timeoutExport", () => {
 
   it("throws when timeout is missing from the map", () => {
     const map = new Map();
-    expect(() => timeoutExport(map)).toThrow(
-      "app/cron/: missing export const timeout",
-    );
+    expect(() => timeoutExport(map)).toThrow("app/cron/: missing export const timeout");
   });
 });
 
