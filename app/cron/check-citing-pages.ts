@@ -1,4 +1,5 @@
 import { convert } from "convert";
+import { runJob } from "~/lib/cron/runJob";
 import checkCitingPagesFn from "~/lib/llm-visibility/checkCitingPages";
 
 export const schedule = "0 6 * * *";
@@ -11,6 +12,6 @@ async function main() {
   return { checked: results.length };
 }
 
-if (import.meta.main) await main();
+if (import.meta.main) await runJob("check-citing-pages", main);
 
 export default main;

@@ -1,5 +1,6 @@
 import { convert } from "convert";
 import { parallel } from "radashi";
+import { runJob } from "~/lib/cron/runJob";
 import prisma from "~/lib/prisma.server";
 import { attemptDelivery } from "~/lib/webhooks.server";
 
@@ -18,6 +19,6 @@ async function main() {
   return { processed: pending.length };
 }
 
-if (import.meta.main) await main();
+if (import.meta.main) await runJob("webhook-retries", main);
 
 export default main;

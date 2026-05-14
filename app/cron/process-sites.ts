@@ -4,6 +4,7 @@ import { map } from "radashi";
 import sendTrialEndedEmails from "~/emails/TrialEnded";
 import sendTrialEndingEmails from "~/emails/TrialEnding";
 import { sendSiteDigestEmails } from "~/emails/WeeklyDigest";
+import { runJob } from "~/lib/cron/runJob";
 import { daysAgo } from "~/lib/formatDate";
 import prepareSites from "~/lib/prepareSites.server";
 import { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
@@ -43,6 +44,6 @@ async function main() {
   return { sites: results };
 }
 
-if (import.meta.main) await main();
+if (import.meta.main) await runJob("process-sites", main);
 
 export default main;
