@@ -137,3 +137,6 @@ function assertDefaultExport(sourceFile: ts.SourceFile): void {
   }
   throw new Error("app/cron/: file does not export a default function");
 }
+
+// Exported for testing
+export { collect, strExport, boolExport, timeoutExport, parseConvertCall, assertDefaultExport };
