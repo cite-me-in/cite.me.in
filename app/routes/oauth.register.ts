@@ -46,11 +46,7 @@ export async function action({ request }: Route.ActionArgs) {
       const url = new URL(uri);
       if (url.protocol !== "http:" && url.protocol !== "https:")
         throw new Error("Invalid protocol");
-      if (
-        url.protocol === "http:" &&
-        url.hostname !== "localhost" &&
-        url.hostname !== "127.0.0.1"
-      )
+      if (url.protocol === "http:" && url.hostname !== "localhost" && url.hostname !== "127.0.0.1")
         throw data(
           {
             error: "invalid_redirect_uri",
@@ -71,8 +67,7 @@ export async function action({ request }: Route.ActionArgs) {
   }
 
   const clientId = generateToken(16);
-  const clientSecret =
-    token_endpoint_auth_method === "none" ? "" : generateToken(32);
+  const clientSecret = token_endpoint_auth_method === "none" ? "" : generateToken(32);
   const scopes = scope.split(" ").filter(Boolean);
 
   const client = await prisma.oAuthClient.create({

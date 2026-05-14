@@ -25,9 +25,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   if (!deviceCode) return { code, deviceCode: null, error: "Invalid code" };
 
-  const expiresAt = new Date(
-    deviceCode.createdAt.getTime() + deviceCode.expiresIn * 1000,
-  );
+  const expiresAt = new Date(deviceCode.createdAt.getTime() + deviceCode.expiresIn * 1000);
   if (expiresAt < new Date()) {
     await prisma.oAuthDeviceCode.delete({ where: { code } });
     return { code, deviceCode: null, error: "Code expired" };
@@ -64,9 +62,7 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function Device({ loaderData }: Route.ComponentProps) {
   const { code, deviceCode, deviceCodeId, error } = loaderData;
-  const url = new URL(
-    typeof window !== "undefined" ? window.location.href : "http://localhost",
-  );
+  const url = new URL(typeof window !== "undefined" ? window.location.href : "http://localhost");
   const denied = url.searchParams.get("denied");
   const approved = url.searchParams.get("approved");
 
@@ -86,9 +82,7 @@ export default function Device({ loaderData }: Route.ComponentProps) {
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="w-full max-w-md rounded-lg bg-white p-8 text-center shadow">
           <h1 className="mb-4 text-2xl font-bold">Approved!</h1>
-          <p className="text-gray-600">
-            You can close this window and return to the application.
-          </p>
+          <p className="text-gray-600">You can close this window and return to the application.</p>
         </div>
       </div>
     );
@@ -99,9 +93,7 @@ export default function Device({ loaderData }: Route.ComponentProps) {
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="w-full max-w-md rounded-lg bg-white p-8 shadow">
           <h1 className="mb-4 text-2xl font-bold">Device Activation</h1>
-          <p className="mb-4 text-gray-600">
-            Enter the code shown on your device:
-          </p>
+          <p className="mb-4 text-gray-600">Enter the code shown on your device:</p>
           <form method="get" className="flex gap-2">
             <input
               type="text"
@@ -110,10 +102,7 @@ export default function Device({ loaderData }: Route.ComponentProps) {
               className="flex-1 rounded border px-3 py-2 text-center text-2xl tracking-widest uppercase"
               maxLength={8}
             />
-            <button
-              type="submit"
-              className="rounded bg-blue-600 px-4 py-2 text-white"
-            >
+            <button type="submit" className="rounded bg-blue-600 px-4 py-2 text-white">
               Continue
             </button>
           </form>
@@ -128,10 +117,7 @@ export default function Device({ loaderData }: Route.ComponentProps) {
         <div className="w-full max-w-md rounded-lg bg-white p-8 text-center shadow">
           <h1 className="mb-4 text-2xl font-bold text-red-600">Error</h1>
           <p className="text-gray-600">{error || "Invalid code"}</p>
-          <a
-            href="/oauth/device"
-            className="mt-4 inline-block text-blue-600 hover:underline"
-          >
+          <a href="/oauth/device" className="mt-4 inline-block text-blue-600 hover:underline">
             Try again
           </a>
         </div>
@@ -142,12 +128,9 @@ export default function Device({ loaderData }: Route.ComponentProps) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <div className="w-full max-w-md rounded-lg bg-white p-8 shadow">
-        <h1 className="mb-4 text-2xl font-bold">
-          Authorize {deviceCode.clientName}
-        </h1>
+        <h1 className="mb-4 text-2xl font-bold">Authorize {deviceCode.clientName}</h1>
         <p className="mb-6 text-gray-600">
-          This application is requesting access to your account with the
-          following permissions:
+          This application is requesting access to your account with the following permissions:
         </p>
         <ul className="mb-6 space-y-2">
           {deviceCode.scopes.map((scope) => (

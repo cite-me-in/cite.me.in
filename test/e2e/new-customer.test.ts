@@ -12,9 +12,7 @@ test.beforeAll(async () => {
 });
 
 test("loads homepage with Playwright", async () => {
-  await expect(
-    page.getByRole("heading", { name: /Does ChatGPT mention/i }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Does ChatGPT mention/i })).toBeVisible();
   await expect(
     page.getByRole("navigation").getByRole("link", { name: /get started/i }),
   ).toBeVisible();
@@ -29,15 +27,9 @@ test("clicks get started button", async () => {
 });
 
 test("fills out sign-up form", async () => {
-  await page
-    .getByRole("textbox", { name: "Email", exact: true })
-    .fill("test@example.com");
-  await page
-    .getByRole("textbox", { name: "Password", exact: true })
-    .fill("password123");
-  await page
-    .getByRole("textbox", { name: "Confirm password", exact: true })
-    .fill("password123");
+  await page.getByRole("textbox", { name: "Email", exact: true }).fill("test@example.com");
+  await page.getByRole("textbox", { name: "Password", exact: true }).fill("password123");
+  await page.getByRole("textbox", { name: "Confirm password", exact: true }).fill("password123");
   await page.getByRole("button", { name: "Create account" }).click();
   await page.waitForURL("/sites");
 });

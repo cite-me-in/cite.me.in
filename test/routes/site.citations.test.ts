@@ -19,8 +19,7 @@ const QUERIES = [
     group: "1. discovery",
   },
   {
-    query:
-      "What are the best platforms for finding pop-up shops in shopping centers?",
+    query: "What are the best platforms for finding pop-up shops in shopping centers?",
     group: "1. discovery",
   },
   {
@@ -54,16 +53,10 @@ const CITATION_SETS: Array<{ citations: string[] }> = [
     ],
   },
   {
-    citations: [
-      `https://${HOSTNAME}/marketplace`,
-      "https://popupinsider.com/guide",
-    ],
+    citations: [`https://${HOSTNAME}/marketplace`, "https://popupinsider.com/guide"],
   },
   {
-    citations: [
-      "https://storeshq.com/retail",
-      "https://siteselectiongroup.com/leasing",
-    ],
+    citations: ["https://storeshq.com/retail", "https://siteselectiongroup.com/leasing"],
   },
   {
     citations: [
@@ -80,10 +73,7 @@ const CITATION_SETS: Array<{ citations: string[] }> = [
     ],
   },
   {
-    citations: [
-      "https://siteselectiongroup.com/leasing",
-      "https://popupinsider.com/guide",
-    ],
+    citations: ["https://siteselectiongroup.com/leasing", "https://popupinsider.com/guide"],
   },
   {
     citations: [
@@ -192,8 +182,7 @@ describe("site page", () => {
         // Create citations for each query
         const queryIds = run.queries.map((q) => q.id);
         for (let qi = 0; qi < queryIds.length; qi++) {
-          const { citations } =
-            CITATION_SETS[(qi * 3 + runIdx) % CITATION_SETS.length];
+          const { citations } = CITATION_SETS[(qi * 3 + runIdx) % CITATION_SETS.length];
           await prisma.citation.createMany({
             data: citations.map((c) => ({
               url: c,
@@ -211,32 +200,21 @@ describe("site page", () => {
 
   it("should show positive sentiment for ChatGPT", async () => {
     const ctx = await signIn(user.id);
-    const page = await goto(
-      `/site/${siteDomain}/citations?platform=chatgpt`,
-      ctx,
-    );
+    const page = await goto(`/site/${siteDomain}/citations?platform=chatgpt`, ctx);
     await expect(page.getByText("Positive", { exact: true })).toBeVisible();
-    await expect(
-      page.getByText(/Rentail\.space is cited positively/),
-    ).toBeVisible();
+    await expect(page.getByText(/Rentail\.space is cited positively/)).toBeVisible();
   });
 
   it("should show negative sentiment for Gemini", async () => {
     const ctx = await signIn(user.id);
-    const page = await goto(
-      `/site/${siteDomain}/citations?platform=gemini`,
-      ctx,
-    );
+    const page = await goto(`/site/${siteDomain}/citations?platform=gemini`, ctx);
     await expect(page.getByText("Negative", { exact: true })).toBeVisible();
     await expect(page.getByText(/unfavorable mentions/)).toBeVisible();
   });
 
   it("should show neutral sentiment for Claude", async () => {
     const ctx = await signIn(user.id);
-    const page = await goto(
-      `/site/${siteDomain}/citations?platform=claude`,
-      ctx,
-    );
+    const page = await goto(`/site/${siteDomain}/citations?platform=claude`, ctx);
     await expect(page.getByText("Neutral", { exact: true })).toBeVisible();
     await expect(page.getByText(/mentioned neutrally/)).toBeVisible();
   });

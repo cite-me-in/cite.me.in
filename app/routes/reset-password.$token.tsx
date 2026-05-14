@@ -32,8 +32,7 @@ export default function ResetPassword() {
       title="Link expired"
       form={
         <p>
-          This link is invalid or has already been used. Request a new one from
-          the{" "}
+          This link is invalid or has already been used. Request a new one from the{" "}
           <Link to="/password-recovery" className="text-blue-500 underline">
             password recovery page
           </Link>

@@ -30,8 +30,7 @@ export function validateDomainInput(input: string): {
 
   // Check for localhost or IP addresses
   const localhostPattern = /localhost|127\.0\.0\.1|0\.0\.0\.0|:\d+/i;
-  if (localhostPattern.test(trimmed))
-    return { valid: false, error: "Enter a public website URL" };
+  if (localhostPattern.test(trimmed)) return { valid: false, error: "Enter a public website URL" };
 
   // Extract domain using URL parsing (same approach as server)
   const domain = extractDomain(trimmed);

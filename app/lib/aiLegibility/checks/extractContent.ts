@@ -63,10 +63,7 @@ type ContentAssessment = {
   useful: boolean;
 };
 
-export async function assessContent(
-  html: string,
-  url?: string,
-): Promise<ContentAssessment> {
+export async function assessContent(html: string, url?: string): Promise<ContentAssessment> {
   const { textContent, wordCount } = await extractContent(html, url);
   const contentLength = textContent.length;
 
@@ -81,8 +78,7 @@ export async function assessContent(
   if (!paragraphs) usefulnessSignals.push("no paragraph breaks");
   if (!sentenceEndings) usefulnessSignals.push("no sentence structure");
   if (!headings) usefulnessSignals.push("no headings");
-  if (!enoughWords)
-    usefulnessSignals.push(`only ${wordCount} words (need ${MIN_WORD_COUNT})`);
+  if (!enoughWords) usefulnessSignals.push(`only ${wordCount} words (need ${MIN_WORD_COUNT})`);
 
   const useful = hasRealContent && enoughWords;
 

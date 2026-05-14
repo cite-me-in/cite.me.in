@@ -49,18 +49,12 @@ export async function action({ request }: Route.ActionArgs) {
 export default function TryPage({ loaderData }: Route.ComponentProps) {
   const { domain, user } = loaderData;
   const actionData = useActionData<typeof action>();
-  const [lines, setLines] = useState<string[]>(
-    loaderData.scanStatus?.lines ?? [],
-  );
-  const [scanStatus, setScanStatus] = useState<string>(
-    loaderData.scanStatus?.status ?? "idle",
-  );
+  const [lines, setLines] = useState<string[]>(loaderData.scanStatus?.lines ?? []);
+  const [scanStatus, setScanStatus] = useState<string>(loaderData.scanStatus?.status ?? "idle");
   const [result, setResult] = useState<ScanResult | undefined>(
     loaderData.scanStatus?.result ?? undefined,
   );
-  const [scanError, setScanError] = useState<string | null>(
-    loaderData.scanStatus?.error ?? null,
-  );
+  const [scanError, setScanError] = useState<string | null>(loaderData.scanStatus?.error ?? null);
   const startedRef = useRef(false);
   const [progressVisible, setProgressVisible] = useState(true);
   const [resultVisible, setResultVisible] = useState(false);
@@ -76,8 +70,7 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
         total?: number;
       }
     > = {};
-    for (const name of Object.values(LOG_TO_CHECK))
-      states[name] = { status: "pending" };
+    for (const name of Object.values(LOG_TO_CHECK)) states[name] = { status: "pending" };
 
     let currentCheck: string | null = null;
     for (const line of lines) {
@@ -166,9 +159,7 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
     async () => {
       if (scanStatus === "complete" || scanStatus === "error") return;
       try {
-        const res = await fetch(
-          `/try/scan?domain=${encodeURIComponent(domain)}`,
-        );
+        const res = await fetch(`/try/scan?domain=${encodeURIComponent(domain)}`);
         const data = (await res.json()) as {
           lines?: string[];
           status: string;
@@ -204,11 +195,7 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
       {domain ? (
         <section className="border-b-2 border-black bg-amber-400 px-6 py-4">
           <h1 className="mx-auto flex max-w-3xl items-center gap-2 text-4xl font-bold">
-            <span>
-              {scanStatus === "complete"
-                ? `Scanned ${domain}`
-                : `Scanning ${domain}...`}
-            </span>
+            <span>{scanStatus === "complete" ? `Scanned ${domain}` : `Scanning ${domain}...`}</span>
           </h1>
         </section>
       ) : (
@@ -218,16 +205,13 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
               Is your site ready for AI?
             </h1>
             <p className="mx-auto mb-10 max-w-xl text-lg font-medium text-black/80">
-              Enter any URL. We scan your site's AI legibility in seconds and
-              give you step-by-step prompts to fix what's missing. See how your
-              site stacks up against the competition.
+              Enter any URL. We scan your site's AI legibility in seconds and give you step-by-step
+              prompts to fix what's missing. See how your site stacks up against the competition.
             </p>
 
             <DomainForm
               domain={domain}
-              actionError={
-                actionData && "error" in actionData ? actionData.error : null
-              }
+              actionError={actionData && "error" in actionData ? actionData.error : null}
             />
           </div>
         </section>
@@ -235,10 +219,7 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
 
       {domain ? (
         <>
-          <section
-            id="scan-results"
-            className="border-b-2 border-black px-6 py-16"
-          >
+          <section id="scan-results" className="border-b-2 border-black px-6 py-16">
             <div className="mx-auto max-w-3xl">
               <div className="mb-6 flex flex-wrap items-center gap-3">
                 <div className="rounded-base inline-flex items-center gap-2 border-2 border-black bg-white px-3 py-1.5 text-sm font-bold shadow-[2px_2px_0px_0px_black]">
@@ -256,9 +237,7 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
               {scanStatus !== "idle" && scanStatus !== "error" && (
                 <div
                   className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                    progressVisible
-                      ? "max-h-[3000px] opacity-100"
-                      : "max-h-0 opacity-0"
+                    progressVisible ? "max-h-[3000px] opacity-100" : "max-h-0 opacity-0"
                   }`}
                 >
                   <LiveScanProgress checkStates={checkStates} lines={lines} />
@@ -308,13 +287,7 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
   );
 }
 
-function DomainForm({
-  domain,
-  actionError,
-}: {
-  domain: string;
-  actionError: string | null;
-}) {
+function DomainForm({ domain, actionError }: { domain: string; actionError: string | null }) {
   const [error, setError] = useState<string | null>(null);
   const displayedError = error || actionError;
   const navigation = useNavigation();
@@ -354,14 +327,10 @@ function DomainForm({
         </Button>
       </div>
       {displayedError && (
-        <p className="mt-3 text-left text-sm font-bold text-red-600">
-          {displayedError}
-        </p>
+        <p className="mt-3 text-left text-sm font-bold text-red-600">{displayedError}</p>
       )}
       {!displayedError && domain && (
-        <p className="mt-3 text-left text-xs font-medium text-black/40">
-          Scan takes ~15 seconds
-        </p>
+        <p className="mt-3 text-left text-xs font-medium text-black/40">Scan takes ~15 seconds</p>
       )}
     </Form>
   );

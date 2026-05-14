@@ -1,11 +1,6 @@
 import { describe, expect, it, vi } from "vite-plus/test";
 import crawl from "~/lib/scrape/crawl";
-import {
-  HTML_MAIN_CONTENT,
-  llmsTxtSite,
-  mockFetch,
-  navOnlySite,
-} from "./fixtures";
+import { HTML_MAIN_CONTENT, llmsTxtSite, mockFetch, navOnlySite } from "./fixtures";
 
 describe("crawl", () => {
   it("should return content from crawled pages", async () => {
@@ -34,10 +29,7 @@ describe("crawl", () => {
 
   it("should stop fetching after maxPages content pages", async () => {
     let pagesFetched = 0;
-    const manyUrls = Array.from(
-      { length: 30 },
-      (_, i) => `https://acme.com/page-${i}`,
-    ).join("\n");
+    const manyUrls = Array.from({ length: 30 }, (_, i) => `https://acme.com/page-${i}`).join("\n");
 
     vi.stubGlobal("fetch", async (url: string) => {
       if (typeof url === "string" && url.includes("/sitemap.txt")) {

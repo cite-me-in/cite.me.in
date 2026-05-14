@@ -37,8 +37,7 @@ export default function TermsOfService() {
           mode="static"
           remarkPlugins={[remarkGfm]}
           components={{
-            a: ({ children, href }) =>
-              href ? <Link to={href}>{children}</Link> : children,
+            a: ({ children, href }) => (href ? <Link to={href}>{children}</Link> : children),
           }}
         >
           {terms}

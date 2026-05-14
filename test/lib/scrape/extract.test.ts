@@ -55,9 +55,7 @@ describe("fetchAndExtract", () => {
       signal: AbortSignal.timeout(ms("5s")),
     });
     expect(result).not.toBeNull();
-    expect(result?.text).toContain(
-      "main article content extracted from JSON-LD",
-    );
+    expect(result?.text).toContain("main article content extracted from JSON-LD");
     expect(result?.text).not.toContain("noisy sidebar");
   });
 
@@ -78,8 +76,7 @@ describe("fetchAndExtract", () => {
           ok: true,
           status: 200,
           headers: {
-            get: (h: string) =>
-              h === "content-type" ? "application/pdf" : null,
+            get: (h: string) => (h === "content-type" ? "application/pdf" : null),
           },
           text: async () => "binary content",
         },

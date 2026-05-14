@@ -5,10 +5,7 @@ import { goto } from "~/test/helpers/launchBrowser";
 
 describe("FAQ page", () => {
   let page: Page;
-  const totalQuestions = faq.reduce(
-    (sum, category) => sum + category.questions.length,
-    0,
-  );
+  const totalQuestions = faq.reduce((sum, category) => sum + category.questions.length, 0);
 
   beforeAll(async () => {
     page = await goto("/faq");

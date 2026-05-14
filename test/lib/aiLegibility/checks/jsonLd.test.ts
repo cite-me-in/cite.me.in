@@ -145,9 +145,7 @@ describe("checkJsonLd", () => {
     });
 
     expect(result.passed).toBe(false);
-    expect(result.message).toContain(
-      "No JSON-LD found on https://acme.com/no-ld",
-    );
+    expect(result.message).toContain("No JSON-LD found on https://acme.com/no-ld");
   });
 
   it("should fail when any reviewed page has invalid JSON-LD", async () => {

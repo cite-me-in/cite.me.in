@@ -51,9 +51,7 @@ export default async function checkMarkdownNegotiation({
       const lowContent = pageResults.filter(
         (result) => result.isMarkdown && result.contentLength <= 50,
       );
-      const sources = lowContent.map(
-        (result) => `${result.url} (${result.contentLength} chars)`,
-      );
+      const sources = lowContent.map((result) => `${result.url} (${result.contentLength} chars)`);
       return {
         name: "Markdown content negotiation",
         passed: false,
@@ -112,8 +110,7 @@ async function checkPage(url: string): Promise<PageResult> {
 
     const contentType = response.headers.get("Content-Type") ?? "";
     const isMarkdown =
-      contentType.startsWith("text/markdown") ||
-      contentType.startsWith("text/plain");
+      contentType.startsWith("text/markdown") || contentType.startsWith("text/plain");
     const text = response.ok ? await response.text() : "";
     const contentLength = text.trim().length;
 

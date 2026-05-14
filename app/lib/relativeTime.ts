@@ -75,11 +75,7 @@ export function duration(
   milliseconds: number,
   options: { compact?: boolean; max_units?: number } = {},
 ): string {
-  if (
-    milliseconds < 0 ||
-    Number.isNaN(milliseconds) ||
-    !Number.isFinite(milliseconds)
-  )
+  if (milliseconds < 0 || Number.isNaN(milliseconds) || !Number.isFinite(milliseconds))
     throw new Error("Duration must be a non-negative finite number");
 
   const { compact = false, max_units = 2 } = options;
@@ -150,8 +146,7 @@ export function duration(
  * parseDuration("2:30") // 9000000
  */
 export function parseDuration(input: string): number {
-  if (!input || input.trim() === "")
-    throw new Error("Cannot parse empty duration string");
+  if (!input || input.trim() === "") throw new Error("Cannot parse empty duration string");
 
   const trimmed = input.trim();
 
@@ -275,30 +270,14 @@ export function humanDate(
 
   // Within past 7 days - "Last {weekday}"
   if (dayDiff > 1 && dayDiff <= 7) {
-    const weekdays = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
+    const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const weekday = weekdays[targetDate.getUTCDay()];
     return `Last ${weekday}`;
   }
 
   // Within next 7 days - "This {weekday}"
   if (dayDiff < -1 && dayDiff >= -7) {
-    const weekdays = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-    ];
+    const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const weekday = weekdays[targetDate.getUTCDay()];
     return `This ${weekday}`;
   }
@@ -343,10 +322,7 @@ export function humanDate(
  * dateRange(mar5, apr7) // "March 5 – April 7, 2024"
  * dateRange(dec28_2024, jan3_2025) // "December 28, 2024 – January 3, 2025"
  */
-export function dateRange(
-  start: number | string | Date,
-  end: number | string | Date,
-): string {
+export function dateRange(start: number | string | Date, end: number | string | Date): string {
   let startTs = normalizeTimestamp(start);
   let endTs = normalizeTimestamp(end);
 
@@ -406,8 +382,7 @@ function normalizeTimestamp(timestamp: number | string | Date): number {
   if (typeof timestamp === "number") return timestamp;
   if (typeof timestamp === "string") {
     const date = new Date(timestamp);
-    if (Number.isNaN(date.getTime()))
-      throw new Error(`Invalid ISO 8601 timestamp: ${timestamp}`);
+    if (Number.isNaN(date.getTime())) throw new Error(`Invalid ISO 8601 timestamp: ${timestamp}`);
     return date.getTime();
   }
   if (timestamp instanceof Date) return timestamp.getTime();

@@ -33,11 +33,7 @@ export default function AuthForm({
 
         <CardContent>{form}</CardContent>
 
-        {footer && (
-          <CardFooter className="flex flex-col gap-2 text-center">
-            {footer}
-          </CardFooter>
-        )}
+        {footer && <CardFooter className="flex flex-col gap-2 text-center">{footer}</CardFooter>}
       </Card>
     </main>
   );

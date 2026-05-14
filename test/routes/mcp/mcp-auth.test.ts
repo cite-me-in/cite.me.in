@@ -64,9 +64,7 @@ describe("MCP Authorization Flow", () => {
     });
 
     it("should serve Protected Resource Metadata", async () => {
-      const res = await fetch(
-        `${baseUrl}/.well-known/oauth-protected-resource`,
-      );
+      const res = await fetch(`${baseUrl}/.well-known/oauth-protected-resource`);
 
       expect(res.ok).toBe(true);
       const data = (await res.json()) as {
@@ -81,9 +79,7 @@ describe("MCP Authorization Flow", () => {
     });
 
     it("should serve Authorization Server Metadata", async () => {
-      const res = await fetch(
-        `${baseUrl}/.well-known/oauth-authorization-server`,
-      );
+      const res = await fetch(`${baseUrl}/.well-known/oauth-authorization-server`);
 
       expect(res.ok).toBe(true);
       const data = (await res.json()) as {

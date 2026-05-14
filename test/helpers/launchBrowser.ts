@@ -3,13 +3,7 @@ import { resolve } from "node:path";
 import { URL as URLString } from "node:url";
 import { ms } from "convert";
 import debug from "debug";
-import {
-  type Browser,
-  type BrowserContext,
-  type Page,
-  type Route,
-  chromium,
-} from "playwright";
+import { type Browser, type BrowserContext, type Page, type Route, chromium } from "playwright";
 import { port } from "./launchServer";
 import trimConsole from "./trimConsole";
 
@@ -52,10 +46,9 @@ export async function goto(
   // NOTE: We need to reload the page otherwise React doesn't handle the form
   // submission correctly on Playwright.
   await page.reload({ waitUntil: "load" });
-  await page.waitForFunction(
-    () => document.body.getAttribute("data-hydrated") === "true",
-    { timeout: ms("8s") },
-  );
+  await page.waitForFunction(() => document.body.getAttribute("data-hydrated") === "true", {
+    timeout: ms("8s"),
+  });
 
   return page;
 }
@@ -104,16 +97,11 @@ async function blockOutgoingRequests(route: Route): Promise<void> {
 
   // Allow local requests to pass through
   if (
-    ["document", "script", "xhr", "fetch", "image"].includes(
-      route.request().resourceType(),
-    ) &&
+    ["document", "script", "xhr", "fetch", "image"].includes(route.request().resourceType()) &&
     ["localhost", "cite.me.in"].includes(hostname)
   ) {
     return await route.continue({
-      url: new URL(
-        route.request().url(),
-        `http://localhost:${port}`,
-      ).toString(),
+      url: new URL(route.request().url(), `http://localhost:${port}`).toString(),
     });
   } else {
     const resourceType = route.request().resourceType();

@@ -62,10 +62,7 @@ describe("WeeklyDigestEmail", () => {
         total: { current: 142, previous: 137 },
         domain: { current: 23, previous: 18 },
       },
-      citationsURL: new URL(
-        "/site/example.com/citations",
-        envVars.VITE_APP_URL,
-      ).toString(),
+      citationsURL: new URL("/site/example.com/citations", envVars.VITE_APP_URL).toString(),
       citationTrends: {
         current: [10, 20, 30, 40, 50, 60, 70],
         previous: [5, 15, 25, 35, 45, 55, 65],
@@ -139,8 +136,7 @@ describe("WeeklyDigestEmail", () => {
       name: "email/weekly-digest",
       modify: (doc) => {
         for (const el of doc.querySelectorAll("*")) {
-          if (el.tagName === "IMG" && el.getAttribute("data-slot") === "chart")
-            el.remove();
+          if (el.tagName === "IMG" && el.getAttribute("data-slot") === "chart") el.remove();
         }
       },
     });

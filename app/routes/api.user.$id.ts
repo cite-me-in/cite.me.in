@@ -6,8 +6,7 @@ import type { Route } from "./+types/api.user.$id";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { id, isAdmin } = await verifyUserAccess(request);
-  if (!isAdmin && id !== params.id)
-    throw new Response("Forbidden", { status: 403 });
+  if (!isAdmin && id !== params.id) throw new Response("Forbidden", { status: 403 });
 
   const user = await prisma.user.findUniqueOrThrow({
     where: { id: params.id },

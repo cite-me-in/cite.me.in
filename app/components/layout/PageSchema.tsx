@@ -12,8 +12,7 @@ export default function PageSchema() {
           {
             "@type": "SoftwareApplication",
             name: "Cite.me.in",
-            description:
-              "Monitor whether your brand gets cited when people ask AI questions.",
+            description: "Monitor whether your brand gets cited when people ask AI questions.",
             applicationCategory: "BusinessApplication",
             operatingSystem: "Web",
             url: siteURL,

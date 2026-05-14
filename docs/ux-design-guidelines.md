@@ -56,15 +56,15 @@ Every page follows this pattern:
 
 ## Animations
 
-| Element | Pattern | Duration |
-|---|---|---|
-| Button hover | translate -2px -2px, shadow 3→5px | 100ms |
-| Button active | translate +2px +2px, shadow 5→1px | 100ms |
-| Dialog open/close | opacity 0→1, scale 95→100 | 200ms |
-| Card fade-in | `fade-in-0 zoom-in-95 animate-in` | 300ms |
-| Gauge score | Custom rAF arc animation 0→target | 500ms |
-| Progress bar width | `transition-width` | 500ms |
-| Bouncing dots | Custom keyframe `brutalist-spin-16` | N/A |
+| Element            | Pattern                             | Duration |
+| ------------------ | ----------------------------------- | -------- |
+| Button hover       | translate -2px -2px, shadow 3→5px   | 100ms    |
+| Button active      | translate +2px +2px, shadow 5→1px   | 100ms    |
+| Dialog open/close  | opacity 0→1, scale 95→100           | 200ms    |
+| Card fade-in       | `fade-in-0 zoom-in-95 animate-in`   | 300ms    |
+| Gauge score        | Custom rAF arc animation 0→target   | 500ms    |
+| Progress bar width | `transition-width`                  | 500ms    |
+| Bouncing dots      | Custom keyframe `brutalist-spin-16` | N/A      |
 
 ## Forms
 

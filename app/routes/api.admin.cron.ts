@@ -46,12 +46,12 @@ export async function loader({ request }: Route.LoaderArgs) {
   return data({
     tasks: tasks.map((task) => {
       const h = healthByJob.get(task.name);
-      const last =
-        lastRun.find((r) => r.job === task.name)?._max.startedAt ?? null;
+      const last = lastRun.find((r) => r.job === task.name)?._max.startedAt ?? null;
       return {
         name: task.name,
         schedule: task.schedule,
         timeout: task.timeout,
+        skip: task.skip ?? false,
         lastRun: last?.toISOString() ?? null,
         recentRuns: (runsByJob.get(task.name) ?? []).slice(0, 20).map((r) => ({
           status: r.status,
@@ -73,6 +73,7 @@ function loadTasks(): {
   name: string;
   schedule: string;
   timeout: number;
+  skip: boolean;
 }[] {
   const configPath = path.resolve(process.cwd(), "build", "cron-config.json");
   const raw = fs.readFileSync(configPath, "utf-8");

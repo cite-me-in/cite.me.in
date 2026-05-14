@@ -22,8 +22,7 @@ export default async function crawl({
   const results: { url: URL; title: string; text: string }[] = [];
 
   const llmsText = await fetchLLMsText({ baseURL, signal });
-  if (llmsText)
-    results.push({ url: baseURL, title: baseURL.hostname, text: llmsText });
+  if (llmsText) results.push({ url: baseURL, title: baseURL.hostname, text: llmsText });
 
   const homepage = await fetchAndExtract({ url: baseURL, signal });
   if (!homepage) throw new Error(`HTTP error fetching ${domain}`);
@@ -41,8 +40,7 @@ export default async function crawl({
 
   async function worker(): Promise<void> {
     while (true) {
-      if (signal.aborted || wordCount >= maxWords || pagesFetched >= maxPages)
-        break;
+      if (signal.aborted || wordCount >= maxWords || pagesFetched >= maxPages) break;
       const url = queue.shift();
       if (!url) break;
 
@@ -60,9 +58,7 @@ export default async function crawl({
   }
   await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()));
 
-  const combined = results
-    .map(({ title, text }) => `## ${title}\n\n${text}`)
-    .join("\n\n---\n\n");
+  const combined = results.map(({ title, text }) => `## ${title}\n\n${text}`).join("\n\n---\n\n");
   logger(
     "[crawl] Crawled %s => %d pages — %d words",
     baseURL.hostname,

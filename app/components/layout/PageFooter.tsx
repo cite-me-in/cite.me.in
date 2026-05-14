@@ -40,12 +40,11 @@ export default function PageFooter() {
         </a>
         <div className="flex flex-col gap-2">
           <p className="font-medium">
-            Monitor AI citation visibility for your brand. Built for small
-            businesses and seasonal sellers. AI powered.
+            Monitor AI citation visibility for your brand. Built for small businesses and seasonal
+            sellers. AI powered.
           </p>
           <p className="flex flex-row items-center gap-1 font-medium">
-            © {new Date().getFullYear()} cite.me.in &mdash; Squirrel-brain
-            friendly 🐿️
+            © {new Date().getFullYear()} cite.me.in &mdash; Squirrel-brain friendly 🐿️
           </p>
         </div>
         <SocialLinks />

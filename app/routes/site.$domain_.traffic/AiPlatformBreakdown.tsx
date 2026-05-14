@@ -30,10 +30,7 @@ export default function AiPlatformBreakdown({
           <TableBody>
             {platformBreakdown.length === 0 ? (
               <TableRow>
-                <TableCell
-                  colSpan={3}
-                  className="text-foreground/60 text-center"
-                >
+                <TableCell colSpan={3} className="text-foreground/60 text-center">
                   No AI referrals in this period
                 </TableCell>
               </TableRow>
@@ -41,12 +38,8 @@ export default function AiPlatformBreakdown({
               platformBreakdown.map((row) => (
                 <TableRow key={row.platform}>
                   <TableCell className="font-medium">{row.platform}</TableCell>
-                  <TableCell className="text-right">
-                    {row.visitors.toLocaleString()}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {row.pct.toFixed(2)}%
-                  </TableCell>
+                  <TableCell className="text-right">{row.visitors.toLocaleString()}</TableCell>
+                  <TableCell className="text-right">{row.pct.toFixed(2)}%</TableCell>
                 </TableRow>
               ))
             )}

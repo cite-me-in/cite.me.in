@@ -1,9 +1,4 @@
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/Card";
+import { Card, CardDescription, CardHeader, CardTitle } from "~/components/ui/Card";
 
 export default function VisitorKeyMetrics({
   totalVisitors,
@@ -29,9 +24,7 @@ export default function VisitorKeyMetrics({
       ].map(({ label, value }) => (
         <Card key={label}>
           <CardHeader className="text-center">
-            <CardDescription className="text-foreground/60">
-              {label}
-            </CardDescription>
+            <CardDescription className="text-foreground/60">{label}</CardDescription>
             <CardTitle>{value}</CardTitle>
           </CardHeader>
         </Card>

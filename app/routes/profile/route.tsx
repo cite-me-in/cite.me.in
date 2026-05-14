@@ -3,11 +3,7 @@ import * as zod from "zod";
 import AuthForm from "~/components/ui/AuthForm";
 import { Button } from "~/components/ui/Button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/Tabs";
-import {
-  hashPassword,
-  requireUserAccess,
-  verifyPassword,
-} from "~/lib/auth.server";
+import { hashPassword, requireUserAccess, verifyPassword } from "~/lib/auth.server";
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
@@ -49,12 +45,9 @@ export async function action({ request }: Route.ActionArgs) {
     return redirect(session.url);
   }
 
-  if (intent === "regenerateApiKey")
-    return regenerateApiKey({ userId: user.id });
+  if (intent === "regenerateApiKey") return regenerateApiKey({ userId: user.id });
 
-  const email = ((form.get("email") as string | null) ?? "")
-    .trim()
-    .toLowerCase();
+  const email = ((form.get("email") as string | null) ?? "").trim().toLowerCase();
   if (email) return updateEmail({ userId: user.id, email });
 
   const currentPassword = form.get("currentPassword") as string;
@@ -71,13 +64,7 @@ export async function action({ request }: Route.ActionArgs) {
   return { error: "Nothing to update" };
 }
 
-async function updateEmail({
-  userId,
-  email,
-}: {
-  userId: string;
-  email: string;
-}) {
+async function updateEmail({ userId, email }: { userId: string; email: string }) {
   try {
     const { error } = zod.email().safeParse(email);
     if (error) return { error: "Enter a valid email address" };
@@ -104,10 +91,8 @@ async function updatePassword({
   newPassword: string;
   confirmPassword: string;
 }) {
-  if (newPassword.length < 6)
-    return { error: "New password must be at least 6 characters" };
-  if (newPassword !== confirmPassword)
-    return { error: "Passwords do not match" };
+  if (newPassword.length < 6) return { error: "New password must be at least 6 characters" };
+  if (newPassword !== confirmPassword) return { error: "Passwords do not match" };
   if (!(await verifyPassword(currentPassword, user.passwordHash)))
     return { error: "Current password is incorrect" };
 
@@ -173,9 +158,7 @@ export default function ProfilePage() {
             <section>
               <h2 className="font-heading mb-4 text-xl">Subscription</h2>
               <p className="text-foreground/70 mb-4 text-sm">
-                You're on Pro (
-                {account?.interval === "annual" ? "annual" : "monthly"}{" "}
-                billing).
+                You're on Pro ({account?.interval === "annual" ? "annual" : "monthly"} billing).
               </p>
               <Form method="post">
                 <input type="hidden" name="intent" value="billingPortal" />

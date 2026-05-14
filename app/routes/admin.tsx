@@ -36,9 +36,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         orderBy: { onDate: "desc" },
         where: {
           onDate: {
-            gte: Temporal.Now.plainDateISO("UTC")
-              .subtract({ days: 14 })
-              .toJSON(),
+            gte: Temporal.Now.plainDateISO("UTC").subtract({ days: 14 }).toJSON(),
           },
         },
         distinct: ["platform"],
@@ -55,59 +53,43 @@ export default function Admin({ loaderData }: Route.ComponentProps) {
 
       <Card>
         <CardContent className="space-y-4 divide-y-2 divide-black/10">
-          {alphabetical(loaderData.sites, ({ domain }) => domain).map(
-            (site) => (
-              <div key={site.id} className="space-y-2 pb-4">
-                <div className="flex items-center justify-between">
-                  <ActiveLink
-                    to={`/site/${site.domain}`}
-                    className="text-2xl font-bold"
-                  >
-                    {site.domain}
-                  </ActiveLink>
-                  <span className="text-foreground/40">
-                    {site.owner.email} ({site.owner.plan})
-                  </span>
-                </div>
-                <p className="text-foreground/60 italic">{site.summary}</p>
-                <div className="flex flex-row justify-between gap-2">
-                  {alphabetical(
-                    site.citationRuns,
-                    ({ platform }) => platform,
-                  ).map((run) => (
-                    <div key={run.platform}>
-                      <div className="text-center text-2xl font-bold">
-                        {calculateVisibilityScore({
-                          domain: site.domain,
-                          queries: run.queries.map((q) => ({
-                            citations: q.citations.map((c) => c.url),
-                            text: q.text,
-                          })),
-                        }).visibilityScore.toLocaleString()}
-                      </div>
-                      <div className="text-foreground/40 text-center">
-                        {run.platform}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <p className="text-foreground/40 flex justify-between gap-8 text-right">
-                  <span>
-                    Created: {site.createdAt.toISOString().split("T")[0]}
-                  </span>
-                  <span>
-                    Last run: {site.citationRuns[0]?.onDate ?? "Never"}
-                  </span>
-                  <span>
-                    Last processed:{" "}
-                    {site.lastProcessedAt?.toISOString().split("T")[0] ??
-                      "Never"}
-                  </span>
-                </p>
+          {alphabetical(loaderData.sites, ({ domain }) => domain).map((site) => (
+            <div key={site.id} className="space-y-2 pb-4">
+              <div className="flex items-center justify-between">
+                <ActiveLink to={`/site/${site.domain}`} className="text-2xl font-bold">
+                  {site.domain}
+                </ActiveLink>
+                <span className="text-foreground/40">
+                  {site.owner.email} ({site.owner.plan})
+                </span>
               </div>
-            ),
-          )}
+              <p className="text-foreground/60 italic">{site.summary}</p>
+              <div className="flex flex-row justify-between gap-2">
+                {alphabetical(site.citationRuns, ({ platform }) => platform).map((run) => (
+                  <div key={run.platform}>
+                    <div className="text-center text-2xl font-bold">
+                      {calculateVisibilityScore({
+                        domain: site.domain,
+                        queries: run.queries.map((q) => ({
+                          citations: q.citations.map((c) => c.url),
+                          text: q.text,
+                        })),
+                      }).visibilityScore.toLocaleString()}
+                    </div>
+                    <div className="text-foreground/40 text-center">{run.platform}</div>
+                  </div>
+                ))}
+              </div>
+
+              <p className="text-foreground/40 flex justify-between gap-8 text-right">
+                <span>Created: {site.createdAt.toISOString().split("T")[0]}</span>
+                <span>Last run: {site.citationRuns[0]?.onDate ?? "Never"}</span>
+                <span>
+                  Last processed: {site.lastProcessedAt?.toISOString().split("T")[0] ?? "Never"}
+                </span>
+              </p>
+            </div>
+          ))}
         </CardContent>
       </Card>
     </Main>

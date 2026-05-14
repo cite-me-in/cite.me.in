@@ -12,13 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/Select";
-import sendAiLegibilityReport, {
-  AiLegibilityReportEmail,
-} from "~/emails/AiLegibilityReport";
+import sendAiLegibilityReport, { AiLegibilityReportEmail } from "~/emails/AiLegibilityReport";
 import EmailLayout from "~/emails/EmailLayout";
-import sendSiteSetupEmail, {
-  SiteSetupCompleteEmail,
-} from "~/emails/SiteSetupComplete";
+import sendSiteSetupEmail, { SiteSetupCompleteEmail } from "~/emails/SiteSetupComplete";
 import { WeeklyDigestEmail, sendSiteDigestEmails } from "~/emails/WeeklyDigest";
 import type { ScanResult } from "~/lib/aiLegibility/types";
 import { requireUserAccess } from "~/lib/auth.server";
@@ -28,11 +24,7 @@ import loadSetupMetrics from "~/lib/setupMetrics.server";
 import { loadWeeklyDigestMetrics } from "~/lib/weeklyDigest.server";
 import type { Route } from "./+types/site.$domain_.[_]preview";
 
-const EMAIL_TYPES = [
-  "weekly-digest",
-  "setup-complete",
-  "legibility-report",
-] as const;
+const EMAIL_TYPES = ["weekly-digest", "setup-complete", "legibility-report"] as const;
 
 type EmailType = (typeof EMAIL_TYPES)[number];
 
@@ -203,9 +195,7 @@ export default function EmailPreview({ loaderData }: Route.ComponentProps) {
           <input type="hidden" name="type" value={currentType} />
           <Button type="submit" disabled={fetcher.state !== "idle"} size="sm">
             <MailIcon className="size-4" />
-            {fetcher.state === "submitting"
-              ? "Sending..."
-              : `Email ${loaderData.user.email}`}
+            {fetcher.state === "submitting" ? "Sending..." : `Email ${loaderData.user.email}`}
           </Button>
         </fetcher.Form>
       </div>

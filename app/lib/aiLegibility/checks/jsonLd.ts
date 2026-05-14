@@ -62,9 +62,7 @@ function extractSchemas(html: string): JsonLdResult[] {
         }
         const validationError = validateSchema(type, node);
         schemas.push(
-          validationError
-            ? { type, valid: false, error: validationError }
-            : { type, valid: true },
+          validationError ? { type, valid: false, error: validationError } : { type, valid: true },
         );
       }
     } catch (error) {
@@ -98,40 +96,28 @@ export default async function checkJsonLd({
 
   const elapsed = Date.now() - startTime;
 
-  const passed = pageResults.every(
-    (p) => p.schemas.length > 0 && p.schemas.every((s) => s.valid),
-  );
+  const passed = pageResults.every((p) => p.schemas.length > 0 && p.schemas.every((s) => s.valid));
 
   const allErrors: string[] = [];
   for (const result of pageResults) {
     const invalid = result.schemas.filter((s) => !s.valid);
     if (invalid.length > 0) {
-      allErrors.push(
-        `${result.url}: ${invalid
-          .map((s) => `${s.type}: ${s.error}`)
-          .join("; ")}`,
-      );
+      allErrors.push(`${result.url}: ${invalid.map((s) => `${s.type}: ${s.error}`).join("; ")}`);
     }
   }
 
-  const pagesWithValidLd = pageResults.filter(
-    (p) => p.schemas.length > 0,
-  ).length;
+  const pagesWithValidLd = pageResults.filter((p) => p.schemas.length > 0).length;
   const pagesPassing = pageResults.filter((p) => p.passed).length;
 
   const parts: string[] = [];
   parts.push(`${pagesPassing}/${pageResults.length} pages have valid JSON-LD`);
 
   if (pagesWithValidLd > 0) {
-    const uniqueTypes = [
-      ...new Set(pageResults.flatMap((p) => p.schemas.map((s) => s.type))),
-    ];
+    const uniqueTypes = [...new Set(pageResults.flatMap((p) => p.schemas.map((s) => s.type)))];
     parts.push(`schemas found: ${uniqueTypes.join(", ")}`);
   }
 
-  const pagesWithoutLD = pageResults
-    .filter((p) => p.schemas.length === 0)
-    .map((p) => p.url);
+  const pagesWithoutLD = pageResults.filter((p) => p.schemas.length === 0).map((p) => p.url);
 
   const message =
     pageResults.length === 0
@@ -161,8 +147,7 @@ function flattenNodes(data: unknown): Record<string, unknown>[] {
   const obj = data as Record<string, unknown>;
   const nodes: Record<string, unknown>[] = [];
 
-  if (obj["@graph"] && Array.isArray(obj["@graph"]))
-    nodes.push(...flattenNodes(obj["@graph"]));
+  if (obj["@graph"] && Array.isArray(obj["@graph"])) nodes.push(...flattenNodes(obj["@graph"]));
   else if (obj["@type"]) nodes.push(obj);
 
   return nodes;
@@ -180,9 +165,7 @@ function validateSchema(type: string, data: unknown): string | null {
         : "Missing required field 'headline' or 'name' in Article, NewsArticle, or BlogPosting schemas";
     }
     case "Organization": {
-      return obj.name
-        ? null
-        : "Missing required field 'name' in Organization schema";
+      return obj.name ? null : "Missing required field 'name' in Organization schema";
     }
     case "WebSite": {
       return obj.name || obj.url
@@ -195,30 +178,22 @@ function validateSchema(type: string, data: unknown): string | null {
         : "Missing required field 'itemListElement' or 'itemList' in BreadcrumbList schema";
     }
     case "Product": {
-      return obj.name
-        ? null
-        : "Missing required field 'name' in Product schema";
+      return obj.name ? null : "Missing required field 'name' in Product schema";
     }
     case "Person": {
       return obj.name ? null : "Missing required field 'name' in Person schema";
     }
     case "FAQPage": {
-      return obj.mainEntity
-        ? null
-        : "Missing required field 'mainEntity' in FAQPage schema";
+      return obj.mainEntity ? null : "Missing required field 'mainEntity' in FAQPage schema";
     }
     case "HowTo": {
       return obj.name ? null : "Missing required field 'name' in HowTo schema";
     }
     case "LocalBusiness": {
-      return obj.name
-        ? null
-        : "Missing required field 'name' in LocalBusiness schema";
+      return obj.name ? null : "Missing required field 'name' in LocalBusiness schema";
     }
     case "SoftwareApplication": {
-      return obj.name
-        ? null
-        : "Missing required field 'name' in SoftwareApplication schema";
+      return obj.name ? null : "Missing required field 'name' in SoftwareApplication schema";
     }
     default:
       return null;

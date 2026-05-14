@@ -19,11 +19,7 @@ declare global {
        * @param options.trigger - The locator to click (e.g. `page.getByRole("button", { name: /share/i })`)
        * @param options.tolerance - Image comparison tolerance (default: 10)
        */
-      toMatchDownload(options: {
-        name: string;
-        trigger: Locator;
-        tolerance?: number;
-      }): Promise<R>;
+      toMatchDownload(options: { name: string; trigger: Locator; tolerance?: number }): Promise<R>;
     }
   }
 }
@@ -90,8 +86,7 @@ expect.extend({
       });
       if (diffImage) await diffImage.save(diffFilename);
       return {
-        message: () =>
-          `Downloaded image differs from baseline — see ${diffFilename}`,
+        message: () => `Downloaded image differs from baseline — see ${diffFilename}`,
         pass: false,
       };
     }

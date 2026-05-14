@@ -103,10 +103,7 @@ export async function attemptDelivery(
   }
 }
 
-async function scheduleRetry(
-  delivery: WebhookDelivery,
-  lastError: string,
-): Promise<void> {
+async function scheduleRetry(delivery: WebhookDelivery, lastError: string): Promise<void> {
   const attempts = delivery.attempts + 1;
   await prisma.webhookDelivery.update({
     where: { id: delivery.id },

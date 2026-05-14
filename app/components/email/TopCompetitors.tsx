@@ -14,11 +14,7 @@ export function TopCompetitors({
 }) {
   if (competitors.length === 0) return null;
   return (
-    <Card
-      title="Top competitors"
-      subtitle="Sites appearing in your queries this week"
-      withBorder
-    >
+    <Card title="Top competitors" subtitle="Sites appearing in your queries this week" withBorder>
       <table>
         <tbody>
           {competitors.map(({ domain, brandName, url, count, pct }) => (
@@ -29,8 +25,7 @@ export function TopCompetitors({
                 </Link>
               </td>
               <td className="w-30 px-2 py-4 font-bold whitespace-nowrap tabular-nums">
-                {count.toLocaleString()}{" "}
-                {count === 1 ? "citation" : "citations"}
+                {count.toLocaleString()} {count === 1 ? "citation" : "citations"}
               </td>
               <td className="w-15 px-2 py-4 text-right tabular-nums">{pct}%</td>
             </tr>

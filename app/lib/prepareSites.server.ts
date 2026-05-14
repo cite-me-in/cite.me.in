@@ -50,16 +50,10 @@ export default async function prepareSites({
     take: maxSites,
   });
 
-  await log(
-    `Processing ${candidates.length} sites: ${candidates.map((s) => s.domain).join(", ")}`,
-  );
+  await log(`Processing ${candidates.length} sites: ${candidates.map((s) => s.domain).join(", ")}`);
 
-  await parallel({ limit: 10 }, candidates, (site) =>
-    nextCitationRun({ log, site }),
-  );
-  await parallel({ limit: 10 }, candidates, (site) =>
-    updateBotInsight({ log, site }),
-  );
+  await parallel({ limit: 10 }, candidates, (site) => nextCitationRun({ log, site }));
+  await parallel({ limit: 10 }, candidates, (site) => updateBotInsight({ log, site }));
   return candidates;
 }
 
@@ -86,19 +80,15 @@ async function nextCitationRun({
     select: { query: true, group: true },
     where: { siteId: site.id },
   });
-  await parallel(
-    { limit: 10 },
-    PLATFORMS,
-    async ({ name: platform, model, queryFn }) => {
-      try {
-        await runPlatform({ log, model, platform, queries, queryFn, site });
-      } catch (error) {
-        captureAndLogError(error, {
-          extra: { siteId: site.id, platform, step: "citation-run" },
-        });
-      }
-    },
-  );
+  await parallel({ limit: 10 }, PLATFORMS, async ({ name: platform, model, queryFn }) => {
+    try {
+      await runPlatform({ log, model, platform, queries, queryFn, site });
+    } catch (error) {
+      captureAndLogError(error, {
+        extra: { siteId: site.id, platform, step: "citation-run" },
+      });
+    }
+  });
 
   await upsertCitingPages({ log, site });
 
@@ -140,15 +130,11 @@ async function updateBotInsight({
       where: { siteId: site.id, date: { gte: sevenDaysAgo } },
       select: { botType: true, path: true, count: true },
     });
-    const byBot: Record<
-      string,
-      { total: number; pathCounts: Record<string, number> }
-    > = {};
+    const byBot: Record<string, { total: number; pathCounts: Record<string, number> }> = {};
     for (const v of visits) {
       if (!byBot[v.botType]) byBot[v.botType] = { total: 0, pathCounts: {} };
       byBot[v.botType].total += v.count;
-      byBot[v.botType].pathCounts[v.path] =
-        (byBot[v.botType].pathCounts[v.path] ?? 0) + v.count;
+      byBot[v.botType].pathCounts[v.path] = (byBot[v.botType].pathCounts[v.path] ?? 0) + v.count;
     }
     const botStats = Object.entries(byBot)
       .sort(([, a], [, b]) => b.total - a.total)

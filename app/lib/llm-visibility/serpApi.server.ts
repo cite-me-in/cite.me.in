@@ -60,12 +60,9 @@ export default async function fetchSERPResults({
     reconstructed_markdown?: string;
   };
   const citations =
-    json.references?.map(({ link }) => link) ??
-    json.organic_results?.map(({ link }) => link) ??
-    [];
+    json.references?.map(({ link }) => link) ?? json.organic_results?.map(({ link }) => link) ?? [];
   const extraQueries = json.related_searches?.map((r) => r.query) ?? [];
-  const text =
-    json.reconstructed_markdown ?? combineTextBlocks(json.text_blocks ?? []);
+  const text = json.reconstructed_markdown ?? combineTextBlocks(json.text_blocks ?? []);
   return {
     citations,
     extraQueries,

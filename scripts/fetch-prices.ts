@@ -27,9 +27,6 @@ const prices = { monthlyAmount, annualAmount, annualSavings, sites: 5 };
 const json = JSON.stringify(prices, null, 2);
 console.info("JSON:", json);
 
-writeFileSync(
-  resolve(import.meta.dirname, "../app/data/stripe-prices.json"),
-  json,
-);
+writeFileSync(resolve(import.meta.dirname, "../app/data/stripe-prices.json"), json);
 
 console.info("Fetched Stripe prices:", prices);

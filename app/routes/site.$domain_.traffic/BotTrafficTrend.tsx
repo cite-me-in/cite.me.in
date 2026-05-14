@@ -1,12 +1,4 @@
-import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import { ChartContainer } from "~/components/ui/Chart";
 import { formatDateMed, formatDateShort } from "~/lib/formatDate";
@@ -39,31 +31,17 @@ export default function BotTrafficTrend({
       <CardContent>
         <ChartContainer
           config={Object.fromEntries(
-            topBots.map((bot, i) => [
-              bot,
-              { label: bot, color: colors[i % colors.length] },
-            ]),
+            topBots.map((bot, i) => [bot, { label: bot, color: colors[i % colors.length] }]),
           )}
           className="h-48 w-full"
         >
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="date"
-              tickFormatter={(v) => formatDateShort(new Date(v))}
-            />
+            <XAxis dataKey="date" tickFormatter={(v) => formatDateShort(new Date(v))} />
             <YAxis />
-            <Tooltip
-              labelFormatter={(value) => formatDateMed(new Date(value))}
-            />
+            <Tooltip labelFormatter={(value) => formatDateMed(new Date(value))} />
             <Legend />
-            <Line
-              dataKey="total"
-              name="Total"
-              stroke="#111111"
-              strokeWidth={2}
-              type="monotone"
-            />
+            <Line dataKey="total" name="Total" stroke="#111111" strokeWidth={2} type="monotone" />
             {topBots.slice(0, 5).map((bot, i) => (
               <Line
                 dataKey={bot}

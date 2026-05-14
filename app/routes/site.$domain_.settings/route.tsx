@@ -71,11 +71,7 @@ export default function SiteSettingsPage({ loaderData }: Route.ComponentProps) {
       <SitePageHeader site={site} title="Settings" />
 
       <section className="space-y-8">
-        <SiteContentButton
-          content={content}
-          isOwner={isOwner}
-          domain={site.domain}
-        />
+        <SiteContentButton content={content} isOwner={isOwner} domain={site.domain} />
         <TrackingScript script={trackingScript} />
         <MembersSection site={site} isOwner={isOwner} />
       </section>

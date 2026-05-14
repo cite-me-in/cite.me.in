@@ -170,9 +170,7 @@ export async function verifyDeviceCode(code: string): Promise<{
 
   if (!deviceCode) return null;
 
-  const expiresAt = new Date(
-    deviceCode.createdAt.getTime() + deviceCode.expiresIn * 1000,
-  );
+  const expiresAt = new Date(deviceCode.createdAt.getTime() + deviceCode.expiresIn * 1000);
   if (expiresAt < new Date()) {
     await prisma.oAuthDeviceCode.delete({ where: { code } });
     return null;

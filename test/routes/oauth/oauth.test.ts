@@ -32,18 +32,15 @@ describe("OAuth Routes", () => {
 
   describe("Device Flow", () => {
     it("should start device flow", async () => {
-      const res = await fetch(
-        `http://localhost:${port}/oauth/device/authorize`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({
-            client_id: oauthClient.clientId,
-            client_secret: oauthClient.clientSecret,
-            scope: "sites:read",
-          }),
-        },
-      );
+      const res = await fetch(`http://localhost:${port}/oauth/device/authorize`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          client_id: oauthClient.clientId,
+          client_secret: oauthClient.clientSecret,
+          scope: "sites:read",
+        }),
+      });
 
       expect(res.ok).toBe(true);
       const data = (await res.json()) as {
@@ -61,53 +58,44 @@ describe("OAuth Routes", () => {
     });
 
     it("should reject invalid client", async () => {
-      const res = await fetch(
-        `http://localhost:${port}/oauth/device/authorize`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({
-            client_id: "invalid",
-            client_secret: "invalid",
-            scope: "sites:read",
-          }),
-        },
-      );
+      const res = await fetch(`http://localhost:${port}/oauth/device/authorize`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          client_id: "invalid",
+          client_secret: "invalid",
+          scope: "sites:read",
+        }),
+      });
 
       expect(res.status).toBe(401);
     });
 
     it("should return authorization_pending before approval", async () => {
-      const startRes = await fetch(
-        `http://localhost:${port}/oauth/device/authorize`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({
-            client_id: oauthClient.clientId,
-            client_secret: oauthClient.clientSecret,
-            scope: "sites:read",
-          }),
-        },
-      );
+      const startRes = await fetch(`http://localhost:${port}/oauth/device/authorize`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          client_id: oauthClient.clientId,
+          client_secret: oauthClient.clientSecret,
+          scope: "sites:read",
+        }),
+      });
 
       const { device_code } = (await startRes.json()) as {
         device_code: string;
       };
 
-      const tokenRes = await fetch(
-        `http://localhost:${port}/oauth/device/token`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({
-            grant_type: "urn:ietf:params:oauth:grant-type:device_code",
-            client_id: oauthClient.clientId,
-            client_secret: oauthClient.clientSecret,
-            device_code,
-          }),
-        },
-      );
+      const tokenRes = await fetch(`http://localhost:${port}/oauth/device/token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          grant_type: "urn:ietf:params:oauth:grant-type:device_code",
+          client_id: oauthClient.clientId,
+          client_secret: oauthClient.clientSecret,
+          device_code,
+        }),
+      });
 
       expect(tokenRes.status).toBe(400);
       const data = (await tokenRes.json()) as { error: string };
@@ -115,18 +103,15 @@ describe("OAuth Routes", () => {
     });
 
     it("should return tokens after approval", async () => {
-      const startRes = await fetch(
-        `http://localhost:${port}/oauth/device/authorize`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({
-            client_id: oauthClient.clientId,
-            client_secret: oauthClient.clientSecret,
-            scope: "sites:read",
-          }),
-        },
-      );
+      const startRes = await fetch(`http://localhost:${port}/oauth/device/authorize`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          client_id: oauthClient.clientId,
+          client_secret: oauthClient.clientSecret,
+          scope: "sites:read",
+        }),
+      });
 
       const { device_code } = (await startRes.json()) as {
         device_code: string;
@@ -137,19 +122,16 @@ describe("OAuth Routes", () => {
         data: { userId: user.id },
       });
 
-      const tokenRes = await fetch(
-        `http://localhost:${port}/oauth/device/token`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({
-            grant_type: "urn:ietf:params:oauth:grant-type:device_code",
-            client_id: oauthClient.clientId,
-            client_secret: oauthClient.clientSecret,
-            device_code,
-          }),
-        },
-      );
+      const tokenRes = await fetch(`http://localhost:${port}/oauth/device/token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          grant_type: "urn:ietf:params:oauth:grant-type:device_code",
+          client_id: oauthClient.clientId,
+          client_secret: oauthClient.clientSecret,
+          device_code,
+        }),
+      });
 
       expect(tokenRes.ok).toBe(true);
       const data = (await tokenRes.json()) as {

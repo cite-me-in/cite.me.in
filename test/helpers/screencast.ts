@@ -28,11 +28,7 @@ declare module "playwright" {
  * @param options - The options for the screencast.
  * @returns The filename of the screencast.
  */
-export async function startScreencast(
-  page: Page,
-  name: string,
-  options?: ScreencastOptions,
-) {
+export async function startScreencast(page: Page, name: string, options?: ScreencastOptions) {
   const filename = join(process.cwd(), "__screenshots__", `${name}.webm`);
   await mkdir(dirname(filename), { recursive: true });
   if (existsSync(filename)) await unlink(filename);

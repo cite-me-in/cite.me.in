@@ -1,12 +1,6 @@
 // DO NOT add to setup.ts as vitest.config.js cannot upload file that imports vitest
 
-import {
-  access,
-  constants,
-  mkdir,
-  readFile,
-  writeFile,
-} from "node:fs/promises";
+import { access, constants, mkdir, readFile, writeFile } from "node:fs/promises";
 import path, { dirname } from "node:path";
 import { expect } from "@playwright/test";
 import looksSame from "looks-same";
@@ -26,10 +20,7 @@ declare global {
        * @example
        * await expect(page).toMatchScreenshot();
        */
-      toMatchScreenshot(options?: {
-        name?: string;
-        tolerance?: number;
-      }): Promise<R>;
+      toMatchScreenshot(options?: { name?: string; tolerance?: number }): Promise<R>;
     }
   }
 }
@@ -82,17 +73,13 @@ expect.extend({
         pass: true,
       };
     }
-    const { diffImage, equal } = await looksSame(
-      await readFile(filename),
-      screenshot,
-      {
-        createDiffImage: true,
-        ignoreAntialiasing: true,
-        ignoreCaret: true,
-        tolerance: options?.tolerance ?? defaultTolerance,
-        strict: false,
-      },
-    );
+    const { diffImage, equal } = await looksSame(await readFile(filename), screenshot, {
+      createDiffImage: true,
+      ignoreAntialiasing: true,
+      ignoreCaret: true,
+      tolerance: options?.tolerance ?? defaultTolerance,
+      strict: false,
+    });
 
     if (!equal) {
       const diffFilename = path.resolve(baseDir, `${name}.diff.png`);

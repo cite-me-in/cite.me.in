@@ -1,22 +1,11 @@
-import {
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-  type Mock,
-} from "vite-plus/test";
+import { beforeEach, describe, expect, it, vi, type Mock } from "vite-plus/test";
 import { markdownMiddleware } from "~/middleware/markdown";
 
 vi.mock("defuddle/node", () => ({
-  Defuddle: vi
-    .fn<() => { contentMarkdown: string; content: string }>()
-    .mockResolvedValue({
-      contentMarkdown:
-        "# Test\n\nMarkdown content here that is long enough to pass validation.",
-      content:
-        "<h1>Test</h1><p>Markdown content here that is long enough to pass validation.</p>",
-    }),
+  Defuddle: vi.fn<() => { contentMarkdown: string; content: string }>().mockResolvedValue({
+    contentMarkdown: "# Test\n\nMarkdown content here that is long enough to pass validation.",
+    content: "<h1>Test</h1><p>Markdown content here that is long enough to pass validation.</p>",
+  }),
 }));
 
 vi.mock("linkedom", () => ({
@@ -33,31 +22,23 @@ describe("markdownMiddleware", () => {
 
   it("should return markdown for .md requests", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response(
-        "<html><head><title>Test</title></head><body>Content</body></html>",
-        {
-          headers: { "Content-Type": "text/html" },
-        },
-      ),
+      new Response("<html><head><title>Test</title></head><body>Content</body></html>", {
+        headers: { "Content-Type": "text/html" },
+      }),
     );
 
     const request = new Request("http://localhost:5173/privacy.md");
     const response = await markdownMiddleware({ request }, mockNext);
 
-    expect(response.headers.get("Content-Type")).toBe(
-      "text/markdown; charset=utf-8",
-    );
+    expect(response.headers.get("Content-Type")).toBe("text/markdown; charset=utf-8");
     expect(mockNext).not.toHaveBeenCalled();
   });
 
   it("should return 404 for .md requests when HTML contains 404 title", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response(
-        "<html><head><title>404</title></head><body></body></html>",
-        {
-          status: 200,
-        },
-      ),
+      new Response("<html><head><title>404</title></head><body></body></html>", {
+        status: 200,
+      }),
     );
 
     const request = new Request("http://localhost:5173/missing.md");
@@ -68,9 +49,7 @@ describe("markdownMiddleware", () => {
   });
 
   it("should return the original status for .md requests when fetch is not OK", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response("Server Error", { status: 500 }),
-    );
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("Server Error", { status: 500 }));
 
     const request = new Request("http://localhost:5173/error.md");
     const response = await markdownMiddleware({ request }, mockNext);
@@ -80,12 +59,9 @@ describe("markdownMiddleware", () => {
 
   it("should convert HTML to markdown when Accept header includes text/markdown", async () => {
     mockNext.mockResolvedValue(
-      new Response(
-        "<html><head><title>Test</title></head><body>Content</body></html>",
-        {
-          headers: { "Content-Type": "text/html" },
-        },
-      ),
+      new Response("<html><head><title>Test</title></head><body>Content</body></html>", {
+        headers: { "Content-Type": "text/html" },
+      }),
     );
 
     const request = new Request("http://localhost:5173/page", {
@@ -93,9 +69,7 @@ describe("markdownMiddleware", () => {
     });
     const response = await markdownMiddleware({ request }, mockNext);
 
-    expect(response.headers.get("Content-Type")).toBe(
-      "text/markdown; charset=utf-8",
-    );
+    expect(response.headers.get("Content-Type")).toBe("text/markdown; charset=utf-8");
     expect(mockNext).toHaveBeenCalledOnce();
   });
 

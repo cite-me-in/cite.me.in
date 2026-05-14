@@ -53,8 +53,7 @@ export default async function checkLlmsTxt({
       return {
         name: "llms.txt",
         passed: false,
-        message:
-          "llms.txt exists but is empty — needs at least an H1 title per spec",
+        message: "llms.txt exists but is empty — needs at least an H1 title per spec",
         details: { url: llmsURL, elapsed },
       };
     }
@@ -63,14 +62,11 @@ export default async function checkLlmsTxt({
     const h2Sections = lines
       .map((line, i) => ({ line: line.trim(), index: i }))
       .filter(({ line }) => /^##\s+\S/.test(line));
-    const hasFileLinks = nonEmptyLines.some((line) =>
-      /^\s*-\s+\[.+\]\(.+\)/.test(line),
-    );
+    const hasFileLinks = nonEmptyLines.some((line) => /^\s*-\s+\[.+\]\(.+\)/.test(line));
     const blockquoteLines = lines.filter((line) => /^>\s/.test(line));
     const hasBlockquote = blockquoteLines.length > 0;
     const hasOptionalSection = lines.some(
-      (line) =>
-        /^##\s+Optional\b/i.test(line) || /^##\s+Optional\s*$/.test(line),
+      (line) => /^##\s+Optional\b/i.test(line) || /^##\s+Optional\s*$/.test(line),
     );
 
     // Always pass — structure notes are informative
@@ -80,13 +76,11 @@ export default async function checkLlmsTxt({
 
     if (h2Sections.length === 0) notes.push("no H2 sections (recommended)");
 
-    if (!hasFileLinks)
-      notes.push("no file links in [name](url) format (recommended)");
+    if (!hasFileLinks) notes.push("no file links in [name](url) format (recommended)");
 
     if (hasOptionalSection) {
       const optionalIndex = lines.findIndex(
-        (line) =>
-          /^##\s+Optional\b/i.test(line) || /^##\s+Optional\s*$/.test(line),
+        (line) => /^##\s+Optional\b/i.test(line) || /^##\s+Optional\s*$/.test(line),
       );
       const contentAfterOptional = lines
         .slice(optionalIndex + 1)
@@ -117,8 +111,7 @@ export default async function checkLlmsTxt({
       },
     };
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     if (error instanceof Error && error.name === "TimeoutError") {
       return {
         name: "llms.txt",

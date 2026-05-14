@@ -32,8 +32,7 @@ export default function FAQ() {
           Frequently Asked Questions
         </h1>
         <p className="text-xl leading-relaxed font-medium text-black md:text-2xl">
-          Everything you need to know about monitoring your LLM citation
-          visibility.
+          Everything you need to know about monitoring your LLM citation visibility.
         </p>
       </section>
 
@@ -44,8 +43,7 @@ export default function FAQ() {
           Still have questions?
         </h2>
         <p className="mb-8 text-xl leading-relaxed font-medium text-black">
-          Our team is here to help. Reach out and we'll get back to you within
-          24 hours.
+          Our team is here to help. Reach out and we'll get back to you within 24 hours.
         </p>
         <MailtoLink
           email={import.meta.env.VITE_EMAIL_FROM as string}
@@ -72,11 +70,7 @@ function FAQQuestions() {
             </h2>
             <div className="flex flex-col gap-4">
               {category.questions.map((faq) => (
-                <FAQItem
-                  key={faq.question}
-                  question={faq.question}
-                  answer={faq.answer}
-                />
+                <FAQItem key={faq.question} question={faq.question} answer={faq.answer} />
               ))}
             </div>
           </div>

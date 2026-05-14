@@ -1,19 +1,9 @@
 import { useFetcher } from "react-router";
 import { Button } from "~/components/ui/Button";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldSet,
-} from "~/components/ui/FieldSet";
+import { Field, FieldError, FieldGroup, FieldLabel, FieldSet } from "~/components/ui/FieldSet";
 import { Input } from "~/components/ui/Input";
 
-export default function ProfileEmailForm({
-  user,
-}: {
-  user: { email: string };
-}) {
+export default function ProfileEmailForm({ user }: { user: { email: string } }) {
   const fetcher = useFetcher<{ success?: string; error?: string }>();
   const data = fetcher.data;
 
@@ -33,12 +23,8 @@ export default function ProfileEmailForm({
             />
           </Field>
         </FieldGroup>
-        {data?.error && (
-          <FieldError className="text-lg">{data.error}</FieldError>
-        )}
-        {data?.success && (
-          <p className="text-success text-lg">{data.success}</p>
-        )}
+        {data?.error && <FieldError className="text-lg">{data.error}</FieldError>}
+        {data?.success && <p className="text-success text-lg">{data.success}</p>}
         <Button type="submit" disabled={fetcher.state !== "idle"}>
           Update email
         </Button>

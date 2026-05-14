@@ -33,11 +33,7 @@ export default Sentry.wrapSentryHandleRequest(
 
     const response = await new Promise<Response>((resolve, reject) => {
       const { pipe } = renderToPipeableStream(
-        <ServerRouter
-          context={routerContext}
-          url={request.url}
-          nonce={crypto.randomUUID()}
-        />,
+        <ServerRouter context={routerContext} url={request.url} nonce={crypto.randomUUID()} />,
         {
           onShellReady() {
             responseHeaders.set("Content-Type", "text/html");
@@ -63,13 +59,7 @@ export default Sentry.wrapSentryHandleRequest(
     if (!response.ok) return response;
 
     void waitForResponse(response, start).then((duration) => {
-      logger(
-        "%s %s => %d (%dms)",
-        request.method,
-        request.url,
-        response.status,
-        duration,
-      );
+      logger("%s %s => %d (%dms)", request.method, request.url, response.status, duration);
     });
     return response;
   },
@@ -93,21 +83,12 @@ export function handleDataRequest(
   const start = Date.now();
   logger("%s %s", request.method, request.url);
   void waitForResponse(response, start).then((duration) => {
-    logger(
-      "%s %s => %d (%dms)",
-      request.method,
-      request.url,
-      response.status,
-      duration,
-    );
+    logger("%s %s => %d (%dms)", request.method, request.url, response.status, duration);
   });
   return response;
 }
 
-export function handleError(
-  error: unknown,
-  { request }: LoaderFunctionArgs | ActionFunctionArgs,
-) {
+export function handleError(error: unknown, { request }: LoaderFunctionArgs | ActionFunctionArgs) {
   if (!request.signal.aborted) {
     captureAndLogError(error, { extra: { request } });
     logger("error: %s", error);

@@ -18,12 +18,7 @@ export async function loadCronTasks(): Promise<CronTaskConfig[]> {
     const filePath = path.join(cronDir, filename);
     const name = filename.replace(/\.\w+$/, "");
     const content = fs.readFileSync(filePath, "utf-8");
-    const sourceFile = ts.createSourceFile(
-      filePath,
-      content,
-      ts.ScriptTarget.Latest,
-      true,
-    );
+    const sourceFile = ts.createSourceFile(filePath, content, ts.ScriptTarget.Latest, true);
 
     const exports = collect(sourceFile);
     const schedule = strExport(exports, "schedule");
@@ -79,11 +74,7 @@ function strExport(map: Map<string, Expr>, name: string): string {
   return entry.strValue;
 }
 
-function boolExport(
-  map: Map<string, Expr>,
-  name: string,
-  defaultVal: boolean,
-): boolean {
+function boolExport(map: Map<string, Expr>, name: string, defaultVal: boolean): boolean {
   const entry = map.get(name);
   if (!entry) return defaultVal;
   if (entry.kind === ts.SyntaxKind.TrueKeyword) return true;

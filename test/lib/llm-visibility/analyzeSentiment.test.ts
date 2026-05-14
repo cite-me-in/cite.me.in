@@ -27,8 +27,7 @@ afterEach(() => {
 
 describe("analyzeSentiment", () => {
   it("should return neutral when no queries provided", async () => {
-    const { default: analyzeSentiment } =
-      await import("~/lib/llm-visibility/analyzeSentiment");
+    const { default: analyzeSentiment } = await import("~/lib/llm-visibility/analyzeSentiment");
 
     const result = await analyzeSentiment({
       domain: "example.com",
@@ -48,15 +47,13 @@ describe("analyzeSentiment", () => {
       choices: [
         {
           message: {
-            content:
-              '{"label":"positive","summary":"Great visibility.","citations":[]}',
+            content: '{"label":"positive","summary":"Great visibility.","citations":[]}',
           },
         },
       ],
     });
 
-    const { default: analyzeSentiment } =
-      await import("~/lib/llm-visibility/analyzeSentiment");
+    const { default: analyzeSentiment } = await import("~/lib/llm-visibility/analyzeSentiment");
 
     const result = await analyzeSentiment({
       domain: "example.com",
@@ -84,8 +81,7 @@ describe("analyzeSentiment", () => {
         ],
       });
 
-      const { default: analyzeSentiment } =
-        await import("~/lib/llm-visibility/analyzeSentiment");
+      const { default: analyzeSentiment } = await import("~/lib/llm-visibility/analyzeSentiment");
 
       const result = await analyzeSentiment({
         domain: "example.com",
@@ -98,19 +94,14 @@ describe("analyzeSentiment", () => {
 
   it("should include domain and query data in the user message", async () => {
     let capturedMessages: { role: string; content: string }[] | undefined;
-    mockComplete.mockImplementationOnce(
-      async (args: { messages: typeof capturedMessages }) => {
-        capturedMessages = args.messages;
-        return {
-          choices: [
-            { message: { content: '{"label":"neutral","summary":"test"}' } },
-          ],
-        };
-      },
-    );
+    mockComplete.mockImplementationOnce(async (args: { messages: typeof capturedMessages }) => {
+      capturedMessages = args.messages;
+      return {
+        choices: [{ message: { content: '{"label":"neutral","summary":"test"}' } }],
+      };
+    });
 
-    const { default: analyzeSentiment } =
-      await import("~/lib/llm-visibility/analyzeSentiment");
+    const { default: analyzeSentiment } = await import("~/lib/llm-visibility/analyzeSentiment");
 
     await analyzeSentiment({
       domain: "mysite.com",
@@ -131,19 +122,14 @@ describe("analyzeSentiment", () => {
 
   it("should calculate citation position when found", async () => {
     let capturedMessages: { role: string; content: string }[] | undefined;
-    mockComplete.mockImplementationOnce(
-      async (args: { messages: typeof capturedMessages }) => {
-        capturedMessages = args.messages;
-        return {
-          choices: [
-            { message: { content: '{"label":"neutral","summary":"test"}' } },
-          ],
-        };
-      },
-    );
+    mockComplete.mockImplementationOnce(async (args: { messages: typeof capturedMessages }) => {
+      capturedMessages = args.messages;
+      return {
+        choices: [{ message: { content: '{"label":"neutral","summary":"test"}' } }],
+      };
+    });
 
-    const { default: analyzeSentiment } =
-      await import("~/lib/llm-visibility/analyzeSentiment");
+    const { default: analyzeSentiment } = await import("~/lib/llm-visibility/analyzeSentiment");
 
     await analyzeSentiment({
       domain: "mysite.com",
@@ -162,19 +148,14 @@ describe("analyzeSentiment", () => {
 
   it("should report not cited when not found", async () => {
     let capturedMessages: { role: string; content: string }[] | undefined;
-    mockComplete.mockImplementationOnce(
-      async (args: { messages: typeof capturedMessages }) => {
-        capturedMessages = args.messages;
-        return {
-          choices: [
-            { message: { content: '{"label":"neutral","summary":"test"}' } },
-          ],
-        };
-      },
-    );
+    mockComplete.mockImplementationOnce(async (args: { messages: typeof capturedMessages }) => {
+      capturedMessages = args.messages;
+      return {
+        choices: [{ message: { content: '{"label":"neutral","summary":"test"}' } }],
+      };
+    });
 
-    const { default: analyzeSentiment } =
-      await import("~/lib/llm-visibility/analyzeSentiment");
+    const { default: analyzeSentiment } = await import("~/lib/llm-visibility/analyzeSentiment");
 
     await analyzeSentiment({
       domain: "mysite.com",
@@ -196,15 +177,13 @@ describe("analyzeSentiment", () => {
       choices: [
         {
           message: {
-            content:
-              '```json\n{"label":"positive","summary":"Good","citations":[]}\n```',
+            content: '```json\n{"label":"positive","summary":"Good","citations":[]}\n```',
           },
         },
       ],
     });
 
-    const { default: analyzeSentiment } =
-      await import("~/lib/llm-visibility/analyzeSentiment");
+    const { default: analyzeSentiment } = await import("~/lib/llm-visibility/analyzeSentiment");
 
     const result = await analyzeSentiment({
       domain: "example.com",
@@ -223,8 +202,7 @@ describe("analyzeSentiment", () => {
       choices: [{ message: { content: "not valid json" } }],
     });
 
-    const { default: analyzeSentiment } =
-      await import("~/lib/llm-visibility/analyzeSentiment");
+    const { default: analyzeSentiment } = await import("~/lib/llm-visibility/analyzeSentiment");
 
     const result = await analyzeSentiment({
       domain: "example.com",
@@ -240,13 +218,10 @@ describe("analyzeSentiment", () => {
 
   it("should return neutral on invalid schema", async () => {
     mockComplete.mockResolvedValueOnce({
-      choices: [
-        { message: { content: '{"label":"invalid","summary":"test"}' } },
-      ],
+      choices: [{ message: { content: '{"label":"invalid","summary":"test"}' } }],
     });
 
-    const { default: analyzeSentiment } =
-      await import("~/lib/llm-visibility/analyzeSentiment");
+    const { default: analyzeSentiment } = await import("~/lib/llm-visibility/analyzeSentiment");
 
     const result = await analyzeSentiment({
       domain: "example.com",
@@ -265,8 +240,7 @@ describe("analyzeSentiment", () => {
       choices: [{ message: { content: '{"label":"positive"}' } }],
     });
 
-    const { default: analyzeSentiment } =
-      await import("~/lib/llm-visibility/analyzeSentiment");
+    const { default: analyzeSentiment } = await import("~/lib/llm-visibility/analyzeSentiment");
 
     const result = await analyzeSentiment({
       domain: "example.com",
@@ -281,12 +255,9 @@ describe("analyzeSentiment", () => {
   });
 
   it("should return neutral fallback on rate limit errors", async () => {
-    mockComplete.mockRejectedValueOnce(
-      new RateLimitError("Rate limit reached"),
-    );
+    mockComplete.mockRejectedValueOnce(new RateLimitError("Rate limit reached"));
 
-    const { default: analyzeSentiment } =
-      await import("~/lib/llm-visibility/analyzeSentiment");
+    const { default: analyzeSentiment } = await import("~/lib/llm-visibility/analyzeSentiment");
 
     const result = await analyzeSentiment({
       domain: "example.com",
@@ -295,8 +266,7 @@ describe("analyzeSentiment", () => {
 
     expect(result).toEqual({
       label: "neutral",
-      summary:
-        "Sentiment analysis temporarily unavailable due to rate limiting.",
+      summary: "Sentiment analysis temporarily unavailable due to rate limiting.",
       citations: [],
     });
   });
@@ -304,8 +274,7 @@ describe("analyzeSentiment", () => {
   it("should propagate non-rate-limit API errors", async () => {
     mockComplete.mockRejectedValueOnce(new Error("API error"));
 
-    const { default: analyzeSentiment } =
-      await import("~/lib/llm-visibility/analyzeSentiment");
+    const { default: analyzeSentiment } = await import("~/lib/llm-visibility/analyzeSentiment");
 
     await expect(
       analyzeSentiment({
@@ -342,8 +311,7 @@ describe("analyzeSentiment", () => {
       ],
     });
 
-    const { default: analyzeSentiment } =
-      await import("~/lib/llm-visibility/analyzeSentiment");
+    const { default: analyzeSentiment } = await import("~/lib/llm-visibility/analyzeSentiment");
 
     const result = await analyzeSentiment({
       domain: "example.com",
@@ -376,23 +344,20 @@ describe("analyzeSentiment", () => {
 
   it("should include unique citations list in user message", async () => {
     let capturedMessages: { role: string; content: string }[] | undefined;
-    mockComplete.mockImplementationOnce(
-      async (args: { messages: typeof capturedMessages }) => {
-        capturedMessages = args.messages;
-        return {
-          choices: [
-            {
-              message: {
-                content: '{"label":"neutral","summary":"test","citations":[]}',
-              },
+    mockComplete.mockImplementationOnce(async (args: { messages: typeof capturedMessages }) => {
+      capturedMessages = args.messages;
+      return {
+        choices: [
+          {
+            message: {
+              content: '{"label":"neutral","summary":"test","citations":[]}',
             },
-          ],
-        };
-      },
-    );
+          },
+        ],
+      };
+    });
 
-    const { default: analyzeSentiment } =
-      await import("~/lib/llm-visibility/analyzeSentiment");
+    const { default: analyzeSentiment } = await import("~/lib/llm-visibility/analyzeSentiment");
 
     await analyzeSentiment({
       domain: "example.com",

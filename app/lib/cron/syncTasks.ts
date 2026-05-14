@@ -5,11 +5,7 @@ import type { CronTaskConfig } from "./types";
 
 if (import.meta.main) await main();
 
-async function resolveAppUUID(
-  coolifyURL: string,
-  token: string,
-  appName: string,
-): Promise<string> {
+async function resolveAppUUID(coolifyURL: string, token: string, appName: string): Promise<string> {
   const apps = await api<{ uuid: string; name: string }[]>({
     coolifyURL,
     method: "GET",
@@ -24,11 +20,7 @@ async function resolveAppUUID(
 
 async function syncTasks(
   tasks: CronTaskConfig[],
-  {
-    coolifyURL,
-    token,
-    appUUID,
-  }: { coolifyURL: string; token: string; appUUID: string },
+  { coolifyURL, token, appUUID }: { coolifyURL: string; token: string; appUUID: string },
 ): Promise<void> {
   const existing = await api<
     {
@@ -155,9 +147,7 @@ async function main() {
   }
 
   const configPath = path.resolve("build/cron-config.json");
-  const tasks = JSON.parse(
-    fs.readFileSync(configPath, "utf-8"),
-  ) as CronTaskConfig[];
+  const tasks = JSON.parse(fs.readFileSync(configPath, "utf-8")) as CronTaskConfig[];
 
   const skipped = tasks.filter((t) => t.skip);
   if (skipped.length > 0)

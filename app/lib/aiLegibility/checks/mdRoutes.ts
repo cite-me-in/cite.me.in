@@ -46,8 +46,7 @@ export default async function checkMdRoutes({
 
       const contentType = response.headers.get("content-type") ?? "";
       const isMarkdown =
-        contentType.includes("text/markdown") ||
-        contentType.includes("text/plain");
+        contentType.includes("text/markdown") || contentType.includes("text/plain");
       const text = response.ok ? await response.text() : "";
       const contentLength = text.trim().length;
       const ok = response.ok && isMarkdown && contentLength > 50;

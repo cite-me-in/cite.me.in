@@ -4,9 +4,7 @@ export default function BenefitsSection() {
   return (
     <section className="border-b-2 border-black px-6 py-20">
       <div className="mx-auto max-w-5xl">
-        <h2 className="mb-12 text-center text-3xl font-bold md:text-4xl">
-          How it works
-        </h2>
+        <h2 className="mb-12 text-center text-3xl font-bold md:text-4xl">How it works</h2>
         <div className="grid gap-6 md:grid-cols-3">
           <BenefitCard
             icon={SearchIcon}
@@ -56,8 +54,7 @@ function SocialProofBand() {
     <div className="mt-12 flex justify-center">
       <div className="rounded-full border-2 border-black bg-white px-6 py-3 text-lg font-semibold shadow-[2px_2px_0px_0px_black]">
         <span>
-          We already scanned{" "}
-          <span className="font-extrabold text-amber-500">100+</span> sites. Are
+          We already scanned <span className="font-extrabold text-amber-500">100+</span> sites. Are
           you next?
         </span>
       </div>

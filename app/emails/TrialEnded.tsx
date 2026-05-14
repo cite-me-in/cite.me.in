@@ -52,15 +52,12 @@ export async function sendTrialEndedEmail({
     email: (
       <Section>
         <Text>
-          {brandReminderText({ domain, citations: citationCount })} Your free
-          trial has ended and daily runs have paused. Upgrade to Pro to keep
-          your history and resume monitoring — ${prices.monthlyAmount}/month or
-          ${prices.annualAmount}/year.
+          {brandReminderText({ domain, citations: citationCount })} Your free trial has ended and
+          daily runs have paused. Upgrade to Pro to keep your history and resume monitoring — $
+          {prices.monthlyAmount}/month or ${prices.annualAmount}/year.
         </Text>
         <Section className="my-8 text-center">
-          <Button
-            href={new URL("/upgrade", import.meta.env.VITE_APP_URL).toString()}
-          >
+          <Button href={new URL("/upgrade", import.meta.env.VITE_APP_URL).toString()}>
             Upgrade to Pro
           </Button>
         </Section>

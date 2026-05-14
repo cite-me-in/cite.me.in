@@ -1,9 +1,6 @@
 import { beforeEach, describe, expect, it } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
-import {
-  checkUsageLimits,
-  recordUsageEvent,
-} from "~/lib/usage/usageLimit.server";
+import { checkUsageLimits, recordUsageEvent } from "~/lib/usage/usageLimit.server";
 import UsageLimitExceededError from "~/lib/usage/UsageLimitExceededError";
 
 const SITE_ID = "test-usage-site-1";
@@ -65,9 +62,7 @@ describe("checkUsageLimits", () => {
       outputTokens: 500_000,
     });
 
-    await expect(checkUsageLimits(SITE_ID)).rejects.toThrow(
-      UsageLimitExceededError,
-    );
+    await expect(checkUsageLimits(SITE_ID)).rejects.toThrow(UsageLimitExceededError);
   });
 
   it("should throw with correct window and limitType", async () => {
@@ -78,8 +73,6 @@ describe("checkUsageLimits", () => {
       outputTokens: 500_000,
     });
 
-    await expect(checkUsageLimits(SITE_ID)).rejects.toThrow(
-      UsageLimitExceededError,
-    );
+    await expect(checkUsageLimits(SITE_ID)).rejects.toThrow(UsageLimitExceededError);
   });
 });

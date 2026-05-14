@@ -40,12 +40,8 @@ export default async function checkRobotsDirectives({
 }): Promise<Omit<CheckResult, "category">> {
   const noindexPages = pages.flatMap((page) => {
     const metaTag = hasNoindexInHtml(page.html);
-    const xRobotsTag = hasNoindexInHeader(
-      page.headers?.get("X-Robots-Tag") ?? null,
-    );
-    return metaTag || xRobotsTag
-      ? [{ url: page.url, metaTag, xRobotsTag }]
-      : [];
+    const xRobotsTag = hasNoindexInHeader(page.headers?.get("X-Robots-Tag") ?? null);
+    return metaTag || xRobotsTag ? [{ url: page.url, metaTag, xRobotsTag }] : [];
   });
 
   if (noindexPages.length === 0) {

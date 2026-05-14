@@ -6,8 +6,7 @@ import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/site.$domain_.ai-legibility.scan";
 
 export async function action({ request, params }: Route.ActionArgs) {
-  if (request.method !== "POST")
-    throw new Response("Method not allowed", { status: 405 });
+  if (request.method !== "POST") throw new Response("Method not allowed", { status: 405 });
 
   const { site, user } = await requireSiteAccess({
     domain: params.domain,

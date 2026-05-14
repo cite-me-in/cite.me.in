@@ -5,12 +5,10 @@ export default function AboutHeader() {
         Know when AI is citing your brand
       </h1>
       <p className="text-xl leading-relaxed font-medium text-black md:text-2xl">
-        We built Cite.me.in because we needed it ourselves — a clear answer to
-        "does AI actually mention us?"
+        We built Cite.me.in because we needed it ourselves — a clear answer to "does AI actually
+        mention us?"
       </p>
-      <p className="mt-2 text-lg font-bold text-black">
-        Squirrel-brain friendly, ADHD-approved 🐿️
-      </p>
+      <p className="mt-2 text-lg font-bold text-black">Squirrel-brain friendly, ADHD-approved 🐿️</p>
     </section>
   );
 }

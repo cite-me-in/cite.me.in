@@ -27,10 +27,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   });
 
   if (!client)
-    throw data(
-      { error: "invalid_client", error_description: "Unknown client" },
-      { status: 400 },
-    );
+    throw data({ error: "invalid_client", error_description: "Unknown client" }, { status: 400 });
 
   if (!client.redirectUris.includes(redirectUri))
     throw data(
@@ -76,10 +73,7 @@ export async function action({ request }: Route.ActionArgs) {
   });
 
   if (!client)
-    throw data(
-      { error: "invalid_client", error_description: "Unknown client" },
-      { status: 400 },
-    );
+    throw data({ error: "invalid_client", error_description: "Unknown client" }, { status: 400 });
 
   const code = generateToken();
   const now = new Date();
@@ -104,23 +98,14 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Authorize({ loaderData }: Route.ComponentProps) {
-  const {
-    client,
-    scopes,
-    redirectUri,
-    state,
-    codeChallenge,
-    clientId,
-    userId,
-  } = loaderData;
+  const { client, scopes, redirectUri, state, codeChallenge, clientId, userId } = loaderData;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <div className="w-full max-w-md rounded-lg bg-white p-8 shadow">
         <h1 className="mb-4 text-2xl font-bold">Authorize {client.name}</h1>
         <p className="mb-6 text-gray-600">
-          This application is requesting access to your account with the
-          following permissions:
+          This application is requesting access to your account with the following permissions:
         </p>
         <ul className="mb-6 space-y-2">
           {scopes.map((scope) => (
@@ -136,9 +121,7 @@ export default function Authorize({ loaderData }: Route.ComponentProps) {
           <input type="hidden" name="redirect_uri" value={redirectUri} />
           <input type="hidden" name="scope" value={scopes.join(" ")} />
           {state && <input type="hidden" name="state" value={state} />}
-          {codeChallenge && (
-            <input type="hidden" name="code_challenge" value={codeChallenge} />
-          )}
+          {codeChallenge && <input type="hidden" name="code_challenge" value={codeChallenge} />}
           <button
             type="submit"
             name="allow"

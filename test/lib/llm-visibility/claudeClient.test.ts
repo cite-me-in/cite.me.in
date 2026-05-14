@@ -14,8 +14,7 @@ const mockCreate = vi.hoisted(() =>
 );
 
 vi.mock("@anthropic-ai/sdk", async (importOriginal) => {
-  const { APIError } =
-    await importOriginal<typeof import("@anthropic-ai/sdk")>();
+  const { APIError } = await importOriginal<typeof import("@anthropic-ai/sdk")>();
   return {
     APIError,
     default: class {
@@ -71,8 +70,7 @@ describe("queryClaude", () => {
       usage: { input_tokens: 100, output_tokens: 50 },
     });
 
-    const { default: queryClaude } =
-      await import("~/lib/llm-visibility/claudeClient.server");
+    const { default: queryClaude } = await import("~/lib/llm-visibility/claudeClient.server");
 
     const result = await queryClaude({
       maxRetries: 0,
@@ -80,10 +78,7 @@ describe("queryClaude", () => {
       query: "What is the capital of France?",
     });
 
-    expect(result.citations).toEqual([
-      "https://example.com",
-      "https://other.com",
-    ]);
+    expect(result.citations).toEqual(["https://example.com", "https://other.com"]);
     expect(result.text).toBe("Paris is the capital of France.");
     expect(result.extraQueries).toEqual([]);
   });
@@ -116,8 +111,7 @@ describe("queryClaude", () => {
       usage: { input_tokens: 100, output_tokens: 50 },
     });
 
-    const { default: queryClaude } =
-      await import("~/lib/llm-visibility/claudeClient.server");
+    const { default: queryClaude } = await import("~/lib/llm-visibility/claudeClient.server");
 
     const result = await queryClaude({
       maxRetries: 0,
@@ -131,12 +125,9 @@ describe("queryClaude", () => {
   it("should throw InsufficientCreditError on 402 response", async () => {
     const { APIError: AnthropicAPIError } = await import("@anthropic-ai/sdk");
     const headers = new Headers();
-    mockCreate.mockRejectedValue(
-      AnthropicAPIError.generate(402, {}, "Payment required", headers),
-    );
+    mockCreate.mockRejectedValue(AnthropicAPIError.generate(402, {}, "Payment required", headers));
 
-    const { default: queryClaude } =
-      await import("~/lib/llm-visibility/claudeClient.server");
+    const { default: queryClaude } = await import("~/lib/llm-visibility/claudeClient.server");
 
     const { isInsufficientCreditError } =
       await import("~/lib/llm-visibility/insufficientCreditError");
@@ -161,8 +152,7 @@ describe("queryClaude", () => {
       AnthropicAPIError.generate(429, {}, "Rate limit exceeded", headers),
     );
 
-    const { default: queryClaude } =
-      await import("~/lib/llm-visibility/claudeClient.server");
+    const { default: queryClaude } = await import("~/lib/llm-visibility/claudeClient.server");
 
     const { isInsufficientCreditError } =
       await import("~/lib/llm-visibility/insufficientCreditError");
@@ -186,8 +176,7 @@ describe("queryClaude", () => {
       AnthropicAPIError.generate(500, {}, "Internal Server Error", headers),
     );
 
-    const { default: queryClaude } =
-      await import("~/lib/llm-visibility/claudeClient.server");
+    const { default: queryClaude } = await import("~/lib/llm-visibility/claudeClient.server");
 
     const { isInsufficientCreditError } =
       await import("~/lib/llm-visibility/insufficientCreditError");
@@ -232,8 +221,7 @@ describe("queryClaude", () => {
       usage: { input_tokens: 100, output_tokens: 50 },
     });
 
-    const { default: queryClaude } =
-      await import("~/lib/llm-visibility/claudeClient.server");
+    const { default: queryClaude } = await import("~/lib/llm-visibility/claudeClient.server");
 
     const result = await queryClaude({
       maxRetries: 0,

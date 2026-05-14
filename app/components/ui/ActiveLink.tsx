@@ -40,23 +40,16 @@ const activeLinkVariants = cva(
 );
 
 export interface ActiveLinkProps
-  extends
-    React.AnchorHTMLAttributes<HTMLAnchorElement>,
-    VariantProps<typeof activeLinkVariants> {
+  extends React.AnchorHTMLAttributes<HTMLAnchorElement>, VariantProps<typeof activeLinkVariants> {
   viewTransition?: boolean;
   to: string;
 }
 
 const ActiveLink = React.forwardRef<HTMLAnchorElement, ActiveLinkProps>(
-  (
-    { className, disabled, variant, size, bg, to, viewTransition, ...props },
-    ref,
-  ) => (
+  ({ className, disabled, variant, size, bg, to, viewTransition, ...props }, ref) => (
     <Link
       ref={ref}
-      className={twMerge(
-        activeLinkVariants({ variant, size, disabled, className, bg }),
-      )}
+      className={twMerge(activeLinkVariants({ variant, size, disabled, className, bg }))}
       to={to}
       rel="noopener noreferer"
       viewTransition={viewTransition}

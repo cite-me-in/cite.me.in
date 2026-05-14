@@ -51,10 +51,7 @@ expect.extend({
 
     // Wait for the page to finish rendering/animations before capturing screenshots or HTML.
     // This can use Playwright's waitForLoadState and a small additional delay for UI transitions.
-    if (
-      "waitForLoadState" in locator &&
-      typeof locator.waitForLoadState === "function"
-    ) {
+    if ("waitForLoadState" in locator && typeof locator.waitForLoadState === "function") {
       await locator.waitForLoadState("networkidle");
       await locator.evaluate(() => document.fonts.ready);
     }
@@ -76,8 +73,7 @@ expect.extend({
       expect(locator).toMatchScreenshot({ name, ...options }),
       expect(locator).toMatchInnerHTML({ name, ...options }),
     ]);
-    if (screenshot.status === "rejected")
-      throw new Error(screenshot.reason.message);
+    if (screenshot.status === "rejected") throw new Error(screenshot.reason.message);
     if (html.status === "rejected") throw new Error(html.reason.message);
 
     return { message: () => "Visual matches baseline", pass: true };

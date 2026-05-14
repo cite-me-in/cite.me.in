@@ -1,9 +1,5 @@
 import { beforeAll, describe, expect, it } from "vite-plus/test";
-import {
-  requireAdmin,
-  verifySiteAccess,
-  verifyUserAccess,
-} from "~/lib/api/apiAuth.server";
+import { requireAdmin, verifySiteAccess, verifyUserAccess } from "~/lib/api/apiAuth.server";
 import { hashPassword } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
 
@@ -60,9 +56,7 @@ describe("requireAdmin", () => {
   it("should throw 403 when token is unknown", async () => {
     let caught: unknown;
     try {
-      await requireAdmin(
-        makeRequest("cite.me.in_nonexistent-user_wrongsecret"),
-      );
+      await requireAdmin(makeRequest("cite.me.in_nonexistent-user_wrongsecret"));
     } catch (e) {
       caught = e;
     }
@@ -169,9 +163,7 @@ describe("verifyUserAccess", () => {
   it("should throw 404 when userId in token doesn't exist", async () => {
     let caught: unknown;
     try {
-      await verifyUserAccess(
-        makeRequest("cite.me.in_nonexistent-user-id_testabcdef"),
-      );
+      await verifyUserAccess(makeRequest("cite.me.in_nonexistent-user-id_testabcdef"));
     } catch (e) {
       caught = e;
     }

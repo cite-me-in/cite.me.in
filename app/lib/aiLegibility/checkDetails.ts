@@ -364,8 +364,7 @@ const CATEGORIES: Category[] = [
           fixExample:
             '<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "Organization",\n  "name": "Your Company",\n  "url": "https://example.com",\n  "description": "Description of your organization"\n}\n</script>\n\n<script type="application/ld+json">\n{\n  "@context": "https://schema.org",\n  "@type": "WebSite",\n  "name": "Your Site",\n  "url": "https://example.com"\n}\n</script>',
           effort: "15 min",
-          skillURL:
-            "https://skills.sh/coreyhaines31/marketingskills/schema-markup",
+          skillURL: "https://skills.sh/coreyhaines31/marketingskills/schema-markup",
           resourceLinks: [
             {
               label: "Schema.org",

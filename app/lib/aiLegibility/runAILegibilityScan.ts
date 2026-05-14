@@ -24,12 +24,7 @@ import checkRobotsDirectives from "./checks/robotsDirectives";
 import checkRobotsTxt from "./checks/robotsTxt";
 import checkSitemapTxt from "./checks/sitemapTxt";
 import checkSitemapXml from "./checks/sitemapXml";
-import type {
-  CheckResult,
-  ScanProgress,
-  ScanResult,
-  Suggestion,
-} from "./types";
+import type { CheckResult, ScanProgress, ScanResult, Suggestion } from "./types";
 
 /**
  * Run AI Legibility scan for a site, identifying any SEO problems and
@@ -77,9 +72,7 @@ export default async function runAILegibilityScan({
   } catch (error) {
     captureAndLogError(error, { extra: { site } });
     await setStatus({ domain: site.domain, status: "error" });
-    await log(
-      `❌ Error: ${error instanceof Error ? error.message : "Unknown error"}`,
-    );
+    await log(`❌ Error: ${error instanceof Error ? error.message : "Unknown error"}`);
     return { lines: [], done: false, nextOffset: 0, result: undefined };
   }
 }
@@ -117,33 +110,24 @@ export async function runScanSteps({
     robotsSitemapUrls: robotsTxtResult.sitemapURLs,
   });
   checks.push(sitemmapXmlResult);
-  await log(
-    `${sitemmapXmlResult.passed ? "✓" : "✗"} ${sitemmapXmlResult.message}`,
-  );
+  await log(`${sitemmapXmlResult.passed ? "✓" : "✗"} ${sitemmapXmlResult.message}`);
 
   await log("Checking sitemap.txt...");
   const sitemapTxtResult = await checkSitemapTxt({
     url,
     robotsSitemapUrls: robotsTxtResult.sitemapURLs,
   });
-  await log(
-    `${sitemapTxtResult.passed ? "✓" : "✗"} ${sitemapTxtResult.message}`,
-  );
+  await log(`${sitemapTxtResult.passed ? "✓" : "✗"} ${sitemapTxtResult.message}`);
   checks.push(sitemapTxtResult);
 
   await log("Checking sample pages...");
   const urlsFrom = (result: { urls: string[] }) => result.urls;
   let sampleURLs = shuffle([
-    ...new Set([
-      ...urlsFrom(sitemmapXmlResult),
-      ...urlsFrom(sitemapTxtResult),
-    ]).values(),
+    ...new Set([...urlsFrom(sitemmapXmlResult), ...urlsFrom(sitemapTxtResult)]).values(),
   ]).slice(0, 10);
 
   if (sampleURLs.length === 0 && homepageResult.html) {
-    const links = homepageResult.html.matchAll(
-      /<a[^>]+href\s*=\s*["']([^"']+)["'][^>]*>/gi,
-    );
+    const links = homepageResult.html.matchAll(/<a[^>]+href\s*=\s*["']([^"']+)["'][^>]*>/gi);
     const resolved: string[] = [];
     for (const match of links) {
       try {
@@ -189,9 +173,7 @@ export async function runScanSteps({
     },
   };
   checks.push(samplePagesResult);
-  await log(
-    `${samplePagesResult.passed ? "✓" : "✗"} ${samplePagesResult.message}`,
-  );
+  await log(`${samplePagesResult.passed ? "✓" : "✗"} ${samplePagesResult.message}`);
 
   const reviewedPages: {
     url: string;
@@ -224,18 +206,14 @@ export async function runScanSteps({
     links: new Headers(homepageResult.headers ?? {}),
   });
   checks.push(linkHeadersResult);
-  await log(
-    `${linkHeadersResult.passed ? "✓" : "✗"} ${linkHeadersResult.message}`,
-  );
+  await log(`${linkHeadersResult.passed ? "✓" : "✗"} ${linkHeadersResult.message}`);
 
   await log("Checking markdown alternate links...");
   const markdownAlternateResult = await checkMarkdownAlternateLinks({
     pages: reviewedPages,
   });
   checks.push(markdownAlternateResult);
-  await log(
-    `${markdownAlternateResult.passed ? "✓" : "✗"} ${markdownAlternateResult.message}`,
-  );
+  await log(`${markdownAlternateResult.passed ? "✓" : "✗"} ${markdownAlternateResult.message}`);
 
   await log("Checking .md routes...");
   const mdRoutesResult = await checkMdRoutes({
@@ -249,9 +227,7 @@ export async function runScanSteps({
     pages: reviewedPages,
   });
   checks.push(robotsDirectivesResult);
-  await log(
-    `${robotsDirectivesResult.passed ? "✓" : "✗"} ${robotsDirectivesResult.message}`,
-  );
+  await log(`${robotsDirectivesResult.passed ? "✓" : "✗"} ${robotsDirectivesResult.message}`);
 
   await log("Checking markdown content negotiation...");
   const markdownResult = await checkMarkdownNegotiation({
@@ -265,9 +241,7 @@ export async function runScanSteps({
     robotsContent: (robotsTxtResult.details?.robotsContent as string) ?? null,
   });
   checks.push(contentSignalsResult);
-  await log(
-    `${contentSignalsResult.passed ? "✓" : "✗"} ${contentSignalsResult.message}`,
-  );
+  await log(`${contentSignalsResult.passed ? "✓" : "✗"} ${contentSignalsResult.message}`);
 
   await log("Checking AI bot traffic...");
   const samplePageUrls = fetchedPages.map((p) => p.url);
@@ -276,24 +250,17 @@ export async function runScanSteps({
     sampleUrls: samplePageUrls.length > 0 ? samplePageUrls : undefined,
     log,
   });
-  await log(
-    `${aiBotTrafficResult.passed ? "✓" : "✗"} ${aiBotTrafficResult.message}`,
-  );
+  await log(`${aiBotTrafficResult.passed ? "✓" : "✗"} ${aiBotTrafficResult.message}`);
   checks.push(aiBotTrafficResult);
 
   await log("Checking llms-full.txt...");
   const llmsFullTxtResult = await checkLlmsFullTxt({ url });
   checks.push(llmsFullTxtResult);
-  await log(
-    `${llmsFullTxtResult.passed ? "✓" : "✗"} ${llmsFullTxtResult.message}`,
-  );
+  await log(`${llmsFullTxtResult.passed ? "✓" : "✗"} ${llmsFullTxtResult.message}`);
 
   const withCategory = checks.map((check) => ({
     ...check,
-    category: getCheckCategory(check.name) as
-      | "discovered"
-      | "trusted"
-      | "welcomed",
+    category: getCheckCategory(check.name) as "discovered" | "trusted" | "welcomed",
     detail: getCheckDetail(check.name),
   }));
   const summary = await summarize({ checks: withCategory, log });
@@ -357,15 +324,9 @@ async function summarize({
     },
   };
 
-  await log(
-    `Discovered: ${summary.discovered.passed}/${summary.discovered.total} passed`,
-  );
-  await log(
-    `Trusted: ${summary.trusted.passed}/${summary.trusted.total} passed`,
-  );
-  await log(
-    `Welcomed: ${summary.welcomed.passed}/${summary.welcomed.total} passed`,
-  );
+  await log(`Discovered: ${summary.discovered.passed}/${summary.discovered.total} passed`);
+  await log(`Trusted: ${summary.trusted.passed}/${summary.trusted.total} passed`);
+  await log(`Welcomed: ${summary.welcomed.passed}/${summary.welcomed.total} passed`);
 
   return summary;
 }

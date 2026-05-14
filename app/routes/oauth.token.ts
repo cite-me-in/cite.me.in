@@ -24,8 +24,7 @@ export async function action({ request }: Route.ActionArgs) {
     throw data({ error: "invalid_client" }, { status: 401 });
 
   if (grantType === "authorization_code") {
-    if (!code || !redirectUri)
-      throw data({ error: "invalid_request" }, { status: 400 });
+    if (!code || !redirectUri) throw data({ error: "invalid_request" }, { status: 400 });
 
     const authCode = await prisma.oAuthAuthorizationCode.findUnique({
       where: { code },
@@ -44,10 +43,7 @@ export async function action({ request }: Route.ActionArgs) {
 
     if (authCode.expiresAt < new Date()) {
       await prisma.oAuthAuthorizationCode.delete({ where: { code } });
-      throw data(
-        { error: "invalid_grant", error_description: "Code expired" },
-        { status: 400 },
-      );
+      throw data({ error: "invalid_grant", error_description: "Code expired" }, { status: 400 });
     }
 
     if (authCode.redirectUri !== redirectUri)
@@ -87,8 +83,7 @@ export async function action({ request }: Route.ActionArgs) {
   }
 
   if (grantType === "refresh_token") {
-    if (!refreshToken)
-      throw data({ error: "invalid_request" }, { status: 400 });
+    if (!refreshToken) throw data({ error: "invalid_request" }, { status: 400 });
 
     const storedRefreshToken = await prisma.oAuthRefreshToken.findUnique({
       where: { token: refreshToken },

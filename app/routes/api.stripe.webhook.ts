@@ -11,14 +11,11 @@ import type { Route } from "./+types/api.stripe.webhook";
 const logger = debug("server");
 
 function hasRequiredStripeSignatureParts(signature: string) {
-  return (
-    /(?:^|,)\s*t=\d+/.test(signature) && /(?:^|,)\s*v1=[^,\s]+/.test(signature)
-  );
+  return /(?:^|,)\s*t=\d+/.test(signature) && /(?:^|,)\s*v1=[^,\s]+/.test(signature);
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  if (request.method !== "POST")
-    throw new Response("Method not allowed", { status: 405 });
+  if (request.method !== "POST") throw new Response("Method not allowed", { status: 405 });
 
   const sig = request.headers.get("stripe-signature");
   const body = await request.text();
@@ -30,11 +27,7 @@ export async function action({ request }: Route.ActionArgs) {
 
   let event: Stripe.Event;
   try {
-    event = getStripe().webhooks.constructEvent(
-      body,
-      sig,
-      envVars.STRIPE_WEBHOOK_SECRET,
-    );
+    event = getStripe().webhooks.constructEvent(body, sig, envVars.STRIPE_WEBHOOK_SECRET);
   } catch (error) {
     if (!(error instanceof Stripe.errors.StripeSignatureVerificationError))
       captureAndLogError(error);
@@ -68,11 +61,7 @@ export async function action({ request }: Route.ActionArgs) {
         }),
       ]);
 
-      logger(
-        "[stripe] Activated account for user %s (interval: %s)",
-        userId,
-        interval,
-      );
+      logger("[stripe] Activated account for user %s (interval: %s)", userId, interval);
     }
 
     if (event.type === "customer.subscription.deleted") {
@@ -89,10 +78,7 @@ export async function action({ request }: Route.ActionArgs) {
         await emitWebhookEvent("subscription.cancelled", {
           userId: account.userId,
         });
-        logger(
-          "[stripe] Cancelled account for subscription %s",
-          subscription.id,
-        );
+        logger("[stripe] Cancelled account for subscription %s", subscription.id);
       }
     }
   } catch (error) {

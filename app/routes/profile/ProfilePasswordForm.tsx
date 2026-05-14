@@ -1,13 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useFetcher } from "react-router";
 import { Button } from "~/components/ui/Button";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldSet,
-} from "~/components/ui/FieldSet";
+import { Field, FieldError, FieldGroup, FieldLabel, FieldSet } from "~/components/ui/FieldSet";
 import { Input } from "~/components/ui/Input";
 
 export default function ProfilePasswordForm() {
@@ -44,9 +38,7 @@ export default function ProfilePasswordForm() {
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor="confirmPassword">
-              Confirm new password
-            </FieldLabel>
+            <FieldLabel htmlFor="confirmPassword">Confirm new password</FieldLabel>
             <Input
               id="confirmPassword"
               name="confirmPassword"
@@ -56,12 +48,8 @@ export default function ProfilePasswordForm() {
             />
           </Field>
         </FieldGroup>
-        {data?.error && (
-          <FieldError className="text-lg">{data.error}</FieldError>
-        )}
-        {data?.success && (
-          <p className="text-success text-lg">{data.success}</p>
-        )}
+        {data?.error && <FieldError className="text-lg">{data.error}</FieldError>}
+        {data?.success && <p className="text-success text-lg">{data.success}</p>}
         <Button type="submit" disabled={fetcher.state !== "idle"}>
           Change password
         </Button>

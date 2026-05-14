@@ -25,15 +25,9 @@ test.beforeAll(async () => {
 
 test("should sign up for a new account", async () => {
   page = await goto("/sign-up");
-  await page
-    .getByRole("textbox", { name: "Email", exact: true })
-    .fill(TEST_EMAIL);
-  await page
-    .getByRole("textbox", { name: "Password", exact: true })
-    .fill(TEST_PASSWORD);
-  await page
-    .getByRole("textbox", { name: "Confirm password", exact: true })
-    .fill(TEST_PASSWORD);
+  await page.getByRole("textbox", { name: "Email", exact: true }).fill(TEST_EMAIL);
+  await page.getByRole("textbox", { name: "Password", exact: true }).fill(TEST_PASSWORD);
+  await page.getByRole("textbox", { name: "Confirm password", exact: true }).fill(TEST_PASSWORD);
   await expect(page.locator("main")).toMatchVisual({
     name: "e2e/stripe/1.sign-up",
   });
@@ -51,12 +45,8 @@ test("should sign up for a new account", async () => {
 });
 
 test("should show monthly and annual subscription options on sites page", async () => {
-  await expect(
-    page.getByRole("button", { name: /subscribe.*\$\d+\/month/i }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: /subscribe.*\$\d+\/year/i }),
-  ).toBeVisible();
+  await expect(page.getByRole("button", { name: /subscribe.*\$\d+\/month/i })).toBeVisible();
+  await expect(page.getByRole("button", { name: /subscribe.*\$\d+\/year/i })).toBeVisible();
 });
 
 test("should start Stripe checkout for monthly plan", async () => {
@@ -69,9 +59,7 @@ test("should start Stripe checkout for monthly plan", async () => {
 
   // Restore page after Stripe redirect
   await page.goto(`http://localhost:${port}/sites`, { waitUntil: "load" });
-  await page.waitForFunction(
-    () => document.body.getAttribute("data-hydrated") === "true",
-  );
+  await page.waitForFunction(() => document.body.getAttribute("data-hydrated") === "true");
 });
 
 test("should activate account via webhook", async () => {
@@ -115,9 +103,7 @@ test("should activate account via webhook", async () => {
       computeHMACSignature: (payload: string, secret: string) =>
         createHmac("sha256", secret).update(payload).digest("hex"),
       computeHMACSignatureAsync: (payload: string, secret: string) =>
-        Promise.resolve(
-          createHmac("sha256", secret).update(payload).digest("hex"),
-        ),
+        Promise.resolve(createHmac("sha256", secret).update(payload).digest("hex")),
       computeSHA256Async: (data: Uint8Array) =>
         Promise.resolve(createHash("sha256").update(data).digest()),
     },
@@ -146,14 +132,10 @@ test("should activate account via webhook", async () => {
 
 test("should show pro state on sites page after subscribing", async () => {
   await page.goto(`http://localhost:${port}/sites`, { waitUntil: "load" });
-  await page.waitForFunction(
-    () => document.body.getAttribute("data-hydrated") === "true",
-  );
+  await page.waitForFunction(() => document.body.getAttribute("data-hydrated") === "true");
 
   await expect(page.getByRole("button", { name: "Add Site" })).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: /subscribe/i }),
-  ).not.toBeVisible();
+  await expect(page.getByRole("button", { name: /subscribe/i })).not.toBeVisible();
   await expect(page.locator("main")).toMatchVisual({
     name: "e2e/stripe/3.sites-pro",
   });

@@ -15,9 +15,7 @@ import summarize from "~/lib/scrape/summarize";
 
 const domain = normalizeDomain(process.argv[2]);
 if (!domain) {
-  console.error(
-    "Usage: ./scripts/crawl.ts <domain> [maxPages] [maxWords] [maxSeconds]",
-  );
+  console.error("Usage: ./scripts/crawl.ts <domain> [maxPages] [maxWords] [maxSeconds]");
   process.exit(1);
 }
 

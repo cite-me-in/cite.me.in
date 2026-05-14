@@ -8,9 +8,8 @@ export default function NoVisitors({ domain }: { domain: string }) {
       </CardHeader>
       <CardContent>
         <p className="text-foreground/60 text-base">
-          Install the tracking snippet on{" "}
-          <span className="font-mono">{domain}</span> to start seeing human
-          visitor data here.
+          Install the tracking snippet on <span className="font-mono">{domain}</span> to start
+          seeing human visitor data here.
         </p>
       </CardContent>
     </Card>

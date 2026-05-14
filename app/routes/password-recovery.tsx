@@ -3,12 +3,7 @@ import { Form } from "react-router";
 import { ActiveLink } from "~/components/ui/ActiveLink";
 import AuthForm from "~/components/ui/AuthForm";
 import { Button } from "~/components/ui/Button";
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-  FieldSet,
-} from "~/components/ui/FieldSet";
+import { Field, FieldGroup, FieldLabel, FieldSet } from "~/components/ui/FieldSet";
 import { Input } from "~/components/ui/Input";
 import sendPasswordRecoveryEmail from "~/emails/PasswordRecovery";
 import captureAndLogError from "~/lib/captureAndLogError.server";
@@ -49,8 +44,8 @@ export default function PasswordRecovery({ actionData }: Route.ComponentProps) {
         title="Check your email"
         form={
           <p>
-            If that email is associated with an account, we've sent a sign-in
-            link. It expires in 30 minutes.
+            If that email is associated with an account, we've sent a sign-in link. It expires in 30
+            minutes.
           </p>
         }
       />

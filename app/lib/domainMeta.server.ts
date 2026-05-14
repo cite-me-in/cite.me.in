@@ -29,9 +29,7 @@ export async function getDomainMeta(domain: string): Promise<DomainMeta> {
     });
     const canonicalUrl = res.url;
     const html = await res.text();
-    const brandName = decodeEntities(
-      extractBrandName(html) ?? prettifyDomain(domain),
-    );
+    const brandName = decodeEntities(extractBrandName(html) ?? prettifyDomain(domain));
     const meta = { brandName, url: canonicalUrl };
     cache.set(domain, { ...meta, fetchedAt: Date.now() });
     return meta;
@@ -47,12 +45,8 @@ export async function getDomainMeta(domain: string): Promise<DomainMeta> {
 
 function extractBrandName(html: string): string | null {
   const ogMatch =
-    html.match(
-      /<meta[^>]+property=["']og:site_name["'][^>]+content=["']([^"']+)["']/i,
-    ) ??
-    html.match(
-      /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:site_name["']/i,
-    );
+    html.match(/<meta[^>]+property=["']og:site_name["'][^>]+content=["']([^"']+)["']/i) ??
+    html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:site_name["']/i);
   if (ogMatch) return ogMatch[1].trim();
 
   const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
@@ -82,7 +76,5 @@ function decodeEntities(text: string): string {
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
-    .replace(/&#x([A-Fa-f0-9]+);/g, (_, n) =>
-      String.fromCharCode(Number.parseInt(n, 16)),
-    );
+    .replace(/&#x([A-Fa-f0-9]+);/g, (_, n) => String.fromCharCode(Number.parseInt(n, 16)));
 }

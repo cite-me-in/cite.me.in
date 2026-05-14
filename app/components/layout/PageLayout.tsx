@@ -42,10 +42,7 @@ export default function PageLayout({
         {/* Google / Search Engine Tags */}
         <meta
           itemProp="image"
-          content={new URL(
-            "/images/og-image.png",
-            import.meta.env.VITE_APP_URL,
-          ).toString()}
+          content={new URL("/images/og-image.png", import.meta.env.VITE_APP_URL).toString()}
         />
         <meta itemProp="name" content={title} />
 

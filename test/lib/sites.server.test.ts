@@ -1,11 +1,4 @@
-import {
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  vi,
-} from "vite-plus/test";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
 import crawl from "~/lib/scrape/crawl";
 import summarize from "~/lib/scrape/summarize";
@@ -54,9 +47,7 @@ describe("fetchSiteContent", () => {
       maxWords: 1000,
       maxSeconds: 10,
     });
-    expect(content).toContain(
-      "This is the main documentation for Example Domain",
-    );
+    expect(content).toContain("This is the main documentation for Example Domain");
   });
 
   it("should return summary from crawled content", async () => {

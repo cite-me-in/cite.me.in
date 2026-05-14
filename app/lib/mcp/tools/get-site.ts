@@ -5,8 +5,7 @@ import prisma from "~/lib/prisma.server";
 export default {
   name: "get_site",
 
-  description:
-    "Get detailed information about a site including visibility metrics",
+  description: "Get detailed information about a site including visibility metrics",
   inputSchema: z.object({
     domain: z.string().describe("The domain of the site"),
   }),
@@ -34,10 +33,7 @@ export default {
     }),
   }),
 
-  handler: async (
-    { domain }: { domain: string },
-    extra: { authInfo?: { token?: string } },
-  ) => {
+  handler: async ({ domain }: { domain: string }, extra: { authInfo?: { token?: string } }) => {
     try {
       const userId = await verifyBearerToken(extra.authInfo?.token);
 

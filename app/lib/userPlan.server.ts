@@ -32,17 +32,11 @@ export function queryNextToProcess(): Prisma.SiteWhereInput {
     OR: [
       {
         owner: { plan: { in: ["paid", "gratis"] } },
-        OR: [
-          { lastProcessedAt: null },
-          { lastProcessedAt: { lte: daysAgo(1) } },
-        ],
+        OR: [{ lastProcessedAt: null }, { lastProcessedAt: { lte: daysAgo(1) } }],
       },
       {
         owner: { plan: "trial", createdAt: { gte: daysAgo(TRIAL_DAYS) } },
-        OR: [
-          { lastProcessedAt: null },
-          { lastProcessedAt: { lte: daysAgo(7) } },
-        ],
+        OR: [{ lastProcessedAt: null }, { lastProcessedAt: { lte: daysAgo(7) } }],
       },
     ],
   };
@@ -50,10 +44,7 @@ export function queryNextToProcess(): Prisma.SiteWhereInput {
 
 // Whether a site should be processed right now.
 // Trial expires after TRIAL_DAYS — no processing after that.
-export function isProcessingEligible(user: {
-  plan: Plan;
-  createdAt: Date;
-}): boolean {
+export function isProcessingEligible(user: { plan: Plan; createdAt: Date }): boolean {
   if (user.plan === "cancelled") return false;
   if (user.plan === "trial") return daysSince(user.createdAt) < TRIAL_DAYS;
   return true; // paid, gratis
@@ -61,10 +52,7 @@ export function isProcessingEligible(user: {
 
 // Whether to send the weekly digest to this user's sites.
 // Same eligibility as processing.
-export function isDigestEligible(user: {
-  plan: Plan;
-  createdAt: Date;
-}): boolean {
+export function isDigestEligible(user: { plan: Plan; createdAt: Date }): boolean {
   return isProcessingEligible(user);
 }
 

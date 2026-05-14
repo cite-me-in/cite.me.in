@@ -17,8 +17,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     });
     await parallel({ limit: 10 }, pending, attemptDelivery);
 
-    if (envVars.HEARTBEAT_CRON_WEBHOOK_RETRIES)
-      await fetch(envVars.HEARTBEAT_CRON_WEBHOOK_RETRIES);
+    if (envVars.HEARTBEAT_CRON_WEBHOOK_RETRIES) await fetch(envVars.HEARTBEAT_CRON_WEBHOOK_RETRIES);
 
     return data({ ok: true, processed: pending.length });
   } catch (error) {

@@ -51,18 +51,13 @@ references, with a link to each source URL.`,
       },
     });
   } catch (error) {
-    if (
-      error instanceof GoogleApiError &&
-      (error.status === 402 || error.status === 429)
-    )
+    if (error instanceof GoogleApiError && (error.status === 402 || error.status === 429))
       throw new InsufficientCreditError("gemini", error.status);
     throw error;
   }
 
   const text = response.text ?? "";
-  const metadata = response.candidates?.[0]?.groundingMetadata as
-    | GroundingMetadata
-    | undefined;
+  const metadata = response.candidates?.[0]?.groundingMetadata as GroundingMetadata | undefined;
 
   const extraQueries = metadata?.webSearchQueries ?? [];
   const chunks = metadata?.groundingChunks ?? [];
@@ -80,9 +75,7 @@ references, with a link to each source URL.`,
     }
   });
 
-  const validUrls = resolvedUrls.filter(
-    (r): r is { url: string; title: string } => r !== null,
-  );
+  const validUrls = resolvedUrls.filter((r): r is { url: string; title: string } => r !== null);
 
   const citations = [...new Set(validUrls.map((r) => r.url))];
 
@@ -99,10 +92,7 @@ references, with a link to each source URL.`,
   };
 }
 
-function addMarkdownCitations(
-  text: string,
-  sources: { url: string; title: string }[],
-): string {
+function addMarkdownCitations(text: string, sources: { url: string; title: string }[]): string {
   const sourcesIndex = text.indexOf("\nSources:\n");
   if (sourcesIndex === -1 || sources.length === 0) return text;
 

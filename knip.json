@@ -10,12 +10,7 @@
     "test/helpers/serverWorker.ts",
     "app/cron/*.ts"
   ],
-  "project": [
-    "app/**/*.ts",
-    "app/**/*.tsx",
-    "test/**/*.ts",
-    "!__screenshots__"
-  ],
+  "project": ["app/**/*.ts", "app/**/*.tsx", "test/**/*.ts", "!__screenshots__"],
   "ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend"],
   "ignoreFiles": ["app/lib/truncateWords.ts", "app/lib/relativeTime.ts"],
   "ignoreIssues": {

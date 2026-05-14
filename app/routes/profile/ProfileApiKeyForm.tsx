@@ -6,11 +6,7 @@ import { FieldError, FieldGroup, FieldSet } from "~/components/ui/FieldSet";
 import { Input } from "~/components/ui/Input";
 import type { action } from "./route";
 
-export default function ProfileApiKeyForm({
-  apiKey,
-}: {
-  apiKey: string | null;
-}) {
+export default function ProfileApiKeyForm({ apiKey }: { apiKey: string | null }) {
   const fetcher = useFetcher<typeof action>();
   const data = fetcher.data;
   const currentKey = (data && "apiKey" in data ? data.apiKey : null) ?? apiKey;

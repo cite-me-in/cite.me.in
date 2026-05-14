@@ -7,8 +7,7 @@ import type { Route } from "./+types/site.$domain_.setup.run";
 const logger = debug("server:setup.run");
 
 export async function action({ request, params }: Route.ActionArgs) {
-  if (request.method !== "POST")
-    throw new Response("Method not allowed", { status: 405 });
+  if (request.method !== "POST") throw new Response("Method not allowed", { status: 405 });
 
   const { site, user } = await requireSiteAccess({
     domain: params.domain,
@@ -17,8 +16,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 
   // Idempotency: don't start a second pipeline if one is running or done.
   const current = await getStatus({ siteId: site.id, userId: user.id });
-  if (current === "running" || current === "complete")
-    return new Response(null, { status: 204 });
+  if (current === "running" || current === "complete") return new Response(null, { status: 204 });
 
   logger("Starting setup pipeline for site %s", site.domain);
   const log = async (line: string) => {

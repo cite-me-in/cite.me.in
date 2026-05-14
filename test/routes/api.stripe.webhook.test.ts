@@ -19,9 +19,7 @@ function signedRequest(payload: string) {
       computeHMACSignature: (payload: string, secret: string) =>
         createHmac("sha256", secret).update(payload).digest("hex"),
       computeHMACSignatureAsync: (payload: string, secret: string) =>
-        Promise.resolve(
-          createHmac("sha256", secret).update(payload).digest("hex"),
-        ),
+        Promise.resolve(createHmac("sha256", secret).update(payload).digest("hex")),
       computeSHA256Async: (data: Uint8Array) =>
         Promise.resolve(createHash("sha256").update(data).digest()),
     },

@@ -22,26 +22,16 @@ export default function SiteEntry({
   return (
     <div className="space-y-4">
       <div className="flex flex-row items-center justify-between">
-        <Link
-          to={`/site/${site.domain}/citations`}
-          className="font-mono text-lg font-bold"
-        >
+        <Link to={`/site/${site.domain}/citations`} className="font-mono text-lg font-bold">
           {site.domain}
         </Link>
 
-        <ActiveLink
-          variant="button"
-          to={`/site/${site.domain}/citations`}
-          aria-label="View site"
-        >
+        <ActiveLink variant="button" to={`/site/${site.domain}/citations`} aria-label="View site">
           View Site <ArrowRightIcon className="size-4" />
         </ActiveLink>
       </div>
 
-      <Link
-        to={`/site/${site.domain}/citations`}
-        className="grid grid-cols-4 gap-4 text-center"
-      >
+      <Link to={`/site/${site.domain}/citations`} className="grid grid-cols-4 gap-4 text-center">
         <Metric
           label="Your citations"
           current={yourCitations.current}
@@ -114,17 +104,10 @@ function Metric({
   );
 }
 
-function Delta({
-  current,
-  previous,
-}: {
-  current: number;
-  previous: number | null;
-}) {
+function Delta({ current, previous }: { current: number; previous: number | null }) {
   if (previous === null) return null;
   if (previous === 0 && current === 0) return null;
-  if (previous === 0)
-    return <span className="text-sm font-medium text-green-700">new</span>;
+  if (previous === 0) return <span className="text-sm font-medium text-green-700">new</span>;
 
   const pct = Math.round(((current - previous) / previous) * 100);
   const positive = pct >= 0;

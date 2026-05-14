@@ -19,18 +19,13 @@ export default function SuggestedQueries() {
 
   const isLoading = fetcher.state !== "idle";
   const data = fetcher.data;
-  const suggestions =
-    !dismissed && data && "suggestions" in data ? data.suggestions : undefined;
-  const error =
-    fetcher.state === "idle" && data && !data.ok ? data.error : undefined;
+  const suggestions = !dismissed && data && "suggestions" in data ? data.suggestions : undefined;
+  const error = fetcher.state === "idle" && data && !data.ok ? data.error : undefined;
 
   // Group suggestions by group and sort by group/group's queries
   const groupedSuggestions = suggestions
     ? [...suggestions]
-        .sort(
-          (a, b) =>
-            a.group.localeCompare(b.group) || a.query.localeCompare(b.query),
-        )
+        .sort((a, b) => a.group.localeCompare(b.group) || a.query.localeCompare(b.query))
         .reduce(
           (acc, suggestion) => {
             if (!acc[suggestion.group]) {
@@ -53,10 +48,7 @@ export default function SuggestedQueries() {
       )}
 
       {suggestions ? (
-        <AllSuggestions
-          groupedSuggestions={groupedSuggestions}
-          setDismissed={setDismissed}
-        />
+        <AllSuggestions groupedSuggestions={groupedSuggestions} setDismissed={setDismissed} />
       ) : (
         <AskForSuggestionsButton
           isLoading={isLoading}
@@ -97,9 +89,7 @@ function AllSuggestions({
           if (items.length === 0) return null;
           return (
             <div key={group} className="space-y-1">
-              <p className="text-foreground/50 text-base tracking-wide uppercase">
-                {group}
-              </p>
+              <p className="text-foreground/50 text-base tracking-wide uppercase">{group}</p>
               <ul className="space-y-2">
                 {items.map((s) => (
                   <SingleSuggestion key={s.query} suggestion={s} />
@@ -113,11 +103,7 @@ function AllSuggestions({
   );
 }
 
-function SingleSuggestion({
-  suggestion,
-}: {
-  suggestion: { group: string; query: string };
-}) {
+function SingleSuggestion({ suggestion }: { suggestion: { group: string; query: string } }) {
   const addFetcher = useFetcher<typeof action>();
   const added = addFetcher.data?.ok === true;
 
@@ -170,9 +156,7 @@ function AskForSuggestionsButton({
         onClick={suggestQueries}
         title="Use AI to suggest queries for this site"
       >
-        <SparklesIcon
-          className={twMerge(isLoading ? "animate-spin" : "", "size-4")}
-        />
+        <SparklesIcon className={twMerge(isLoading ? "animate-spin" : "", "size-4")} />
         {isLoading ? "Generating…" : "Suggest queries"}
       </Button>
     </div>

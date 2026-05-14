@@ -110,9 +110,9 @@ function HeroSection() {
           </h1>
 
           <p className="mb-8 max-w-2xl text-xl leading-relaxed font-medium text-black md:text-2xl">
-            Most founders are running blind on AI visibility. Cite.me.in runs
-            your queries across ChatGPT, Claude, and Gemini and records every
-            time they cite your website. See what's working. Fix what's not.
+            Most founders are running blind on AI visibility. Cite.me.in runs your queries across
+            ChatGPT, Claude, and Gemini and records every time they cite your website. See what's
+            working. Fix what's not.
           </p>
 
           <form
@@ -144,8 +144,7 @@ function HeroSection() {
                 type="submit"
                 className="rounded-base inline-flex h-14 shrink-0 items-center gap-2 border-2 border-black bg-blue-500 px-6 text-lg font-bold text-white shadow-[4px_4px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_black]"
               >
-                {navigation.state === "loading" &&
-                navigation.location?.pathname === "/try" ? (
+                {navigation.state === "loading" && navigation.location?.pathname === "/try" ? (
                   <Spinner white />
                 ) : (
                   <SearchIcon className="h-5 w-5" />
@@ -153,11 +152,7 @@ function HeroSection() {
                 Scan now
               </button>
             </div>
-            {error && (
-              <p className="mt-3 text-left text-sm font-bold text-red-600">
-                {error}
-              </p>
-            )}
+            {error && <p className="mt-3 text-left text-sm font-bold text-red-600">{error}</p>}
           </form>
         </div>
 
@@ -177,9 +172,7 @@ function HowItWorksSection() {
   return (
     <section className="border-b-2 border-black px-6 py-20">
       <div className="mx-auto max-w-5xl">
-        <h2 className="mb-12 text-3xl font-bold text-black md:text-4xl">
-          How it works
-        </h2>
+        <h2 className="mb-12 text-3xl font-bold text-black md:text-4xl">How it works</h2>
         <div className="grid gap-6 md:grid-cols-3">
           {STEPS.map(({ number, title, body, icon: Icon }) => (
             <div
@@ -210,8 +203,7 @@ function ForWhoSection() {
           Built for anyone with an online presence
         </h2>
         <p className="mb-12 text-xl font-medium text-black">
-          If AI platforms could be sending you traffic, you should know whether
-          they are.
+          If AI platforms could be sending you traffic, you should know whether they are.
         </p>
         <div className="grid gap-6 md:grid-cols-3">
           {PERSONAS.map(({ icon: Icon, title, body }) => (

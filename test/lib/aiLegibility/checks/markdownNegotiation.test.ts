@@ -31,12 +31,9 @@ describe("checkMarkdownNegotiation", () => {
   it("should pass when sample page serves markdown but homepage doesn't", async () => {
     msw.use(
       http.get("https://acme.com/", () =>
-        HttpResponse.text(
-          "<!DOCTYPE html><html><head></head><body>HTML</body></html>",
-          {
-            headers: { "Content-Type": "text/html" },
-          },
-        ),
+        HttpResponse.text("<!DOCTYPE html><html><head></head><body>HTML</body></html>", {
+          headers: { "Content-Type": "text/html" },
+        }),
       ),
       http.get("https://acme.com/about", () =>
         HttpResponse.text(
@@ -110,12 +107,9 @@ describe("checkMarkdownNegotiation", () => {
   it("should fail when no page serves markdown", async () => {
     msw.use(
       http.get("https://acme.com/", () =>
-        HttpResponse.text(
-          "<!DOCTYPE html><html><head></head><body>HTML</body></html>",
-          {
-            headers: { "Content-Type": "text/html" },
-          },
-        ),
+        HttpResponse.text("<!DOCTYPE html><html><head></head><body>HTML</body></html>", {
+          headers: { "Content-Type": "text/html" },
+        }),
       ),
     );
 
@@ -128,11 +122,7 @@ describe("checkMarkdownNegotiation", () => {
   });
 
   it("should fail when server returns 406 for Accept: text/markdown", async () => {
-    msw.use(
-      http.get("https://acme.com/", () =>
-        HttpResponse.text("", { status: 406 }),
-      ),
-    );
+    msw.use(http.get("https://acme.com/", () => HttpResponse.text("", { status: 406 })));
 
     const result = await checkMarkdownNegotiation({
       pages: [{ url: "https://acme.com/" }],
@@ -167,10 +157,7 @@ describe("checkMarkdownNegotiation", () => {
     );
 
     const result = await checkMarkdownNegotiation({
-      pages: [
-        { url: "https://acme.com/" },
-        { url: "https://acme.com/timeout" },
-      ],
+      pages: [{ url: "https://acme.com/" }, { url: "https://acme.com/timeout" }],
     });
 
     expect(result.passed).toBe(true);

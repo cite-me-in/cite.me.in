@@ -54,8 +54,7 @@ export default async function checkLlmsFullTxt({
       details: { url: llmsFullURL, lineCount: nonEmptyLines.length },
     };
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     if (error instanceof Error && error.name === "TimeoutError")
       return {
         name: "llms-full.txt",

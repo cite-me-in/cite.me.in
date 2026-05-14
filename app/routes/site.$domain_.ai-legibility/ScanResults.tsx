@@ -1,10 +1,4 @@
-import {
-  CheckCircleIcon,
-  CheckIcon,
-  CopyIcon,
-  LightbulbIcon,
-  XCircleIcon,
-} from "lucide-react";
+import { CheckCircleIcon, CheckIcon, CopyIcon, LightbulbIcon, XCircleIcon } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
 import {
@@ -30,18 +24,10 @@ export default function ScanResults({ result }: { result: ScanResult }) {
     <>
       {groupedChecks.map((group) =>
         group.checks.length > 0 ? (
-          <div
-            key={group.key}
-            id={`section-${group.key}`}
-            className="scroll-mt-20 space-y-2"
-          >
-            <h3 className={`text-lg font-bold ${group.color}`}>
-              {group.title}
-            </h3>
+          <div key={group.key} id={`section-${group.key}`} className="scroll-mt-20 space-y-2">
+            <h3 className={`text-lg font-bold ${group.color}`}>{group.title}</h3>
             <Accordion
-              defaultValue={group.checks
-                .filter((c) => !c.passed)
-                .map((c) => c.name)}
+              defaultValue={group.checks.filter((c) => !c.passed).map((c) => c.name)}
               className="space-y-2"
               multiple
             >
@@ -71,15 +57,12 @@ export default function ScanResults({ result }: { result: ScanResult }) {
             Suggestions to go further
           </h3>
           <p className="mt-1 text-sm text-purple-600">
-            These are optional enhancements that can improve how AI agents
-            discover and understand your content.
+            These are optional enhancements that can improve how AI agents discover and understand
+            your content.
           </p>
           <div className="mt-4 space-y-3">
             {suggestions.map((s) => (
-              <div
-                key={s.title}
-                className="rounded-base border-2 border-purple-300 bg-white p-4"
-              >
+              <div key={s.title} className="rounded-base border-2 border-purple-300 bg-white p-4">
                 <h4 className="font-bold text-purple-900">{s.title}</h4>
                 <p className="mt-1 text-sm text-purple-700">{s.description}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-purple-500">
@@ -156,25 +139,19 @@ function CheckSummary({ check }: { check: CheckResult }) {
 
   return (
     <div className="space-y-4">
-      {check.detail && (
-        <DetailBlock term="Goal">{check.detail.goal}</DetailBlock>
-      )}
+      {check.detail && <DetailBlock term="Goal">{check.detail.goal}</DetailBlock>}
 
       <DetailBlock term="Issue" bold>
         {check.message}
       </DetailBlock>
 
       {check.detail && (
-        <DetailBlock term="How to implement">
-          {check.detail.howToImplement}
-        </DetailBlock>
+        <DetailBlock term="How to implement">{check.detail.howToImplement}</DetailBlock>
       )}
 
       {check.detail?.fixExample && (
         <div>
-          <h4 className="text-foreground/70 mb-1 text-base font-semibold">
-            Example
-          </h4>
+          <h4 className="text-foreground/70 mb-1 text-base font-semibold">Example</h4>
           <pre className="bg-muted overflow-x-auto rounded p-3 font-mono text-sm leading-relaxed whitespace-pre-wrap">
             {check.detail.fixExample}
           </pre>
@@ -183,35 +160,18 @@ function CheckSummary({ check }: { check: CheckResult }) {
 
       {check.detail && check.detail.resourceLinks.length > 0 && (
         <div>
-          <h4 className="text-foreground/70 mb-1 text-base font-semibold">
-            Resources
-          </h4>
+          <h4 className="text-foreground/70 mb-1 text-base font-semibold">Resources</h4>
           <div className="flex flex-wrap gap-2">
             {check.detail.resourceLinks.map((link, i) => (
-              <Link
-                key={i}
-                to={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Badge
-                  variant="neutral"
-                  className="cursor-pointer hover:bg-neutral-200"
-                >
+              <Link key={i} to={link.url} target="_blank" rel="noopener noreferrer">
+                <Badge variant="neutral" className="cursor-pointer hover:bg-neutral-200">
                   {link.label}
                 </Badge>
               </Link>
             ))}
             {check.detail.skillURL && (
-              <Link
-                to={check.detail.skillURL}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Badge
-                  variant="neutral"
-                  className="cursor-pointer hover:bg-neutral-200"
-                >
+              <Link to={check.detail.skillURL} target="_blank" rel="noopener noreferrer">
+                <Badge variant="neutral" className="cursor-pointer hover:bg-neutral-200">
                   Skill
                 </Badge>
               </Link>
@@ -221,11 +181,7 @@ function CheckSummary({ check }: { check: CheckResult }) {
       )}
 
       <div className="flex justify-end gap-2">
-        <Button
-          size="sm"
-          variant={copied ? "default" : "outline"}
-          onClick={handleCopy}
-        >
+        <Button size="sm" variant={copied ? "default" : "outline"} onClick={handleCopy}>
           {copied ? (
             <>
               <CheckIcon className="size-3" />
@@ -243,26 +199,12 @@ function CheckSummary({ check }: { check: CheckResult }) {
   );
 }
 
-function DetailBlock({
-  term,
-  children,
-  bold,
-}: {
-  term: string;
-  children: string;
-  bold?: boolean;
-}) {
+function DetailBlock({ term, children, bold }: { term: string; children: string; bold?: boolean }) {
   return (
     <div>
-      <h4 className="text-foreground/70 mb-1 text-base font-semibold">
-        {term}
-      </h4>
+      <h4 className="text-foreground/70 mb-1 text-base font-semibold">{term}</h4>
       <p
-        className={
-          bold
-            ? "text-foreground/80 text-base font-bold"
-            : "text-foreground/80 text-base"
-        }
+        className={bold ? "text-foreground/80 text-base font-bold" : "text-foreground/80 text-base"}
       >
         {children}
       </p>

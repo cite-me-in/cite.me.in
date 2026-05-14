@@ -1,11 +1,5 @@
 import { Badge } from "~/components/ui/Badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/Card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/Card";
 import type { SentimentLabel } from "~/prisma";
 
 export default function BrandSentiment({
@@ -33,9 +27,7 @@ export default function BrandSentiment({
             {sentiment.sentimentSummary && <p>{sentiment.sentimentSummary}</p>}
           </div>
         ) : (
-          <p className="text-foreground/60">
-            No sentiment analysis available for {platformLabel}.
-          </p>
+          <p className="text-foreground/60">No sentiment analysis available for {platformLabel}.</p>
         )}
       </CardContent>
     </Card>

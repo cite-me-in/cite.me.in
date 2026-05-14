@@ -1,10 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vite-plus/test";
 import checkSitemapTxt from "~/lib/aiLegibility/checks/sitemapTxt";
-import {
-  SITEMAP_TXT,
-  SITEMAP_TXT_INVALID,
-  mockFetch,
-} from "~/test/lib/aiLegibility/fixtures";
+import { SITEMAP_TXT, SITEMAP_TXT_INVALID, mockFetch } from "~/test/lib/aiLegibility/fixtures";
 
 describe("checkSitemapTxt", () => {
   afterEach(() => {

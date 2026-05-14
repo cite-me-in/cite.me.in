@@ -2,16 +2,9 @@ import { ms } from "convert";
 import { parallel } from "radashi";
 import invariant from "tiny-invariant";
 import captureAndLogError from "~/lib/captureAndLogError.server";
-import {
-  isSameDomain,
-  normalizeDomain,
-  normalizeURL,
-} from "~/lib/isSameDomain";
+import { isSameDomain, normalizeDomain, normalizeURL } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
-import {
-  checkUsageLimits,
-  recordUsageEvent,
-} from "~/lib/usage/usageLimit.server";
+import { checkUsageLimits, recordUsageEvent } from "~/lib/usage/usageLimit.server";
 import { isInsufficientCreditError } from "./insufficientCreditError";
 import type { QueryFn } from "./queryFn";
 import updateRunSentiment from "./updateRunSentiment";
@@ -49,9 +42,7 @@ export async function queryPlatform({
 
   const notEmptyQueries = queries.filter((q) => q.query.trim());
   const existingQueries = run.queries.map(({ query }) => query);
-  const newQueries = notEmptyQueries.filter(
-    ({ query }) => !existingQueries.includes(query),
-  );
+  const newQueries = notEmptyQueries.filter(({ query }) => !existingQueries.includes(query));
   if (newQueries.length === 0) return;
 
   const [firstQuery, ...restQueries] = newQueries;
@@ -102,9 +93,7 @@ export async function queryPlatform({
     } catch (error) {
       if (isInsufficientCreditError(error)) {
         creditExhausted = true;
-        await log(
-          `${platform}: Credit exhausted mid-run, keeping partial results`,
-        );
+        await log(`${platform}: Credit exhausted mid-run, keeping partial results`);
         return;
       }
       captureAndLogError(error, { extra: { siteId: site.id, platform } });
@@ -171,9 +160,7 @@ export async function singleQueryRepetition({
           queryId: citationRecord.id,
           runId,
           siteId: site.id,
-          relationship: isSameDomain({ domain: site.domain, url })
-            ? "direct"
-            : null,
+          relationship: isSameDomain({ domain: site.domain, url }) ? "direct" : null,
         };
       }),
       skipDuplicates: true,
