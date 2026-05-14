@@ -44,7 +44,7 @@ echo -e "\033[0;32m--- Step 8: Trigger Coolify deployment ---\033[0m"
 coolify deploy name cite.me.in --force
 
 echo -e "\033[0;32m--- Step 9: Sync cron tasks to Coolify ---\033[0m"
-tsx app/lib/cron/syncTasks.ts \
+infisical --env prod run -- tsx app/lib/cron/syncTasks.ts \
   --coolify https://coolify.labnotes.org \
   --app cite.me.in
 

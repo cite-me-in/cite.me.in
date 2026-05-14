@@ -140,7 +140,7 @@ async function main() {
 
   const coolifyURL = flag(args, "--coolify") ?? process.env.COOLIFY_URL;
   const token = flag(args, "--token") ?? process.env.COOLIFY_TOKEN;
-  const appName = flag(args, "--app") ?? process.env.COOLIFY_APP_UUID;
+  const appName = flag(args, "--app") ?? process.env.COOLIFY_APP;
 
   const missing: string[] = [];
   if (!coolifyURL) missing.push("--coolify (or COOLIFY_URL env)");

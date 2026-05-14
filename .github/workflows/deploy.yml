@@ -115,4 +115,4 @@ jobs:
         run: tsx app/lib/cron/syncTasks.ts
         env:
           COOLIFY_URL: "https://coolify.labnotes.org"
-          COOLIFY_APP_UUID: "cite.me.in"
+          COOLIFY_APP: "cite.me.in"
