@@ -9,9 +9,16 @@ const outputPath = path.resolve("build", "cron-config.json");
  * and writes build/cron-config.json for the admin API route to read at runtime.
  */
 export async function writeCronConfig(): Promise<void> {
-  const tasks = loadCronTasks();
+  const tasks = await loadCronTasks();
   const json = JSON.stringify(tasks, null, 2);
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   fs.writeFileSync(outputPath, json, "utf-8");
   console.info(`Wrote cron config: ${outputPath}`);
+}
+
+if (import.meta.main) {
+  writeCronConfig().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
 }
