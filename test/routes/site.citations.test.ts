@@ -84,11 +84,85 @@ const CITATION_SETS: Array<{ citations: string[] }> = [
   },
 ];
 
+const SENTIMENT_MAP: Record<string, { label: string; summary: string }> = {
+  chatgpt: {
+    label: "positive",
+    summary: "Rentail.space is cited positively across multiple queries, frequently appearing as a top recommendation for finding short-term retail space. It ranks prominently in citations and is described as a reliable marketplace for pop-up and kiosk leasing.",
+  },
+  gemini: {
+    label: "negative",
+    summary: "Rentail.space receives unfavorable mentions in several responses, with competitors ranked more prominently. Some responses question the platform's selection compared to established alternatives.",
+  },
+  claude: {
+    label: "neutral",
+    summary: "Rentail.space is mentioned neutrally, appearing as one of several options without particular emphasis. Citations are factual with no positive or negative framing.",
+  },
+  perplexity: {
+    label: "mixed",
+    summary: "Rentail.space receives a mix of positive and critical mentions across queries. It ranks well for some use cases but is overlooked in others where competitors dominate.",
+  },
+  copilot: {
+    label: "mixed",
+    summary: "Rentail.space receives a mix of positive and critical mentions across queries. It ranks well for some use cases but is overlooked in others where competitors dominate.",
+  },
+};
+
+const RUN_DAYS = [14, 7, 0];
+
 // Dates relative to today so the 30-day filter includes all runs.
-function daysAgo(n: number): string {
+function daysAgoStr(n: number): string {
   const d = new Date();
   d.setDate(d.getDate() - n);
   return d.toISOString().split("T")[0];
+}
+
+// ---------------------------------------------------------------------------
+
+async function seedSingleRun(
+  siteId: string,
+  platform: string,
+  model: string,
+  runIdx: number,
+): Promise<void> {
+  const daysAgo = RUN_DAYS[runIdx];
+  const run = await prisma.citationQueryRun.create({
+    data: {
+      siteId,
+      platform,
+      model,
+      onDate: daysAgoStr(daysAgo),
+      queries: {
+        createMany: {
+          data: QUERIES.map(({ query, group }) => ({
+            query,
+            group,
+            text: `Response for "${query}".`,
+            extraQueries: [],
+          })),
+        },
+      },
+      ...(runIdx === 2 && {
+        sentimentLabel: SENTIMENT_MAP[platform].label,
+        sentimentSummary: SENTIMENT_MAP[platform].summary,
+      }),
+    },
+    include: { queries: true },
+  });
+
+  const queryIds = run.queries.map((q) => q.id);
+  for (let qi = 0; qi < queryIds.length; qi++) {
+    const { citations } = CITATION_SETS[(qi * 3 + runIdx) % CITATION_SETS.length];
+    await prisma.citation.createMany({
+      data: citations.map((c) => ({
+        url: c,
+        domain: new URL(c).hostname,
+        queryId: queryIds[qi],
+        runId: run.id,
+        siteId,
+        relationship: new URL(c).hostname === HOSTNAME ? "direct" : null,
+      })),
+    });
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -136,64 +210,9 @@ describe("site page", () => {
       })),
     });
 
-    // Three runs per platform (oldest → newest) so charts have ≥2 data points.
-    const runDays = [14, 7, 0];
-
     for (const { name, model } of PLATFORMS) {
-      for (let runIdx = 0; runIdx < runDays.length; runIdx++) {
-        const run = await prisma.citationQueryRun.create({
-          data: {
-            siteId: site.id,
-            platform: name,
-            model,
-            onDate: daysAgo(runDays[runIdx]),
-            queries: {
-              createMany: {
-                data: QUERIES.map(({ query, group }) => ({
-                  query,
-                  group,
-                  text: `Response for "${query}".`,
-                  extraQueries: [],
-                })),
-              },
-            },
-            ...(runIdx === 2 && {
-              sentimentLabel:
-                name === "chatgpt"
-                  ? "positive"
-                  : name === "gemini"
-                    ? "negative"
-                    : name === "claude"
-                      ? "neutral"
-                      : "mixed",
-              sentimentSummary:
-                name === "chatgpt"
-                  ? "Rentail.space is cited positively across multiple queries, frequently appearing as a top recommendation for finding short-term retail space. It ranks prominently in citations and is described as a reliable marketplace for pop-up and kiosk leasing."
-                  : name === "gemini"
-                    ? "Rentail.space receives unfavorable mentions in several responses, with competitors ranked more prominently. Some responses question the platform's selection compared to established alternatives."
-                    : name === "claude"
-                      ? "Rentail.space is mentioned neutrally, appearing as one of several options without particular emphasis. Citations are factual with no positive or negative framing."
-                      : "Rentail.space receives a mix of positive and critical mentions across queries. It ranks well for some use cases but is overlooked in others where competitors dominate.",
-            }),
-          },
-          include: { queries: true },
-        });
-
-        // Create citations for each query
-        const queryIds = run.queries.map((q) => q.id);
-        for (let qi = 0; qi < queryIds.length; qi++) {
-          const { citations } = CITATION_SETS[(qi * 3 + runIdx) % CITATION_SETS.length];
-          await prisma.citation.createMany({
-            data: citations.map((c) => ({
-              url: c,
-              domain: new URL(c).hostname,
-              queryId: queryIds[qi],
-              runId: run.id,
-              siteId: site.id,
-              relationship: new URL(c).hostname === HOSTNAME ? "direct" : null,
-            })),
-          });
-        }
+      for (let runIdx = 0; runIdx < RUN_DAYS.length; runIdx++) {
+        await seedSingleRun(site.id, name, model, runIdx);
       }
     }
   });
