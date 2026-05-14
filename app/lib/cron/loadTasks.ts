@@ -92,7 +92,26 @@ function timeoutExport(map: Map<string, Expr>): number {
         return value * 3600;
     }
   }
+
+  // Handle convert(N, "minutes").to("seconds") pattern
+  const parsed = parseConvertCall(entry.text);
+  if (parsed !== null) return parsed;
+
   throw new Error(`Invalid timeout: "${entry.text}"`);
+}
+
+/**
+ * Parse `convert(N, "minutes").to("seconds")` pattern and return seconds.
+ * Returns null if the expression doesn't match.
+ */
+function parseConvertCall(text: string): number | null {
+  const match = text.match(
+    /^convert\(\s*(\d+)\s*,\s*"(minutes|hours)"\s*\)\s*\.\s*to\s*\(\s*"seconds"\s*\)\s*$/,
+  );
+  if (!match) return null;
+  const value = parseInt(match[1], 10);
+  const unit = match[2];
+  return unit === "minutes" ? value * 60 : value * 3600;
 }
 
 function assertDefaultExport(sourceFile: ts.SourceFile): void {

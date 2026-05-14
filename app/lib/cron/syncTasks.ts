@@ -5,6 +5,23 @@ import type { CronTaskConfig } from "./types";
 
 if (import.meta.main) await main();
 
+async function resolveAppUUID(
+  coolifyURL: string,
+  token: string,
+  appName: string,
+): Promise<string> {
+  const apps = await api<{ uuid: string; name: string }[]>({
+    coolifyURL,
+    method: "GET",
+    pathname: "/api/v1/applications",
+    token,
+  });
+  invariant(apps, "Failed to fetch applications");
+  const app = apps.find((a) => a.name === appName);
+  if (!app) throw new Error(`Coolify application not found: "${appName}"`);
+  return app.uuid;
+}
+
 async function syncTasks(
   tasks: CronTaskConfig[],
   {
@@ -123,12 +140,12 @@ async function main() {
 
   const coolifyURL = flag(args, "--coolify") ?? process.env.COOLIFY_URL;
   const token = flag(args, "--token") ?? process.env.COOLIFY_TOKEN;
-  const appUUID = flag(args, "--app") ?? process.env.COOLIFY_APP_UUID;
+  const appName = flag(args, "--app") ?? process.env.COOLIFY_APP_UUID;
 
   const missing: string[] = [];
   if (!coolifyURL) missing.push("--coolify (or COOLIFY_URL env)");
   if (!token) missing.push("--token (or COOLIFY_TOKEN env)");
-  if (!appUUID) missing.push("--app (or COOLIFY_APP_UUID env)");
+  if (!appName) missing.push("--app (or COOLIFY_APP_UUID env)");
   if (missing.length > 0) {
     console.error(`Missing required arguments: ${missing.join(", ")}`);
     process.exit(1);
@@ -139,11 +156,12 @@ async function main() {
     fs.readFileSync(configPath, "utf-8"),
   ) as CronTaskConfig[];
 
-  console.info(`Syncing ${tasks.length} cron tasks to ${appUUID}...`);
+  console.info(`Syncing ${tasks.length} cron tasks to ${appName}...`);
+  const appUUID = await resolveAppUUID(coolifyURL!, token!, appName!);
   await syncTasks(tasks, {
     coolifyURL: coolifyURL!,
     token: token!,
-    appUUID: appUUID!,
+    appUUID,
   });
   console.info("Done.");
 }
