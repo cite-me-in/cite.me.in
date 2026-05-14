@@ -58,7 +58,8 @@ async function syncTasks(
       const needsUpdate =
         existingTask.command !== command ||
         existingTask.frequency !== task.schedule ||
-        existingTask.timeout !== task.timeout;
+        existingTask.timeout !== task.timeout ||
+        existingTask.enabled !== !task.skip;
 
       if (needsUpdate) {
         console.info(`Updating scheduled task: ${task.name}`);
@@ -68,6 +69,7 @@ async function syncTasks(
             frequency: task.schedule,
             name: task.name,
             timeout: task.timeout,
+            enabled: !task.skip,
           },
           coolifyURL,
           method: "PATCH",
@@ -83,6 +85,7 @@ async function syncTasks(
           command,
           frequency: task.schedule,
           timeout: task.timeout,
+          enabled: !task.skip,
         },
         coolifyURL,
         method: "POST",
@@ -159,13 +162,12 @@ async function main() {
   const skipped = tasks.filter((t) => t.skip);
   if (skipped.length > 0)
     console.info(
-      `Skipping ${skipped.length} disabled tasks: ${skipped.map((t) => t.name).join(", ")}`,
+      `Found ${skipped.length} disabled tasks: ${skipped.map((t) => t.name).join(", ")}`,
     );
-  const active = tasks.filter((t) => !t.skip);
 
-  console.info(`Syncing ${active.length} cron tasks to ${appName}...`);
+  console.info(`Syncing ${tasks.length} cron tasks to ${appName}...`);
   const appUUID = await resolveAppUUID(coolifyURL!, token!, appName!);
-  await syncTasks(active, {
+  await syncTasks(tasks, {
     coolifyURL: coolifyURL!,
     token: token!,
     appUUID,

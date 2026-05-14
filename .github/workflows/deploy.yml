@@ -112,7 +112,7 @@ jobs:
           coolify-token: ${{ secrets.COOLIFY_TOKEN }}
 
       - name: Sync cron tasks
-        run: tsx app/lib/cron/syncTasks.ts
+        run: pnpm exec tsx app/lib/cron/syncTasks.ts
         env:
           COOLIFY_URL: "https://coolify.labnotes.org"
           COOLIFY_APP: "cite.me.in"

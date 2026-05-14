@@ -29,7 +29,7 @@ echo -e "\033[0;32m--- Step 5: Update production database ---\033[0m"
 infisical --env prod run -- pnpm prisma db push
 
 echo -e "\033[0;32m--- Step 6: Generate cron config ---\033[0m"
-tsx app/lib/cron/writeConfig.ts
+pnpm exec tsx app/lib/cron/writeConfig.ts
 
 echo -e "\033[0;32m--- Step 7: Build and push Docker image ---\033[0m"
 infisical export --env prod --format=dotenv > .env
@@ -44,7 +44,7 @@ echo -e "\033[0;32m--- Step 8: Trigger Coolify deployment ---\033[0m"
 coolify deploy name cite.me.in --force
 
 echo -e "\033[0;32m--- Step 9: Sync cron tasks to Coolify ---\033[0m"
-infisical --env prod run -- tsx app/lib/cron/syncTasks.ts \
+infisical --env prod run -- pnpm exec tsx app/lib/cron/syncTasks.ts \
   --coolify https://coolify.labnotes.org \
   --app cite.me.in
 
