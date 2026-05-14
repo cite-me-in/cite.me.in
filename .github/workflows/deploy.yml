@@ -110,3 +110,9 @@ jobs:
           app-name: "cite.me.in"
           image: "ghcr.io/cite-me-in/cite.me.in:latest"
           coolify-token: ${{ secrets.COOLIFY_TOKEN }}
+
+      - name: Sync cron tasks
+        run: tsx app/lib/cron/syncTasks.ts
+        env:
+          COOLIFY_URL: "https://coolify.labnotes.org"
+          COOLIFY_APP_UUID: "cite.me.in"

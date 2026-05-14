@@ -61,6 +61,20 @@ model BotVisit {
   @@map("bot_visits")
 }
 
+model CronRun {
+  id         String   @id @default(cuid())
+  job        String   @map("job")
+  status     String   @map("status")
+  startedAt  DateTime @map("started_at")
+  finishedAt DateTime @map("finished_at")
+  durationMs Int      @map("duration_ms")
+  details    Json?    @map("details")
+  error      String?  @map("error")
+
+  @@index([job, startedAt])
+  @@map("cron_runs")
+}
+
 model CitationQuery {
   citations    Citation[]
   createdAt    DateTime         @map("created_at")    @default(now())

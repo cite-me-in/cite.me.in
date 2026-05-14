@@ -3,7 +3,7 @@
   "license": "AGPL-3.0-only",
   "type": "module",
   "scripts": {
-    "build": "prisma generate && react-router build --force",
+    "build": "prisma generate && react-router build --force && tsx app/lib/cron/writeConfig.ts",
     "check": "secretlint **/* --format stylish && react-router typegen && vp check --fix && knip",
     "clean": "pnpm install --force && rm -rf node_modules/.vite .react-router build",
     "dev": "portless run react-router dev",
@@ -13,7 +13,7 @@
     "test:reset": "rm -rf __screenshots__/*",
     "test": "NODE_OPTIONS=\"--localstorage-file /tmp/citeup-test-storage\" pnpm run check && pnpm test:db:push && pnpm test:reset && vp test run && playwright test",
     "upgrade": "./scripts/upgrade.sh",
-    "ready": "pnpm prisma generate && pnpm prisma db push && pnpm react-router typegen"
+    "ready": "pnpm prisma generate && pnpm prisma db push && pnpm react-router typegen && tsx app/lib/cron/writeConfig.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.95.1",

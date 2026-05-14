@@ -28,10 +28,9 @@ fi
 echo -e "\033[0;32m--- Step 5: Update production database ---\033[0m"
 infisical --env prod run -- pnpm prisma db push
 
-echo -e "\033[0;32m--- Step 6: Deploy to production ---\033[0m"
-tsx scripts/lib/deploy.ts \
+echo -e "\033[0;32m--- Step 6: Sync cron tasks to Coolify ---\033[0m"
+infisical --env prod run -- tsx app/lib/cron/syncTasks.ts \
   --coolify https://coolify.labnotes.org \
-  --image ghcr.io/cite-me-in/cite.me.in:latest \
   --app cite.me.in
 
 echo -e "\033[0;34m--- Deployed to https://cite.me.in ---\033[0m"
