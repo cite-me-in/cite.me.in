@@ -12,5 +12,6 @@
   "ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend"],
   "duplicates": {
     "ignore": ["test/**", "__screenshots__/**"]
-  }
+  },
+  "ignorePatterns": ["test/**"]
 }
