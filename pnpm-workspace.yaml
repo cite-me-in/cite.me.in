@@ -1,5 +1,4 @@
 minimumReleaseAge: 1440
-minimumReleaseAgeExclude:
 
 onlyBuiltDependencies:
   - "@google/genai"
@@ -7,9 +6,10 @@ onlyBuiltDependencies:
   - "@prisma/client"
   - "@prisma/engines"
   - "@sentry/cli"
-  - libpq
   - core-js
   - esbuild
+  - fallow
+  - libpq
   - msw
   - prisma
   - protobufjs

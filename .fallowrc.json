@@ -10,7 +10,5 @@
     "test/**/*.ts",
     "test/helpers/serverWorker.ts"
   ],
-  "ignoreDependencies": [
-    "@secretlint/secretlint-rule-preset-recommend"
-  ]
+  "ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend"]
 }

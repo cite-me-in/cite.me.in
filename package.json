@@ -5,6 +5,7 @@
   "scripts": {
     "build": "prisma generate && react-router build --force && tsx app/lib/cron/writeConfig.ts",
     "check": "secretlint **/* --format stylish && react-router typegen && vp check --fix && knip",
+    "check:fallow": "fallow",
     "clean": "pnpm install --force && rm -rf node_modules/.vite .react-router build",
     "dev": "portless run react-router dev",
     "start": "react-router-serve ./build/server/index.js",
@@ -73,6 +74,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "diff": "^9.0.0",
+    "fallow": "^2.73.0",
     "fast-xml-parser": "^5.7.3",
     "knip": "^6.12.2",
     "looks-same": "^10.0.1",

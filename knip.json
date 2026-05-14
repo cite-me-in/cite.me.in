@@ -7,7 +7,8 @@
     "app/global.css",
     "scripts/*",
     "test/**/*.ts",
-    "test/helpers/serverWorker.ts"
+    "test/helpers/serverWorker.ts",
+    "app/cron/*.ts"
   ],
   "project": [
     "app/**/*.ts",
