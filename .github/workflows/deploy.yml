@@ -31,7 +31,8 @@ jobs:
         ports:
           - 5432:5432
         # needed because the postgres container does not provide a healthcheck
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+        options:
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
           --health-retries 5
 
       redis:
@@ -83,7 +84,7 @@ jobs:
           pnpm prisma generate
           pnpm prisma db push
           pnpm react-router typegen
-          tsx app/lib/cron/writeConfig.ts
+          pnpm exec tsx app/lib/cron/writeConfig.ts
 
       - name: Run checks
         run: pnpm run check
