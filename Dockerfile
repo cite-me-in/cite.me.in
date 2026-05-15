@@ -21,6 +21,7 @@ COPY . .
 
 ARG INFISICAL_ENV
 COPY .env .env
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN pnpm build
 
 # --- RUNNER ---
