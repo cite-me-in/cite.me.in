@@ -1,5 +1,4 @@
 __screenshots__/
-.env.test
 docs/
 scripts/
 test/
@@ -8,6 +7,3 @@ test/
 .pnpm-store/
 node_modules/
 .git/
-
-.env.local
-.env.production

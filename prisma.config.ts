@@ -2,7 +2,6 @@ import { resolve } from "node:path";
 import dotenv from "dotenv";
 import { defineConfig, env } from "prisma/config";
 
-if (process.env.NODE_ENV === "test") dotenv.config({ path: ".env.test", quiet: true });
 dotenv.config({ path: ".env", quiet: true });
 
 // @see https://www.prisma.io/docs/orm/overview/databases/supabase#specific-considerations
