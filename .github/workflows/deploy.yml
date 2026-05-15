@@ -97,9 +97,14 @@ jobs:
         run: DEBUG=server,app:*,browser pnpm vp test run
         env:
           NODE_OPTIONS: --enable-source-maps
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_TEST_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_TEST_WEBHOOK_SECRET }}
 
       - name: Run Playwright
         run: pnpm playwright test
+        env:
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_TEST_SECRET_KEY }}
+          STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_TEST_WEBHOOK_SECRET }}
 
       - name: Get Infisical secrets
         uses: zerodays/action-infisical@v1
