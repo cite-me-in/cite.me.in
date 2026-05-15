@@ -12,6 +12,7 @@ const TEST_PASSWORD = "password123";
 
 // Skip if using the default fake Stripe key — CI doesn't inject real credentials
 const hasStripeCredentials = envVars.STRIPE_SECRET_KEY !== "sk_test_1234567890";
+console.log("DEBUG envVars:", envVars.STRIPE_SECRET_KEY?.substring(0, 15), envVars.STRIPE_SECRET_KEY?.length);
 test.skip(!hasStripeCredentials, "No real Stripe credentials configured");
 
 test.describe.configure({ mode: "serial" });
