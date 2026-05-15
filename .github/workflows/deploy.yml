@@ -88,10 +88,10 @@ jobs:
 
       - name: Run checks
         run: |
-          secretlint --format stylish
-          react-router typegen
-          vp check --fix
-          knip
+          pnpm exec secretlint --format stylish
+          pnpm exec react-router typegen
+          pnpm exec vp check --fix
+          pnpm exec knip
 
       - name: Run tests
         run: DEBUG=server,app:*,browser pnpm vp test run
