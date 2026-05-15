@@ -1,19 +1,48 @@
 import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import { daysAgo, hoursAgo } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
-import { port } from "~/test/helpers/launchServer";
 
 vi.mock("~/lib/envVars.server", () => ({
   default: { CRON_SECRET: "test-cron-secret" },
 }));
 
-async function makeRequest(auth?: string) {
-  const response = await fetch(`http://localhost:${port}/cron/process-sites`, {
-    headers: { authorization: `Bearer ${auth}` },
-  });
-  expect(response.status).toBe(200);
+vi.mock("~/lib/captureAndLogError.server", () => ({
+  default: async () => {},
+}));
 
-  const { ok, results } = (await response.json()) as {
+vi.mock("~/lib/llm-visibility/queryPlatform", () => ({
+  queryPlatform: async () => {},
+}));
+
+vi.mock("~/lib/llm-visibility/generateBotInsight", () => ({
+  default: async () => "mock insight",
+}));
+
+vi.mock("~/lib/prepareSites.server", async () => {
+  const actual = await vi.importActual("~/lib/prepareSites.server");
+  return { default: (actual as { default: unknown }).default };
+});
+
+vi.mock("~/emails/WeeklyDigest", () => ({
+  sendSiteDigestEmails: async () => [],
+}));
+
+vi.mock("~/lib/weeklyDigest.server", () => ({
+  loadWeeklyDigestMetrics: async () => ({}),
+}));
+
+vi.mock("~/emails/sendEmails", () => ({
+  sendEmail: async () => ({ id: "test-email-id" }),
+}));
+
+async function makeRequest(auth?: string) {
+  const { loader } = await import("~/routes/cron.process-sites");
+  const request = new Request("http://localhost/cron/process-sites", {
+    headers: auth ? { authorization: `Bearer ${auth}` } : undefined,
+  });
+  const response = await loader({ request, params: {}, context: {} } as never);
+
+  const { ok, results } = response.data as {
     ok: boolean;
     results: { emailIds: string[]; domain: string; skipped: boolean }[];
   };
@@ -24,13 +53,22 @@ async function makeRequest(auth?: string) {
 
 describe("cron.process-sites", () => {
   beforeEach(async () => {
-    await prisma.user.deleteMany({ where: { email: { contains: "process" } } });
+    await prisma.user.deleteMany({
+      where: { email: { contains: "process" } },
+    });
   });
 
   describe("auth", () => {
     it("should return 401 without Authorization header", async () => {
-      const res = await fetch(`http://localhost:${port}/cron/process-sites`);
-      expect(res.status).toBe(401);
+      const { loader } = await import("~/routes/cron.process-sites");
+      const request = new Request("http://localhost/cron/process-sites");
+      let caught: unknown;
+      try {
+        await loader({ request, params: {}, context: {} } as never);
+      } catch (e) {
+        caught = e;
+      }
+      expect(caught instanceof Response && caught.status === 401).toBe(true);
     });
   });
 
