@@ -99,12 +99,16 @@ jobs:
           NODE_OPTIONS: --enable-source-maps
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_TEST_SECRET_KEY }}
           STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_TEST_WEBHOOK_SECRET }}
+          STRIPE_PRICE_MONTHLY_ID: ${{ secrets.STRIPE_TEST_PRICE_MONTHLY_ID }}
+          STRIPE_PRICE_ANNUAL_ID: ${{ secrets.STRIPE_TEST_PRICE_ANNUAL_ID }}
 
       - name: Run Playwright
         run: pnpm playwright test
         env:
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_TEST_SECRET_KEY }}
           STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_TEST_WEBHOOK_SECRET }}
+          STRIPE_PRICE_MONTHLY_ID: ${{ secrets.STRIPE_TEST_PRICE_MONTHLY_ID }}
+          STRIPE_PRICE_ANNUAL_ID: ${{ secrets.STRIPE_TEST_PRICE_ANNUAL_ID }}
 
       - name: Get Infisical secrets
         uses: zerodays/action-infisical@v1
