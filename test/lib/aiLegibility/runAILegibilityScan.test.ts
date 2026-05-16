@@ -1,5 +1,5 @@
 import { HttpResponse, http } from "msw";
-import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import runAILegibilityScan from "~/lib/aiLegibility/runAILegibilityScan";
 import msw from "~/test/mocks/msw";
 import { failingSite, partialSite, passingSite } from "./fixtures";

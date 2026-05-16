@@ -1,5 +1,5 @@
 import { type BrowserContext, type Page, expect } from "@playwright/test";
-import { beforeAll, describe, it } from "vite-plus/test";
+import { beforeAll, describe, it } from "vitest";
 import { hashPassword, verifyPassword } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
 import type { User } from "~/prisma";

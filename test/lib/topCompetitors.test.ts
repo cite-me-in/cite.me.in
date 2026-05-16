@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vite-plus/test";
+import { describe, expect, it } from "vitest";
 import { topCompetitors } from "~/routes/site.$domain_.citations/TopCompetitors";
 
 describe("topCompetitors", () => {

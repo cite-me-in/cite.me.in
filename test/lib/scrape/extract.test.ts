@@ -1,5 +1,5 @@
 import { ms } from "convert";
-import { describe, expect, it, vi } from "vite-plus/test";
+import { describe, expect, it, vi } from "vitest";
 import fetchAndExtract from "~/lib/scrape/extract";
 import {
   CANONICAL_SKIP_HTML,

@@ -1,5 +1,5 @@
 import invariant from "tiny-invariant";
-import { beforeAll, describe, expect, it } from "vite-plus/test";
+import { beforeAll, describe, expect, it } from "vitest";
 import type { createDocument } from "zod-openapi";
 import { port } from "~/test/helpers/launchServer";
 

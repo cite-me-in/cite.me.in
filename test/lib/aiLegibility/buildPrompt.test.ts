@@ -1,4 +1,4 @@
-import { expect, it } from "vite-plus/test";
+import { expect, it } from "vitest";
 import buildPrompt from "~/lib/aiLegibility/buildPrompt";
 import type { CheckResult } from "~/lib/aiLegibility/types";
 

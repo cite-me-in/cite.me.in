@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import prisma from "~/lib/prisma.server";
 import type { Site } from "~/prisma";
 

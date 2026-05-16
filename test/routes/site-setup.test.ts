@@ -1,6 +1,6 @@
 import { type Page, expect } from "@playwright/test";
 import Redis from "ioredis";
-import { afterAll, beforeAll, describe, it } from "vite-plus/test";
+import { afterAll, beforeAll, describe, it } from "vitest";
 import { hashPassword } from "~/lib/auth.server";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";

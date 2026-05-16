@@ -1,8 +1,7 @@
 import path from "node:path";
 import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
-import { defineConfig } from "vite-plus";
-import type { ParsedStack } from "vite-plus/test";
+import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   build: {
@@ -24,10 +23,6 @@ export default defineConfig({
     allowedHosts: [".ngrok-free.app"],
     cors: false, // Disable Vite's CORS middleware, let React Router handle it
   },
-  staged: {
-    "*.{ts,tsx}": "vp check --fix",
-  },
-
   test: {
     fileParallelism: false,
     bail: 1,
@@ -43,7 +38,7 @@ export default defineConfig({
       else process.stdout.write(log);
     },
 
-    onStackTrace: (error: { name?: string }, { file }: ParsedStack) => {
+    onStackTrace: (error: { name?: string }, { file }: { file: string }) => {
       // If we've encountered a ReferenceError, show the whole stack.
       if (error.name === "ReferenceError") return true;
       // Reject all frames from third party libraries.

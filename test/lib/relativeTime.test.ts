@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vite-plus/test";
+import { describe, expect, it } from "vitest";
 import { timeago } from "~/lib/relativeTime";
 
 const NOW = new Date("2025-06-15T12:00:00Z").getTime();

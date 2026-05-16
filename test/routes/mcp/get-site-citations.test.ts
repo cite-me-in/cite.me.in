@@ -1,5 +1,5 @@
 import invariant from "tiny-invariant";
-import { afterAll, beforeAll, describe, expect, it } from "vite-plus/test";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import prisma from "~/lib/prisma.server";
 import { accessToken, initSession, mcpRequest, parseResponse } from "./setup";
 

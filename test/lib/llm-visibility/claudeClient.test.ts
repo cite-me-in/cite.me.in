@@ -2,7 +2,7 @@ import type {
   BetaContentBlock,
   BetaWebSearchResultBlock,
 } from "@anthropic-ai/sdk/resources/beta/messages/messages.mjs";
-import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockCreate = vi.hoisted(() =>
   vi.fn<

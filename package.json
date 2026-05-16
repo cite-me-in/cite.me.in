@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "prisma generate && react-router build --force && tsx app/lib/cron/writeConfig.ts",
-    "check": "secretlint --format stylish && react-router typegen && vp check --fix && infisical --env test run -- knip",
+    "check": "secretlint --format stylish && react-router typegen && infisical --env test run -- knip",
     "fallow": "fallow",
     "clean": "pnpm install --force && rm -rf node_modules/.vite .react-router build",
     "dev": "infisical --env test run -- portless run -- react-router dev",
@@ -12,7 +12,7 @@
     "test:db:push": "infisical --env test run -- pnpm prisma db push",
     "prod:db:push": "infisical --env prod run -- pnpm prisma db push",
     "test:reset": "rm -rf __screenshots__/*",
-    "test": "NODE_OPTIONS=\"--localstorage-file /tmp/citeup-test-storage\" pnpm run check && pnpm test:db:push && pnpm test:reset && infisical --env test run -- vp test run && infisical --env test run -- playwright test",
+    "test": "NODE_OPTIONS=\"--localstorage-file /tmp/citeup-test-storage\" pnpm run check && pnpm test:db:push && pnpm test:reset && infisical --env test run -- vitest run && infisical --env test run -- playwright test",
     "ready": "pnpm prisma generate && pnpm prisma db push && pnpm react-router typegen && tsx app/lib/cron/writeConfig.ts"
   },
   "dependencies": {
@@ -64,8 +64,6 @@
   "devDependencies": {
     "@infisical/cli": "^0.43.84",
     "@playwright/test": "^1.60.0",
-    "@rolldown/binding-linux-x64-gnu": "1.0.0",
-    "@rolldown/binding-linux-x64-musl": "1.0.0",
     "@react-router/dev": "^7.15.1",
     "@secretlint/secretlint-rule-preset-recommend": "^13.0.0",
     "@tailwindcss/forms": "^0.5.11",
@@ -75,7 +73,6 @@
     "@types/node": "^25.8.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@voidzero-dev/vite-plus-linux-x64-gnu": "0.1.20",
     "diff": "^9.0.0",
     "fallow": "^2.74.0",
     "knip": "^6.13.1",
@@ -88,8 +85,8 @@
     "tailwindcss": "^4.3.0",
     "tsx": "^4.22.0",
     "typescript": "^6.0.3",
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.1.20",
-    "vite-plus": "0.1.20"
+    "vite": "^8.0.11",
+    "vitest": "^4.1.5"
   },
   "engines": {
     "node": ">=24.10.1"

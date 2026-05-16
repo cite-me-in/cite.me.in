@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vite-plus/test";
+import { describe, expect, it } from "vitest";
 import checkContentSignals from "~/lib/aiLegibility/checks/contentSignals";
 import { ROBOTS_TXT_WITH_SIGNAL } from "~/test/lib/aiLegibility/fixtures";
 

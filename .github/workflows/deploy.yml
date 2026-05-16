@@ -89,11 +89,11 @@ jobs:
         run: |
           pnpm exec secretlint --format stylish
           pnpm exec react-router typegen
-          pnpm exec vp check --fix
+          # vp check --fix removed (vite-plus replaced with vite + vitest)
           pnpm exec knip
 
       - name: Run tests
-        run: DEBUG=server,app:*,browser pnpm vp test run
+        run: DEBUG=server,app:*,browser pnpm vitest run
         env:
           NODE_OPTIONS: --enable-source-maps
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_TEST_SECRET_KEY }}

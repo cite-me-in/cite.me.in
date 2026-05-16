@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
 import type { InputJsonObject } from "@prisma/client/runtime/client";
-import { beforeAll, describe, it } from "vite-plus/test";
+import { beforeAll, describe, it } from "vitest";
 import sendAiLegibilityReport from "~/emails/AiLegibilityReport";
 import { appendLog, startNewScan } from "~/lib/aiLegibility/progress.server";
 import type { ScanResult } from "~/lib/aiLegibility/types";

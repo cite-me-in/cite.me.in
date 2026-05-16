@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vite-plus/test";
+import { beforeEach, describe, expect, it } from "vitest";
 import recordBotVisit from "~/lib/botTracking.server";
 import envVars from "~/lib/envVars.server";
 import { normalizeDomain } from "~/lib/isSameDomain";

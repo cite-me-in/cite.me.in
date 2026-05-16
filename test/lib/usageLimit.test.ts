@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vite-plus/test";
+import { beforeEach, describe, expect, it } from "vitest";
 import prisma from "~/lib/prisma.server";
 import { checkUsageLimits, recordUsageEvent } from "~/lib/usage/usageLimit.server";
 import UsageLimitExceededError from "~/lib/usage/UsageLimitExceededError";

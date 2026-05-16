@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import prisma from "~/lib/prisma.server";
 import crawl from "~/lib/scrape/crawl";
 import summarize from "~/lib/scrape/summarize";

@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { beforeAll, describe, it } from "vite-plus/test";
+import { beforeAll, describe, it } from "vitest";
 import prisma from "~/lib/prisma.server";
 import type { User } from "~/prisma";
 import { goto } from "~/test/helpers/launchBrowser";

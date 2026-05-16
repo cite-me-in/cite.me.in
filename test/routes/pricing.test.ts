@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
 import { ms } from "convert";
-import { beforeEach, describe, it } from "vite-plus/test";
+import { beforeEach, describe, it } from "vitest";
 import prisma from "~/lib/prisma.server";
 import { goto } from "~/test/helpers/launchBrowser";
 import { port } from "~/test/helpers/launchServer";

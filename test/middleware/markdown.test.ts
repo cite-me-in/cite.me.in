@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi, type Mock } from "vite-plus/test";
+import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 import { markdownMiddleware } from "~/middleware/markdown";
 
 vi.mock("defuddle/node", () => ({

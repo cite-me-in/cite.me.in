@@ -19,7 +19,7 @@ else
   infisical --env dev run --  pnpm test:db:push
 
   echo -e "\033[0;32m--- Step 3: Run tests ---\033[0m"
-  infisical --env test run -- pnpm vp test run
+  infisical --env test run -- pnpm vitest run
 
   echo -e "\033[0;32m--- Step 4: Run Playwright ---\033[0m"
   infisical --env test run -- pnpm playwright test

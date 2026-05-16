@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it } from "vite-plus/test";
+import { beforeAll, describe, expect, it } from "vitest";
 import { requireAdmin, verifySiteAccess, verifyUserAccess } from "~/lib/api/apiAuth.server";
 import { hashPassword } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";

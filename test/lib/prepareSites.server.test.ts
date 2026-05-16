@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vite-plus/test";
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import prisma from "~/lib/prisma.server";
 
 const mockQueryPlatform = vi.fn<() => void>();

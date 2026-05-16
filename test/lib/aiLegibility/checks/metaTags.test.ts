@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vite-plus/test";
+import { describe, expect, it } from "vitest";
 import checkMetaTags from "~/lib/aiLegibility/checks/metaTags";
 import { HOMEPAGE_WITH_CONTENT } from "~/test/lib/aiLegibility/fixtures";
 

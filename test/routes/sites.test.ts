@@ -1,7 +1,7 @@
 import { type Locator, type Page, expect } from "@playwright/test";
 import { ms } from "convert";
 import type { BrowserContext } from "playwright";
-import { afterAll, beforeAll, describe, it } from "vite-plus/test";
+import { afterAll, beforeAll, describe, it } from "vitest";
 import { hashPassword } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
 import type { Site, User } from "~/prisma";
