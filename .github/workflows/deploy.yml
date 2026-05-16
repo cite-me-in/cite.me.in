@@ -64,7 +64,7 @@ jobs:
             playwright-${{ runner.os }}-
 
       - name: Install dependencies
-        run: rm -rf node_modules && pnpm install --force
+        run: rm -rf node_modules && pnpm store path | xargs rm -rf && pnpm install --frozen-lockfile
 
       - name: Install Playwright and system dependencies
         run: pnpm exec playwright install chromium
