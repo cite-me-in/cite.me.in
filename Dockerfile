@@ -1,4 +1,4 @@
-FROM node:24-slim AS base
+FROM node:22-slim AS base
 
 RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ libpq-dev && rm -rf /var/lib/apt/lists/*
 
@@ -26,7 +26,7 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN pnpm build
 
 # --- RUNNER ---
-FROM node:24-slim AS runner
+FROM node:22-slim AS runner
 ENV NODE_ENV=production
 ENV DEBIAN_FRONTEND=noninteractive
 
