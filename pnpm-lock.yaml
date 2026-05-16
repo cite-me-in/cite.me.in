@@ -216,13 +216,6 @@ importers:
       vite-plus:
         specifier: ^0.1.21
         version: 0.1.21(@edge-runtime/vm@3.2.0)(@opentelemetry/api@1.9.1)(@types/node@25.8.0)(@voidzero-dev/vite-plus-core@0.1.21(@types/node@25.8.0)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.0)(typescript@6.0.3)(yaml@2.9.0))(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.0)(typescript@6.0.3)(yaml@2.9.0)
-    optionalDependencies:
-      '@voidzero-dev/vite-plus-linux-x64-gnu':
-        specifier: 0.1.21
-        version: 0.1.21
-      '@voidzero-dev/vite-plus-linux-x64-musl':
-        specifier: 0.1.21
-        version: 0.1.21
 
 packages:
 
