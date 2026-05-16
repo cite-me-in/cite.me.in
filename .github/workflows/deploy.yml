@@ -64,7 +64,7 @@ jobs:
             playwright-${{ runner.os }}-
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Install Playwright and system dependencies
         run: pnpm exec playwright install chromium
