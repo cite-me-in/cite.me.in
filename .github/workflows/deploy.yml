@@ -51,7 +51,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version-file: "package.json"
+          node-version: "22"
 
       - name: Cache Playwright browsers
         id: playwright-cache
