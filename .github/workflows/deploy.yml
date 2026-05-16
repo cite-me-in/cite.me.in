@@ -47,11 +47,10 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
-          cache: true
+          cache: false
 
       - uses: actions/setup-node@v6
         with:
-          cache: "pnpm"
           node-version-file: "package.json"
 
       - name: Cache Playwright browsers
@@ -64,7 +63,7 @@ jobs:
             playwright-${{ runner.os }}-
 
       - name: Install dependencies
-        run: rm -rf node_modules && pnpm store path | xargs rm -rf && pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Install Playwright and system dependencies
         run: pnpm exec playwright install chromium
