@@ -11,7 +11,7 @@
     "app/cron/*.ts"
   ],
   "project": ["app/**/*.ts", "app/**/*.tsx", "test/**/*.ts", "!__screenshots__"],
-  "ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend", "portless", "@voidzero-dev/vite-plus-darwin-arm64", "@voidzero-dev/vite-plus-darwin-x64", "@voidzero-dev/vite-plus-linux-arm64-gnu", "@voidzero-dev/vite-plus-linux-arm64-musl", "@voidzero-dev/vite-plus-linux-x64-gnu", "@voidzero-dev/vite-plus-linux-x64-musl", "@voidzero-dev/vite-plus-win32-arm64-msvc", "@voidzero-dev/vite-plus-win32-x64-msvc"],
+  "ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend", "portless", "@rolldown/binding-linux-x64-gnu", "@rolldown/binding-linux-x64-musl", "@voidzero-dev/vite-plus-darwin-arm64", "@voidzero-dev/vite-plus-darwin-x64", "@voidzero-dev/vite-plus-linux-arm64-gnu", "@voidzero-dev/vite-plus-linux-arm64-musl", "@voidzero-dev/vite-plus-linux-x64-gnu", "@voidzero-dev/vite-plus-linux-x64-musl", "@voidzero-dev/vite-plus-win32-arm64-msvc", "@voidzero-dev/vite-plus-win32-x64-msvc"],
   "ignoreFiles": ["app/lib/truncateWords.ts"],
   "ignoreIssues": {
     "app/lib/api/schemas.ts": ["exports"],

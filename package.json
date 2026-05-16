@@ -64,6 +64,8 @@
   "devDependencies": {
     "@infisical/cli": "^0.43.84",
     "@playwright/test": "^1.60.0",
+    "@rolldown/binding-linux-x64-gnu": "1.0.0",
+    "@rolldown/binding-linux-x64-musl": "1.0.0",
     "@react-router/dev": "^7.15.1",
     "@secretlint/secretlint-rule-preset-recommend": "^13.0.0",
     "@tailwindcss/forms": "^0.5.11",
