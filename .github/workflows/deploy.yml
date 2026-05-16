@@ -64,7 +64,7 @@ jobs:
             playwright-${{ runner.os }}-
 
       - name: Install dependencies
-        run: pnpm install
+        run: rm -rf node_modules && pnpm install --force
 
       - name: Install Playwright and system dependencies
         run: pnpm exec playwright install chromium
