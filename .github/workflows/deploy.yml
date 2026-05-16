@@ -136,3 +136,4 @@ jobs:
         env:
           COOLIFY_URL: "https://coolify.labnotes.org"
           COOLIFY_APP: "cite.me.in"
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
