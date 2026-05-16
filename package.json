@@ -85,21 +85,12 @@
     "tailwindcss": "^4.3.0",
     "tsx": "^4.22.0",
     "typescript": "^6.0.3",
-    "vite": "^8.0.11",
-    "vitest": "^4.1.5"
+    "vite": "^7.3.3",
+    "vitest": "^3.2.4"
   },
   "engines": {
     "node": ">=24.10.1"
   },
-  "pnpm": {
-    "overrides": {
-      "@rolldown/binding-linux-x64-gnu": "1.0.0",
-      "@rolldown/binding-linux-x64-musl": "1.0.0",
-      "@rolldown/binding-linux-arm64-gnu": "1.0.0",
-      "@rolldown/binding-linux-arm64-musl": "1.0.0",
-      "@rolldown/binding-darwin-arm64": "1.0.0",
-      "@rolldown/binding-darwin-x64": "1.0.0"
-    }
-  },
+
   "packageManager": "pnpm@10.33.0"
 }
