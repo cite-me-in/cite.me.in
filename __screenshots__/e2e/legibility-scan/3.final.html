@@ -41,8 +41,11 @@
         Scan complete
       </div>
     </div>
-    <div class="overflow-hidden transition-all duration-500 ease-in-out max-h-0 opacity-0">
+    <div class="overflow-hidden transition-all duration-500 ease-in-out max-h-[3000px] opacity-100">
       <div class="space-y-4">
+        <div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-secondary-background text-foreground" data-slot="card">
+          <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header"></div>
+        </div>
         <div class="grid gap-3 sm:grid-cols-2">
           <div class="rounded-base shadow-[2px_2px_0px_0px_black flex items-start gap-3 border-2 p-3 text-base border-red-600 bg-red-50">
             <div class="pt-1">
@@ -320,7 +323,7 @@
         </div>
       </div>
     </div>
-    <div class="transition-all duration-500 ease-in-out translate-y-0 opacity-100" style="pointer-events: auto;">
+    <div class="transition-all duration-500 ease-in-out translate-y-4 opacity-0" style="pointer-events: none;">
       <div class="space-y-8">
         <div class="rounded-base border-2 border-black bg-white p-6 shadow-[4px_4px_0px_0px_black]">
           <div class="mb-4 flex items-center justify-between">

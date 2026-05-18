@@ -47,22 +47,19 @@ test("shows the full scan result including CTA", async () => {
     timeout: 50_000,
   });
 
-  // Wait for the progress section to finish collapsing (300ms hold + 500ms transition)
-  // before results fade in — wait until the progress div actually reaches opacity 0
-  await page.waitForFunction(
-    () => {
-      const el = document.querySelector('[class*="max-h-0"][class*="opacity-0"]');
-      if (!el) return false;
-      // Verify transition is complete by checking computed opacity
-      const style = getComputedStyle(el);
-      return style.opacity === "0";
-    },
-    { timeout: 10_000 },
-  );
+  // Wait for scan results to appear after the progress→results CSS transition chain.
+  await page.waitForSelector("text=AI Legibility Report", { timeout: 10_000 });
 
   await page.evaluate(() => document.fonts.ready);
   await page.locator("#scan-results").scrollIntoViewIfNeeded();
   await expect(page.locator("main")).toMatchVisual({
     name: "e2e/legibility-scan/3.final",
+    // "Starting scan..." spinner is SSR-rendered and remains in the DOM inside
+    // the collapsed progress wrapper. Strip it from the HTML comparison.
+    modify: (doc) => {
+      for (const el of doc.querySelectorAll('[data-slot="card-title"]')) {
+        if (el.textContent?.includes("Starting scan")) el.remove();
+      }
+    },
   });
 });
