@@ -31,19 +31,11 @@ infisical --env prod run -- pnpm prisma db push
 echo -e "\033[0;32m--- Step 6: Generate cron config ---\033[0m"
 infisical --env prod run -- tsx app/lib/cron/writeConfig.ts
 
-echo -e "\033[0;32m--- Step 7: Build and push Docker image ---\033[0m"
+echo -e "\033[0;32m--- Step 7: Trigger Coolify deployment ---\033[0m"
 infisical export --env prod --format=dotenv > .env
-docker buildx build \
-  --platform linux/amd64 \
-  --push \
-  -t ghcr.io/cite-me-in/cite.me.in:latest \
-  .
-rm -f .env
-
-echo -e "\033[0;32m--- Step 8: Trigger Coolify deployment ---\033[0m"
 infisical --env prod run -- coolify deploy name cite.me.in --force
 
-echo -e "\033[0;32m--- Step 9: Sync cron tasks to Coolify ---\033[0m"
+echo -e "\033[0;32m--- Step 8: Sync cron tasks to Coolify ---\033[0m"
 infisical --env prod run -- pnpm exec tsx app/lib/cron/syncTasks.ts \
   --coolify https://coolify.labnotes.org \
   --app cite.me.in

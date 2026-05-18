@@ -18,7 +18,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.96.0",
     "@base-ui/react": "^1.4.1",
-    "@google/genai": "^2.2.0",
+    "@google/genai": "^2.3.0",
     "@js-temporal/polyfill": "^0.5.1",
     "@logtail/node": "^0.5.8",
     "@modelcontextprotocol/sdk": "^1.29.0",
@@ -41,7 +41,7 @@
     "ioredis": "^5.10.1",
     "linkedom": "^0.18.12",
     "lucide-react": "^1.16.0",
-    "openai": "^6.37.0",
+    "openai": "^6.38.0",
     "radashi": "^12.9.1",
     "random-password-toolkit": "^1.0.2",
     "react": "^19.2.6",
@@ -65,7 +65,7 @@
     "@infisical/cli": "^0.43.84",
     "@playwright/test": "^1.60.0",
     "@react-router/dev": "^7.15.1",
-    "@secretlint/secretlint-rule-preset-recommend": "^13.0.0",
+    "@secretlint/secretlint-rule-preset-recommend": "^13.0.2",
     "@tailwindcss/forms": "^0.5.11",
     "@tailwindcss/typography": "^0.5.19",
     "@tailwindcss/vite": "^4.3.0",
@@ -74,32 +74,22 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "diff": "^9.0.0",
-    "fallow": "^2.74.0",
-    "knip": "^6.13.1",
+    "fallow": "^2.75.0",
+    "knip": "^6.14.1",
     "looks-same": "^10.0.1",
     "msw": "^2.14.6",
     "playwright": "^1.60.0",
     "portless": "^0.13.0",
     "prisma": "^7.8.0",
-    "secretlint": "^13.0.0",
+    "secretlint": "^13.0.2",
     "tailwindcss": "^4.3.0",
-    "tsx": "^4.22.0",
+    "tsx": "^4.22.1",
     "typescript": "^6.0.3",
-    "vite": "^8.0.11",
-    "vitest": "^4.1.5"
+    "vite": "^8.0.13",
+    "vitest": "^4.1.6"
   },
   "engines": {
     "node": ">=24.10.1"
   },
-  "pnpm": {
-    "overrides": {
-      "@rolldown/binding-linux-x64-gnu": "1.0.1",
-      "@rolldown/binding-linux-x64-musl": "1.0.1",
-      "@rolldown/binding-linux-arm64-gnu": "1.0.1",
-      "@rolldown/binding-linux-arm64-musl": "1.0.1",
-      "@rolldown/binding-darwin-arm64": "1.0.1",
-      "@rolldown/binding-darwin-x64": "1.0.1"
-    }
-  },
-  "packageManager": "pnpm@10.33.0"
+  "packageManager": "pnpm@11.1.2"
 }

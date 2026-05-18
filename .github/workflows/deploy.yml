@@ -6,12 +6,10 @@ on:
   workflow_dispatch:
 
 env:
-  POSTGRES_URL: "postgresql://postgres:postgres@localhost:5432/citeup_test"
-  POSTGRES_URL_NON_POOLING: "postgresql://postgres:postgres@localhost:5432/citeup_test"
-  REDIS_URL: "redis://localhost:6379"
-  NODE_ENV: "test"
-  CI: "true"
   UPDATE_SNAPSHOT: "true"
+  INFISICAL_CLIENT_ID: "f61bf12f-03e0-4fc9-963b-f116b3bfd0fa"
+  INFISICAL_CLIENT_SECRET: "0ae805a36044b33072321abf428b03f1f868c7c5234e252e40cc26d6c0ae05bf"
+  INFISICAL_PROJECT_SLUG: "cite-me-in"
 
 jobs:
   deploy:
@@ -31,7 +29,8 @@ jobs:
         ports:
           - 5432:5432
         # needed because the postgres container does not provide a healthcheck
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+        options:
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
           --health-retries 5
 
       redis:
@@ -70,12 +69,12 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit != 'true'
 
       - name: Get test secrets
-        uses: zerodays/action-infisical@v1
+        uses: Infisical/secrets-action@v1.0.16
         with:
-          environment: "test"
-          infisical_token: ${{ secrets.INFISICAL_TOKEN }}
-          output_file: ".env"
-          workspace_id: "a89716e5-9232-4ee7-85ea-11977924fe95"
+          client-id: ${{ env.INFISICAL_CLIENT_ID }}
+          client-secret: ${{ env.INFISICAL_CLIENT_SECRET }}
+          env-slug: "test"
+          project-slug: ${{ env.INFISICAL_PROJECT_SLUG }}
 
       - name: Prepare application
         run: |
@@ -108,13 +107,15 @@ jobs:
           STRIPE_PRICE_MONTHLY_ID: ${{ secrets.STRIPE_TEST_PRICE_MONTHLY_ID }}
           STRIPE_PRICE_ANNUAL_ID: ${{ secrets.STRIPE_TEST_PRICE_ANNUAL_ID }}
 
-      - name: Get Infisical secrets
-        uses: zerodays/action-infisical@v1
+      - name: Get production secrets
+        uses: Infisical/secrets-action@v1.0.16
         with:
-          environment: "prod"
-          infisical_token: ${{ secrets.INFISICAL_TOKEN }}
-          output_file: ".env"
-          workspace_id: "a89716e5-9232-4ee7-85ea-11977924fe95"
+          client-id: ${{ env.INFISICAL_CLIENT_ID }}
+          client-secret: ${{ env.INFISICAL_CLIENT_SECRET }}
+          env-slug: "prod"
+          export-type: "file"
+          file-output-path: "/.env"
+          project-slug: ${{ env.INFISICAL_PROJECT_SLUG }}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v4
@@ -124,12 +125,14 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy to Coolify
-        uses: assaf/coolify-deploy@115b5163ba3e10e116cd4ec0bfe100ce982ed658
+        uses: assaf/coolify-deploy@1.2.0
         with:
           coolify-url: "https://coolify.labnotes.org"
           app-name: "cite.me.in"
           image: "ghcr.io/cite-me-in/cite.me.in:latest"
           coolify-token: ${{ secrets.COOLIFY_TOKEN }}
+          healthcheck-path: "/"
+          healthcheck-timeout: "60"
 
       - name: Sync cron tasks
         run: pnpm exec tsx app/lib/cron/syncTasks.ts

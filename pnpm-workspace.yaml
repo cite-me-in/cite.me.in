@@ -1,3 +1,14 @@
+allowBuilds:
+  '@google/genai': true
+  '@infisical/cli': true
+  '@prisma/engines': true
+  '@sentry/cli': true
+  esbuild: true
+  fallow: true
+  msw: true
+  prisma: true
+  protobufjs: true
+
 minimumReleaseAge: 1440
 
 onlyBuiltDependencies:
@@ -22,5 +33,5 @@ peerDependencyRules:
     vite: "*"
 
 supportedArchitectures:
-  os: [darwin, linux]
-  cpu: [arm64, x64]
+  os: [ darwin, linux ]
+  cpu: [ arm64, x64 ]
