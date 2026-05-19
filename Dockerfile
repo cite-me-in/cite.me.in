@@ -10,7 +10,7 @@ RUN corepack enable pnpm
 FROM base AS deps
 WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN pnpm install --prod --frozen-lockfile
+RUN pnpm install --prod --frozen-lockfile --ignore-scripts
 
 # --- BUILDER ---
 FROM base AS builder
@@ -59,7 +59,7 @@ COPY --from=builder /app/prisma/prod-ca-2021.crt ./prisma/prod-ca-2021.crt
 COPY --from=builder /app/app ./app
 COPY --from=builder /app/.env .env
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 
 RUN chmod 644 .env
 
