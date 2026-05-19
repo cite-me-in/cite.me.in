@@ -1,8 +1,8 @@
 allowBuilds:
-  '@google/genai': true
-  '@infisical/cli': true
-  '@prisma/engines': true
-  '@sentry/cli': true
+  "@google/genai": true
+  "@infisical/cli": true
+  "@prisma/engines": true
+  "@sentry/cli": true
   esbuild: true
   fallow: true
   msw: true
@@ -10,6 +10,8 @@ allowBuilds:
   protobufjs: true
 
 minimumReleaseAge: 1440
+minimumReleaseAgeExclude:
+  - "coolify-ghcr-deploy"
 
 onlyBuiltDependencies:
   - "@google/genai"
@@ -33,5 +35,5 @@ peerDependencyRules:
     vite: "*"
 
 supportedArchitectures:
-  os: [ darwin, linux ]
-  cpu: [ arm64, x64 ]
+  os: [darwin, linux]
+  cpu: [arm64, x64]
