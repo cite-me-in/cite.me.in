@@ -43,17 +43,14 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v6
 
-      - name: Clear stale pnpm installation
-        run: rm -rf ~/setup-pnpm
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-        with:
-          cache: false
-
       - uses: actions/setup-node@v6
         with:
           node-version: "22"
+
+      - name: Setup pnpm
+        run: |
+          corepack enable
+          corepack prepare --activate
 
       - name: Cache Playwright browsers
         id: playwright-cache
