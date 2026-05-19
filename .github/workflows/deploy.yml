@@ -43,6 +43,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v6
 
+      - name: Clear stale pnpm installation
+        run: rm -rf ~/setup-pnpm
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
