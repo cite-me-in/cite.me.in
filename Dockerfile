@@ -1,4 +1,4 @@
-FROM node:22-slim AS base
+FROM node:24-slim AS base
 
 RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ libpq-dev && rm -rf /var/lib/apt/lists/*
 
@@ -10,7 +10,7 @@ RUN corepack enable pnpm
 FROM base AS deps
 WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN pnpm install --prod --frozen-lockfile
+RUN pnpm install --prod --frozen-lockfile --ignore-scripts
 
 # --- BUILDER ---
 FROM base AS builder
@@ -20,13 +20,19 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY . .
 
-ARG INFISICAL_ENV
-COPY .env .env
 ENV NODE_OPTIONS="--max-old-space-size=4096"
-RUN pnpm build
+
+# Build with secrets from Docker --secret id=env (passed by coolify-deploy or coolify-ghcr-deploy)
+RUN --mount=type=secret,id=env,required=true \
+    set -a; . /run/secrets/env; set +a && \
+    pnpm build
+
+# Persist the env file so the runner stage can copy it
+RUN --mount=type=secret,id=env,required=true \
+    cp /run/secrets/env .env && chmod 644 .env
 
 # --- RUNNER ---
-FROM node:22-slim AS runner
+FROM node:24-slim AS runner
 ENV NODE_ENV=production
 ENV DEBIAN_FRONTEND=noninteractive
 

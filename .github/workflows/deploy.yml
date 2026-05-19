@@ -125,12 +125,13 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy to Coolify
-        uses: assaf/coolify-deploy@1.2.0
+        uses: assaf/coolify-deploy@v1.4.0
         with:
           coolify-url: "https://coolify.labnotes.org"
           app-name: "cite.me.in"
           image: "ghcr.io/cite-me-in/cite.me.in:latest"
           coolify-token: ${{ secrets.COOLIFY_TOKEN }}
+          env-file: ".env"
           healthcheck-path: "/"
           healthcheck-timeout: "60"
 
