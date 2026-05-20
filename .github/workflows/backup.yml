@@ -65,6 +65,6 @@ jobs:
                 filesec=$(date -d "$datepart" +%s 2>/dev/null || true)
                 if [ -n "$filesec" ] && [ "$filesec" -lt "$cutoff" ]; then
                   echo "Deleting $key"
-                  aws s3 rm "s3://$R2_BUCKET/$key" --endpoint-url "$endpoint" --no-progress
+                  aws s3 rm "s3://$R2_BUCKET/$key" --endpoint-url "$endpoint"
                 fi
               done
