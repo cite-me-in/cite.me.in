@@ -1,6 +1,5 @@
-FROM node:24-slim AS base
-
-RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ libpq-dev && rm -rf /var/lib/apt/lists/*
+FROM node:22-slim AS base
+ENV UV_USE_IO_URING=0
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
@@ -10,58 +9,46 @@ RUN corepack enable pnpm
 FROM base AS deps
 WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN pnpm install --prod --frozen-lockfile --ignore-scripts
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
 # --- BUILDER ---
 FROM base AS builder
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN pnpm install --frozen-lockfile
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-ENV NODE_OPTIONS="--max-old-space-size=4096"
-
-# Build with secrets from Docker --secret id=env (passed by coolify-deploy or coolify-ghcr-deploy)
 RUN --mount=type=secret,id=env,required=true \
-    set -a; . /run/secrets/env; set +a && \
-    pnpm build
-
-# Persist the env file so the runner stage can copy it
-RUN --mount=type=secret,id=env,required=true \
-    cp /run/secrets/env .env && chmod 644 .env
+  set -a; . /run/secrets/env; set +a && \
+  pnpm run build:prisma && \
+  pnpm run build
 
 # --- RUNNER ---
-FROM node:24-slim AS runner
+FROM node:22-slim AS runner
 ENV NODE_ENV=production
-ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 make g++ curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
-# Retry with timeout (workaround for Colima TCP connection drops to Azure CDN)
-RUN for i in $(seq 1 3); do \
-        timeout 600 npx -y playwright@1.59.1 install chromium --with-deps && break; \
-        echo "Attempt $i failed, retrying in 15s..."; \
-        sleep 15; \
-    done
 RUN corepack enable pnpm
 
 WORKDIR /app
 
-ENV HOST="0.0.0.0"
+ENV HOSTNAME="0.0.0.0"
 ENV PORT=3000
 EXPOSE 3000
 
-COPY --from=deps /app/node_modules ./node_modules
 COPY --from=builder /app/build ./build
+COPY --from=builder /app/node_modules/.pnpm/node_modules/@prisma/engines ./build/node_modules/.pnpm/node_modules/@prisma/engines
 COPY --from=builder /app/prisma/generated ./prisma/generated
 COPY --from=builder /app/prisma/prod-ca-2021.crt ./prisma/prod-ca-2021.crt
-COPY --from=builder /app/app ./app
-COPY --from=builder /app/.env .env
-COPY --from=builder /app/tsconfig.json ./tsconfig.json
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY --from=builder /app/app/data ./app/data
+COPY package.json pnpm-lock.yaml ./
 
-RUN chmod 644 .env
+RUN --mount=type=secret,id=env,required=true \
+    cp /run/secrets/env .env && chmod 644 .env
+RUN pnpm install --prod --frozen-lockfile --ignore-scripts
 
 USER node
 
