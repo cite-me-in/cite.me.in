@@ -37,3 +37,5 @@ peerDependencyRules:
 supportedArchitectures:
   os: [darwin, linux]
   cpu: [arm64, x64]
+
+blockExoticSubdeps: true
