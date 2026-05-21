@@ -7,9 +7,6 @@ on:
 
 env:
   UPDATE_SNAPSHOT: "true"
-  INFISICAL_CLIENT_ID: "e3f8dffe-ac00-4ea1-9fbf-07c99f4b2a0b"
-  INFISICAL_CLIENT_SECRET: "0a917d5ae673968533a89baafa91e506ce53f9e7c2a2e79a6e4cfe7d12fe2b5a"
-  INFISICAL_PROJECT_SLUG: "cite-me-in"
 
 jobs:
   deploy:
