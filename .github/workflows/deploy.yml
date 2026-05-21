@@ -68,10 +68,10 @@ jobs:
       - name: Get test secrets
         uses: Infisical/secrets-action@v1.0.16
         with:
-          client-id: ${{ env.INFISICAL_CLIENT_ID }}
-          client-secret: ${{ env.INFISICAL_CLIENT_SECRET }}
+          client-id: ${{ secrets.INFISICAL_CLIENT_ID }}
+          client-secret: ${{ secrets.INFISICAL_CLIENT_SECRET }}
           env-slug: "test"
-          project-slug: ${{ env.INFISICAL_PROJECT_SLUG }}
+          project-slug: ${{ secrets.INFISICAL_PROJECT_SLUG }}
 
       - name: Prepare application
         run: |
@@ -107,12 +107,12 @@ jobs:
       - name: Get production secrets
         uses: Infisical/secrets-action@v1.0.16
         with:
-          client-id: ${{ env.INFISICAL_CLIENT_ID }}
-          client-secret: ${{ env.INFISICAL_CLIENT_SECRET }}
+          client-id: ${{ secrets.INFISICAL_CLIENT_ID }}
+          client-secret: ${{ secrets.INFISICAL_CLIENT_SECRET }}
           env-slug: "prod"
           export-type: "file"
           file-output-path: "/.env"
-          project-slug: ${{ env.INFISICAL_PROJECT_SLUG }}
+          project-slug: ${{ secrets.INFISICAL_PROJECT_SLUG }}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v4
