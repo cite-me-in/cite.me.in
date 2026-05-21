@@ -88,7 +88,7 @@ jobs:
           pnpm exec knip
 
       - name: Run tests
-        run: DEBUG=server,app:*,browser pnpm vitest run
+        run: pnpm vitest run
         env:
           NODE_OPTIONS: --enable-source-maps
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_TEST_SECRET_KEY }}
