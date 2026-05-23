@@ -5,13 +5,19 @@
     "app/components/ui/*.tsx",
     "app/emails/sendEmails.tsx",
     "app/global.css",
-    "scripts/*",
+    "scripts/**/*",
     "test/**/*.ts",
     "test/helpers/serverWorker.ts"
   ],
-  "ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend"],
+  "ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend", "coolify-ghcr-deploy", "portless"],
   "duplicates": {
     "ignore": ["test/**", "__screenshots__/**"]
   },
-  "ignorePatterns": ["test/**"]
+  "dynamicallyLoaded": ["app/cron/**", "app/lib/cron/**", "test/helpers/screencast.ts", "test/helpers/suite.setup.ts"],
+  "ignoreExports": [
+    { "file": "app/lib/llm-visibility/claudeClient.server.ts", "exports": ["*"] },
+    { "file": "app/lib/llm-visibility/geminiClient.server.ts", "exports": ["*"] },
+    { "file": "app/lib/llm-visibility/openaiClient.server.ts", "exports": ["*"] },
+    { "file": "app/lib/llm-visibility/perplexityClient.server.ts", "exports": ["*"] }
+  ]
 }

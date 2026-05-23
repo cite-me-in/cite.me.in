@@ -67,6 +67,7 @@ export function timeago(
  * duration(3661, { compact: true }) // "1h 1m"
  * duration(3661, { max_units: 1 }) // "1 hour"
  */
+// fallow-ignore-next-line unused-export
 export function duration(
   milliseconds: number,
   options: { compact?: boolean; max_units?: number } = {},
@@ -145,6 +146,7 @@ export function duration(
  * parseDuration("2.5 hours") // 9000000
  * parseDuration("2:30") // 9000000
  */
+// fallow-ignore-next-line unused-export
 export function parseDuration(input: string): number {
   if (!input || input.trim() === "")
     throw new Error("Cannot parse empty duration string");
@@ -235,6 +237,7 @@ export function parseDuration(input: string): number {
  * humanDate(lastFriday, now) // "Last Friday"
  * humanDate(someDate, now) // "March 5" or "March 5, 2023"
  */
+// fallow-ignore-next-line unused-export
 export function humanDate(
   timestamp: number | string | Date,
   reference?: number | string | Date,
@@ -339,6 +342,7 @@ export function humanDate(
  * dateRange(mar5, apr7) // "March 5 – April 7, 2024"
  * dateRange(dec28_2024, jan3_2025) // "December 28, 2024 – January 3, 2025"
  */
+// fallow-ignore-next-line unused-export
 export function dateRange(
   start: number | string | Date,
   end: number | string | Date,

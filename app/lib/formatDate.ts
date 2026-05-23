@@ -37,6 +37,7 @@ export function formatDateMed(date: Date): string {
  * @example
  * formatDateHuge(new Date("2026-03-23")) // "Monday, March 23, 2026"
  */
+// fallow-ignore-next-line unused-export
 export function formatDateHuge(date: Date): string {
   return fullDate.format(date);
 }
