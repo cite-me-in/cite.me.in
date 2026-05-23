@@ -1,5 +1,11 @@
 import { Badge } from "~/components/ui/Badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/Card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/Card";
 import { normalizeDomain } from "~/lib/isSameDomain";
 
 export const INDIRECT_CITATION_WEIGHT = 0.5;
@@ -26,7 +32,8 @@ export default function RelatedCitations({
       <CardHeader>
         <CardTitle>Related Citations</CardTitle>
         <CardDescription className="text-foreground/60">
-          {directCount} direct + {indirectCount} indirect (×0.5) = {totalScore} total
+          {directCount} direct + {indirectCount} indirect (×0.5) = {totalScore}{" "}
+          total
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -39,7 +46,10 @@ export default function RelatedCitations({
               </h4>
               <ul className="space-y-1">
                 {direct.map((citation) => (
-                  <li key={citation.url} className="flex items-start gap-2 text-sm">
+                  <li
+                    key={citation.url}
+                    className="flex items-start gap-2 text-sm"
+                  >
                     <a
                       href={citation.url}
                       target="_blank"
@@ -49,7 +59,9 @@ export default function RelatedCitations({
                       {truncateUrl(citation.url)}
                     </a>
                     {citation.reason && (
-                      <span className="text-foreground/50 text-xs">{citation.reason}</span>
+                      <span className="text-foreground/50 text-xs">
+                        {citation.reason}
+                      </span>
                     )}
                   </li>
                 ))}
@@ -64,7 +76,10 @@ export default function RelatedCitations({
               </h4>
               <ul className="space-y-1">
                 {indirect.map((citation) => (
-                  <li key={citation.url} className="flex items-start gap-2 text-sm">
+                  <li
+                    key={citation.url}
+                    className="flex items-start gap-2 text-sm"
+                  >
                     <a
                       href={citation.url}
                       target="_blank"
@@ -74,7 +89,9 @@ export default function RelatedCitations({
                       {truncateUrl(citation.url)}
                     </a>
                     {citation.reason && (
-                      <span className="text-foreground/50 text-xs">{citation.reason}</span>
+                      <span className="text-foreground/50 text-xs">
+                        {citation.reason}
+                      </span>
                     )}
                   </li>
                 ))}
@@ -91,7 +108,10 @@ function truncateUrl(url: string): string {
   try {
     const parsed = new URL(url);
     const domain = normalizeDomain(parsed.hostname);
-    const path = parsed.pathname.length > 30 ? `${parsed.pathname.slice(0, 30)}…` : parsed.pathname;
+    const path =
+      parsed.pathname.length > 30
+        ? `${parsed.pathname.slice(0, 30)}…`
+        : parsed.pathname;
     return `${domain}${path}`;
   } catch {
     return url.length > 50 ? `${url.slice(0, 50)}…` : url;

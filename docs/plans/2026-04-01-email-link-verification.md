@@ -31,7 +31,9 @@ import envVars from "~/lib/envVars.server";
 const BASE = `http://localhost:${process.env.PORT ?? 3000}`;
 const DEST = `${envVars.VITE_APP_URL}/sites`;
 
-afterEach(() => prisma.user.deleteMany({ where: { email: { contains: "r-route-test" } } }));
+afterEach(() =>
+  prisma.user.deleteMany({ where: { email: { contains: "r-route-test" } } }),
+);
 
 describe("/r proxy route", () => {
   it("should redirect to url and mark emailVerifiedAt when token is valid", async () => {
@@ -274,7 +276,10 @@ Change:
 ```tsx
 const html = await pretty(
   await render(
-    <EmailLayout subject={subject} unsubscribeURL={canUnsubscribe ? unsubscribeURL : undefined}>
+    <EmailLayout
+      subject={subject}
+      unsubscribeURL={canUnsubscribe ? unsubscribeURL : undefined}
+    >
       {email}
     </EmailLayout>,
   ),
@@ -287,7 +292,10 @@ To:
 const html = await pretty(
   await render(
     <EmailLinkContext.Provider value={{ email: user.email, token }}>
-      <EmailLayout subject={subject} unsubscribeURL={canUnsubscribe ? unsubscribeURL : undefined}>
+      <EmailLayout
+        subject={subject}
+        unsubscribeURL={canUnsubscribe ? unsubscribeURL : undefined}
+      >
         {email}
       </EmailLayout>
     </EmailLinkContext.Provider>,
@@ -438,7 +446,11 @@ Remove the email verification call from the `action` in `app/routes/sign-up.tsx`
 
 ```ts
 import sendEmailVerificationEmail from "~/emails/EmailVerification";
-import { createEmailVerificationToken, createSession, hashPassword } from "~/lib/auth.server";
+import {
+  createEmailVerificationToken,
+  createSession,
+  hashPassword,
+} from "~/lib/auth.server";
 ```
 
 Becomes:

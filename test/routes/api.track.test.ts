@@ -56,8 +56,12 @@ describe("api.track", () => {
     const res = await fetch(BASE_URL, { method: "GET" });
     expect(res.status).toBe(405);
     expect(res.headers.get("access-control-allow-origin")).toBe("*");
-    expect(res.headers.get("access-control-allow-methods")).toBe("POST, OPTIONS");
-    expect(res.headers.get("access-control-allow-headers")).toBe("Content-Type");
+    expect(res.headers.get("access-control-allow-methods")).toBe(
+      "POST, OPTIONS",
+    );
+    expect(res.headers.get("access-control-allow-headers")).toBe(
+      "Content-Type",
+    );
   });
 
   describe("validation", () => {

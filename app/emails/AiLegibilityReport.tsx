@@ -26,11 +26,20 @@ export default async function sendAiLegibilityReport({
   result: ScanResult;
   sendTo: { id: string; email: string; unsubscribed: boolean };
 }) {
-  const reportURL = new URL(`/site/${site.domain}/ai-legibility`, envVars.VITE_APP_URL).toString();
+  const reportURL = new URL(
+    `/site/${site.domain}/ai-legibility`,
+    envVars.VITE_APP_URL,
+  ).toString();
 
   await sendEmail({
     domain: site.domain,
-    email: <AiLegibilityReportEmail site={site} result={result} reportUrl={reportURL} />,
+    email: (
+      <AiLegibilityReportEmail
+        site={site}
+        result={result}
+        reportUrl={reportURL}
+      />
+    ),
     isTransactional: true,
     sendTo,
     subject: `AI Legibility Report for ${site.domain}`,
@@ -57,11 +66,15 @@ export function AiLegibilityReportEmail({
   const { checks, summary } =
     typeof result === "string" ? (JSON.parse(result) as ScanResult) : result;
   const totalPassed = useMemo(
-    () => summary.discovered.passed + summary.trusted.passed + summary.welcomed.passed,
+    () =>
+      summary.discovered.passed +
+      summary.trusted.passed +
+      summary.welcomed.passed,
     [summary],
   );
   const totalChecks = useMemo(
-    () => summary.discovered.total + summary.trusted.total + summary.welcomed.total,
+    () =>
+      summary.discovered.total + summary.trusted.total + summary.welcomed.total,
     [summary],
   );
   const score = Math.round((totalPassed / totalChecks) * 100);
@@ -74,7 +87,10 @@ export function AiLegibilityReportEmail({
 
       <Card withBorder>
         <Text className="text-light text-lg">Site AI legibility score</Text>
-        <Text className="text-4xl font-bold" style={{ color: scoreColor(score) }}>
+        <Text
+          className="text-4xl font-bold"
+          style={{ color: scoreColor(score) }}
+        >
           {score}
         </Text>
         <Text className="text-light text-sm">
@@ -95,7 +111,8 @@ export function AiLegibilityReportEmail({
             className="text-base font-bold tracking-wide uppercase"
             style={{ color: category.emailColor }}
           >
-            {category.title} — {summary[category.key].passed}/{summary[category.key].total}
+            {category.title} — {summary[category.key].passed}/
+            {summary[category.key].total}
           </Text>
 
           {checks
@@ -139,7 +156,9 @@ function CheckPassed({ check }: { check: CheckResult }) {
 function CheckFailed({ check }: { check: CheckResult }) {
   return (
     <Card withBorder className="pb-1">
-      <Text className="my-1 text-base font-bold text-red-600">✗ {check.name}</Text>
+      <Text className="my-1 text-base font-bold text-red-600">
+        ✗ {check.name}
+      </Text>
 
       <div
         style={{
@@ -153,7 +172,9 @@ function CheckFailed({ check }: { check: CheckResult }) {
         <>
           <DetailBlock label="Goal">{check.detail.goal}</DetailBlock>
           <DetailBlock label="Issue">{check.detail.issue}</DetailBlock>
-          <DetailBlock label="How to implement">{check.detail.howToImplement}</DetailBlock>
+          <DetailBlock label="How to implement">
+            {check.detail.howToImplement}
+          </DetailBlock>
           {check.detail.fixExample && (
             <DetailBlock label="Example">
               <pre
@@ -179,7 +200,13 @@ function CheckFailed({ check }: { check: CheckResult }) {
   );
 }
 
-function DetailBlock({ label, children }: { label: string; children: React.ReactNode }) {
+function DetailBlock({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="text-text my-2 text-base leading-relaxed">
       <strong>{label}:</strong>

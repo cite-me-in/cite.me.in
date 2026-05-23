@@ -189,8 +189,16 @@ it(
         label: "positive",
         summary: "Good coverage.",
         citations: [
-          { url: "https://rentail.space/listings", relationship: "direct", reason: "Own domain" },
-          { url: "https://rentail.space/faq", relationship: "direct", reason: "Own domain" },
+          {
+            url: "https://rentail.space/listings",
+            relationship: "direct",
+            reason: "Own domain",
+          },
+          {
+            url: "https://rentail.space/faq",
+            relationship: "direct",
+            reason: "Own domain",
+          },
         ],
       }),
     }));
@@ -258,14 +266,21 @@ import prisma from "../app/lib/prisma.server";
 import { normalizeDomain } from "../app/lib/isSameDomain";
 
 const queries = await prisma.citationQuery.findMany({
-  select: { id: true, citations: true, runId: true, run: { select: { siteId: true } } },
+  select: {
+    id: true,
+    citations: true,
+    runId: true,
+    run: { select: { siteId: true } },
+  },
 });
 
 const classifications = await prisma.citationClassification.findMany({
   select: { url: true, runId: true, relationship: true, reason: true },
 });
 
-const classMap = new Map(classifications.map((c) => [`${c.runId}:${c.url}`, c]));
+const classMap = new Map(
+  classifications.map((c) => [`${c.runId}:${c.url}`, c]),
+);
 
 let created = 0;
 for (const q of queries) {
@@ -377,7 +392,13 @@ In `app/routes/site.$domain_.citations/route.tsx`, replace the `CitationQueryRun
 const [citations, siteQueries] = await Promise.all([
   prisma.citation.findMany({
     where: { siteId: site.id },
-    select: { url: true, domain: true, relationship: true, runId: true, queryId: true },
+    select: {
+      url: true,
+      domain: true,
+      relationship: true,
+      runId: true,
+      queryId: true,
+    },
     orderBy: { createdAt: "desc" },
   }),
   prisma.siteQuery.findMany({
@@ -550,7 +571,9 @@ it(
     timeout: 30_000,
   },
   async () => {
-    const pages = await prisma.citedPage.findMany({ where: { siteId: site.id } });
+    const pages = await prisma.citedPage.findMany({
+      where: { siteId: site.id },
+    });
     // rentail.space URLs: /listings and /faq
     expect(pages).toHaveLength(2);
     expect(pages.map((p) => p.url)).toContain("https://rentail.space/listings");
@@ -578,14 +601,21 @@ await upsertCitedPages({ siteId: site.id, runId: run.id });
 Add the helper:
 
 ```ts
-async function upsertCitedPages({ siteId, runId }: { siteId: string; runId: string }) {
+async function upsertCitedPages({
+  siteId,
+  runId,
+}: {
+  siteId: string;
+  runId: string;
+}) {
   const ownCitations = await prisma.citation.findMany({
     where: { runId, siteId },
     select: { url: true },
   });
 
   const urlCounts = new Map<string, number>();
-  for (const { url } of ownCitations) urlCounts.set(url, (urlCounts.get(url) ?? 0) + 1);
+  for (const { url } of ownCitations)
+    urlCounts.set(url, (urlCounts.get(url) ?? 0) + 1);
 
   for (const [url, count] of urlCounts) {
     await prisma.citedPage.upsert({
@@ -683,7 +713,10 @@ describe("checkCitedPageHealth", () => {
   });
 
   it("should return unhealthy when fetch throws", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("ECONNREFUSED")));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockRejectedValue(new Error("ECONNREFUSED")),
+    );
 
     const result = await checkCitedPageHealth("https://down.example.com");
     expect(result.statusCode).toBeNull();
@@ -719,7 +752,9 @@ export async function checkCitedPageHealth(url: string): Promise<{
       redirect: "follow",
     });
     const text = await response.text();
-    const contentHash = createHash("sha256").update(text.slice(0, 50_000)).digest("hex");
+    const contentHash = createHash("sha256")
+      .update(text.slice(0, 50_000))
+      .digest("hex");
     const isHealthy = response.status >= 200 && response.status < 400;
     return { statusCode: response.status, contentHash, isHealthy };
   } catch {
@@ -801,11 +836,17 @@ describe("cron.check-cited-pages", () => {
     const request = new Request("http://localhost/cron/check-cited-pages", {
       headers: { authorization: "Bearer test-secret" },
     });
-    const response = await loader({ request, params: {}, context: {} } as never);
+    const response = await loader({
+      request,
+      params: {},
+      context: {},
+    } as never);
     const body = await response.json();
     expect(body.ok).toBe(true);
 
-    const page = await prisma.citedPage.findUnique({ where: { id: "page-ccp-1" } });
+    const page = await prisma.citedPage.findUnique({
+      where: { id: "page-ccp-1" },
+    });
     expect(page?.statusCode).toBe(200);
     expect(page?.isHealthy).toBe(true);
     expect(page?.lastCheckedAt).toBeTruthy();
@@ -814,7 +855,9 @@ describe("cron.check-cited-pages", () => {
   it("should reject requests without auth", async () => {
     const { loader } = await import("~/routes/cron.check-cited-pages");
     const request = new Request("http://localhost/cron/check-cited-pages");
-    await expect(loader({ request, params: {}, context: {} } as never)).rejects.toThrow();
+    await expect(
+      loader({ request, params: {}, context: {} } as never),
+    ).rejects.toThrow();
   });
 });
 ```
@@ -849,7 +892,10 @@ export async function loader({ request }: Route.LoaderArgs) {
     const staleThreshold = new Date(Date.now() - STALE_HOURS * 60 * 60 * 1000);
     const pages = await prisma.citedPage.findMany({
       where: {
-        OR: [{ lastCheckedAt: null }, { lastCheckedAt: { lt: staleThreshold } }],
+        OR: [
+          { lastCheckedAt: null },
+          { lastCheckedAt: { lt: staleThreshold } },
+        ],
       },
       include: { site: { select: { domain: true, ownerId: true } } },
       take: 100,
@@ -858,7 +904,9 @@ export async function loader({ request }: Route.LoaderArgs) {
 
     const results = [];
     for (const page of pages) {
-      const { statusCode, contentHash, isHealthy } = await checkCitedPageHealth(page.url);
+      const { statusCode, contentHash, isHealthy } = await checkCitedPageHealth(
+        page.url,
+      );
       const wasHealthy = page.isHealthy;
 
       await prisma.citedPage.update({
@@ -876,7 +924,10 @@ export async function loader({ request }: Route.LoaderArgs) {
     return data({ ok: true, checked: results.length, results });
   } catch (error) {
     captureAndLogError(error, { extra: { step: "check-cited-pages" } });
-    return data({ ok: false, error: error instanceof Error ? error.message : String(error) });
+    return data({
+      ok: false,
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
 }
 ```
@@ -924,7 +975,12 @@ export async function sendCitedPageAlertEmail({
   page,
   siteOwnerId,
 }: {
-  page: { id: string; url: string; citationCount: number; site: { domain: string } };
+  page: {
+    id: string;
+    url: string;
+    citationCount: number;
+    site: { domain: string };
+  };
   siteOwnerId: string;
 }) {
   const dedupKey = DEDUP_KEY(page.id);
@@ -949,7 +1005,9 @@ export async function sendCitedPageAlertEmail({
       html: `<p>A page on <strong>${page.site.domain}</strong> that has been cited ${page.citationCount} times is no longer responding:</p><p><a href="${page.url}">${page.url}</a></p><p>AI platforms may stop citing this page until it is restored.</p>`,
     });
 
-    await prisma.sentEmail.create({ data: { userId: siteOwnerId, type: dedupKey } });
+    await prisma.sentEmail.create({
+      data: { userId: siteOwnerId, type: dedupKey },
+    });
   } catch (error) {
     captureAndLogError(error, { extra: { pageId: page.id } });
   }
@@ -1023,7 +1081,9 @@ export default function SitePagesRoute({ loaderData }: Route.ComponentProps) {
       <SitePageHeader title="Cited Pages" domain={site.domain} />
       <div className="mb-4 flex gap-6 text-sm">
         <span className="text-green-700">{healthy} healthy</span>
-        {broken > 0 && <span className="text-red-700 font-medium">{broken} broken</span>}
+        {broken > 0 && (
+          <span className="text-red-700 font-medium">{broken} broken</span>
+        )}
       </div>
       {pages.length === 0 ? (
         <p className="text-foreground/60">
@@ -1051,7 +1111,9 @@ export default function SitePagesRoute({ loaderData }: Route.ComponentProps) {
                   >
                     {new URL(page.url).pathname}
                   </a>
-                  <span className="text-foreground/50 text-xs">{new URL(page.url).hostname}</span>
+                  <span className="text-foreground/50 text-xs">
+                    {new URL(page.url).hostname}
+                  </span>
                 </td>
                 <td className="py-2 text-right">{page.citationCount}</td>
                 <td className="py-2 text-right">
@@ -1066,7 +1128,9 @@ export default function SitePagesRoute({ loaderData }: Route.ComponentProps) {
                   )}
                 </td>
                 <td className="py-2 text-right text-foreground/50">
-                  {page.lastCheckedAt ? new Date(page.lastCheckedAt).toLocaleDateString() : "—"}
+                  {page.lastCheckedAt
+                    ? new Date(page.lastCheckedAt).toLocaleDateString()
+                    : "—"}
                 </td>
               </tr>
             ))}
@@ -1116,9 +1180,17 @@ import { getCitationGaps } from "~/lib/citationGapAnalysis.server";
 describe("getCitationGaps", () => {
   it("should identify queries where competitor appears but own domain does not", () => {
     const citations = [
-      { url: "https://competitor.com/a", domain: "competitor.com", queryId: "q1" },
+      {
+        url: "https://competitor.com/a",
+        domain: "competitor.com",
+        queryId: "q1",
+      },
       { url: "https://mysite.com/page", domain: "mysite.com", queryId: "q1" },
-      { url: "https://competitor.com/b", domain: "competitor.com", queryId: "q2" },
+      {
+        url: "https://competitor.com/b",
+        domain: "competitor.com",
+        queryId: "q2",
+      },
       // q2: competitor cited, mysite not cited
     ];
     const queries = [
@@ -1126,7 +1198,11 @@ describe("getCitationGaps", () => {
       { id: "q2", query: "short term retail leasing" },
     ];
 
-    const gaps = getCitationGaps({ citations, queries, ownDomain: "mysite.com" });
+    const gaps = getCitationGaps({
+      citations,
+      queries,
+      ownDomain: "mysite.com",
+    });
 
     expect(gaps).toHaveLength(1);
     expect(gaps[0].competitorDomain).toBe("competitor.com");
@@ -1136,19 +1212,37 @@ describe("getCitationGaps", () => {
 
   it("should return empty when own domain appears in all queries with competitor", () => {
     const citations = [
-      { url: "https://competitor.com/a", domain: "competitor.com", queryId: "q1" },
+      {
+        url: "https://competitor.com/a",
+        domain: "competitor.com",
+        queryId: "q1",
+      },
       { url: "https://mysite.com/page", domain: "mysite.com", queryId: "q1" },
     ];
     const queries = [{ id: "q1", query: "query one" }];
 
-    const gaps = getCitationGaps({ citations, queries, ownDomain: "mysite.com" });
+    const gaps = getCitationGaps({
+      citations,
+      queries,
+      ownDomain: "mysite.com",
+    });
     expect(gaps).toHaveLength(0);
   });
 
   it("should exclude non-competitor domains", () => {
-    const citations = [{ url: "https://reddit.com/r/retail", domain: "reddit.com", queryId: "q1" }];
+    const citations = [
+      {
+        url: "https://reddit.com/r/retail",
+        domain: "reddit.com",
+        queryId: "q1",
+      },
+    ];
     const queries = [{ id: "q1", query: "query one" }];
-    const gaps = getCitationGaps({ citations, queries, ownDomain: "mysite.com" });
+    const gaps = getCitationGaps({
+      citations,
+      queries,
+      ownDomain: "mysite.com",
+    });
     expect(gaps).toHaveLength(0);
   });
 });
@@ -1189,11 +1283,15 @@ export function getCitationGaps({
     if (c.domain === ownDomain) continue;
     if (nonCompetitors.has(c.domain)) continue;
     if (nonCompetitors.has(c.domain.split(".").slice(1).join("."))) continue;
-    if (!competitorQueries.has(c.domain)) competitorQueries.set(c.domain, new Set());
+    if (!competitorQueries.has(c.domain))
+      competitorQueries.set(c.domain, new Set());
     competitorQueries.get(c.domain)!.add(c.queryId);
   }
 
-  const gaps: { competitorDomain: string; queries: { id: string; query: string }[] }[] = [];
+  const gaps: {
+    competitorDomain: string;
+    queries: { id: string; query: string }[];
+  }[] = [];
   for (const [domain, queryIds] of competitorQueries) {
     const gapQueryIds = [...queryIds].filter((id) => !ownQueryIds.has(id));
     if (gapQueryIds.length === 0) continue;
@@ -1253,13 +1351,22 @@ return { site, citations, siteQueries, competitors, shareOfVoice, gaps };
 ```tsx
 // app/routes/site.$domain_.citations/CitationGapAnalysis.tsx
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/Card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/Card";
 import { Badge } from "~/components/ui/Badge";
 
 export default function CitationGapAnalysis({
   gaps,
 }: {
-  gaps: { competitorDomain: string; queries: { id: string; query: string }[] }[];
+  gaps: {
+    competitorDomain: string;
+    queries: { id: string; query: string }[];
+  }[];
 }) {
   const [expanded, setExpanded] = useState<string | null>(null);
 
@@ -1280,7 +1387,11 @@ export default function CitationGapAnalysis({
               <button
                 type="button"
                 className="flex w-full items-center justify-between py-1 font-medium hover:text-foreground/70"
-                onClick={() => setExpanded(expanded === competitorDomain ? null : competitorDomain)}
+                onClick={() =>
+                  setExpanded(
+                    expanded === competitorDomain ? null : competitorDomain,
+                  )
+                }
               >
                 <span>{competitorDomain}</span>
                 <Badge variant="neutral">

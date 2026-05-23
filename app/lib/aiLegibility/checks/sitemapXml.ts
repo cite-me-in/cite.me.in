@@ -32,7 +32,9 @@ export default async function checkSitemapXml({
 
   if (urlsToTry.length === 1) return fetchSitemapXml(urlsToTry[0], startTime);
 
-  let lastError: (Omit<CheckResult, "category"> & { urls: string[] }) | undefined;
+  let lastError:
+    | (Omit<CheckResult, "category"> & { urls: string[] })
+    | undefined;
 
   for (const sitemapUrl of urlsToTry) {
     const result = await fetchSitemapXml(sitemapUrl, startTime);
@@ -99,7 +101,11 @@ async function fetchSitemapXml(
         };
       }
 
-      const urlNodes = Array.isArray(urlset.url) ? urlset.url : urlset.url ? [urlset.url] : [];
+      const urlNodes = Array.isArray(urlset.url)
+        ? urlset.url
+        : urlset.url
+          ? [urlset.url]
+          : [];
       const urls = urlNodes.map(({ loc }) => loc).filter(Boolean) as string[];
 
       if (urls.length === 0) {
@@ -134,7 +140,8 @@ async function fetchSitemapXml(
       };
     }
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     if (error instanceof Error && error.name === "TimeoutError") {
       return {
         name: "sitemap.xml",
@@ -201,7 +208,9 @@ async function handleSitemapIndex(
         const childUrlNodes = Array.isArray(childParsed.urlset.url)
           ? childParsed.urlset.url
           : [childParsed.urlset.url];
-        const childPageUrls = childUrlNodes.map((u) => u.loc).filter(Boolean) as string[];
+        const childPageUrls = childUrlNodes
+          .map((u) => u.loc)
+          .filter(Boolean) as string[];
         allUrls.push(...childPageUrls);
       }
     } catch {
@@ -215,7 +224,8 @@ async function handleSitemapIndex(
     return {
       name: "sitemap.xml",
       passed: true,
-      message: "sitemap.xml is a sitemap index but no child sitemaps resolved to URLs",
+      message:
+        "sitemap.xml is a sitemap index but no child sitemaps resolved to URLs",
       details: {
         url: sitemapUrl,
         childSitemaps: childUrls.length,

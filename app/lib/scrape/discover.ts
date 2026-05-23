@@ -34,7 +34,11 @@ export default async function discoverURLs({
   return urls;
 }
 
-async function fetchSitemapURLs(baseURL: URL, doc: Document, signal: AbortSignal): Promise<URL[]> {
+async function fetchSitemapURLs(
+  baseURL: URL,
+  doc: Document,
+  signal: AbortSignal,
+): Promise<URL[]> {
   const link = doc.querySelector('link[rel="sitemap"]');
   const url = link?.getAttribute("href");
   if (!url) return [];
@@ -68,7 +72,13 @@ async function fetchSitemapURLs(baseURL: URL, doc: Document, signal: AbortSignal
   }
 }
 
-async function parseSitemapXML({ xml, baseURL }: { xml: string; baseURL: URL }): Promise<URL[]> {
+async function parseSitemapXML({
+  xml,
+  baseURL,
+}: {
+  xml: string;
+  baseURL: URL;
+}): Promise<URL[]> {
   const locs: URL[] = [];
   const locRegex = /<loc>(.*?)<\/loc>/g;
   let match = locRegex.exec(xml);
@@ -80,7 +90,11 @@ async function parseSitemapXML({ xml, baseURL }: { xml: string; baseURL: URL }):
   return locs;
 }
 
-async function fetchRSS(baseURL: URL, doc: Document, signal: AbortSignal): Promise<URL[]> {
+async function fetchRSS(
+  baseURL: URL,
+  doc: Document,
+  signal: AbortSignal,
+): Promise<URL[]> {
   const link = doc.querySelector('link[type*="rss"], link[type*="atom"]');
   const url = link?.getAttribute("href");
   if (!url) return [];
@@ -120,7 +134,13 @@ async function fetchRSS(baseURL: URL, doc: Document, signal: AbortSignal): Promi
   }
 }
 
-function extractNavURLs({ baseURL, doc }: { baseURL: URL; doc: Document }): URL[] {
+function extractNavURLs({
+  baseURL,
+  doc,
+}: {
+  baseURL: URL;
+  doc: Document;
+}): URL[] {
   const navs = doc.querySelectorAll("nav");
   const anchors =
     navs.length > 0
@@ -130,7 +150,8 @@ function extractNavURLs({ baseURL, doc }: { baseURL: URL; doc: Document }): URL[
   const urls = anchors
     .map((anchor) => {
       const href = anchor.getAttribute("href");
-      if (!href || href.startsWith("#") || href.startsWith("mailto:")) return null;
+      if (!href || href.startsWith("#") || href.startsWith("mailto:"))
+        return null;
       if (MEDIA_EXTENSIONS.test(href)) return null;
       return new URL(href, baseURL);
     })

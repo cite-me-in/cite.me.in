@@ -36,7 +36,9 @@ export default async function openaiClient({
   } catch (error) {
     if (
       error instanceof OpenAI.APIError &&
-      (error.status === 402 || error.status === 429 || error.code === "insufficient_quota")
+      (error.status === 402 ||
+        error.status === 429 ||
+        error.code === "insufficient_quota")
     )
       throw new InsufficientCreditError("chatgpt", error.status);
     throw error;
@@ -54,7 +56,9 @@ export default async function openaiClient({
       : [];
   const citations = [
     ...new Set(
-      annotations.filter((a) => a.type === "url_citation").map((a) => (a as { url: string }).url),
+      annotations
+        .filter((a) => a.type === "url_citation")
+        .map((a) => (a as { url: string }).url),
     ),
   ];
 

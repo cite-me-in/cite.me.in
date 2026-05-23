@@ -19,7 +19,9 @@ const localRoutes = [
  * @returns A list of all the routes that should be included in the sitemap.
  */
 export default async function getSitemapRoutes(): Promise<string[]> {
-  const blogURLs = await processSitemap("https://blog.cite.me.in/sitemap-index.xml");
+  const blogURLs = await processSitemap(
+    "https://blog.cite.me.in/sitemap-index.xml",
+  );
   return [...localRoutes, ...blogURLs];
 }
 

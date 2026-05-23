@@ -35,7 +35,14 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   return data(
     SiteQueriesSchema.parse({
       platforms: platforms.map(
-        ({ model, onDate, platform, queries, sentimentLabel, sentimentSummary }) => ({
+        ({
+          model,
+          onDate,
+          platform,
+          queries,
+          sentimentLabel,
+          sentimentSummary,
+        }) => ({
           model,
           onDate,
           platform,

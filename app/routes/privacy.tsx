@@ -37,7 +37,8 @@ export default function PrivacyPolicy() {
           mode="static"
           remarkPlugins={[remarkGfm]}
           components={{
-            a: ({ children, href }) => (href ? <Link to={href}>{children}</Link> : children),
+            a: ({ children, href }) =>
+              href ? <Link to={href}>{children}</Link> : children,
           }}
         >
           {privacy}

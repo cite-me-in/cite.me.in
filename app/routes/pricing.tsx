@@ -3,7 +3,12 @@ import { Link } from "react-router";
 import { twMerge } from "tailwind-merge";
 import { Badge } from "~/components/ui/Badge";
 import { type ButtonProps, buttonVariants } from "~/components/ui/Button";
-import { Card, CardContent, CardFooter, CardHeader } from "~/components/ui/Card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
 import prices from "~/data/stripe-prices.json";
 import type { Route } from "./+types/pricing";
@@ -28,7 +33,8 @@ export default function PricingPage({ loaderData }: Route.ComponentProps) {
     <Main className="mx-auto max-w-5xl px-4 py-16">
       <h1 className="font-heading mb-4 text-center text-4xl">Pricing</h1>
       <p className="text-foreground/70 mx-auto mb-12 max-w-xl text-center">
-        Monitor your brand's AI citation visibility. Start free — no credit card required.
+        Monitor your brand's AI citation visibility. Start free — no credit card
+        required.
       </p>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -95,7 +101,11 @@ function ProTierCard({
         color="text-amber-600"
       />
 
-      <TierCTA to="/sign-up?next=/upgrade" cta="Get started" variant="default" />
+      <TierCTA
+        to="/sign-up?next=/upgrade"
+        cta="Get started"
+        variant="default"
+      />
     </TierCard>
   );
 }
@@ -103,7 +113,11 @@ function ProTierCard({
 function CustomTierCard() {
   return (
     <TierCard>
-      <TierSummary title="Custom" price="Let's talk" description="for agencies" />
+      <TierSummary
+        title="Custom"
+        price="Let's talk"
+        description="for agencies"
+      />
 
       <TierFeatures
         features={["Unlimited sites", "Everything in Pro", "Priority support"]}
@@ -111,12 +125,22 @@ function CustomTierCard() {
         color="text-green-600"
       />
 
-      <TierCTA to="mailto:hello@cite.me.in" cta="Contact us" variant="outline" />
+      <TierCTA
+        to="mailto:hello@cite.me.in"
+        cta="Contact us"
+        variant="outline"
+      />
     </TierCard>
   );
 }
 
-function TierCard({ children, variant }: { children: React.ReactNode; variant?: "yellow" }) {
+function TierCard({
+  children,
+  variant,
+}: {
+  children: React.ReactNode;
+  variant?: "yellow";
+}) {
   return (
     <Card className="flex flex-col" variant={variant}>
       {children}
@@ -138,7 +162,9 @@ function TierSummary({
   return (
     <CardHeader>
       <div className="mb-1 flex items-center justify-between">
-        <p className="text-foreground/60 text-sm font-bold tracking-wide uppercase">{title}</p>
+        <p className="text-foreground/60 text-sm font-bold tracking-wide uppercase">
+          {title}
+        </p>
         {badge && <Badge variant="yellow">{badge}</Badge>}
       </div>
       <p className="font-heading mb-1 text-3xl">{price}</p>
@@ -183,7 +209,13 @@ function TierCTA({
 }) {
   return (
     <CardFooter className="mt-auto flex">
-      <Link to={to} className={twMerge(buttonVariants({ variant }), "w-full justify-center")}>
+      <Link
+        to={to}
+        className={twMerge(
+          buttonVariants({ variant }),
+          "w-full justify-center",
+        )}
+      >
         {cta}
       </Link>
     </CardFooter>

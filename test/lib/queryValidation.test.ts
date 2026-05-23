@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { hasWordChanges, isMeaningfulSentence } from "~/lib/llm-visibility/queryValidation";
+import {
+  hasWordChanges,
+  isMeaningfulSentence,
+} from "~/lib/llm-visibility/queryValidation";
 
 describe("isMeaningfulSentence", () => {
   it("should return true for a full question", () => {

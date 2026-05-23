@@ -1,7 +1,10 @@
 import prisma from "~/lib/prisma.server";
 import type { Prisma } from "~/prisma";
 
-export async function runJob(jobName: string, fn: () => Promise<unknown>): Promise<void> {
+export async function runJob(
+  jobName: string,
+  fn: () => Promise<unknown>,
+): Promise<void> {
   const startedAt = new Date();
   try {
     const result = await fn();

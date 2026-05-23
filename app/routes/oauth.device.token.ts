@@ -45,7 +45,8 @@ export async function action({ request }: Route.ActionArgs) {
     throw data({ error: "expired_token" }, { status: 400 });
   }
 
-  if (!storedDeviceCode.userId) throw data({ error: "authorization_pending" }, { status: 400 });
+  if (!storedDeviceCode.userId)
+    throw data({ error: "authorization_pending" }, { status: 400 });
 
   await prisma.oAuthDeviceCode.delete({ where: { code: deviceCode } });
 

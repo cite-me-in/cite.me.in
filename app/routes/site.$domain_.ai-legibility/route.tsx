@@ -2,7 +2,13 @@ import { RefreshCcwIcon } from "lucide-react";
 import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { Button } from "~/components/ui/Button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/Card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
 import { getProgress } from "~/lib/aiLegibility/progress.server";
@@ -40,7 +46,9 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   } | null = null;
   if (report) {
     const parsed = ScanResultSchema.parse(
-      typeof report.result === "string" ? JSON.parse(report.result) : report.result,
+      typeof report.result === "string"
+        ? JSON.parse(report.result)
+        : report.result,
     );
     reportData = {
       id: report.id,
@@ -76,10 +84,14 @@ export default function AiLegibilityPage({ loaderData }: Route.ComponentProps) {
       <SitePageHeader
         site={site}
         title="AI Legibility"
-        subtitle={scannedAt && `Last scanned: ${formatDateMed(new Date(scannedAt))}`}
+        subtitle={
+          scannedAt && `Last scanned: ${formatDateMed(new Date(scannedAt))}`
+        }
       >
         <Button variant="outline" onClick={startScan} disabled={isLoading}>
-          <RefreshCcwIcon className={twMerge("size-4", isLoading && "animate-spin")} />
+          <RefreshCcwIcon
+            className={twMerge("size-4", isLoading && "animate-spin")}
+          />
           Run New Scan
         </Button>
       </SitePageHeader>
@@ -108,7 +120,8 @@ function Fallback({ handleStartScan }: { handleStartScan: () => void }) {
       <CardHeader>
         <CardTitle>Check AI Legibility</CardTitle>
         <CardDescription className="text-center">
-          Run a scan to check your website's AI legibility across ChatGPT, Claude, and Gemini.
+          Run a scan to check your website's AI legibility across ChatGPT,
+          Claude, and Gemini.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex justify-center">

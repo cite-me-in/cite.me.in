@@ -41,7 +41,10 @@ export default async function addSiteQueries(
   });
 }
 
-export async function addSiteQueryGroup(site: { id: string; domain: string }, group: string) {
+export async function addSiteQueryGroup(
+  site: { id: string; domain: string },
+  group: string,
+) {
   await prisma.siteQuery.create({
     data: { siteId: site.id, group: trimQuery(group), query: "" },
   });

@@ -92,9 +92,12 @@ function daysAgo(n: number): Date {
 
 describe("unauthenticated access", () => {
   it("should redirect to /sign-in", async () => {
-    const response = await fetch(`http://localhost:${port}/site/some-id/visitors`, {
-      redirect: "manual",
-    });
+    const response = await fetch(
+      `http://localhost:${port}/site/some-id/visitors`,
+      {
+        redirect: "manual",
+      },
+    );
     expect(response.status).toBe(302);
     expect(response.headers.get("location")).toContain("/sign-in");
   });
@@ -174,7 +177,9 @@ describe("site visitors page", () => {
           },
         });
       }
-      page = await goto(`/site/${siteDomain}/visitors?from=2026-01-27&until=2026-02-26`);
+      page = await goto(
+        `/site/${siteDomain}/visitors?from=2026-01-27&until=2026-02-26`,
+      );
     });
 
     it("should show total unique visitors", async () => {
@@ -183,8 +188,12 @@ describe("site visitors page", () => {
     });
 
     it("should show AI platforms in the breakdown table", async () => {
-      await expect(page.getByRole("cell", { name: "chatgpt", exact: true })).toBeVisible();
-      await expect(page.getByRole("cell", { name: "perplexity", exact: true })).toBeVisible();
+      await expect(
+        page.getByRole("cell", { name: "chatgpt", exact: true }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("cell", { name: "perplexity", exact: true }),
+      ).toBeVisible();
     });
 
     it("should match visually", { timeout: 30_000 }, async () => {
@@ -226,8 +235,9 @@ export default function NoVisitors({ domain }: { domain: string }) {
     <div className="rounded border-2 border-black p-8 text-center">
       <p className="font-bold text-lg">No visitors recorded</p>
       <p className="mt-2 text-foreground/60">
-        Install the tracking snippet on <span className="font-mono">{domain}</span> to start seeing
-        human visitor data here.
+        Install the tracking snippet on{" "}
+        <span className="font-mono">{domain}</span> to start seeing human
+        visitor data here.
       </p>
     </div>
   );
@@ -245,7 +255,12 @@ export default function NoVisitors({ domain }: { domain: string }) {
 **Step 1: Write the component**
 
 ```tsx
-import { Card, CardDescription, CardHeader, CardTitle } from "~/components/ui/Card";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/Card";
 
 export default function VisitorKeyMetrics({
   totalVisitors,
@@ -271,7 +286,9 @@ export default function VisitorKeyMetrics({
       ].map(({ label, value }) => (
         <Card key={label}>
           <CardHeader className="text-center">
-            <CardDescription className="text-foreground/60">{label}</CardDescription>
+            <CardDescription className="text-foreground/60">
+              {label}
+            </CardDescription>
             <CardTitle>{value}</CardTitle>
           </CardHeader>
         </Card>
@@ -292,7 +309,15 @@ export default function VisitorKeyMetrics({
 **Step 1: Write the component**
 
 ```tsx
-import { Area, AreaChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Legend,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import { ChartContainer } from "~/components/ui/Chart";
 import { formatDateMed, formatDateShort } from "~/lib/formatDate";
@@ -315,7 +340,12 @@ export default function VisitorTrafficChart({
   chartData,
 }: {
   platforms: string[];
-  chartData: { date: string; total: number; nonAi: number; [key: string]: number | string }[];
+  chartData: {
+    date: string;
+    total: number;
+    nonAi: number;
+    [key: string]: number | string;
+  }[];
 }) {
   const config = {
     nonAi: { label: "Non-AI", color: NON_AI_COLOR },
@@ -336,9 +366,14 @@ export default function VisitorTrafficChart({
         <ChartContainer config={config} className="h-64 w-full">
           <AreaChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" tickFormatter={(v) => formatDateShort(new Date(v))} />
+            <XAxis
+              dataKey="date"
+              tickFormatter={(v) => formatDateShort(new Date(v))}
+            />
             <YAxis />
-            <Tooltip labelFormatter={(value) => formatDateMed(new Date(value))} />
+            <Tooltip
+              labelFormatter={(value) => formatDateMed(new Date(value))}
+            />
             <Legend />
             <Area
               dataKey="nonAi"
@@ -411,7 +446,9 @@ export default function AiPlatformBreakdown({
             {platformBreakdown.map((row) => (
               <TableRow key={row.platform}>
                 <TableCell className="font-medium">{row.platform}</TableCell>
-                <TableCell className="text-right">{row.visitors.toLocaleString()}</TableCell>
+                <TableCell className="text-right">
+                  {row.visitors.toLocaleString()}
+                </TableCell>
                 <TableCell className="text-right">{row.pct}%</TableCell>
               </TableRow>
             ))}
@@ -436,7 +473,9 @@ export default function AiPlatformBreakdown({
 ```tsx
 import type { Temporal } from "@js-temporal/polyfill";
 import { sum } from "radashi";
-import DateRangeSelector, { parseDateRange } from "~/components/ui/DateRangeSelector";
+import DateRangeSelector, {
+  parseDateRange,
+} from "~/components/ui/DateRangeSelector";
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
 import { requireSiteAccess } from "~/lib/auth.server";
@@ -450,7 +489,9 @@ import VisitorTrafficChart from "./VisitorTrafficChart";
 export const handle = { siteNav: true };
 
 export function meta({ loaderData }: Route.MetaArgs) {
-  return [{ title: `Human Visitors — ${loaderData?.site.domain} | Cite.me.in` }];
+  return [
+    { title: `Human Visitors — ${loaderData?.site.domain} | Cite.me.in` },
+  ];
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
@@ -460,7 +501,11 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   return { site, ...data };
 }
 
-async function getVisitorData(siteId: string, from: Temporal.PlainDate, until: Temporal.PlainDate) {
+async function getVisitorData(
+  siteId: string,
+  from: Temporal.PlainDate,
+  until: Temporal.PlainDate,
+) {
   const visits = await prisma.humanVisit.findMany({
     where: {
       siteId,
@@ -502,16 +547,24 @@ async function getVisitorData(siteId: string, from: Temporal.PlainDate, until: T
       date,
       total: sum(Object.values(dailyBySource[date]), (c) => c),
       nonAi: dailyBySource[date].nonAi ?? 0,
-      ...Object.fromEntries(platforms.map((p) => [p, dailyBySource[date][p] ?? 0])),
+      ...Object.fromEntries(
+        platforms.map((p) => [p, dailyBySource[date][p] ?? 0]),
+      ),
     }));
 
   const platformBreakdown = platforms.map((p) => ({
     platform: p,
     visitors: platformTotals[p],
-    pct: totalVisitors > 0 ? Math.round((platformTotals[p] / totalVisitors) * 100) : 0,
+    pct:
+      totalVisitors > 0
+        ? Math.round((platformTotals[p] / totalVisitors) * 100)
+        : 0,
   }));
 
-  const aiPct = totalVisitors > 0 ? Math.round((aiReferredVisitors / totalVisitors) * 100) : 0;
+  const aiPct =
+    totalVisitors > 0
+      ? Math.round((aiReferredVisitors / totalVisitors) * 100)
+      : 0;
 
   return {
     chartData,

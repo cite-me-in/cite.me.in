@@ -1,6 +1,12 @@
 // DO NOT add to setup.ts as vitest.config.js cannot upload file that imports vitest
 
-import { access, constants, mkdir, readFile, writeFile } from "node:fs/promises";
+import {
+  access,
+  constants,
+  mkdir,
+  readFile,
+  writeFile,
+} from "node:fs/promises";
 import path, { dirname } from "node:path";
 import { expect } from "@playwright/test";
 import { diffLines } from "diff";
@@ -11,7 +17,10 @@ import { baseDir, getTestName } from "./shared";
 declare global {
   namespace PlaywrightTest {
     interface Matchers<R> {
-      toMatchInnerHTML(options?: { name?: string; modify?: (doc: Document) => void }): Promise<R>;
+      toMatchInnerHTML(options?: {
+        name?: string;
+        modify?: (doc: Document) => void;
+      }): Promise<R>;
     }
   }
 }
@@ -25,7 +34,9 @@ expect.extend({
     const name = options?.name || getTestName();
     const filename = path.resolve(baseDir, `${name}.html`);
     const rawHtml =
-      "page" in locator ? await locator.innerHTML() : await (locator as Page).innerHTML("body");
+      "page" in locator
+        ? await locator.innerHTML()
+        : await (locator as Page).innerHTML("body");
 
     const doc = parseHTML(rawHtml).document;
     if (options?.modify) options.modify(doc);
@@ -35,7 +46,10 @@ expect.extend({
       for (const attr of ["src", "href"]) {
         const val = el.getAttribute(attr);
         if (val)
-          el.setAttribute(attr, val.replace(/http:\/\/localhost:\d+\//g, "http://localhost:PORT/"));
+          el.setAttribute(
+            attr,
+            val.replace(/http:\/\/localhost:\d+\//g, "http://localhost:PORT/"),
+          );
       }
     }
 
@@ -94,7 +108,10 @@ function formatHTMLTree(doc: Document): string {
 
     if (node.nodeType === 3) {
       const text = (node as Text).textContent ?? "";
-      const escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const escaped = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
       parts.push(pad + escaped);
     } else if (node.nodeType === 1) {
       const el = node as Element;
@@ -104,17 +121,26 @@ function formatHTMLTree(doc: Document): string {
         .sort((a, b) => a.name.localeCompare(b.name))
         .filter(
           (attr) =>
-            !((attr.name === "id" || attr.name === "for") && attr.value?.match(/^_r_\d+_$/)),
+            !(
+              (attr.name === "id" || attr.name === "for") &&
+              attr.value?.match(/^_r_\d+_$/)
+            ),
         )
         .map((attr) =>
-          attr.value === "" ? attr.name : `${attr.name}="${attr.value.replace(/"/g, "&quot;")}"`,
+          attr.value === ""
+            ? attr.name
+            : `${attr.name}="${attr.value.replace(/"/g, "&quot;")}"`,
         )
         .join(" ");
 
       const tagOpen = attrs ? `<${tag} ${attrs}>` : `<${tag}>`;
 
       if (!el.childNodes.length) {
-        if (/^(area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)$/i.test(tag)) {
+        if (
+          /^(area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)$/i.test(
+            tag,
+          )
+        ) {
           parts.push(pad + (attrs ? `<${tag} ${attrs} />` : `<${tag} />`));
         } else {
           parts.push(`${pad + tagOpen}</${tag}>`);
@@ -145,7 +171,15 @@ function diffHTMLs(html: string, original: string): string {
     .join("\n");
 }
 
-function multipleLines({ added, count, value }: { added: boolean; count: number; value: string }) {
+function multipleLines({
+  added,
+  count,
+  value,
+}: {
+  added: boolean;
+  count: number;
+  value: string;
+}) {
   return [
     added ? `added: ${count}` : `removed: ${count}`,
     ...value.split("\n").map((line) => (added ? `+ ${line}` : `- ${line}`)),

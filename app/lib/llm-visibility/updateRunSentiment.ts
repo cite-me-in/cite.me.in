@@ -39,7 +39,9 @@ export default async function updateRunSentiment({
       queries: completedQueries.map((q) => ({
         query: q.query,
         text: q.text,
-        citations: q.citations.filter((c) => c.relationship === null).map((c) => c.url),
+        citations: q.citations
+          .filter((c) => c.relationship === null)
+          .map((c) => c.url),
       })),
       siteSummary: run.site.summary,
     });
@@ -64,7 +66,9 @@ export default async function updateRunSentiment({
       });
     }
 
-    await log(`Sentiment analysis complete: ${label} for ${run.site.domain} on ${run.platform}`);
+    await log(
+      `Sentiment analysis complete: ${label} for ${run.site.domain} on ${run.platform}`,
+    );
   } catch (sentimentError) {
     captureAndLogError(sentimentError, {
       extra: { run },

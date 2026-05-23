@@ -82,9 +82,12 @@ function daysAgo(n: number): Date {
 
 describe("unauthenticated access", () => {
   it("should redirect to /sign-in", async () => {
-    const response = await fetch(`http://localhost:${port}/site/some-id/traffic`, {
-      redirect: "manual",
-    });
+    const response = await fetch(
+      `http://localhost:${port}/site/some-id/traffic`,
+      {
+        redirect: "manual",
+      },
+    );
     expect(response.status).toBe(302);
     expect(response.headers.get("location")).toContain("/sign-in");
   });
@@ -165,7 +168,10 @@ describe("traffic page", () => {
         });
       }
       const ctx = await signIn(user.id);
-      page = await goto(`/site/${siteDomain}/traffic?from=2026-01-27&until=2026-02-26`, ctx);
+      page = await goto(
+        `/site/${siteDomain}/traffic?from=2026-01-27&until=2026-02-26`,
+        ctx,
+      );
     });
 
     afterAll(async () => {
@@ -174,13 +180,20 @@ describe("traffic page", () => {
 
     it("should show total unique visitors", async () => {
       await expect(
-        page.locator('[data-slot="card"]').filter({ hasText: "Unique Visitors" }).getByText("3"),
+        page
+          .locator('[data-slot="card"]')
+          .filter({ hasText: "Unique Visitors" })
+          .getByText("3"),
       ).toBeVisible();
     });
 
     it("should show AI platforms in the breakdown table", async () => {
-      await expect(page.getByRole("cell", { name: "chatgpt", exact: true })).toBeVisible();
-      await expect(page.getByRole("cell", { name: "gemini", exact: true })).toBeVisible();
+      await expect(
+        page.getByRole("cell", { name: "chatgpt", exact: true }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("cell", { name: "gemini", exact: true }),
+      ).toBeVisible();
     });
 
     it("should match visually", { timeout: 15_000 }, async () => {
@@ -193,7 +206,8 @@ describe("traffic page", () => {
               continue;
             }
             const href = el.getAttribute("href") ?? "";
-            if (href.startsWith("/site/") && !href.endsWith("/traffic")) el.remove();
+            if (href.startsWith("/site/") && !href.endsWith("/traffic"))
+              el.remove();
           }
         },
       });
@@ -221,7 +235,10 @@ describe("traffic page", () => {
         });
       }
       const ctx = await signIn(user.id);
-      page = await goto(`/site/${siteDomain}/traffic?from=2026-01-27&until=2026-02-26`, ctx);
+      page = await goto(
+        `/site/${siteDomain}/traffic?from=2026-01-27&until=2026-02-26`,
+        ctx,
+      );
     });
 
     afterAll(async () => {
@@ -229,9 +246,15 @@ describe("traffic page", () => {
     });
 
     it("should list all bot types in the activity table", async () => {
-      await expect(page.getByRole("cell", { name: "Google", exact: true })).toBeVisible();
-      await expect(page.getByRole("cell", { name: "GPT Bot", exact: true })).toBeVisible();
-      await expect(page.getByRole("cell", { name: "Gemini", exact: true })).toBeVisible();
+      await expect(
+        page.getByRole("cell", { name: "Google", exact: true }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("cell", { name: "GPT Bot", exact: true }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("cell", { name: "Gemini", exact: true }),
+      ).toBeVisible();
     });
 
     it("should show bot traffic trend chart", async () => {
@@ -251,7 +274,10 @@ describe("traffic page", () => {
         },
       });
       const ctx = await signIn(user.id);
-      page = await goto(`/site/${siteDomain}/traffic?from=2026-01-27&until=2026-02-26`, ctx);
+      page = await goto(
+        `/site/${siteDomain}/traffic?from=2026-01-27&until=2026-02-26`,
+        ctx,
+      );
     });
 
     afterAll(async () => {
@@ -260,7 +286,9 @@ describe("traffic page", () => {
 
     it("should show the insight text", async () => {
       await expect(
-        page.getByText("ChatGPT visited 8 times this week, mostly your homepage."),
+        page.getByText(
+          "ChatGPT visited 8 times this week, mostly your homepage.",
+        ),
       ).toBeVisible();
     });
 

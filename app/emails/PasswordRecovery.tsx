@@ -20,11 +20,13 @@ export default async function sendPasswordRecoveryEmail({
 function PasswordRecovery({ url: resetPasswordUrl }: { url: string }) {
   return (
     <Section>
-      <Text className="text-text my-4 text-base leading-relaxed">Hello there,</Text>
+      <Text className="text-text my-4 text-base leading-relaxed">
+        Hello there,
+      </Text>
 
       <Text className="text-text my-4 text-base leading-relaxed">
-        You recently requested to reset your Cite.me.in password. To complete this request, please
-        click the button below.
+        You recently requested to reset your Cite.me.in password. To complete
+        this request, please click the button below.
       </Text>
 
       <Section className="my-8 text-center">
@@ -40,8 +42,8 @@ function PasswordRecovery({ url: resetPasswordUrl }: { url: string }) {
       </CodeInline>
 
       <Text className="text-text my-4 text-base leading-relaxed">
-        This link will expire in 30 minutes. If you didn't request this change, you can safely
-        ignore this email.
+        This link will expire in 30 minutes. If you didn't request this change,
+        you can safely ignore this email.
       </Text>
 
       <Text className="text-text my-4 text-base leading-relaxed">

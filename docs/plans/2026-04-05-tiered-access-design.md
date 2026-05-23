@@ -82,7 +82,10 @@ export function processingIntervalHours(plan: Plan): number {
 
 // Whether a site should be processed right now.
 // Trial expires after 25 days.
-export function isProcessingEligible(user: { plan: Plan; createdAt: Date }): boolean {
+export function isProcessingEligible(user: {
+  plan: Plan;
+  createdAt: Date;
+}): boolean {
   if (user.plan === "cancelled") return false;
   if (user.plan === "trial") return daysSince(user.createdAt) < TRIAL_DAYS;
   return true; // paid, gratis
@@ -90,7 +93,10 @@ export function isProcessingEligible(user: { plan: Plan; createdAt: Date }): boo
 
 // Whether to include this site in the weekly digest.
 // Same eligibility as processing.
-export function isDigestEligible(user: { plan: Plan; createdAt: Date }): boolean {
+export function isDigestEligible(user: {
+  plan: Plan;
+  createdAt: Date;
+}): boolean {
   return isProcessingEligible(user);
 }
 ```
@@ -134,7 +140,10 @@ await prisma.$transaction([
 **`customer.subscription.deleted`** — set `User.plan = "cancelled"` and emit webhook notification (currently missing):
 
 ```ts
-await prisma.user.update({ where: { id: account.userId }, data: { plan: "cancelled" } });
+await prisma.user.update({
+  where: { id: account.userId },
+  data: { plan: "cancelled" },
+});
 await emitWebhookEvent("subscription.cancelled", { userId: account.userId });
 ```
 

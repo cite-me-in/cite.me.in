@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
 import ts from "typescript";
+import { describe, expect, it } from "vitest";
 import {
   assertDefaultExport,
   boolExport,
@@ -65,19 +65,31 @@ describe("collect", () => {
 describe("strExport", () => {
   it("returns string value when entry exists and is a string literal", () => {
     const map = new Map([
-      ["name", { kind: ts.SyntaxKind.StringLiteral, text: '"hello"', strValue: "hello" }],
+      [
+        "name",
+        {
+          kind: ts.SyntaxKind.StringLiteral,
+          text: '"hello"',
+          strValue: "hello",
+        },
+      ],
     ]);
     expect(strExport(map, "name")).toBe("hello");
   });
 
   it("throws when entry doesn't exist", () => {
     const map = new Map();
-    expect(() => strExport(map, "missing")).toThrow("app/cron/: missing export const missing");
+    expect(() => strExport(map, "missing")).toThrow(
+      "app/cron/: missing export const missing",
+    );
   });
 
   it("throws when entry exists but has no strValue", () => {
     const map = new Map([
-      ["num", { kind: ts.SyntaxKind.NumericLiteral, text: "42", strValue: undefined }],
+      [
+        "num",
+        { kind: ts.SyntaxKind.NumericLiteral, text: "42", strValue: undefined },
+      ],
     ]);
     expect(() => strExport(map, "num")).toThrow(
       "app/cron/: export const num must be a string literal",
@@ -88,14 +100,24 @@ describe("strExport", () => {
 describe("boolExport", () => {
   it("returns true for TrueKeyword entry", () => {
     const map = new Map([
-      ["flag", { kind: ts.SyntaxKind.TrueKeyword, text: "true", strValue: undefined }],
+      [
+        "flag",
+        { kind: ts.SyntaxKind.TrueKeyword, text: "true", strValue: undefined },
+      ],
     ]);
     expect(boolExport(map, "flag", false)).toBe(true);
   });
 
   it("returns false for FalseKeyword entry", () => {
     const map = new Map([
-      ["flag", { kind: ts.SyntaxKind.FalseKeyword, text: "false", strValue: undefined }],
+      [
+        "flag",
+        {
+          kind: ts.SyntaxKind.FalseKeyword,
+          text: "false",
+          strValue: undefined,
+        },
+      ],
     ]);
     expect(boolExport(map, "flag", true)).toBe(false);
   });
@@ -108,7 +130,14 @@ describe("boolExport", () => {
 
   it("throws when entry exists but is not a boolean", () => {
     const map = new Map([
-      ["str", { kind: ts.SyntaxKind.StringLiteral, text: '"hello"', strValue: "hello" }],
+      [
+        "str",
+        {
+          kind: ts.SyntaxKind.StringLiteral,
+          text: '"hello"',
+          strValue: "hello",
+        },
+      ],
     ]);
     expect(() => boolExport(map, "str", false)).toThrow(
       "app/cron/: export const str must be a boolean literal",
@@ -119,35 +148,50 @@ describe("boolExport", () => {
 describe("timeoutExport", () => {
   it('parses "30s" to 30', () => {
     const map = new Map([
-      ["timeout", { kind: ts.SyntaxKind.StringLiteral, text: '"30s"', strValue: "30s" }],
+      [
+        "timeout",
+        { kind: ts.SyntaxKind.StringLiteral, text: '"30s"', strValue: "30s" },
+      ],
     ]);
     expect(timeoutExport(map)).toBe(30);
   });
 
   it('parses "5m" to 300', () => {
     const map = new Map([
-      ["timeout", { kind: ts.SyntaxKind.StringLiteral, text: '"5m"', strValue: "5m" }],
+      [
+        "timeout",
+        { kind: ts.SyntaxKind.StringLiteral, text: '"5m"', strValue: "5m" },
+      ],
     ]);
     expect(timeoutExport(map)).toBe(300);
   });
 
   it('parses "1h" to 3600', () => {
     const map = new Map([
-      ["timeout", { kind: ts.SyntaxKind.StringLiteral, text: '"1h"', strValue: "1h" }],
+      [
+        "timeout",
+        { kind: ts.SyntaxKind.StringLiteral, text: '"1h"', strValue: "1h" },
+      ],
     ]);
     expect(timeoutExport(map)).toBe(3600);
   });
 
   it('parses "90" (no unit) to 90', () => {
     const map = new Map([
-      ["timeout", { kind: ts.SyntaxKind.StringLiteral, text: '"90"', strValue: "90" }],
+      [
+        "timeout",
+        { kind: ts.SyntaxKind.StringLiteral, text: '"90"', strValue: "90" },
+      ],
     ]);
     expect(timeoutExport(map)).toBe(90);
   });
 
   it("throws on invalid timeout string", () => {
     const map = new Map([
-      ["timeout", { kind: ts.SyntaxKind.StringLiteral, text: '"abc"', strValue: "abc" }],
+      [
+        "timeout",
+        { kind: ts.SyntaxKind.StringLiteral, text: '"abc"', strValue: "abc" },
+      ],
     ]);
     expect(() => timeoutExport(map)).toThrow('Invalid timeout string: "abc"');
   });
@@ -198,7 +242,9 @@ describe("timeoutExport", () => {
 
   it("throws when timeout is missing from the map", () => {
     const map = new Map();
-    expect(() => timeoutExport(map)).toThrow("app/cron/: missing export const timeout");
+    expect(() => timeoutExport(map)).toThrow(
+      "app/cron/: missing export const timeout",
+    );
   });
 });
 

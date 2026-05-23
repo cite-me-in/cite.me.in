@@ -1,4 +1,12 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterAll,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import prisma from "~/lib/prisma.server";
 
 const mockQueryPlatform = vi.fn<() => void>();
@@ -23,7 +31,8 @@ vi.mock("~/lib/captureAndLogError.server", () => ({
 
 const fixedNow = new Date("2024-03-15T12:00:00Z");
 
-const daysAgo = (n: number) => new Date(fixedNow.getTime() - n * 24 * 60 * 60 * 1000);
+const daysAgo = (n: number) =>
+  new Date(fixedNow.getTime() - n * 24 * 60 * 60 * 1000);
 
 async function createTestUser(data: {
   id: string;
@@ -61,7 +70,11 @@ async function createTestSite(data: {
   });
 }
 
-async function createTestSiteQuery(data: { siteId: string; query: string; group: string }) {
+async function createTestSiteQuery(data: {
+  siteId: string;
+  query: string;
+  group: string;
+}) {
   return prisma.siteQuery.create({
     data: {
       siteId: data.siteId,
@@ -103,7 +116,9 @@ describe("prepareSites", () => {
 
   beforeEach(async () => {
     mockQueryPlatform.mockReset().mockResolvedValue(undefined);
-    mockGenerateBotInsight.mockReset().mockResolvedValue("Test bot insight content");
+    mockGenerateBotInsight
+      .mockReset()
+      .mockResolvedValue("Test bot insight content");
     mockUpsertCitingPages.mockReset().mockResolvedValue(undefined);
 
     await prisma.botVisit.deleteMany();
@@ -359,7 +374,9 @@ describe("prepareSites", () => {
 
       expect(mockGenerateBotInsight).toHaveBeenCalledWith(
         "process2.com",
-        expect.arrayContaining([expect.objectContaining({ botType: "ChatGPT", total: 10 })]),
+        expect.arrayContaining([
+          expect.objectContaining({ botType: "ChatGPT", total: 10 }),
+        ]),
       );
 
       const insight = await prisma.botInsight.findUnique({

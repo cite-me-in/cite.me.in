@@ -23,7 +23,13 @@ import buildPrompt from "~/lib/aiLegibility/buildPrompt";
 import CATEGORIES from "~/lib/aiLegibility/checkDetails";
 import type { CheckResult, ScanResult } from "~/lib/aiLegibility/types";
 
-export default function ScanResults({ result, user }: { result: ScanResult; user: unknown }) {
+export default function ScanResults({
+  result,
+  user,
+}: {
+  result: ScanResult;
+  user: unknown;
+}) {
   const totalPassed = result.checks.filter((c) => c.passed).length;
   const totalChecks = result.checks.length;
   const score = Math.round((totalPassed / totalChecks) * 100);
@@ -34,8 +40,12 @@ export default function ScanResults({ result, user }: { result: ScanResult; user
       {showCelebration && (
         <div className="rounded-base border-2 border-black bg-green-100 p-6 text-center shadow-[4px_4px_0px_0px_black]">
           <CheckCircleIcon className="mx-auto mb-2 h-8 w-8 text-green-600" />
-          <h3 className="text-xl font-bold text-green-800">All {totalChecks} checks passed!</h3>
-          <p className="mt-1 text-green-700">Your site is well-optimized for AI discovery.</p>
+          <h3 className="text-xl font-bold text-green-800">
+            All {totalChecks} checks passed!
+          </h3>
+          <p className="mt-1 text-green-700">
+            Your site is well-optimized for AI discovery.
+          </p>
         </div>
       )}
 
@@ -70,8 +80,12 @@ export default function ScanResults({ result, user }: { result: ScanResult; user
 
           {totalPassed < totalChecks && (
             <>
-              <QuickWinCard failedChecks={result.checks.filter((c) => !c.passed)} />
-              <ImproveSiteModal failedChecks={result.checks.filter((c) => !c.passed)} />
+              <QuickWinCard
+                failedChecks={result.checks.filter((c) => !c.passed)}
+              />
+              <ImproveSiteModal
+                failedChecks={result.checks.filter((c) => !c.passed)}
+              />
             </>
           )}
 
@@ -102,7 +116,11 @@ export default function ScanResults({ result, user }: { result: ScanResult; user
   );
 }
 
-function CollapsiblePassed({ passed }: { passed: { name: string; message: string }[] }) {
+function CollapsiblePassed({
+  passed,
+}: {
+  passed: { name: string; message: string }[];
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -136,8 +154,8 @@ function UpgradeCard({ user }: { user: unknown }) {
       </h3>
       <p className="mb-6 font-medium text-black/70">
         Legibility is necessary but not sufficient. With a paid plan, we run{" "}
-        <strong>9 targeted queries</strong> across ChatGPT, Claude, Gemini, Copilot, and Perplexity
-        every week — so you know exactly what's working.
+        <strong>9 targeted queries</strong> across ChatGPT, Claude, Gemini,
+        Copilot, and Perplexity every week — so you know exactly what's working.
       </p>
 
       {user ? (
@@ -187,12 +205,14 @@ function ImproveSiteModal({ failedChecks }: { failedChecks: CheckResult[] }) {
             Fix in minutes with your coding agent
           </DialogTitle>
           <DialogDescription className="font-base text-black/60">
-            Copy the prompts below and paste them into Cursor, Copilot, or Claude. Each one includes
-            an example fix — just paste and let your AI handle it.
+            Copy the prompts below and paste them into Cursor, Copilot, or
+            Claude. Each one includes an example fix — just paste and let your
+            AI handle it.
           </DialogDescription>
 
           <div className="min-h-0 flex-1 overflow-y-auto">
             <textarea
+              aria-label="Prompt"
               className="rounded-base min-h-[30vh] w-full resize-none border-2 border-black bg-[hsl(60,100%,97%)] p-4 font-mono"
               value={allPrompts}
               readOnly
@@ -263,7 +283,9 @@ function CheckRow({
               <div key={i} className="ml-4">
                 <span>{page.timedOut ? "⏱️" : "✗"}</span>{" "}
                 <span className="font-mono text-sm">{page.url}</span>
-                <span className="ml-1 text-sm text-black/60">{page.message}</span>
+                <span className="ml-1 text-sm text-black/60">
+                  {page.message}
+                </span>
               </div>
             ))}
           </div>
@@ -303,7 +325,8 @@ function ScoreGauge({ score }: { score: number }) {
         />
       </div>
       <p className="mt-3 font-medium text-black/50">
-        Most sites score 45-65. {score >= 65 ? "You're above average!" : "There's room to improve."}
+        Most sites score 45-65.{" "}
+        {score >= 65 ? "You're above average!" : "There's room to improve."}
       </p>
     </div>
   );
@@ -321,7 +344,8 @@ function QuickWinCard({ failedChecks }: { failedChecks: CheckResult[] }) {
     const e = c.detail?.effort;
     if (!e) return best;
     if (!best) return c;
-    return (EFFORT_ORDER[e] ?? 99) < (EFFORT_ORDER[best.detail?.effort ?? "1 hour"] ?? 99)
+    return (EFFORT_ORDER[e] ?? 99) <
+      (EFFORT_ORDER[best.detail?.effort ?? "1 hour"] ?? 99)
       ? c
       : best;
   }, null);
@@ -353,9 +377,12 @@ function QuickWinCard({ failedChecks }: { failedChecks: CheckResult[] }) {
         <strong>{quickWin.message}</strong>
       </p>
 
-      <p className="mb-3 font-medium text-emerald-700">{quickWin.detail.issue}</p>
+      <p className="mb-3 font-medium text-emerald-700">
+        {quickWin.detail.issue}
+      </p>
 
       <textarea
+        aria-label="Prompt"
         className="rounded-base mb-3 w-full resize-none border-2 border-emerald-400 bg-white p-3 font-mono text-emerald-900"
         value={prompt}
         readOnly
@@ -364,8 +391,8 @@ function QuickWinCard({ failedChecks }: { failedChecks: CheckResult[] }) {
 
       <div className="flex items-center justify-between gap-4">
         <span className="max-w-md font-medium text-emerald-700">
-          Copy this prompt and paste it into your AI coding agent (Claude Code, Cursor, Copilot,
-          Codex) — it will fix the code in minutes.
+          Copy this prompt and paste it into your AI coding agent (Claude Code,
+          Cursor, Copilot, Codex) — it will fix the code in minutes.
         </span>
         <button
           onClick={handleCopy}

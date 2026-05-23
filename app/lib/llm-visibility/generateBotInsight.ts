@@ -16,7 +16,10 @@ export default async function generateBotInsight(
   }[],
 ): Promise<string> {
   const statLines = botStats
-    .map((s) => `- ${s.botType}: ${s.total} visits. Top pages: ${s.topPaths.join(", ")}`)
+    .map(
+      (s) =>
+        `- ${s.botType}: ${s.total} visits. Top pages: ${s.topPaths.join(", ")}`,
+    )
     .join("\n");
 
   const completion = await client.chat.completions.create({

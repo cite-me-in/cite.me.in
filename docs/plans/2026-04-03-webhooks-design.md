@@ -107,10 +107,16 @@ Internally:
 await emitWebhookEvent("user.created", { userId: user.id, email: user.email });
 
 // site.$domain_.setup.tsx — after site creation
-await emitWebhookEvent("site.created", { siteId: site.id, domain: site.domain });
+await emitWebhookEvent("site.created", {
+  siteId: site.id,
+  domain: site.domain,
+});
 
 // site.$domain_.settings/ delete action — before or after deletion
-await emitWebhookEvent("site.deleted", { siteId: site.id, domain: site.domain });
+await emitWebhookEvent("site.deleted", {
+  siteId: site.id,
+  domain: site.domain,
+});
 ```
 
 ## Delivery & HMAC Signing

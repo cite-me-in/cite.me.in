@@ -24,7 +24,12 @@ import checkRobotsDirectives from "./checks/robotsDirectives";
 import checkRobotsTxt from "./checks/robotsTxt";
 import checkSitemapTxt from "./checks/sitemapTxt";
 import checkSitemapXml from "./checks/sitemapXml";
-import type { CheckResult, ScanProgress, ScanResult, Suggestion } from "./types";
+import type {
+  CheckResult,
+  ScanProgress,
+  ScanResult,
+  Suggestion,
+} from "./types";
 
 /**
  * Run AI Legibility scan for a site, identifying any SEO problems and
@@ -72,7 +77,9 @@ export default async function runAILegibilityScan({
   } catch (error) {
     captureAndLogError(error, { extra: { site } });
     await setStatus({ domain: site.domain, status: "error" });
-    await log(`❌ Error: ${error instanceof Error ? error.message : "Unknown error"}`);
+    await log(
+      `❌ Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
     return { lines: [], done: false, nextOffset: 0, result: undefined };
   }
 }
@@ -97,11 +104,16 @@ async function collectSampleUrls(
 ): Promise<string[]> {
   const urlsFrom = (result: { urls: string[] }) => result.urls;
   let sampleURLs = shuffle([
-    ...new Set([...urlsFrom(sitemapXmlResult), ...urlsFrom(sitemapTxtResult)]).values(),
+    ...new Set([
+      ...urlsFrom(sitemapXmlResult),
+      ...urlsFrom(sitemapTxtResult),
+    ]).values(),
   ]).slice(0, 10);
 
   if (sampleURLs.length === 0 && homepageResult.html) {
-    const links = homepageResult.html.matchAll(/<a[^>]+href\s*=\s*["']([^"']+)["'][^>]*>/gi);
+    const links = homepageResult.html.matchAll(
+      /<a[^>]+href\s*=\s*["']([^"']+)["'][^>]*>/gi,
+    );
     const resolved: string[] = [];
     for (const match of links) {
       try {
@@ -168,7 +180,7 @@ export async function runScanSteps({
   const url = normalizeURL(domain);
   const checks: Omit<CheckResult, "category">[] = [];
 
-  async function runCheck<T extends { passed: boolean; message: string }>(
+  async function runCheck<T extends Omit<CheckResult, "category">>(
     name: string,
     fn: () => Promise<T>,
   ): Promise<T> {
@@ -191,7 +203,9 @@ export async function runScanSteps({
   await log(`${homepageResult.passed ? "✓" : "✗"} ${homepageResult.message}`);
 
   // Discovery checks
-  const robotsTxtResult = await runCheck("robots.txt", () => checkRobotsTxt({ url }));
+  const robotsTxtResult = await runCheck("robots.txt", () =>
+    checkRobotsTxt({ url }),
+  );
   const sitemapXmlResult = await runCheck("sitemap.xml", () =>
     checkSitemapXml({ url, robotsSitemapUrls: robotsTxtResult.sitemapURLs }),
   );
@@ -207,21 +221,25 @@ export async function runScanSteps({
     url,
   );
   const pagesToFetch = sampleURLs.filter((u) => u !== url);
-  const { pages: fetchedPages, result: samplePagesResult } = await fetchSamplePages(
-    pagesToFetch,
-    log,
-  );
+  const { pages: fetchedPages, result: samplePagesResult } =
+    await fetchSamplePages(pagesToFetch, log);
   checks.push(samplePagesResult);
-  await log(`${samplePagesResult.passed ? "✓" : "✗"} ${samplePagesResult.message}`);
+  await log(
+    `${samplePagesResult.passed ? "✓" : "✗"} ${samplePagesResult.message}`,
+  );
 
   const reviewedPages = [homepageResult, ...fetchedPages];
 
   // Content checks
   await runCheck("JSON-LD", () =>
-    checkJsonLd({ pages: reviewedPages.map((p) => ({ url: p.url, html: p.html })) }),
+    checkJsonLd({
+      pages: reviewedPages.map((p) => ({ url: p.url, html: p.html })),
+    }),
   );
   await runCheck("meta tags", () =>
-    checkMetaTags({ pages: reviewedPages.map((p) => ({ url: p.url, html: p.html })) }),
+    checkMetaTags({
+      pages: reviewedPages.map((p) => ({ url: p.url, html: p.html })),
+    }),
   );
   await runCheck("llms.txt", () => checkLlmsTxt({ url }));
   await runCheck("sitemap link headers", () =>
@@ -232,14 +250,18 @@ export async function runScanSteps({
   );
 
   // .md checks — chained dependency, keep result from markdownAlternateLinks
-  const markdownAlternateResult = await runCheck("markdown alternate links", () =>
-    checkMarkdownAlternateLinks({ pages: reviewedPages }),
+  const markdownAlternateResult = await runCheck(
+    "markdown alternate links",
+    () => checkMarkdownAlternateLinks({ pages: reviewedPages }),
   );
   await runCheck(".md routes", () =>
     checkMdRoutes({
       urls:
-        ((markdownAlternateResult.details ?? {}) as { alternateUrls?: string[] }).alternateUrls ??
-        [],
+        (
+          (markdownAlternateResult.details ?? {}) as {
+            alternateUrls?: string[];
+          }
+        ).alternateUrls ?? [],
     }),
   );
 
@@ -260,7 +282,8 @@ export async function runScanSteps({
   await runCheck("AI bot traffic", () =>
     checkAiBotTraffic({
       url,
-      sampleUrls: fetchedPages.length > 0 ? fetchedPages.map((p) => p.url) : undefined,
+      sampleUrls:
+        fetchedPages.length > 0 ? fetchedPages.map((p) => p.url) : undefined,
       log,
     }),
   );
@@ -268,7 +291,10 @@ export async function runScanSteps({
 
   const withCategory = checks.map((check) => ({
     ...check,
-    category: getCheckCategory(check.name) as "discovered" | "trusted" | "welcomed",
+    category: getCheckCategory(check.name) as
+      | "discovered"
+      | "trusted"
+      | "welcomed",
     detail: getCheckDetail(check.name),
   }));
   const summary = await summarize({ checks: withCategory, log });
@@ -332,9 +358,15 @@ async function summarize({
     },
   };
 
-  await log(`Discovered: ${summary.discovered.passed}/${summary.discovered.total} passed`);
-  await log(`Trusted: ${summary.trusted.passed}/${summary.trusted.total} passed`);
-  await log(`Welcomed: ${summary.welcomed.passed}/${summary.welcomed.total} passed`);
+  await log(
+    `Discovered: ${summary.discovered.passed}/${summary.discovered.total} passed`,
+  );
+  await log(
+    `Trusted: ${summary.trusted.passed}/${summary.trusted.total} passed`,
+  );
+  await log(
+    `Welcomed: ${summary.welcomed.passed}/${summary.welcomed.total} passed`,
+  );
 
   return summary;
 }

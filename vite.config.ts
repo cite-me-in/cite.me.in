@@ -9,8 +9,12 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@tailwindcss/typography": path.resolve("node_modules/@tailwindcss/typography/src/index.js"),
-      "@tailwindcss/forms": path.resolve("node_modules/@tailwindcss/forms/src/index.js"),
+      "@tailwindcss/typography": path.resolve(
+        "node_modules/@tailwindcss/typography/src/index.js",
+      ),
+      "@tailwindcss/forms": path.resolve(
+        "node_modules/@tailwindcss/forms/src/index.js",
+      ),
     },
     dedupe: ["react", "react-dom", "react-router"],
     tsconfigPaths: true,

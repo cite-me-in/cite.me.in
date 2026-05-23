@@ -35,7 +35,9 @@ export async function launchServer(): Promise<number> {
 
   worker = fork(resolve("test/helpers/serverWorker.ts"), {
     execArgv: ["--import", "tsx/esm"],
-    stdio: debug.enabled("server") ? ["ignore", process.stdout, process.stderr, "ipc"] : undefined,
+    stdio: debug.enabled("server")
+      ? ["ignore", process.stdout, process.stderr, "ipc"]
+      : undefined,
     env: {
       ...process.env,
       CHOKIDAR_USEPOLLING: "1",
@@ -45,7 +47,8 @@ export async function launchServer(): Promise<number> {
       VITE_TEST_MODE: "1",
     },
   });
-  if (worker.pid) await writeFile(serverStatePath, JSON.stringify({ port, pid: worker.pid }));
+  if (worker.pid)
+    await writeFile(serverStatePath, JSON.stringify({ port, pid: worker.pid }));
 
   // Wait for the server to send ready message
   logger("Waiting for server to start...");
@@ -105,7 +108,9 @@ export async function closeServer(): Promise<void> {
 }
 
 export async function isPortAvailable(port: number): Promise<boolean> {
-  const results = await Promise.all(loopbackHosts.map((host) => canBindPort(port, host)));
+  const results = await Promise.all(
+    loopbackHosts.map((host) => canBindPort(port, host)),
+  );
   return results.every(Boolean);
 }
 
@@ -125,8 +130,12 @@ async function canBindPort(port: number, host: string): Promise<boolean> {
   });
 }
 
-function waitForExit(worker: ChildProcess, timeoutMs: number): Promise<boolean> {
-  if (worker.exitCode !== null || worker.signalCode !== null) return Promise.resolve(true);
+function waitForExit(
+  worker: ChildProcess,
+  timeoutMs: number,
+): Promise<boolean> {
+  if (worker.exitCode !== null || worker.signalCode !== null)
+    return Promise.resolve(true);
 
   return new Promise<boolean>((resolve) => {
     const timeout = setTimeout(() => {
@@ -154,7 +163,10 @@ async function terminateServerPid(): Promise<void> {
   }
 }
 
-async function waitForPidExit(pid: number, timeoutMs: number): Promise<boolean> {
+async function waitForPidExit(
+  pid: number,
+  timeoutMs: number,
+): Promise<boolean> {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
     if (!isProcessRunning(pid)) return true;

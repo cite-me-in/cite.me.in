@@ -24,15 +24,22 @@ No test needed — the component is covered by the visual regression tests in Ta
 import { Text } from "@react-email/components";
 import Card from "~/components/email/Card";
 
-export function BrandReminderCard({ domain, citations }: { domain: string; citations: number }) {
+export function BrandReminderCard({
+  domain,
+  citations,
+}: {
+  domain: string;
+  citations: number;
+}) {
   const n = citations.toLocaleString();
   const noun = citations === 1 ? "citation" : "citations";
   return (
     <Card withBorder>
       <Text className="text-base text-text leading-relaxed">
-        cite.me.in is your window into how AI talks about your brand. Every day it asks ChatGPT,
-        Claude, Gemini, and Perplexity the questions your customers ask — and records every time{" "}
-        <strong>{domain}</strong> shows up. So far:{" "}
+        cite.me.in is your window into how AI talks about your brand. Every day
+        it asks ChatGPT, Claude, Gemini, and Perplexity the questions your
+        customers ask — and records every time <strong>{domain}</strong> shows
+        up. So far:{" "}
         <strong>
           {n} {noun}
         </strong>{" "}
@@ -277,8 +284,9 @@ After:
 
 ```tsx
 <Text>
-  {brandReminderText({ domain, citations: citationCount })} If you'd like to keep your history and
-  continue daily runs, upgrade to Pro for ${prices.monthlyAmount}/month.
+  {brandReminderText({ domain, citations: citationCount })} If you'd like to
+  keep your history and continue daily runs, upgrade to Pro for $
+  {prices.monthlyAmount}/month.
 </Text>
 ```
 
@@ -332,8 +340,9 @@ After:
 
 ```tsx
 <Text>
-  {brandReminderText({ domain, citations: citationCount })} Your free trial has ended and daily runs
-  have paused. Upgrade to Pro to keep your history and resume monitoring — ${prices.monthlyAmount}
+  {brandReminderText({ domain, citations: citationCount })} Your free trial has
+  ended and daily runs have paused. Upgrade to Pro to keep your history and
+  resume monitoring — ${prices.monthlyAmount}
   /month or ${prices.annualAmount}/year.
 </Text>
 ```

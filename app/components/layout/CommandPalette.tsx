@@ -121,7 +121,9 @@ export default function CommandPalette() {
       : groups
           .map((g) => ({
             ...g,
-            items: g.items.filter((i) => i.label.toLowerCase().includes(normalizedQuery)),
+            items: g.items.filter((i) =>
+              i.label.toLowerCase().includes(normalizedQuery),
+            ),
           }))
           .filter((g) => g.items.length > 0);
 
@@ -152,7 +154,8 @@ export default function CommandPalette() {
 
   useEffect(() => {
     const item = flatItems[activeIndex];
-    if (item) itemRefs.current.get(item.id)?.scrollIntoView({ block: "nearest" });
+    if (item)
+      itemRefs.current.get(item.id)?.scrollIntoView({ block: "nearest" });
   }, [activeIndex, flatItems]);
 
   function setItemRef(id: string, el: HTMLButtonElement | null) {
@@ -200,6 +203,7 @@ export default function CommandPalette() {
           <div className="relative border-b-2 border-black">
             <SearchIcon className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-gray-400" />
             <input
+              aria-label="Search"
               ref={inputRef}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -224,7 +228,9 @@ export default function CommandPalette() {
           </div>
           <div className="max-h-[60vh] overflow-y-auto">
             {filteredGroups.length === 0 ? (
-              <p className="px-4 py-6 text-center text-sm text-gray-400">No commands found.</p>
+              <p className="px-4 py-6 text-center text-sm text-gray-400">
+                No commands found.
+              </p>
             ) : (
               filteredGroups.map((group) => (
                 <CommandGroup

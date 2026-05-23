@@ -23,7 +23,8 @@ const CORS_HEADERS = {
 };
 
 export async function loader({ request }: { request: Request }) {
-  if (request.method === "OPTIONS") return new Response(null, { headers: CORS_HEADERS });
+  if (request.method === "OPTIONS")
+    return new Response(null, { headers: CORS_HEADERS });
 
   throw new Response("Method not allowed", {
     status: 405,
@@ -42,7 +43,10 @@ export async function action({ request }: { request: Request }) {
   try {
     parsed = (await request.json()) as z.infer<typeof TrackSchema>;
   } catch (error) {
-    logger("api.track: invalid JSON", error instanceof Error ? error.stack : String(error));
+    logger(
+      "api.track: invalid JSON",
+      error instanceof Error ? error.stack : String(error),
+    );
     throw new Response("Invalid JSON", {
       status: 400,
       headers: CORS_HEADERS,
@@ -69,7 +73,8 @@ export async function action({ request }: { request: Request }) {
     throw new Response("Not Found", { status: 404, headers: CORS_HEADERS });
   }
 
-  const userAgent = inputs.userAgent ?? request.headers.get("user-agent") ?? "Unknown";
+  const userAgent =
+    inputs.userAgent ?? request.headers.get("user-agent") ?? "Unknown";
   const ip = inputs.ip ?? request.headers.get("x-forwarded-for");
 
   try {
@@ -94,7 +99,10 @@ export async function action({ request }: { request: Request }) {
       return data({ ok: true }, { headers: CORS_HEADERS });
     }
   } catch (error) {
-    logger("api.track: error tracking visit", error instanceof Error ? error.stack : String(error));
+    logger(
+      "api.track: error tracking visit",
+      error instanceof Error ? error.stack : String(error),
+    );
     throw new Response("Bad Request", { status: 400, headers: CORS_HEADERS });
   }
 }

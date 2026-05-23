@@ -24,7 +24,8 @@ export default async function fetchAndExtract({
       headers: {
         Accept: "text/markdown, text/html;q=0.9",
         "User-Agent": "Mozilla/5.0 (compatible; cite.me.in/1.0)",
-        "sec-ch-ua": '"Google Chrome";v="124", "Chromium";v="124", "Not_A Brand";v="24"',
+        "sec-ch-ua":
+          '"Google Chrome";v="124", "Chromium";v="124", "Not_A Brand";v="24"',
       },
       redirect: "follow",
       signal: AbortSignal.any([signal, AbortSignal.timeout(ms("5s"))]),
@@ -32,10 +33,16 @@ export default async function fetchAndExtract({
     if (!response.ok) return null;
 
     const contentType = response.headers.get("content-type") ?? "";
-    if (!SUPPORTED_CONTENT_TYPES.some((type) => contentType.includes(type))) return null;
+    if (!SUPPORTED_CONTENT_TYPES.some((type) => contentType.includes(type)))
+      return null;
 
     const body = await response.text();
-    logger("[crawl] Fetched %s => %s — %d bytes", url, contentType, body.length);
+    logger(
+      "[crawl] Fetched %s => %s — %d bytes",
+      url,
+      contentType,
+      body.length,
+    );
     return contentType.includes("text/markdown")
       ? extractFromMarkdown(body, url)
       : extractFromHtml(body, url);
@@ -50,7 +57,9 @@ export default async function fetchAndExtract({
 
 function extractFromMarkdown(body: string, url: URL) {
   const firstLine = body.split("\n").find((l) => l.startsWith("# "));
-  const title = firstLine ? firstLine.replace(/^#\s+/, "") : new URL(url).pathname;
+  const title = firstLine
+    ? firstLine.replace(/^#\s+/, "")
+    : new URL(url).pathname;
   return { title, text: body };
 }
 
@@ -63,7 +72,11 @@ async function extractFromHtml(html: string, url: URL) {
     const canonical = document.querySelector('link[rel="canonical"]');
     if (canonical) {
       const href = canonical.getAttribute("href");
-      if (href && href !== url.toString() && new URL(href, url).pathname !== url.pathname)
+      if (
+        href &&
+        href !== url.toString() &&
+        new URL(href, url).pathname !== url.pathname
+      )
         return { title: document.title?.trim() ?? "", text: "", html };
     }
 
@@ -71,7 +84,8 @@ async function extractFromHtml(html: string, url: URL) {
       markdown: true,
     });
     return {
-      title: result.title?.trim() ?? document.title?.trim() ?? new URL(url).pathname,
+      title:
+        result.title?.trim() ?? document.title?.trim() ?? new URL(url).pathname,
       text: result.content?.trim() ?? "",
       html,
     };
@@ -81,7 +95,8 @@ async function extractFromHtml(html: string, url: URL) {
 }
 
 function extractArticleBody(html: string): string | null {
-  const scriptRegex = /<script[^>]+type=["']application\/ld\+json["']>[^]*?<\/script>/gi;
+  const scriptRegex =
+    /<script[^>]+type=["']application\/ld\+json["']>[^]*?<\/script>/gi;
   let match: RegExpExecArray | null;
   while (true) {
     match = scriptRegex.exec(html);
@@ -99,7 +114,9 @@ function extractArticleBody(html: string): string | null {
             : null;
       if (
         !type ||
-        !["Article", "NewsArticle", "BlogPosting"].includes(type.replace(/^schema:/i, ""))
+        !["Article", "NewsArticle", "BlogPosting"].includes(
+          type.replace(/^schema:/i, ""),
+        )
       ) {
         continue;
       }

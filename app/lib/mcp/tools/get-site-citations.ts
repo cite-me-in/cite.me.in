@@ -36,7 +36,10 @@ export default {
       }),
     ),
   }),
-  handler: async ({ domain }: { domain: string }, extra: { authInfo?: { token?: string } }) => {
+  handler: async (
+    { domain }: { domain: string },
+    extra: { authInfo?: { token?: string } },
+  ) => {
     try {
       const userId = await verifyBearerToken(extra.authInfo?.token);
 
@@ -121,8 +124,12 @@ export default {
             ...(c.reason && { reason: c.reason }),
           }));
 
-          const directCitations = citations.filter((c) => c.relationship === "direct").length;
-          const indirectCitations = citations.filter((c) => c.relationship === "indirect").length;
+          const directCitations = citations.filter(
+            (c) => c.relationship === "direct",
+          ).length;
+          const indirectCitations = citations.filter(
+            (c) => c.relationship === "indirect",
+          ).length;
           const mentionsYourSite = directCitations + indirectCitations;
 
           const platformResult = {
@@ -147,7 +154,9 @@ export default {
         }
       }
 
-      const queries = Array.from(queryMap.values()).sort((a, b) => a.query.localeCompare(b.query));
+      const queries = Array.from(queryMap.values()).sort((a, b) =>
+        a.query.localeCompare(b.query),
+      );
 
       const result = {
         domain,

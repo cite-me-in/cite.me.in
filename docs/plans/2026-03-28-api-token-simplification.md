@@ -57,13 +57,17 @@ describe("verifyUserAccess", () => {
   it("should throw 404 Response when token is unknown", async () => {
     // Wrong secret — userId exists but token doesn't match stored key
     await expect(
-      verifyUserAccess(makeRequest("cite.me.in_api-auth-test-user-1_wrongsecret")),
+      verifyUserAccess(
+        makeRequest("cite.me.in_api-auth-test-user-1_wrongsecret"),
+      ),
     ).rejects.toThrow(Response);
   });
 
   it("should throw 404 when userId in token doesn't exist", async () => {
     await expect(
-      verifyUserAccess(makeRequest("cite.me.in_nonexistent-user-id_testabcdef")),
+      verifyUserAccess(
+        makeRequest("cite.me.in_nonexistent-user-id_testabcdef"),
+      ),
     ).rejects.toThrow(Response);
   });
 });
@@ -95,7 +99,8 @@ export async function requireAdminApiKey(request: Request): Promise<void> {
   const auth = request.headers.get("authorization");
   if (!auth) throw new Response("Unauthorized", { status: 401 });
   const [tokenType, token] = auth.split(/\s+/);
-  if (tokenType !== "Bearer") throw new Response("Unauthorized", { status: 401 });
+  if (tokenType !== "Bearer")
+    throw new Response("Unauthorized", { status: 401 });
   if (!envVars.ADMIN_API_SECRET || token !== envVars.ADMIN_API_SECRET)
     throw new Response("Unauthorized", { status: 401 });
 }
@@ -116,7 +121,8 @@ export async function verifyUserAccess(request: Request): Promise<{
   const auth = request.headers.get("authorization");
   if (!auth) throw new Response("Unauthorized", { status: 401 });
   const [tokenType, token] = auth.split(/\s+/);
-  if (tokenType !== "Bearer") throw new Response("Unauthorized", { status: 401 });
+  if (tokenType !== "Bearer")
+    throw new Response("Unauthorized", { status: 401 });
 
   const userId = parseTokenUserId(token);
   if (!userId) throw new Response("Not found", { status: 404 });
@@ -421,7 +427,10 @@ beforeAll(async () => {
                   extraQueries: [],
                   text: "Some answer",
                   position: 1,
-                  citations: [`https://${DOMAIN}/page1`, `https://${DOMAIN}/page2`],
+                  citations: [
+                    `https://${DOMAIN}/page1`,
+                    `https://${DOMAIN}/page2`,
+                  ],
                 },
               },
             },
@@ -464,7 +473,9 @@ describe("GET /api/me", () => {
       expect(body.email).toBe(EMAIL);
       expect(Array.isArray(body.sites)).toBe(true);
       expect(body.sites[0].domain).toBe(DOMAIN);
-      expect(body.sites[0].createdAt).toBe(new Date().toISOString().split("T")[0]);
+      expect(body.sites[0].createdAt).toBe(
+        new Date().toISOString().split("T")[0],
+      );
     });
   });
 });

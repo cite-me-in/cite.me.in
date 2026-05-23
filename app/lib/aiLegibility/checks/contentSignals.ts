@@ -36,7 +36,8 @@ export default async function checkContentSignals({
     return {
       name: "Content Signals",
       passed: false,
-      message: "No Content-Signal found in robots.txt — AI agents lack a content usage signal",
+      message:
+        "No Content-Signal found in robots.txt — AI agents lack a content usage signal",
       details: { signals: [] },
     };
   }

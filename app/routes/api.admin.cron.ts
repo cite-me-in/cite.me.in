@@ -46,7 +46,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   return data({
     tasks: tasks.map((task) => {
       const h = healthByJob.get(task.name);
-      const last = lastRun.find((r) => r.job === task.name)?._max.startedAt ?? null;
+      const last =
+        lastRun.find((r) => r.job === task.name)?._max.startedAt ?? null;
       return {
         name: task.name,
         schedule: task.schedule,

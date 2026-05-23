@@ -42,7 +42,11 @@ export async function loader({ request }: Route.LoaderArgs) {
           domain,
         })),
         updatedAt: new Date(
-          Math.max(...[account?.updatedAt, user.updatedAt].map((date) => date?.getTime() ?? 0)),
+          Math.max(
+            ...[account?.updatedAt, user.updatedAt].map(
+              (date) => date?.getTime() ?? 0,
+            ),
+          ),
         )
           .toISOString()
           .split("T")[0],

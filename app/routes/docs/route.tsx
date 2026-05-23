@@ -10,14 +10,20 @@ export function meta(): Route.MetaDescriptors {
     { title: "API Documentation | Cite.me.in" },
     {
       name: "description",
-      content: "Monitoring API reference for cite.me.in — endpoints, parameters, and examples.",
+      content:
+        "Monitoring API reference for cite.me.in — endpoints, parameters, and examples.",
     },
   ];
 }
 
 export function links(): Route.LinkDescriptors {
   return [
-    { rel: "alternate", type: "text/markdown", title: "Markdown version", href: "/docs.md" },
+    {
+      rel: "alternate",
+      type: "text/markdown",
+      title: "Markdown version",
+      href: "/docs.md",
+    },
     {
       rel: "alternate",
       type: "text/plain",
@@ -53,12 +59,12 @@ export default function ApiDocs({ loaderData }: Route.ComponentProps) {
                 <a href={href}>{children}</a>
               ),
             h3: ({ children }) => (
-              <h3 className="mt-8 border-t-2 border-t-gray-400 pt-8 font-bold text-2xl">
+              <h3 className="mt-8 border-t-2 border-t-gray-400 pt-8 text-2xl font-bold">
                 {children}
               </h3>
             ),
             pre: ({ children }) => (
-              <pre className="overflow-x-auto bg-gray-100 p-4 font-light font-mono text-black">
+              <pre className="overflow-x-auto bg-gray-100 p-4 font-mono font-light text-black">
                 {children}
               </pre>
             ),
@@ -67,7 +73,9 @@ export default function ApiDocs({ loaderData }: Route.ComponentProps) {
               <thead className="border-b-2 border-b-gray-600">{children}</thead>
             ),
             code: ({ children }) => (
-              <code className="font-light font-mono before:hidden after:hidden">{children}</code>
+              <code className="font-mono font-light before:hidden after:hidden">
+                {children}
+              </code>
             ),
           }}
         >

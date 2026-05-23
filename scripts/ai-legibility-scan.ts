@@ -8,7 +8,9 @@ const url = process.argv[2];
 
 if (!url) {
   console.error("Usage: tsx scripts/ai-legibility-scan.ts <url>");
-  console.error("Example: tsx scripts/ai-legibility-scan.ts https://example.com");
+  console.error(
+    "Example: tsx scripts/ai-legibility-scan.ts https://example.com",
+  );
   process.exit(1);
 }
 

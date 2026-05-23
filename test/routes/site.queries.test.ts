@@ -9,9 +9,12 @@ import { signIn } from "~/test/helpers/signIn";
 
 describe("unauthenticated access", () => {
   it("should redirect to /sign-in", async () => {
-    const response = await fetch(`http://localhost:${port}/site/some-id/queries`, {
-      redirect: "manual",
-    });
+    const response = await fetch(
+      `http://localhost:${port}/site/some-id/queries`,
+      {
+        redirect: "manual",
+      },
+    );
     expect(response.status).toBe(302);
     expect(response.headers.get("location")).toContain("/sign-in");
   });
@@ -57,11 +60,15 @@ describe("site queries page", () => {
     });
 
     it("should show site domain breadcrumb", async () => {
-      await expect(page.getByRole("link", { name: "queries-test.example.com" })).toBeVisible();
+      await expect(
+        page.getByRole("link", { name: "queries-test.example.com" }),
+      ).toBeVisible();
     });
 
     it("should show Add group button", async () => {
-      await expect(page.getByRole("button", { name: "Add group" })).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Add group" }),
+      ).toBeVisible();
     });
 
     it("should match visually", async () => {
@@ -70,7 +77,8 @@ describe("site queries page", () => {
         modify: (doc) => {
           for (const el of doc.querySelectorAll("*")) {
             const href = el.getAttribute("href") ?? "";
-            if (href.startsWith("/site/") && !href.endsWith("/queries")) el.remove();
+            if (href.startsWith("/site/") && !href.endsWith("/queries"))
+              el.remove();
           }
         },
       });
@@ -106,7 +114,9 @@ describe("site queries page", () => {
 
     it("should show group names", async () => {
       await expect(page.locator('input[value="1. discovery"]')).toBeVisible();
-      await expect(page.locator('input[value="2. active_search"]')).toBeVisible();
+      await expect(
+        page.locator('input[value="2. active_search"]'),
+      ).toBeVisible();
     });
 
     it("should show query text", async () => {
@@ -129,7 +139,8 @@ describe("site queries page", () => {
         modify: (doc) => {
           for (const el of doc.querySelectorAll("*")) {
             const href = el.getAttribute("href") ?? "";
-            if (href.startsWith("/site/") && !href.endsWith("/queries")) el.remove();
+            if (href.startsWith("/site/") && !href.endsWith("/queries"))
+              el.remove();
           }
         },
       });

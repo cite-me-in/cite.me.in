@@ -20,7 +20,11 @@ type SetupMetrics = {
   totalCitations: number;
   byPlatform: Record<
     Platform,
-    { citations: number; sentiment: string | null; sentimentSummary: string | null }
+    {
+      citations: number;
+      sentiment: string | null;
+      sentimentSummary: string | null;
+    }
   >;
   topQueries: Array<{ query: string; citations: number }>; // top 5
   competitors: Array<{ domain: string; citations: number }>; // top 5

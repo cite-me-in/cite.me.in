@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "prisma generate && react-router build --force && tsx app/lib/cron/writeConfig.ts",
-    "check": "secretlint --format stylish && react-router typegen && infisical --env test run -- knip",
+    "check": "vp lint && vp fmt && secretlint --format stylish && react-router typegen && infisical --env test run -- knip",
     "fallow": "fallow",
     "clean": "pnpm install --force && rm -rf node_modules/.vite .react-router build",
     "dev": "infisical --env test run -- portless run -- react-router dev",
@@ -79,6 +79,9 @@
     "knip": "^6.14.2",
     "looks-same": "^10.0.1",
     "msw": "^2.14.6",
+    "oxfmt": "^0.51.0",
+    "oxlint": "^1.66.0",
+    "oxlint-tsgolint": "^0.23.0",
     "playwright": "^1.60.0",
     "portless": "^0.13.0",
     "prisma": "^7.8.0",

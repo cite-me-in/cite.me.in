@@ -47,7 +47,9 @@ describe("fetchSiteContent", () => {
       maxWords: 1000,
       maxSeconds: 10,
     });
-    expect(content).toContain("This is the main documentation for Example Domain");
+    expect(content).toContain(
+      "This is the main documentation for Example Domain",
+    );
   });
 
   it("should return summary from crawled content", async () => {

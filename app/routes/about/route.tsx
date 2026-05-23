@@ -16,7 +16,10 @@ export function meta(): Route.MetaDescriptors {
 
 export default function About() {
   return (
-    <main className="flex min-h-screen flex-col bg-[hsl(60,100%,99%)]" aria-label="About page">
+    <main
+      className="flex min-h-screen flex-col bg-[hsl(60,100%,99%)]"
+      aria-label="About page"
+    >
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData()) }}
@@ -43,7 +46,8 @@ function schemaData() {
       "@type": "Organization",
       "@id": new URL("#organization", import.meta.env.VITE_APP_URL).toString(),
       name: "Cite.me.in",
-      description: "Platform for monitoring LLM citation visibility across AI platforms",
+      description:
+        "Platform for monitoring LLM citation visibility across AI platforms",
       url: new URL("/about", import.meta.env.VITE_APP_URL).toString(),
       foundingDate: "2026",
       founder: {

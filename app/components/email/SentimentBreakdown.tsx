@@ -13,7 +13,8 @@ export default function SentimentBreakdown({
   >;
 }) {
   const platforms = Object.entries(byPlatform).filter(
-    ([, { sentimentLabel, sentimentSummary }]) => sentimentLabel && sentimentSummary,
+    ([, { sentimentLabel, sentimentSummary }]) =>
+      sentimentLabel && sentimentSummary,
   );
   if (platforms.length === 0) return null;
 

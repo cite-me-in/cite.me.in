@@ -24,7 +24,9 @@ async function main() {
     if (site.digestSentAt && site.digestSentAt > oneWeekAgo) {
       return { domain: site.domain, skipped: true };
     }
-    const sendEmails = await sendSiteDigestEmails(await loadWeeklyDigestMetrics(site.id));
+    const sendEmails = await sendSiteDigestEmails(
+      await loadWeeklyDigestMetrics(site.id),
+    );
     return {
       emailIds: sendEmails.map((e) => e.id),
       domain: site.domain,
@@ -36,7 +38,9 @@ async function main() {
   await sendTrialEndingEmails();
 
   const emailCount = results.flatMap((r) => r.emailIds ?? []).length;
-  console.info(`Done: processed ${sites.length} sites, sent ${emailCount} digest emails`);
+  console.info(
+    `Done: processed ${sites.length} sites, sent ${emailCount} digest emails`,
+  );
   return { sites: results };
 }
 

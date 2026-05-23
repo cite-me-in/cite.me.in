@@ -93,7 +93,8 @@ async function testBotAccess(
 
     return { bot: bot.name, page, blocked: false, status: response.status };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     return {
       bot: bot.name,
       page,

@@ -42,7 +42,12 @@ export default async function setup() {
   }
 }
 
-const screenshotsDir = resolve(import.meta.dirname, "..", "..", "__screenshots__");
+const screenshotsDir = resolve(
+  import.meta.dirname,
+  "..",
+  "..",
+  "__screenshots__",
+);
 
 function hasNewScreenshots(): boolean {
   if (!existsSync(screenshotsDir)) return false;
@@ -65,7 +70,9 @@ export async function teardown() {
   if (process.env.CI) return;
 
   if (hasNewScreenshots()) {
-    console.info("\nVisual differences detected. Suggest: ./scripts/screenshots.ts \n");
+    console.info(
+      "\nVisual differences detected. Suggest: ./scripts/screenshots.ts \n",
+    );
   }
 
   await promisify(execFile)("terminal-notifier", [
