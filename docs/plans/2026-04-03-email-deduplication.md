@@ -74,9 +74,7 @@ At the end of the file, add:
 
 ```ts
 export function daysAgo(days: number): Date {
-  return new Date(
-    Temporal.Now.instant().subtract({ hours: days * 24 }).epochMilliseconds,
-  );
+  return new Date(Temporal.Now.instant().subtract({ hours: days * 24 }).epochMilliseconds);
 }
 ```
 
@@ -113,9 +111,7 @@ describe("trial emails", () => {
         id: "user-trial-email-1",
         email: "trial-email-ended@test.com",
         passwordHash: "test",
-        createdAt: new Date(
-          Temporal.Now.instant().subtract({ hours: 24 * 26 }).epochMilliseconds,
-        ),
+        createdAt: new Date(Temporal.Now.instant().subtract({ hours: 24 * 26 }).epochMilliseconds),
         ownedSites: {
           create: {
             id: "site-trial-email-1",
@@ -247,9 +243,7 @@ it("should not send TrialEnding if TrialEnded already sent", async () => {
       id: "user-trial-email-2",
       email: "trial-email-ending-skip@test.com",
       passwordHash: "test",
-      createdAt: new Date(
-        Temporal.Now.instant().subtract({ hours: 24 * 25 }).epochMilliseconds,
-      ),
+      createdAt: new Date(Temporal.Now.instant().subtract({ hours: 24 * 25 }).epochMilliseconds),
       sentEmails: { create: { type: "TrialEnded" } },
       ownedSites: {
         create: {
@@ -277,9 +271,7 @@ it("should send TrialEnding once and not again", async () => {
       id: "user-trial-email-3",
       email: "trial-email-ending@test.com",
       passwordHash: "test",
-      createdAt: new Date(
-        Temporal.Now.instant().subtract({ hours: 24 * 24 }).epochMilliseconds,
-      ),
+      createdAt: new Date(Temporal.Now.instant().subtract({ hours: 24 * 24 }).epochMilliseconds),
       ownedSites: {
         create: {
           id: "site-trial-email-3",
@@ -389,10 +381,7 @@ git commit -m "feat: refactor TrialEnding to use SentEmail deduplication"
 Find:
 
 ```ts
-await Promise.all([
-  sendTrialEndingEmails(trialDays),
-  sendTrialEndedEmails(trialDays),
-]);
+await Promise.all([sendTrialEndingEmails(trialDays), sendTrialEndedEmails(trialDays)]);
 ```
 
 Replace with:
@@ -451,9 +440,7 @@ await prisma.sentEmail.createMany({
   data: oldEnding.map((u) => ({ userId: u.id, type: "TrialEnding" })),
 });
 
-console.log(
-  `Backfilled: ${oldEnded.length} TrialEnded, ${oldEnding.length} TrialEnding`,
-);
+console.log(`Backfilled: ${oldEnded.length} TrialEnded, ${oldEnding.length} TrialEnding`);
 ```
 
 **Step 2: Run against dev database**

@@ -29,11 +29,7 @@ export default function ShareButton({
             skipFonts: true,
             backgroundColor: "white",
             type: "image/png",
-            filter: (node) =>
-              !(
-                node instanceof HTMLElement &&
-                node.dataset.slot === "card-footer"
-              ),
+            filter: (node) => !(node instanceof HTMLElement && node.dataset.slot === "card-footer"),
           });
           const blob = base64ToBlob(dataUrl);
           const file = new File([blob], "ai-legibility-score.png", {

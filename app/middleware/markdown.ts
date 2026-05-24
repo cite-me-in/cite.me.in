@@ -7,9 +7,7 @@ export async function markdownMiddleware(
 ) {
   const url = new URL(request.url);
   const isMdExtension = url.pathname.endsWith(".md");
-  const acceptsMarkdown = request.headers
-    .get("accept")
-    ?.includes("text/markdown");
+  const acceptsMarkdown = request.headers.get("accept")?.includes("text/markdown");
 
   if (!isMdExtension && !acceptsMarkdown) return next();
 
@@ -22,9 +20,7 @@ export async function markdownMiddleware(
   } else {
     const response = await next();
     const contentType = response.headers.get("content-type") || "";
-    return contentType.includes("text/html")
-      ? convertHTMLToMarkdown(response)
-      : response;
+    return contentType.includes("text/html") ? convertHTMLToMarkdown(response) : response;
   }
 }
 

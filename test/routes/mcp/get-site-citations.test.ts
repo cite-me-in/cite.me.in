@@ -82,15 +82,11 @@ describe("get_site_citations", () => {
     const openaiFrameworkQuery = openaiQueries.find(
       (q) => q.query === "What is the best framework?",
     );
-    const openaiNodeQuery = openaiQueries.find(
-      (q) => q.query === "What is Node.js?",
-    );
+    const openaiNodeQuery = openaiQueries.find((q) => q.query === "What is Node.js?");
     const anthropicFrameworkQuery = anthropicQueries.find(
       (q) => q.query === "What is the best framework?",
     );
-    const anthropicNodeQuery = anthropicQueries.find(
-      (q) => q.query === "What is Node.js?",
-    );
+    const anthropicNodeQuery = anthropicQueries.find((q) => q.query === "What is Node.js?");
 
     invariant(openaiFrameworkQuery, "OpenAI framework query not found");
     invariant(openaiNodeQuery, "OpenAI node query not found");
@@ -282,16 +278,10 @@ describe("get_site_citations", () => {
         }[];
       };
 
-      const frameworkQuery = content.queries.find(
-        (q) => q.query === "What is the best framework?",
-      );
+      const frameworkQuery = content.queries.find((q) => q.query === "What is the best framework?");
       invariant(frameworkQuery, "Framework query not found");
-      const openaiPlatform = frameworkQuery.platforms.find(
-        (p) => p.platform === "openai",
-      );
-      const anthropicPlatform = frameworkQuery.platforms.find(
-        (p) => p.platform === "anthropic",
-      );
+      const openaiPlatform = frameworkQuery.platforms.find((p) => p.platform === "openai");
+      const anthropicPlatform = frameworkQuery.platforms.find((p) => p.platform === "anthropic");
       invariant(openaiPlatform, "OpenAI platform not found");
       invariant(anthropicPlatform, "Anthropic platform not found");
 
@@ -318,13 +308,9 @@ describe("get_site_citations", () => {
         }[];
       };
 
-      const nodeQuery = content.queries.find(
-        (q) => q.query === "What is Node.js?",
-      );
+      const nodeQuery = content.queries.find((q) => q.query === "What is Node.js?");
       invariant(nodeQuery, "Node query not found");
-      const openaiPlatform = nodeQuery.platforms.find(
-        (p) => p.platform === "openai",
-      );
+      const openaiPlatform = nodeQuery.platforms.find((p) => p.platform === "openai");
       invariant(openaiPlatform, "OpenAI platform not found");
 
       const citationUrls = openaiPlatform.citations.map((c) => c.url);

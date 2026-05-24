@@ -14,9 +14,7 @@ describe("try page hero and nav", () => {
   // Note: May need re-snapshotting if the button text change ("Check" → "Scan now")
   // or other layout updates cause a visual diff with the stored try/hero snapshot.
   it("should render the hero visually", async () => {
-    await expect(
-      page.getByRole("heading", { name: "Is your site ready for AI?" }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Is your site ready for AI?" })).toBeVisible();
     await expect(page.locator("main")).toMatchVisual({
       name: "try/hero",
     });
@@ -28,24 +26,16 @@ describe("try page hero and nav", () => {
   });
 
   it("should show sign in and get started nav links", async () => {
-    await expect(
-      page.getByRole("navigation").getByRole("link", { name: "Sign in" }),
-    ).toBeVisible();
+    await expect(page.getByRole("navigation").getByRole("link", { name: "Sign in" })).toBeVisible();
     await expect(
       page.getByRole("navigation").getByRole("link", { name: "Get started" }),
     ).toBeVisible();
   });
 
   it("should show the benefits section", async () => {
-    await expect(
-      page.getByRole("heading", { name: "How it works" }),
-    ).toBeVisible();
-    await expect(
-      page.getByText("Scan your site", { exact: true }),
-    ).toBeVisible();
-    await expect(
-      page.getByText("See what matters", { exact: true }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "How it works" })).toBeVisible();
+    await expect(page.getByText("Scan your site", { exact: true })).toBeVisible();
+    await expect(page.getByText("See what matters", { exact: true })).toBeVisible();
     await expect(page.getByText("Fix with AI", { exact: true })).toBeVisible();
   });
 
@@ -53,9 +43,7 @@ describe("try page hero and nav", () => {
     await expect(
       page.getByRole("heading", { name: "Turn this into weekly monitoring" }),
     ).toBeVisible();
-    await expect(
-      page.getByRole("link", { name: /Start monitoring/ }),
-    ).toBeVisible();
+    await expect(page.getByRole("link", { name: /Start monitoring/ })).toBeVisible();
     await expect(page.getByRole("link", { name: "See pricing" })).toBeVisible();
   });
 

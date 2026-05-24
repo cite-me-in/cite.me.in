@@ -66,17 +66,12 @@ export default function KeyMetrics({ metrics }: { metrics: KeyMetric[] }) {
                     <span
                       className={twMerge(
                         "text-center font-semibold text-sm",
-                        pctDeltaColor(
-                          metric.current as number,
-                          metric.previous,
-                        ),
+                        pctDeltaColor(metric.current as number, metric.previous),
                       )}
                     >
                       {pctDelta(metric.current as number, metric.previous)}
                     </span>
-                    <span className="text-light text-xs">
-                      {metric.previous.toLocaleString()}
-                    </span>
+                    <span className="text-light text-xs">{metric.previous.toLocaleString()}</span>
                   </Text>
                 ) : null}
               </Column>

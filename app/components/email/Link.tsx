@@ -11,9 +11,7 @@ export default function Link({ href, ...props }: LinkProps) {
   const wrapped = new URL("/r", envVars.VITE_APP_URL);
   wrapped.searchParams.set(
     "url",
-    href.startsWith(envVars.VITE_APP_URL)
-      ? `${new URL(href).pathname}${new URL(href).hash}`
-      : href,
+    href.startsWith(envVars.VITE_APP_URL) ? `${new URL(href).pathname}${new URL(href).hash}` : href,
   );
   wrapped.searchParams.set("email", ctx.email);
   wrapped.searchParams.set("token", ctx.token);

@@ -101,16 +101,9 @@ export function WeeklyDigestEmail({
 }: WeeklyDigestEmailProps) {
   return (
     <>
-      <TopMetrics
-        citations={citations}
-        score={score}
-        queryCoverageRate={queryCoverageRate}
-      />
+      <TopMetrics citations={citations} score={score} queryCoverageRate={queryCoverageRate} />
       <PlatformBreakdown byPlatform={byPlatform} />
-      <CitationTrendsChart
-        current={citationTrends.current}
-        previous={citationTrends.previous}
-      />
+      <CitationTrendsChart current={citationTrends.current} previous={citationTrends.previous} />
       <TopQueries topQueries={topQueries} />
       <SentimentBreakdown byPlatform={byPlatform} />
 
@@ -130,22 +123,12 @@ export function WeeklyDigestEmail({
   );
 }
 
-function CitationTrendsChart({
-  current,
-  previous,
-}: {
-  current: number[];
-  previous: number[];
-}) {
+function CitationTrendsChart({ current, previous }: { current: number[]; previous: number[] }) {
   const svgBase64 = generateCitationChart(current, previous);
   const src = `data:image/svg+xml;base64,${svgBase64}`;
 
   return (
-    <Card
-      title="Citation trends"
-      subtitle="Compared to previous week"
-      withBorder
-    >
+    <Card title="Citation trends" subtitle="Compared to previous week" withBorder>
       <Row>
         <Column className="px-5 pt-4">
           <Img
@@ -206,11 +189,7 @@ function TopQueries({
 }) {
   if (topQueries.length === 0) return null;
   return (
-    <Card
-      title="↑ Top queries"
-      subtitle="Queries most cited this week"
-      withBorder
-    >
+    <Card title="↑ Top queries" subtitle="Queries most cited this week" withBorder>
       <table>
         <thead>
           <tr className="text-light text-center text-xs tracking-wide uppercase">
@@ -224,9 +203,7 @@ function TopQueries({
             <tr key={query} className="border-border border-t">
               <td className="p-4 text-left">{query}</td>
               <td className="p-4 text-center">{count.toLocaleString()}</td>
-              <td className={twMerge("p-4 text-center", deltaColor(delta))}>
-                {deltaValue(delta)}
-              </td>
+              <td className={twMerge("p-4 text-center", deltaColor(delta))}>{deltaValue(delta)}</td>
             </tr>
           ))}
         </tbody>
@@ -280,8 +257,7 @@ function generateCitationChart(current: number[], previous: number[]): string {
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   const xAt = (i: number) => paddingLeft + i * xStep;
-  const yAt = (v: number) =>
-    paddingTop + chartHeight - (v / maxVal) * chartHeight;
+  const yAt = (v: number) => paddingTop + chartHeight - (v / maxVal) * chartHeight;
 
   const toPath = (values: number[]) => {
     const pts = values.map((v, i) => ({ x: xAt(i), y: yAt(v ?? 0) }));

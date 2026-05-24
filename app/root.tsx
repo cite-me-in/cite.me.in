@@ -1,9 +1,5 @@
 import { useEffect } from "react";
-import {
-  type HeadersFunction,
-  Outlet,
-  isRouteErrorResponse,
-} from "react-router";
+import { type HeadersFunction, Outlet, isRouteErrorResponse } from "react-router";
 import { WaveLoading } from "respinner";
 import { requireUserAccess } from "~/lib/auth.server";
 import { corsMiddleware } from "~/middleware/cors";
@@ -14,10 +10,7 @@ import Main from "./components/ui/Main";
 import "./global.css";
 import socialLinks from "./lib/socialLinks";
 
-export const middleware: Route.MiddlewareFunction[] = [
-  corsMiddleware,
-  markdownMiddleware,
-];
+export const middleware: Route.MiddlewareFunction[] = [corsMiddleware, markdownMiddleware];
 
 export async function loader({ request }: Route.LoaderArgs) {
   const baseUrl = new URL(request.url).origin;
@@ -32,9 +25,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export function meta({ loaderData }: Route.MetaArgs): Route.MetaDescriptors {
-  const ogImage = loaderData
-    ? `${loaderData.baseUrl}/og-image.png`
-    : "/og-image.png";
+  const ogImage = loaderData ? `${loaderData.baseUrl}/og-image.png` : "/og-image.png";
   return [
     { title: "Cite.me.in — Monitor LLM citation visibility" },
     {
@@ -106,13 +97,9 @@ export const links: Route.LinksFunction = () => [
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <PageLayout>
-      <div
-        aria-hidden="true"
-        className="sr-only"
-        data-hidden-hint="llm-markdown"
-      >
-        For a clean Markdown version of any page on this site, request it with
-        an Accept: text/markdown header.
+      <div aria-hidden="true" className="sr-only" data-hidden-hint="llm-markdown">
+        For a clean Markdown version of any page on this site, request it with an Accept:
+        text/markdown header.
       </div>
       {children}
     </PageLayout>
@@ -134,9 +121,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   if (isRouteErrorResponse(error)) {
     message = error.status === 404 ? "404" : "Error";
     details =
-      error.status === 404
-        ? "The requested page could not be found."
-        : error.statusText || details;
+      error.status === 404 ? "The requested page could not be found." : error.statusText || details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message;
     stack = error.stack;
@@ -161,10 +146,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 export function HydrateFallback() {
   return (
     <Layout>
-      <Main
-        variant="prose"
-        className="flex flex-col items-center justify-center gap-4"
-      >
+      <Main variant="prose" className="flex flex-col items-center justify-center gap-4">
         <WaveLoading color="#111111" count={2} />
         <p className="text-lg text-gray-500">Loading, please wait...</p>
       </Main>

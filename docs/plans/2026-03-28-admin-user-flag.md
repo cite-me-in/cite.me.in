@@ -121,11 +121,7 @@ describe("requireAdmin", () => {
 Also update the import at the top — change `requireAdminApiKey` to `requireAdmin`:
 
 ```ts
-import {
-  requireAdmin,
-  verifySiteAccess,
-  verifyUserAccess,
-} from "~/lib/api/apiAuth.server";
+import { requireAdmin, verifySiteAccess, verifyUserAccess } from "~/lib/api/apiAuth.server";
 ```
 
 And remove the `envVars` import if it's only used for `ADMIN_API_SECRET` (check whether it's used elsewhere in the file — if not, remove the import line).
@@ -186,8 +182,7 @@ export async function verifyUserAccess(request: Request): Promise<{
   const auth = request.headers.get("authorization");
   if (!auth) throw new Response("Unauthorized", { status: 401 });
   const [tokenType, token] = auth.split(/\s+/);
-  if (tokenType !== "Bearer")
-    throw new Response("Unauthorized", { status: 401 });
+  if (tokenType !== "Bearer") throw new Response("Unauthorized", { status: 401 });
 
   const userId = parseTokenUserId(token);
   if (!userId) throw new Response("Not found", { status: 404 });

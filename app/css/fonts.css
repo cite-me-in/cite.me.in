@@ -9,8 +9,7 @@
 
 @font-face {
   font-family: "Archivo";
-  src: url("/fonts/Archivo-Italic-VariableFont_wdth,wght.ttf")
-    format("truetype");
+  src: url("/fonts/Archivo-Italic-VariableFont_wdth,wght.ttf") format("truetype");
   font-weight: 100 900;
   font-style: italic;
   font-display: swap;
@@ -32,17 +31,14 @@
 
 @font-face {
   font-family: "Atkinson";
-  src: url("/fonts/AtkinsonHyperlegibleMono-VariableFont_wght.ttf")
-    format("truetype");
+  src: url("/fonts/AtkinsonHyperlegibleMono-VariableFont_wght.ttf") format("truetype");
   font-display: swap;
 }
 
 @theme {
   --font-sans:
-    "Archivo", "ui-sans-serif", "system-ui", "sans-serif", "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    "Archivo", "ui-sans-serif", "system-ui", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
   --font-serif: "Quando", "Times New Roman";
-  --font-mono:
-    "Atkinson", "Monaco", "Consolas", "Liberation Mono", "Courier New",
-    "monospace";
+  --font-mono: "Atkinson", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace";
 }

@@ -78,9 +78,7 @@ export function parseDateRange(searchParams: URLSearchParams): {
   const period =
     untilDate === todayDate
       ? Math.floor(
-          from
-            .until(until, { largestUnit: "day", smallestUnit: "day" })
-            .total("hours") / 24,
+          from.until(until, { largestUnit: "day", smallestUnit: "day" }).total("hours") / 24,
         )
       : periods[1];
 

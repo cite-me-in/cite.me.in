@@ -21,8 +21,7 @@ export default [
   { ...platforms.gemini, queryFn: queryGemini },
   {
     ...platforms.copilot,
-    queryFn: ({ query, timeout }) =>
-      fetchSERPResults({ query, engine: "bing_copilot", timeout }),
+    queryFn: ({ query, timeout }) => fetchSERPResults({ query, engine: "bing_copilot", timeout }),
   },
   { ...platforms.perplexity, queryFn: queryPerplexity },
 ] satisfies {

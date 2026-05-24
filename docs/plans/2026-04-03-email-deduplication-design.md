@@ -39,9 +39,7 @@ Add `daysAgo(days: number): Date` to `app/lib/formatDate.ts`:
 
 ```ts
 export function daysAgo(days: number): Date {
-  return new Date(
-    Temporal.Now.instant().subtract({ hours: days * 24 }).epochMilliseconds,
-  );
+  return new Date(Temporal.Now.instant().subtract({ hours: days * 24 }).epochMilliseconds);
 }
 ```
 

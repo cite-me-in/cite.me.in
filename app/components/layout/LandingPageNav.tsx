@@ -1,11 +1,7 @@
 import { Button } from "../ui/Button";
 import CiteMeInLogo from "./CiteMeInLogo";
 
-export default function LandingPageNav({
-  isSignedIn,
-}: {
-  isSignedIn: boolean;
-}) {
+export default function LandingPageNav({ isSignedIn }: { isSignedIn: boolean }) {
   return (
     <nav className="flex items-center justify-between border-b-2 border-black bg-[hsl(60,100%,99%)] px-6 py-3">
       <CiteMeInLogo />

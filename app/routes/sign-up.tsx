@@ -2,13 +2,7 @@ import { Form, redirect } from "react-router";
 import { ActiveLink } from "~/components/ui/ActiveLink";
 import AuthForm from "~/components/ui/AuthForm";
 import { Button } from "~/components/ui/Button";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldSet,
-} from "~/components/ui/FieldSet";
+import { Field, FieldError, FieldGroup, FieldLabel, FieldSet } from "~/components/ui/FieldSet";
 import { Input } from "~/components/ui/Input";
 import { createSession, hashPassword } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
@@ -31,24 +25,20 @@ export async function action({ request }: Route.ActionArgs) {
   const confirm = form.get("confirm") as string;
   const inviteToken = ((form.get("inviteToken") as string | null) ?? "").trim();
   const next = (form.get("next") as string | null) ?? "";
-  const source =
-    ((form.get("source") as string | null) ?? "").trim() || undefined;
+  const source = ((form.get("source") as string | null) ?? "").trim() || undefined;
 
   const errors: Record<string, string> = {};
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-    errors.email = "Enter a valid email address";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "Enter a valid email address";
 
-  if (password.length < 6)
-    errors.password = "Password must be at least 6 characters";
+  if (password.length < 6) errors.password = "Password must be at least 6 characters";
 
   if (password !== confirm) errors.confirm = "Passwords do not match";
 
   if (Object.keys(errors).length > 0) return { errors };
 
   const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing)
-    return { errors: { email: "An account with this email already exists" } };
+  if (existing) return { errors: { email: "An account with this email already exists" } };
 
   const passwordHash = await hashPassword(password);
 
@@ -71,10 +61,7 @@ export async function action({ request }: Route.ActionArgs) {
   return redirect(redirectTo, { headers: { "Set-Cookie": setCookie } });
 }
 
-export default function SignUp({
-  actionData,
-  loaderData,
-}: Route.ComponentProps) {
+export default function SignUp({ actionData, loaderData }: Route.ComponentProps) {
   const errors = actionData?.errors ?? {};
 
   return (
@@ -83,18 +70,10 @@ export default function SignUp({
       form={
         <Form method="post">
           {loaderData.inviteToken && (
-            <input
-              type="hidden"
-              name="inviteToken"
-              value={loaderData.inviteToken}
-            />
+            <input type="hidden" name="inviteToken" value={loaderData.inviteToken} />
           )}
-          {loaderData.next && (
-            <input type="hidden" name="next" value={loaderData.next} />
-          )}
-          {loaderData.source && (
-            <input type="hidden" name="source" value={loaderData.source} />
-          )}
+          {loaderData.next && <input type="hidden" name="next" value={loaderData.next} />}
+          {loaderData.source && <input type="hidden" name="source" value={loaderData.source} />}
           <FieldSet>
             <FieldGroup>
               <Field data-invalid={!!errors.email}>

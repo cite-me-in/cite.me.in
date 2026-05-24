@@ -1,11 +1,7 @@
 import { Link } from "react-router";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "~/components/ui/Chart";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "~/components/ui/Chart";
 import { formatDateMed } from "~/lib/formatDate";
 import calculateVisibilityScore from "~/lib/llm-visibility/calculateVisibilityScore";
 import type { Citation } from "~/prisma";
@@ -52,9 +48,7 @@ export default function VisibilityCharts({
   site: { id: string; domain: string };
   classifications: Pick<Citation, "url" | "relationship" | "runId">[];
 }) {
-  const data = runs
-    .map((run) => runToPoint(run, site, classifications))
-    .reverse();
+  const data = runs.map((run) => runToPoint(run, site, classifications)).reverse();
 
   return (
     <Card>
@@ -67,10 +61,7 @@ export default function VisibilityCharts({
             <ChartContainer config={chart.config} className="h-36 w-full">
               <AreaChart data={data}>
                 <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="date"
-                  tickFormatter={(value) => formatDateMed(new Date(value))}
-                />
+                <XAxis dataKey="date" tickFormatter={(value) => formatDateMed(new Date(value))} />
                 <YAxis />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Area
@@ -119,15 +110,14 @@ function runToPoint(
   const runClassifications = classifications
     .filter((c) => c.runId === run.id && c.relationship !== null)
     .map((c) => ({ url: c.url, relationship: c.relationship as string }));
-  const { visibilityScore, domainCitations, queryCoverageRate } =
-    calculateVisibilityScore({
-      domain: site.domain,
-      queries: run.queries.map((q) => ({
-        citations: q.citations.map((c) => c.url),
-        text: q.text,
-      })),
-      classifications: runClassifications,
-    });
+  const { visibilityScore, domainCitations, queryCoverageRate } = calculateVisibilityScore({
+    domain: site.domain,
+    queries: run.queries.map((q) => ({
+      citations: q.citations.map((c) => c.url),
+      text: q.text,
+    })),
+    classifications: runClassifications,
+  });
 
   return {
     date: run.onDate,

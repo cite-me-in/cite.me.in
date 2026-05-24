@@ -33,9 +33,7 @@ export default async function checkMarkdownAlternateLinks({
   });
 
   const pagesChecked = pages.length;
-  const pagesWithLink = pageResults.filter(
-    (result) => result.header || result.htmlTag,
-  ).length;
+  const pagesWithLink = pageResults.filter((result) => result.header || result.htmlTag).length;
 
   const alternateURLs: string[] = [];
   for (const result of pageResults)
@@ -45,8 +43,7 @@ export default async function checkMarkdownAlternateLinks({
 
   let message: string;
   if (pagesWithLink === 0) {
-    message =
-      "No <link rel='alternate' type='text/markdown'> found on any reviewed page";
+    message = "No <link rel='alternate' type='text/markdown'> found on any reviewed page";
   } else {
     const parts: string[] = pageResults
       .filter((result) => result.header || result.htmlTag)
@@ -77,8 +74,7 @@ function extractMarkdownUrlsFromHeader(linkHeader: string | null): string[] {
   return Array.from(linkHeader.matchAll(linkRegex))
     .filter(
       (match) =>
-        /rel\s*=\s*"alternate"/i.test(match[2]) &&
-        /type\s*=\s*"text\/markdown"/i.test(match[2]),
+        /rel\s*=\s*"alternate"/i.test(match[2]) && /type\s*=\s*"text\/markdown"/i.test(match[2]),
     )
     .map((match) => match[1]);
 }

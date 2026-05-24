@@ -193,9 +193,7 @@ describe("GET /api/site/:domain/queries", () => {
     it("should return the queries with citations", async () => {
       expect(Array.isArray(body.platforms)).toBe(true);
       expect(body.platforms[0].model).toBe("gpt-4o");
-      expect(body.platforms[0].onDate).toBe(
-        new Date().toISOString().split("T")[0],
-      );
+      expect(body.platforms[0].onDate).toBe(new Date().toISOString().split("T")[0]);
       expect(body.platforms[0].platform).toBe("chatgpt");
       expect(Array.isArray(body.platforms[0].queries)).toBe(true);
       expect(body.platforms[0].queries[0].query).toBe("best retail platforms");

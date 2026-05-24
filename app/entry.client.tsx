@@ -9,10 +9,7 @@ if (import.meta.env.PROD) {
     dsn: import.meta.env.VITE_SENTRY_DSN as string,
     enableLogs: true,
     environment: "production",
-    integrations: [
-      Sentry.browserTracingIntegration(),
-      Sentry.browserProfilingIntegration(),
-    ],
+    integrations: [Sentry.browserTracingIntegration(), Sentry.browserProfilingIntegration()],
     ignoreErrors: [
       // Safari browser extension timeouts (content scripts timing out)
       /Request timeout for contentScriptVisibilityChanged/,

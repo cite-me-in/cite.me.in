@@ -21,8 +21,8 @@ export default function VisibilityScore() {
           Understanding Your Visibility Score
         </h1>
         <p className="text-muted-foreground mb-8 text-lg">
-          A composite metric (0-100) that measures your brand's presence across
-          AI-powered search and chat platforms.
+          A composite metric (0-100) that measures your brand's presence across AI-powered search
+          and chat platforms.
         </p>
 
         <Card className="mb-8">
@@ -30,8 +30,8 @@ export default function VisibilityScore() {
             <h2 className="mb-4 text-xl font-bold">The Formula</h2>
             <div className="bg-muted overflow-x-auto rounded-md p-4 font-mono text-sm">
               <code>
-                Visibility Score = (Query Coverage × 0.35) + (Position Score ×
-                0.30) + (Share of Voice × 0.20) + (Mention Rate × 0.15)
+                Visibility Score = (Query Coverage × 0.35) + (Position Score × 0.30) + (Share of
+                Voice × 0.20) + (Mention Rate × 0.15)
               </code>
             </div>
           </CardContent>
@@ -42,9 +42,7 @@ export default function VisibilityScore() {
             name="Query Coverage"
             weight={35}
             description="How many different queries cite your domain (breadth)"
-            calculation={
-              <code>(Queries with your citation ÷ Total queries) × 100</code>
-            }
+            calculation={<code>(Queries with your citation ÷ Total queries) × 100</code>}
             affects={[
               "How often your content is cited as a source",
               "Relevance of your content to common queries",
@@ -65,8 +63,8 @@ export default function VisibilityScore() {
               <>
                 <code>Σ(1 ÷ (position + 1)) ÷ Total queries × 100</code>
                 <p className="text-muted-foreground mt-2 text-sm">
-                  Position 1 contributes 0.50, position 2 contributes 0.33,
-                  position 5 contributes 0.17, etc.
+                  Position 1 contributes 0.50, position 2 contributes 0.33, position 5 contributes
+                  0.17, etc.
                 </p>
               </>
             }
@@ -103,11 +101,7 @@ export default function VisibilityScore() {
             name="Mention Rate"
             weight={15}
             description="% of queries where your brand/domain is mentioned in the response text (even without a link)"
-            calculation={
-              <code>
-                (Queries mentioning your domain ÷ Total queries) × 100
-              </code>
-            }
+            calculation={<code>(Queries mentioning your domain ÷ Total queries) × 100</code>}
             affects={[
               "Brand recognition and awareness",
               "How often your brand is discussed alongside your topic",
@@ -124,11 +118,10 @@ export default function VisibilityScore() {
         <section className="bg-muted mt-12 rounded-lg p-6">
           <h2 className="mb-4 text-xl font-bold">Putting It All Together</h2>
           <p className="text-muted-foreground">
-            Your visibility score provides a holistic view of how well your
-            brand performs across AI platforms. A score of 50 means you're
-            appearing in about half of relevant queries with moderate
-            positioning. Scores above 70 indicate strong visibility, while
-            scores below 30 suggest significant room for improvement.
+            Your visibility score provides a holistic view of how well your brand performs across AI
+            platforms. A score of 50 means you're appearing in about half of relevant queries with
+            moderate positioning. Scores above 70 indicate strong visibility, while scores below 30
+            suggest significant room for improvement.
           </p>
           <p className="text-muted-foreground mt-4">
             Track your score over time in your{" "}

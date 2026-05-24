@@ -15,11 +15,7 @@
  *   softMentionRate      × 0.15
  */
 
-import {
-  isSameDomain,
-  normalizeDomain,
-  normalizeURL,
-} from "~/lib/isSameDomain";
+import { isSameDomain, normalizeDomain, normalizeURL } from "~/lib/isSameDomain";
 
 const weights = {
   queryCoverageRate: 0.35,
@@ -99,13 +95,10 @@ export default function calculateVisibilityScore({
       if (host === domainNormalized) matchingDomainCitations++;
     }
 
-    const position = query.citations.findIndex((c) =>
-      isSameDomain({ domain, url: c }),
-    );
+    const position = query.citations.findIndex((c) => isSameDomain({ domain, url: c }));
 
     const hasDirectCitation =
-      position !== -1 ||
-      query.citations.some((c) => directUrls.has(normalizeURL(c)));
+      position !== -1 || query.citations.some((c) => directUrls.has(normalizeURL(c)));
 
     if (hasDirectCitation) queriesWithCitation++;
 
@@ -119,11 +112,9 @@ export default function calculateVisibilityScore({
 
   const directCount = directUrls.size;
   const indirectCount = indirectUrls.size;
-  const weightedCitations =
-    matchingDomainCitations + directCount + indirectCount * 0.5;
+  const weightedCitations = matchingDomainCitations + directCount + indirectCount * 0.5;
 
-  const shareOfVoice =
-    totalCitations === 0 ? 0 : (weightedCitations / totalCitations) * 100;
+  const shareOfVoice = totalCitations === 0 ? 0 : (weightedCitations / totalCitations) * 100;
   const softMentionRate = (queriesWithMention / totalQueries) * 100;
 
   const visibilityScore =

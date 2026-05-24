@@ -9,11 +9,20 @@
     "test/**/*.ts",
     "test/helpers/serverWorker.ts"
   ],
-  "ignoreDependencies": ["@secretlint/secretlint-rule-preset-recommend", "coolify-ghcr-deploy", "portless"],
+  "ignoreDependencies": [
+    "@secretlint/secretlint-rule-preset-recommend",
+    "coolify-ghcr-deploy",
+    "portless"
+  ],
   "duplicates": {
     "ignore": ["test/**", "__screenshots__/**"]
   },
-  "dynamicallyLoaded": ["app/cron/**", "app/lib/cron/**", "test/helpers/screencast.ts", "test/helpers/suite.setup.ts"],
+  "dynamicallyLoaded": [
+    "app/cron/**",
+    "app/lib/cron/**",
+    "test/helpers/screencast.ts",
+    "test/helpers/suite.setup.ts"
+  ],
   "ignoreExports": [
     { "file": "app/lib/llm-visibility/claudeClient.server.ts", "exports": ["*"] },
     { "file": "app/lib/llm-visibility/geminiClient.server.ts", "exports": ["*"] },

@@ -21,33 +21,22 @@ describe("sign-in route", () => {
 
   it("should show the sign-in form", async () => {
     const page = (await goto("/sign-in")).locator("main");
-    await expect(
-      page.getByRole("textbox", { name: "Email", exact: true }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("textbox", { name: "Password", exact: true }),
-    ).toBeVisible();
+    await expect(page.getByRole("textbox", { name: "Email", exact: true })).toBeVisible();
+    await expect(page.getByRole("textbox", { name: "Password", exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Sign in" })).toBeVisible();
   });
 
   it("should show error for wrong credentials", async () => {
     const page = (await goto("/sign-in")).locator("main");
     await page.getByRole("textbox", { name: "Email", exact: true }).fill(EMAIL);
-    await page
-      .getByRole("textbox", { name: "Password", exact: true })
-      .fill("wrong-password");
+    await page.getByRole("textbox", { name: "Password", exact: true }).fill("wrong-password");
     await page.getByRole("button", { name: "Sign in" }).click();
-    await expect(
-      page.getByText("email and password do not match"),
-    ).toBeVisible();
+    await expect(page.getByText("email and password do not match")).toBeVisible();
   });
 
   it("should redirect to home on successful sign-in", async () => {
     const page = await goto("/sign-in");
-    await page
-      .locator("main")
-      .getByRole("textbox", { name: "Email", exact: true })
-      .fill(EMAIL);
+    await page.locator("main").getByRole("textbox", { name: "Email", exact: true }).fill(EMAIL);
     await page
       .locator("main")
       .getByRole("textbox", { name: "Password", exact: true })

@@ -49,10 +49,7 @@ references, with a link to each source URL.`,
       { timeout },
     ));
   } catch (error) {
-    if (
-      error instanceof Anthropic.APIError &&
-      (error.status === 402 || error.status === 429)
-    )
+    if (error instanceof Anthropic.APIError && (error.status === 402 || error.status === 429))
       throw new InsufficientCreditError("claude", error.status);
     throw error;
   }

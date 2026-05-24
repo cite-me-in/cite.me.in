@@ -3,17 +3,19 @@
   "entry": [
     "app/components/layout/PageLayout.tsx",
     "app/components/ui/*.tsx",
+    "app/cron/*.ts",
     "app/emails/sendEmails.tsx",
     "app/global.css",
     "scripts/*",
     "test/**/*.ts",
-    "test/helpers/serverWorker.ts",
-    "app/cron/*.ts"
+    "test/helpers/serverWorker.ts"
   ],
-  "project": ["app/**/*.{ts,tsx}", "test/**/*.ts", "!__screenshots__"],
   "ignoreDependencies": [
     "@secretlint/secretlint-rule-preset-recommend",
     "coolify-ghcr-deploy",
+    "oxfmt",
+    "oxlint",
+    "oxlint-tsgolint",
     "portless"
   ],
   "ignoreFiles": ["app/lib/truncateWords.ts"],
@@ -23,5 +25,6 @@
     "app/lib/relativeTime.ts": ["exports"],
     "app/lib/formatDate.ts": ["exports"],
     "app/lib/truncateWords.ts": ["exports"]
-  }
+  },
+  "project": ["app/**/*.{ts,tsx}", "test/**/*.ts", "!__screenshots__"]
 }

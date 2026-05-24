@@ -57,8 +57,7 @@ function parseRobotsTxt(content: string) {
     }
 
     const ruleMatch = trimmed.match(/^(allow|disallow):\s*(.*)/i);
-    if (ruleMatch && current)
-      current.rules.push(`${ruleMatch[1]}: ${ruleMatch[2].trim()}`);
+    if (ruleMatch && current) current.rules.push(`${ruleMatch[1]}: ${ruleMatch[2].trim()}`);
   }
 
   return groups;
@@ -70,16 +69,12 @@ function findBlockedAiBots(content: string) {
 
   for (const bot of AI_BOT_USER_AGENTS) {
     const matchingGroups = groups.filter((g) =>
-      g.agents.some(
-        (a) => a.toLowerCase().replace(/\s+/g, "-") === bot.pattern,
-      ),
+      g.agents.some((a) => a.toLowerCase().replace(/\s+/g, "-") === bot.pattern),
     );
     if (matchingGroups.length === 0) continue;
 
     const lastGroup = matchingGroups[matchingGroups.length - 1];
-    const isFullyBlocked = lastGroup.rules.some((r) =>
-      /^disallow:\s*\/\s*$/i.test(r),
-    );
+    const isFullyBlocked = lastGroup.rules.some((r) => /^disallow:\s*\/\s*$/i.test(r));
     if (!isFullyBlocked) continue;
 
     const hasAllow = lastGroup.rules.some((r) => /^allow:\s*\/\s*$/i.test(r));
@@ -94,9 +89,7 @@ function findBlockedAiBots(content: string) {
   return blocked;
 }
 
-function generateRobotsFix(
-  blockedBots: { agent: string; displayName: string }[],
-) {
+function generateRobotsFix(blockedBots: { agent: string; displayName: string }[]) {
   const lines = blockedBots.map(
     (b) =>
       `# ${b.displayName} — allow AI agents to read your content\nUser-agent: ${b.agent}\nAllow: /`,
@@ -145,9 +138,7 @@ export default async function checkRobotsTxt({
 
     const lines = content.split("\n").filter((line) => line.trim());
     const hasUserAgent = lines.some((line) => /user-agent/i.test(line));
-    const hasAllowOrDisallow = lines.some((line) =>
-      /allow|disallow/i.test(line),
-    );
+    const hasAllowOrDisallow = lines.some((line) => /allow|disallow/i.test(line));
     const hasSitemap = lines.some((line) => /sitemap/i.test(line));
     const sitemapURLs = parseSitemapURLs(content);
 
@@ -201,8 +192,7 @@ export default async function checkRobotsTxt({
       },
     };
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     if (error instanceof Error && error.name === "TimeoutError") {
       return {
         name: "robots.txt",

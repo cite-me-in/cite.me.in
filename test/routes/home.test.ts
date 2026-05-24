@@ -34,36 +34,24 @@ describe("home page", () => {
 
   it("should have sitemap.xml link in head", async () => {
     const link = page.locator('link[rel="sitemap"][type="application/xml"]');
-    await expect(link).toHaveAttribute(
-      "href",
-      `http://localhost:${port}/sitemap.xml`,
-    );
+    await expect(link).toHaveAttribute("href", `http://localhost:${port}/sitemap.xml`);
   });
 
   it("should have sitemap.txt link in head", async () => {
     const link = page.locator('link[rel="sitemap"][type="text/plain"]');
-    await expect(link).toHaveAttribute(
-      "href",
-      `http://localhost:${port}/sitemap.txt`,
-    );
+    await expect(link).toHaveAttribute("href", `http://localhost:${port}/sitemap.txt`);
   });
 
   it("should show the landing page hero", async () => {
-    await expect(
-      page.getByRole("heading", { name: /Does ChatGPT mention/ }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Does ChatGPT mention/ })).toBeVisible();
   });
 
   it("should show the squirrel-brain friendly quote", async () => {
-    await expect(page.locator("blockquote")).toContainText(
-      "Squirrel-brain friendly 🐿️",
-    );
+    await expect(page.locator("blockquote")).toContainText("Squirrel-brain friendly 🐿️");
   });
 
   it("should show sign in and get started nav links when unauthenticated", async () => {
-    await expect(
-      page.getByRole("navigation").getByRole("link", { name: "Sign in" }),
-    ).toBeVisible();
+    await expect(page.getByRole("navigation").getByRole("link", { name: "Sign in" })).toBeVisible();
     await expect(
       page.getByRole("navigation").getByRole("link", { name: "Get started" }),
     ).toBeVisible();
@@ -75,27 +63,17 @@ describe("home page", () => {
   });
 
   it("should show how it works section", async () => {
-    await expect(
-      page.getByRole("heading", { name: "How it works" }),
-    ).toBeVisible();
+    await expect(page.getByRole("heading", { name: "How it works" })).toBeVisible();
     await expect(page.getByText("Add your website")).toBeVisible();
     await expect(page.getByText("We run the queries")).toBeVisible();
     await expect(page.getByText("You see the citations")).toBeVisible();
   });
 
   it("should show who it's for section", async () => {
-    await expect(
-      page.getByText("Built for anyone with an online presence"),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("heading", { name: "Solo founders" }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("heading", { name: "Small businesses" }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("heading", { name: "Marketing teams" }),
-    ).toBeVisible();
+    await expect(page.getByText("Built for anyone with an online presence")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Solo founders" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Small businesses" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Marketing teams" })).toBeVisible();
   });
 
   it("should not show the site header", async () => {

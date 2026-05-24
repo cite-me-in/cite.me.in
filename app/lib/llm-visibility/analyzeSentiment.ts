@@ -54,10 +54,8 @@ export default async function analyzeSentiment({
 
   const queryLines = queries
     .map((query) => {
-      const position =
-        query.citations.findIndex((url) => isSameDomain({ domain, url })) + 1;
-      const cited =
-        position > 0 ? `cited at position #${position}` : "not cited";
+      const position = query.citations.findIndex((url) => isSameDomain({ domain, url })) + 1;
+      const cited = position > 0 ? `cited at position #${position}` : "not cited";
       return `Query: ${query.query}\nCitation status: ${cited}\nResponse:\n$<response>${query.text}</response>`;
     })
     .join("\n\n---\n\n");
@@ -100,15 +98,10 @@ Respond with JSON only, no markdown fences:
     });
   } catch (error) {
     if (error instanceof OpenAI.RateLimitError) {
-      logger(
-        "Sentiment analysis rate limited for %s: %s",
-        domain,
-        error.message,
-      );
+      logger("Sentiment analysis rate limited for %s: %s", domain, error.message);
       return {
         label: "neutral" as SentimentLabel,
-        summary:
-          "Sentiment analysis temporarily unavailable due to rate limiting.",
+        summary: "Sentiment analysis temporarily unavailable due to rate limiting.",
         citations: [],
       };
     }

@@ -85,12 +85,7 @@ export async function createSite({
   const siteCount = await prisma.site.count({ where: { ownerId: user.id } });
   const canAddSite = user.isAdmin || siteCount < limit;
   if (!canAddSite) {
-    logger(
-      "[createSite] User %s cannot add site %s - over limit %d",
-      user.id,
-      domain,
-      limit,
-    );
+    logger("[createSite] User %s cannot add site %s - over limit %d", user.id, domain, limit);
     throw new Error(
       isPro
         ? "Pro plan supports up to 5 sites. Contact us if you need more."
@@ -113,12 +108,8 @@ export async function createSite({
       if (!res.ok && res.status !== 405) throw new Error(`HTTP ${res.status}`);
     } catch (error) {
       if (error instanceof Error && error.message.startsWith("HTTP "))
-        throw new Error(
-          `Could not reach ${domain} (${error.message}). Check the URL.`,
-        );
-      throw new Error(
-        `Could not reach ${domain}. Check the URL and try again.`,
-      );
+        throw new Error(`Could not reach ${domain} (${error.message}). Check the URL.`);
+      throw new Error(`Could not reach ${domain}. Check the URL and try again.`);
     }
   }
 

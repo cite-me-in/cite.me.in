@@ -19,17 +19,14 @@ export async function loader() {
 
 export async function action({ request }: Route.ActionArgs) {
   const authHeader = request.headers.get("authorization");
-  if (!authHeader)
-    throw new Response("Unauthorized", { headers: authResource, status: 401 });
+  if (!authHeader) throw new Response("Unauthorized", { headers: authResource, status: 401 });
 
   const match = authHeader.match(/^Bearer\s+(\S+)/);
-  if (!match)
-    throw new Response("Unauthorized", { headers: authResource, status: 401 });
+  if (!match) throw new Response("Unauthorized", { headers: authResource, status: 401 });
   const token = match[1];
 
   const tokenData = await verifyAccessToken(token);
-  if (!tokenData)
-    throw new Response("Forbidden", { headers: authResource, status: 403 });
+  if (!tokenData) throw new Response("Forbidden", { headers: authResource, status: 403 });
 
   const { userId, scopes } = tokenData;
 
@@ -42,9 +39,7 @@ export async function action({ request }: Route.ActionArgs) {
     throw new Response("Too Many Requests", {
       status: 429,
       headers: {
-        "Retry-After": String(
-          Math.ceil((rateLimit.resetAt - Date.now()) / 1000),
-        ),
+        "Retry-After": String(Math.ceil((rateLimit.resetAt - Date.now()) / 1000)),
         "X-RateLimit-Remaining": "0",
         "X-RateLimit-Reset": String(rateLimit.resetAt),
       },
@@ -54,8 +49,7 @@ export async function action({ request }: Route.ActionArgs) {
     where: { token },
     select: { clientId: true },
   });
-  if (!tokenRecord)
-    throw new Response("Forbidden", { headers: authResource, status: 403 });
+  if (!tokenRecord) throw new Response("Forbidden", { headers: authResource, status: 403 });
 
   const authInfo = {
     token,

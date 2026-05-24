@@ -278,9 +278,7 @@ const classifications = await prisma.citationClassification.findMany({
   select: { url: true, runId: true, relationship: true, reason: true },
 });
 
-const classMap = new Map(
-  classifications.map((c) => [`${c.runId}:${c.url}`, c]),
-);
+const classMap = new Map(classifications.map((c) => [`${c.runId}:${c.url}`, c]));
 
 let created = 0;
 for (const q of queries) {
@@ -601,21 +599,14 @@ await upsertCitedPages({ siteId: site.id, runId: run.id });
 Add the helper:
 
 ```ts
-async function upsertCitedPages({
-  siteId,
-  runId,
-}: {
-  siteId: string;
-  runId: string;
-}) {
+async function upsertCitedPages({ siteId, runId }: { siteId: string; runId: string }) {
   const ownCitations = await prisma.citation.findMany({
     where: { runId, siteId },
     select: { url: true },
   });
 
   const urlCounts = new Map<string, number>();
-  for (const { url } of ownCitations)
-    urlCounts.set(url, (urlCounts.get(url) ?? 0) + 1);
+  for (const { url } of ownCitations) urlCounts.set(url, (urlCounts.get(url) ?? 0) + 1);
 
   for (const [url, count] of urlCounts) {
     await prisma.citedPage.upsert({
@@ -713,10 +704,7 @@ describe("checkCitedPageHealth", () => {
   });
 
   it("should return unhealthy when fetch throws", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockRejectedValue(new Error("ECONNREFUSED")),
-    );
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("ECONNREFUSED")));
 
     const result = await checkCitedPageHealth("https://down.example.com");
     expect(result.statusCode).toBeNull();
@@ -752,9 +740,7 @@ export async function checkCitedPageHealth(url: string): Promise<{
       redirect: "follow",
     });
     const text = await response.text();
-    const contentHash = createHash("sha256")
-      .update(text.slice(0, 50_000))
-      .digest("hex");
+    const contentHash = createHash("sha256").update(text.slice(0, 50_000)).digest("hex");
     const isHealthy = response.status >= 200 && response.status < 400;
     return { statusCode: response.status, contentHash, isHealthy };
   } catch {
@@ -855,9 +841,7 @@ describe("cron.check-cited-pages", () => {
   it("should reject requests without auth", async () => {
     const { loader } = await import("~/routes/cron.check-cited-pages");
     const request = new Request("http://localhost/cron/check-cited-pages");
-    await expect(
-      loader({ request, params: {}, context: {} } as never),
-    ).rejects.toThrow();
+    await expect(loader({ request, params: {}, context: {} } as never)).rejects.toThrow();
   });
 });
 ```
@@ -892,10 +876,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     const staleThreshold = new Date(Date.now() - STALE_HOURS * 60 * 60 * 1000);
     const pages = await prisma.citedPage.findMany({
       where: {
-        OR: [
-          { lastCheckedAt: null },
-          { lastCheckedAt: { lt: staleThreshold } },
-        ],
+        OR: [{ lastCheckedAt: null }, { lastCheckedAt: { lt: staleThreshold } }],
       },
       include: { site: { select: { domain: true, ownerId: true } } },
       take: 100,
@@ -904,9 +885,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
     const results = [];
     for (const page of pages) {
-      const { statusCode, contentHash, isHealthy } = await checkCitedPageHealth(
-        page.url,
-      );
+      const { statusCode, contentHash, isHealthy } = await checkCitedPageHealth(page.url);
       const wasHealthy = page.isHealthy;
 
       await prisma.citedPage.update({
@@ -1081,9 +1060,7 @@ export default function SitePagesRoute({ loaderData }: Route.ComponentProps) {
       <SitePageHeader title="Cited Pages" domain={site.domain} />
       <div className="mb-4 flex gap-6 text-sm">
         <span className="text-green-700">{healthy} healthy</span>
-        {broken > 0 && (
-          <span className="text-red-700 font-medium">{broken} broken</span>
-        )}
+        {broken > 0 && <span className="text-red-700 font-medium">{broken} broken</span>}
       </div>
       {pages.length === 0 ? (
         <p className="text-foreground/60">
@@ -1111,9 +1088,7 @@ export default function SitePagesRoute({ loaderData }: Route.ComponentProps) {
                   >
                     {new URL(page.url).pathname}
                   </a>
-                  <span className="text-foreground/50 text-xs">
-                    {new URL(page.url).hostname}
-                  </span>
+                  <span className="text-foreground/50 text-xs">{new URL(page.url).hostname}</span>
                 </td>
                 <td className="py-2 text-right">{page.citationCount}</td>
                 <td className="py-2 text-right">
@@ -1128,9 +1103,7 @@ export default function SitePagesRoute({ loaderData }: Route.ComponentProps) {
                   )}
                 </td>
                 <td className="py-2 text-right text-foreground/50">
-                  {page.lastCheckedAt
-                    ? new Date(page.lastCheckedAt).toLocaleDateString()
-                    : "—"}
+                  {page.lastCheckedAt ? new Date(page.lastCheckedAt).toLocaleDateString() : "—"}
                 </td>
               </tr>
             ))}
@@ -1283,8 +1256,7 @@ export function getCitationGaps({
     if (c.domain === ownDomain) continue;
     if (nonCompetitors.has(c.domain)) continue;
     if (nonCompetitors.has(c.domain.split(".").slice(1).join("."))) continue;
-    if (!competitorQueries.has(c.domain))
-      competitorQueries.set(c.domain, new Set());
+    if (!competitorQueries.has(c.domain)) competitorQueries.set(c.domain, new Set());
     competitorQueries.get(c.domain)!.add(c.queryId);
   }
 
@@ -1351,13 +1323,7 @@ return { site, citations, siteQueries, competitors, shareOfVoice, gaps };
 ```tsx
 // app/routes/site.$domain_.citations/CitationGapAnalysis.tsx
 import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/Card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/Card";
 import { Badge } from "~/components/ui/Badge";
 
 export default function CitationGapAnalysis({
@@ -1387,11 +1353,7 @@ export default function CitationGapAnalysis({
               <button
                 type="button"
                 className="flex w-full items-center justify-between py-1 font-medium hover:text-foreground/70"
-                onClick={() =>
-                  setExpanded(
-                    expanded === competitorDomain ? null : competitorDomain,
-                  )
-                }
+                onClick={() => setExpanded(expanded === competitorDomain ? null : competitorDomain)}
               >
                 <span>{competitorDomain}</span>
                 <Badge variant="neutral">

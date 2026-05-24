@@ -1,13 +1,7 @@
 import { twMerge } from "tailwind-merge";
 import { ActiveLink } from "~/components/ui/ActiveLink";
 import { Badge } from "~/components/ui/Badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/Card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
 import SiteHeading from "~/components/ui/SiteHeading";
 import {
@@ -58,19 +52,17 @@ export default function SitePagesPage({ loaderData }: Route.ComponentProps) {
             {pages.length > 0 && (
               <div className="flex gap-3">
                 <Badge variant="green">{healthyCount} healthy</Badge>
-                {brokenCount > 0 && (
-                  <Badge variant="red">{brokenCount} broken</Badge>
-                )}
+                {brokenCount > 0 && <Badge variant="red">{brokenCount} broken</Badge>}
               </div>
             )}
           </CardTitle>
 
           <CardDescription className="text-foreground/60 text-base">
             <p>
-              Citing pages are pages that cite your content according to LLMs.
-              This list helps you understand what parts of your content is being
-              surfaced by LLMs and presented to users. To reach a wider
-              audience, these pages should be a priority for your SEO strategy.
+              Citing pages are pages that cite your content according to LLMs. This list helps you
+              understand what parts of your content is being surfaced by LLMs and presented to
+              users. To reach a wider audience, these pages should be a priority for your SEO
+              strategy.
             </p>
           </CardDescription>
         </CardHeader>
@@ -99,10 +91,7 @@ export default function SitePagesPage({ loaderData }: Route.ComponentProps) {
                         "bg-green-100 hover:bg-green-100/80",
                     )}
                   >
-                    <TableCell
-                      className="max-w-xs truncate font-mono"
-                      title={page.url}
-                    >
+                    <TableCell className="max-w-xs truncate font-mono" title={page.url}>
                       <PageUrl
                         direct={isSameDomain({
                           domain: site.domain,
@@ -118,9 +107,7 @@ export default function SitePagesPage({ loaderData }: Route.ComponentProps) {
                       <StatusBadge page={page} />
                     </TableCell>
                     <TableCell className="w-10 text-center">
-                      {page.lastCheckedAt
-                        ? new Date(page.lastCheckedAt).toLocaleDateString()
-                        : "—"}
+                      {page.lastCheckedAt ? new Date(page.lastCheckedAt).toLocaleDateString() : "—"}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -147,9 +134,7 @@ function PageUrl({ url, direct }: { url: string; direct: boolean }) {
         title={url}
         to={url}
       >
-        <span className="text-foreground/60 font-mono text-sm">
-          {parsed.hostname}
-        </span>
+        <span className="text-foreground/60 font-mono text-sm">{parsed.hostname}</span>
         <span className="font-mono text-sm">
           {parsed.pathname === "/" ? "" : parsed.pathname}
           {parsed.search}
@@ -172,9 +157,5 @@ function StatusBadge({
 }) {
   if (!page.lastCheckedAt) return <Badge variant="neutral">pending</Badge>;
   if (page.isHealthy) return <Badge variant="green">healthy</Badge>;
-  return (
-    <Badge variant="red">
-      {page.statusCode ? `broken (${page.statusCode})` : "broken"}
-    </Badge>
-  );
+  return <Badge variant="red">{page.statusCode ? `broken (${page.statusCode})` : "broken"}</Badge>;
 }

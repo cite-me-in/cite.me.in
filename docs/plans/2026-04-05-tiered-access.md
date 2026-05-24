@@ -127,34 +127,22 @@ describe("processingIntervalHours", () => {
 
 describe("isProcessingEligible", () => {
   it("should return true for a paid user", () => {
-    expect(isProcessingEligible({ plan: "paid", createdAt: daysAgo(30) })).toBe(
-      true,
-    );
+    expect(isProcessingEligible({ plan: "paid", createdAt: daysAgo(30) })).toBe(true);
   });
   it("should return true for a gratis user", () => {
-    expect(
-      isProcessingEligible({ plan: "gratis", createdAt: daysAgo(100) }),
-    ).toBe(true);
+    expect(isProcessingEligible({ plan: "gratis", createdAt: daysAgo(100) })).toBe(true);
   });
   it("should return false for a cancelled user", () => {
-    expect(
-      isProcessingEligible({ plan: "cancelled", createdAt: daysAgo(10) }),
-    ).toBe(false);
+    expect(isProcessingEligible({ plan: "cancelled", createdAt: daysAgo(10) })).toBe(false);
   });
   it("should return true for a trial user within 25 days", () => {
-    expect(
-      isProcessingEligible({ plan: "trial", createdAt: daysAgo(10) }),
-    ).toBe(true);
+    expect(isProcessingEligible({ plan: "trial", createdAt: daysAgo(10) })).toBe(true);
   });
   it("should return false for a trial user older than 25 days", () => {
-    expect(
-      isProcessingEligible({ plan: "trial", createdAt: daysAgo(26) }),
-    ).toBe(false);
+    expect(isProcessingEligible({ plan: "trial", createdAt: daysAgo(26) })).toBe(false);
   });
   it("should return false for a trial user at exactly 25 days", () => {
-    expect(
-      isProcessingEligible({ plan: "trial", createdAt: daysAgo(25) }),
-    ).toBe(false);
+    expect(isProcessingEligible({ plan: "trial", createdAt: daysAgo(25) })).toBe(false);
   });
 });
 
@@ -208,10 +196,7 @@ export function processingIntervalHours(plan: Plan): number {
 
 // Whether a site should be processed right now.
 // Trial expires after TRIAL_DAYS — no processing after that.
-export function isProcessingEligible(user: {
-  plan: Plan;
-  createdAt: Date;
-}): boolean {
+export function isProcessingEligible(user: { plan: Plan; createdAt: Date }): boolean {
   if (user.plan === "cancelled") return false;
   if (user.plan === "trial") return daysSince(user.createdAt) < TRIAL_DAYS;
   return true; // paid, gratis
@@ -219,10 +204,7 @@ export function isProcessingEligible(user: {
 
 // Whether to send the weekly digest to this user's sites.
 // Same eligibility as processing.
-export function isDigestEligible(user: {
-  plan: Plan;
-  createdAt: Date;
-}): boolean {
+export function isDigestEligible(user: { plan: Plan; createdAt: Date }): boolean {
   return isProcessingEligible(user);
 }
 
@@ -315,9 +297,7 @@ describe("site processing", () => {
         domain: "paid-site.example.com",
         id: "site-process-1",
         summary: "Test summary",
-        lastProcessedAt: new Date(
-          Temporal.Now.instant().subtract({ hours: 25 }).epochMilliseconds,
-        ),
+        lastProcessedAt: new Date(Temporal.Now.instant().subtract({ hours: 25 }).epochMilliseconds),
         owner: {
           create: {
             id: "user-process-1",
@@ -348,9 +328,7 @@ describe("site processing", () => {
         domain: "paid-site.example.com",
         id: "site-process-1",
         summary: "Test summary",
-        lastProcessedAt: new Date(
-          Temporal.Now.instant().subtract({ hours: 12 }).epochMilliseconds,
-        ),
+        lastProcessedAt: new Date(Temporal.Now.instant().subtract({ hours: 12 }).epochMilliseconds),
         owner: {
           create: {
             id: "user-process-1",
@@ -434,8 +412,7 @@ describe("site processing", () => {
             email: "owner-process3@test.com",
             passwordHash: "test",
             createdAt: new Date(
-              Temporal.Now.instant().subtract({ hours: 24 * 26 })
-                .epochMilliseconds,
+              Temporal.Now.instant().subtract({ hours: 24 * 26 }).epochMilliseconds,
             ),
           },
         },
@@ -454,9 +431,7 @@ describe("site processing", () => {
         domain: "gratis-site.example.com",
         id: "site-process-5",
         summary: "Test summary",
-        lastProcessedAt: new Date(
-          Temporal.Now.instant().subtract({ hours: 25 }).epochMilliseconds,
-        ),
+        lastProcessedAt: new Date(Temporal.Now.instant().subtract({ hours: 25 }).epochMilliseconds),
         owner: {
           create: {
             id: "user-process-5",
@@ -511,11 +486,7 @@ Expected: FAIL — seed data has `status` field that no longer exists, and `prep
 
 ```ts
 import type { Plan } from "~/lib/userPlan.server";
-import {
-  TRIAL_DAYS,
-  isProcessingEligible,
-  processingIntervalHours,
-} from "~/lib/userPlan.server";
+import { TRIAL_DAYS, isProcessingEligible, processingIntervalHours } from "~/lib/userPlan.server";
 import { UsageLimitExceededError } from "~/lib/usage/UsageLimitExceededError";
 import { Temporal } from "@js-temporal/polyfill";
 import { map } from "radashi";
@@ -563,8 +534,7 @@ export default async function prepareSites(): Promise<
             plan: "trial",
             createdAt: {
               gte: new Date(
-                Temporal.Now.instant().subtract({ hours: TRIAL_DAYS * 24 })
-                  .epochMilliseconds,
+                Temporal.Now.instant().subtract({ hours: TRIAL_DAYS * 24 }).epochMilliseconds,
               ),
             },
           },
@@ -583,11 +553,7 @@ export default async function prepareSites(): Promise<
     return Date.now() - lastRun.getTime() >= intervalMs;
   });
 
-  logger(
-    "[prepareSites] Processing %d sites: %s",
-    due.length,
-    due.map((s) => s.domain).join(", "),
-  );
+  logger("[prepareSites] Processing %d sites: %s", due.length, due.map((s) => s.domain).join(", "));
 
   await map(due, async (site) => {
     await Promise.all([nextCitationRun(site), updateBotInsight(site)]);
@@ -790,11 +756,7 @@ if (event.type === "checkout.session.completed") {
     }),
   ]);
 
-  logger(
-    "[stripe] Activated account for user %s (interval: %s)",
-    userId,
-    interval,
-  );
+  logger("[stripe] Activated account for user %s (interval: %s)", userId, interval);
 }
 ```
 

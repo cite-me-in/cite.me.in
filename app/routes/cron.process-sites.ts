@@ -24,9 +24,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     const results = await map(sites, async (site) => {
       if (site.digestSentAt && site.digestSentAt > oneWeekAgo)
         return { emailIds: [], domain: site.domain, skipped: true };
-      const sendEmails = await sendSiteDigestEmails(
-        await loadWeeklyDigestMetrics(site.id),
-      );
+      const sendEmails = await sendSiteDigestEmails(await loadWeeklyDigestMetrics(site.id));
       return {
         emailIds: sendEmails.map((e) => e.id),
         domain: site.domain,
@@ -39,8 +37,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     await sendTrialEndedEmails();
     await sendTrialEndingEmails();
 
-    if (envVars.HEARTBEAT_CRON_PROCESS_SITES)
-      await fetch(envVars.HEARTBEAT_CRON_PROCESS_SITES);
+    if (envVars.HEARTBEAT_CRON_PROCESS_SITES) await fetch(envVars.HEARTBEAT_CRON_PROCESS_SITES);
     return data({ ok: true, results });
   } catch (error) {
     captureAndLogError(error, { extra: { step: "process-sites" } });

@@ -44,9 +44,7 @@ const buttonVariants = cva(
 );
 
 export interface ButtonProps
-  extends
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   render?: React.ReactElement;
   as?: "a" | "button" | "div" | "span";
   href?: string;
@@ -55,11 +53,8 @@ export interface ButtonProps
 const TAG_MAP_EXTENDED = {
   div: <div />,
   span: <span />,
-  button: <button aria-label="Button" />,
-  a: ({
-    href = "",
-    ...props
-  }: React.HTMLAttributes<HTMLElement> & { href?: string }) => (
+  button: <button />,
+  a: ({ href = "", ...props }: React.HTMLAttributes<HTMLElement> & { href?: string }) => (
     <Link to={href} {...props} />
   ),
 } as const;

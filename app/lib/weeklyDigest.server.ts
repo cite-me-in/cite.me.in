@@ -44,10 +44,7 @@ export async function loadWeeklyDigestMetrics(
       sentimentSummary: true,
     },
   });
-  const [currentRuns, prevRuns] = fork(
-    runs,
-    ({ onDate }) => onDate >= weekStart,
-  );
+  const [currentRuns, prevRuns] = fork(runs, ({ onDate }) => onDate >= weekStart);
 
   const metrics = metricsResult[0];
   if (!metrics) throw new Error(`Site not found: ${siteId}`);
@@ -80,16 +77,14 @@ export async function loadWeeklyDigestMetrics(
 
   for (const run of currentRuns) {
     const dayIndex = Math.floor(
-      (new Date(run.onDate).getTime() - new Date(weekStart).getTime()) /
-        (1000 * 60 * 60 * 24),
+      (new Date(run.onDate).getTime() - new Date(weekStart).getTime()) / (1000 * 60 * 60 * 24),
     );
     if (dayIndex >= 0 && dayIndex < 7)
       current[dayIndex] += run.queries.flatMap((q) => q.citations).length;
   }
   for (const run of prevRuns) {
     const dayIndex = Math.floor(
-      (new Date(run.onDate).getTime() - new Date(prevWeekStart).getTime()) /
-        (1000 * 60 * 60 * 24),
+      (new Date(run.onDate).getTime() - new Date(prevWeekStart).getTime()) / (1000 * 60 * 60 * 24),
     );
     if (dayIndex >= 0 && dayIndex < 7)
       previous[dayIndex] += run.queries.flatMap((q) => q.citations).length;
@@ -135,10 +130,7 @@ export async function loadWeeklyDigestMetrics(
     ({ unsubscribed }) => !unsubscribed,
   );
 
-  const citationsURL = new URL(
-    `/site/${domain}/citations`,
-    envVars.VITE_APP_URL,
-  ).toString();
+  const citationsURL = new URL(`/site/${domain}/citations`, envVars.VITE_APP_URL).toString();
 
   const humanVisits = await prisma.humanVisit.findMany({
     where: { date: { gte: new Date(weekStart) }, siteId },
@@ -158,19 +150,15 @@ export async function loadWeeklyDigestMetrics(
 
   const botPageViews = sum(botVisits, (d) => d.count);
   const humanPageViews = sum(humanVisits, (d) => d.count);
-  const humanUniqueVisitors = new Set(
-    humanVisits.map(({ visitorId }) => visitorId),
-  ).size;
-  const botUniqueVisitors = new Set(botVisits.map(({ botType }) => botType))
-    .size;
+  const humanUniqueVisitors = new Set(humanVisits.map(({ visitorId }) => visitorId)).size;
+  const botUniqueVisitors = new Set(botVisits.map(({ botType }) => botType)).size;
   const allPageViews = humanPageViews + botPageViews;
   const visits = {
     pageViews: allPageViews,
     uniqueVisitors: humanUniqueVisitors + botUniqueVisitors,
     aiReferredVisitors:
       humanUniqueVisitors > 0
-        ? sum(humanVisits, ({ aiReferral }) => (aiReferral ? 1 : 0)) /
-          humanUniqueVisitors
+        ? sum(humanVisits, ({ aiReferral }) => (aiReferral ? 1 : 0)) / humanUniqueVisitors
         : 0,
     botVisits: allPageViews > 0 ? botPageViews / allPageViews : 0,
   };

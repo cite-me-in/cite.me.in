@@ -11,9 +11,7 @@ describe("checkCitingPageHealth", () => {
       "fetch",
       vi.fn().mockResolvedValue({
         status: 200,
-        text: vi
-          .fn<() => Promise<string>>()
-          .mockResolvedValue("<html>content</html>"),
+        text: vi.fn<() => Promise<string>>().mockResolvedValue("<html>content</html>"),
       }),
     );
 
@@ -38,10 +36,7 @@ describe("checkCitingPageHealth", () => {
   });
 
   it("should return unhealthy when fetch throws", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockRejectedValue(new Error("ECONNREFUSED")),
-    );
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("ECONNREFUSED")));
 
     const result = await checkCitingPageHealth("https://down.example.com");
     expect(result.statusCode).toBeNull();

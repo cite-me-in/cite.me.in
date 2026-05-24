@@ -1,21 +1,7 @@
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  Legend,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/Card";
+import { Area, AreaChart } from "recharts";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/Card";
 import { ChartContainer } from "~/components/ui/Chart";
-import { formatDateMed, formatDateShort } from "~/lib/formatDate";
+import ChartAxes from "./ChartAxes";
 
 const NON_AI_COLOR = "#d1d5db";
 const PLATFORM_COLORS = [
@@ -57,23 +43,14 @@ export default function VisitorTrafficChart({
       <CardHeader>
         <CardTitle>Human Visitors by Source</CardTitle>
         <CardDescription className="text-foreground/60">
-          This chart shows human visitors and highlights the portion of people
-          who were referred by AI.
+          This chart shows human visitors and highlights the portion of people who were referred by
+          AI.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={config} className="h-64 w-full">
           <AreaChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="date"
-              tickFormatter={(v) => formatDateShort(new Date(v))}
-            />
-            <YAxis />
-            <Tooltip
-              labelFormatter={(value) => formatDateMed(new Date(value))}
-            />
-            <Legend />
+            <ChartAxes />
             <Area
               dataKey="nonAi"
               fill={NON_AI_COLOR}

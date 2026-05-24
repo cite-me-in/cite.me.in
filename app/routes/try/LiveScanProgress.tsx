@@ -60,11 +60,7 @@ export default function LiveScanProgress({
         {Object.values(LOG_TO_CHECK).map((name) => {
           const state = checkStates[name] ?? { status: "pending" };
           return (
-            <CheckStatus
-              key={name}
-              name={name}
-              status={state.status || "pending"}
-            >
+            <CheckStatus key={name} name={name} status={state.status || "pending"}>
               {state.status === "passed"
                 ? state.message || "Passed"
                 : state.status === "failed"
@@ -98,12 +94,9 @@ function CheckStatus({
         {
           passed: "border-green-600 bg-green-50",
           failed: "border-red-600 bg-red-50",
-          running:
-            "border-amber-500 bg-amber-50 shadow-[2px_2px_0px_0px_#D97706]",
-          pending:
-            "border-black/20 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]",
-        }[status] ||
-          "border-black/20 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]",
+          running: "border-amber-500 bg-amber-50 shadow-[2px_2px_0px_0px_#D97706]",
+          pending: "border-black/20 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]",
+        }[status] || "border-black/20 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)]",
       )}
     >
       <div className="pt-1">

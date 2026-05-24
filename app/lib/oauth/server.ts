@@ -1,4 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
+import { data } from "react-router";
 import prisma from "~/lib/prisma.server";
 
 const ACCESS_TOKEN_EXPIRY = 60 * 60; // 1 hour
@@ -24,6 +25,21 @@ export function generateToken(bytes = 32): string {
  */
 export function generateCodeChallenge(verifier: string): string {
   return createHash("sha256").update(verifier).digest("base64url");
+}
+
+/**
+ * Authenticate an OAuth client by ID and secret. Throws a 401 response on failure.
+ */
+export async function authenticateClient(clientId: string, clientSecret: string) {
+  const client = await prisma.oAuthClient.findUnique({
+    where: { clientId },
+    select: { id: true, clientSecret: true },
+  });
+
+  if (!client || client.clientSecret !== clientSecret)
+    throw data({ error: "invalid_client" }, { status: 401 });
+
+  return client;
 }
 
 /**
@@ -170,9 +186,7 @@ export async function verifyDeviceCode(code: string): Promise<{
 
   if (!deviceCode) return null;
 
-  const expiresAt = new Date(
-    deviceCode.createdAt.getTime() + deviceCode.expiresIn * 1000,
-  );
+  const expiresAt = new Date(deviceCode.createdAt.getTime() + deviceCode.expiresIn * 1000);
   if (expiresAt < new Date()) {
     await prisma.oAuthDeviceCode.delete({ where: { code } });
     return null;

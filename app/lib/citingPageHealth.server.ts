@@ -23,9 +23,7 @@ export default async function checkCitingPageHealth(url: string): Promise<{
       redirect: "follow",
     });
     const text = await response.text();
-    const contentHash = createHash("sha256")
-      .update(text.slice(0, 50_000))
-      .digest("hex");
+    const contentHash = createHash("sha256").update(text.slice(0, 50_000)).digest("hex");
     const isHealthy = response.status >= 200 && response.status < 400;
     logger(
       `[citingPageHealth] ${url} => ${response.status} ${isHealthy ? "healthy" : "unhealthy"}`,

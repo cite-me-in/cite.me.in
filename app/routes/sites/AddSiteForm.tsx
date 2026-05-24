@@ -32,9 +32,9 @@ export default function AddSiteForm({
               Verifying domain and generating queries…
             </div>
             <p className="text-foreground/60 text-base">
-              Be patient, nothing will happen for a few seconds. We're going to
-              check the domain and generate queries to ask Claude, OpenAI, and
-              Google to see if they return any citations.
+              Be patient, nothing will happen for a few seconds. We're going to check the domain and
+              generate queries to ask Claude, OpenAI, and Google to see if they return any
+              citations.
             </p>
             {url && (
               <p className="text-foreground/60 text-base">
@@ -45,8 +45,7 @@ export default function AddSiteForm({
         ) : (
           <fetcher.Form method="post" noValidate className="space-y-4">
             <p className="text-foreground/60 text-base">
-              Enter a full URL (https://yoursite.com) or just the domain name
-              (yoursite.com).
+              Enter a full URL (https://yoursite.com) or just the domain name (yoursite.com).
             </p>
             <Field>
               <FieldLabel htmlFor="url">Website URL or domain</FieldLabel>

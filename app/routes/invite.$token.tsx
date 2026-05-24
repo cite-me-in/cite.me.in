@@ -15,8 +15,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     include: { site: { select: { id: true, domain: true } } },
   });
 
-  if (!invitation || invitation.status !== "PENDING")
-    return { status: "invalid" as const };
+  if (!invitation || invitation.status !== "PENDING") return { status: "invalid" as const };
 
   // Check expiry (7 days)
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
@@ -78,11 +77,7 @@ export default function InvitePage({ loaderData }: Route.ComponentProps) {
     return (
       <AuthForm
         title="Invitation expired"
-        form={
-          <p>
-            This invitation has expired. Ask the site owner to send a new one.
-          </p>
-        }
+        form={<p>This invitation has expired. Ask the site owner to send a new one.</p>}
         footer={<Link to="/sign-in">Sign in</Link>}
       />
     );
@@ -93,8 +88,8 @@ export default function InvitePage({ loaderData }: Route.ComponentProps) {
         title="Wrong account"
         form={
           <p>
-            This invitation was sent to {loaderData.invitedEmail}. Sign in with
-            that account to accept it.
+            This invitation was sent to {loaderData.invitedEmail}. Sign in with that account to
+            accept it.
           </p>
         }
         footer={<Link to="/sign-in">Sign in</Link>}
@@ -103,9 +98,7 @@ export default function InvitePage({ loaderData }: Route.ComponentProps) {
 
   // status === "pending"
   const { email, siteDomain, hasAccount, token } = loaderData;
-  const authPath = hasAccount
-    ? `/sign-in?invite=${token}`
-    : `/sign-up?invite=${token}`;
+  const authPath = hasAccount ? `/sign-in?invite=${token}` : `/sign-up?invite=${token}`;
 
   return (
     <AuthForm
@@ -113,8 +106,7 @@ export default function InvitePage({ loaderData }: Route.ComponentProps) {
       form={
         <div className="space-y-4">
           <p>
-            You've been invited to join <strong>{siteDomain}</strong> on
-            Cite.me.in.
+            You've been invited to join <strong>{siteDomain}</strong> on Cite.me.in.
           </p>
           <p className="text-gray-600">This invite was sent to {email}.</p>
           <Button render={<Link to={authPath} />} className="w-full">

@@ -7,15 +7,11 @@ function DialogRoot({ ...props }: React.ComponentProps<typeof Dialog.Root>) {
   return <Dialog.Root data-slot="dialog" {...props} />;
 }
 
-function DialogTrigger({
-  ...props
-}: React.ComponentProps<typeof Dialog.Trigger>) {
+function DialogTrigger({ ...props }: React.ComponentProps<typeof Dialog.Trigger>) {
   return <Dialog.Trigger data-slot="dialog-trigger" {...props} />;
 }
 
-function DialogPortal({
-  ...props
-}: React.ComponentProps<typeof Dialog.Portal>) {
+function DialogPortal({ ...props }: React.ComponentProps<typeof Dialog.Portal>) {
   return <Dialog.Portal data-slot="dialog-portal" {...props} />;
 }
 
@@ -73,10 +69,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-header"
-      className={twMerge(
-        "flex flex-col gap-2 text-center sm:text-left",
-        className,
-      )}
+      className={twMerge("flex flex-col gap-2 text-center sm:text-left", className)}
       {...props}
     />
   );
@@ -86,10 +79,7 @@ function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-footer"
-      className={twMerge(
-        "flex flex-col-reverse gap-3 sm:flex-row sm:justify-end",
-        className,
-      )}
+      className={twMerge("flex flex-col-reverse gap-3 sm:flex-row sm:justify-end", className)}
       {...props}
     />
   );
@@ -104,10 +94,7 @@ function DialogTitle({
   return (
     <Dialog.Title
       data-slot="dialog-title"
-      className={twMerge(
-        "font-heading text-lg leading-none tracking-tight",
-        className,
-      )}
+      className={twMerge("font-heading text-lg leading-none tracking-tight", className)}
       {...props}
     />
   );

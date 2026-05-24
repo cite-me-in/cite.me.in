@@ -43,19 +43,10 @@ export default async function sendSiteSetupEmail({
   metrics: SetupMetrics;
   sendTo: { id: string; email: string; unsubscribed: boolean };
 }) {
-  const citationsURL = new URL(
-    `/site/${site.domain}/citations`,
-    envVars.VITE_APP_URL,
-  ).toString();
+  const citationsURL = new URL(`/site/${site.domain}/citations`, envVars.VITE_APP_URL).toString();
   await sendEmail({
     domain: site.domain,
-    email: (
-      <SiteSetupCompleteEmail
-        site={site}
-        citationsURL={citationsURL}
-        metrics={metrics}
-      />
-    ),
+    email: <SiteSetupCompleteEmail site={site} citationsURL={citationsURL} metrics={metrics} />,
     isTransactional: true,
     sendTo: sendTo,
     subject: "Setup complete",
@@ -86,8 +77,8 @@ export function SiteSetupCompleteEmail({
       </Text>
 
       <Text className="text-text my-4 text-base leading-relaxed">
-        We've crawled your site, generated search queries, and checked how
-        ChatGPT, Claude, and Gemini cite you. Here's what we found.
+        We've crawled your site, generated search queries, and checked how ChatGPT, Claude, and
+        Gemini cite you. Here's what we found.
       </Text>
 
       <PlatformBreakdown byPlatform={metrics.byPlatform} />
@@ -109,18 +100,10 @@ export function SiteSetupCompleteEmail({
   );
 }
 
-function SetupTopQueries({
-  topQueries,
-}: {
-  topQueries: { query: string; count: number }[];
-}) {
+function SetupTopQueries({ topQueries }: { topQueries: { query: string; count: number }[] }) {
   if (topQueries.length === 0) return null;
   return (
-    <Card
-      title="↑ Top queries"
-      subtitle="Queries most cited in your first run"
-      withBorder
-    >
+    <Card title="↑ Top queries" subtitle="Queries most cited in your first run" withBorder>
       <table>
         <thead>
           <tr className="text-light text-center text-xs tracking-wide uppercase">

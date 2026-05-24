@@ -52,8 +52,7 @@ export default function DeleteSiteButton({
         <DialogHeader>
           <DialogTitle>Delete Site</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete <strong>{domain}</strong>? This
-            action cannot be undone.
+            Are you sure you want to delete <strong>{domain}</strong>? This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
 
@@ -75,9 +74,7 @@ export default function DeleteSiteButton({
         />
 
         <DialogFooter>
-          <DialogClose render={<Button variant="outline" />}>
-            Cancel
-          </DialogClose>
+          <DialogClose render={<Button variant="outline" />}>Cancel</DialogClose>
           <Button
             onClick={confirmIfValid}
             disabled={!isValid || isSubmitting}

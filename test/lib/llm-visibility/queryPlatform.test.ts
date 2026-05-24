@@ -21,11 +21,7 @@ const CITATION_SETS = [
     usage: { inputTokens: 100, outputTokens: 50 },
   },
   {
-    citations: [
-      "https://other.com",
-      "https://example.com",
-      "https://rentail.space/faq",
-    ],
+    citations: ["https://other.com", "https://example.com", "https://rentail.space/faq"],
     extraQueries: [],
     text: "Platforms like rentail.space offer temporary retail options.",
     usage: { inputTokens: 120, outputTokens: 60 },
@@ -108,21 +104,17 @@ describe("queryPlatform", () => {
       invariant(first, "first is not null");
       expect(first?.group).toBe("1. discovery");
       expect(first.citations.length).toBe(2);
-      expect(
-        first.citations.some((c) =>
-          isSameDomain({ domain: site.domain, url: c.url }),
-        ),
-      ).toBe(true);
+      expect(first.citations.some((c) => isSameDomain({ domain: site.domain, url: c.url }))).toBe(
+        true,
+      );
 
       const second = run.queries.find((q) => q.query === QUERIES[1].query);
       invariant(second, "second is not null");
       expect(second.group).toBe("2. active_search");
       expect(second.citations.length).toBe(3);
-      expect(
-        second.citations.some((c) =>
-          isSameDomain({ domain: site.domain, url: c.url }),
-        ),
-      ).toBe(true);
+      expect(second.citations.some((c) => isSameDomain({ domain: site.domain, url: c.url }))).toBe(
+        true,
+      );
     },
   );
 
@@ -182,9 +174,7 @@ describe("queryPlatform", () => {
       expect(first.citations).toHaveLength(2);
       expect(first.group).toBe("1. discovery");
       expect(first.query).toBe(QUERIES[0].query);
-      expect(first.text).toBe(
-        "You can find short-term retail space on rentail.space.",
-      );
+      expect(first.text).toBe("You can find short-term retail space on rentail.space.");
       expect(first.extraQueries).toEqual([]);
       expect(first.citations.map((c) => c.url).sort()).toEqual([
         "https://other.com",
@@ -196,9 +186,7 @@ describe("queryPlatform", () => {
       expect(second.citations).toHaveLength(3);
       expect(second.group).toBe("2. active_search");
       expect(second.query).toBe(QUERIES[1].query);
-      expect(second.text).toBe(
-        "Platforms like rentail.space offer temporary retail options.",
-      );
+      expect(second.text).toBe("Platforms like rentail.space offer temporary retail options.");
       expect(second.extraQueries).toEqual([]);
       expect(second.citations.map((c) => c.url).sort()).toEqual([
         "https://example.com",

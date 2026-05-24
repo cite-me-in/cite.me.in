@@ -65,10 +65,7 @@ describe("queryPerplexity", () => {
       query: "What is the capital of France?",
     });
 
-    expect(result.citations).toEqual([
-      "https://example.com/paris",
-      "https://other.com/france",
-    ]);
+    expect(result.citations).toEqual(["https://example.com/paris", "https://other.com/france"]);
     expect(result.text).toContain("Paris - Wikipedia");
     expect(result.text).toContain("Paris is the capital of France.");
     expect(result.extraQueries).toEqual([]);
@@ -125,8 +122,7 @@ describe("queryPerplexity", () => {
   });
 
   it("should throw InsufficientCreditError on 429 response", async () => {
-    const { APIError: PerplexityAPIError } =
-      await import("@perplexity-ai/perplexity_ai");
+    const { APIError: PerplexityAPIError } = await import("@perplexity-ai/perplexity_ai");
     mockCreate.mockRejectedValue(
       new PerplexityAPIError(429, {}, "Rate limit exceeded", new Headers()),
     );
@@ -134,14 +130,13 @@ describe("queryPerplexity", () => {
     const { default: queryPerplexity } =
       await import("~/lib/llm-visibility/perplexityClient.server");
 
-    await expect(
-      queryPerplexity({ maxRetries: 0, timeout: 0, query: "query" }),
-    ).rejects.toThrow(InsufficientCreditError);
+    await expect(queryPerplexity({ maxRetries: 0, timeout: 0, query: "query" })).rejects.toThrow(
+      InsufficientCreditError,
+    );
   });
 
   it("should not throw InsufficientCreditError on other errors", async () => {
-    const { APIError: PerplexityAPIError } =
-      await import("@perplexity-ai/perplexity_ai");
+    const { APIError: PerplexityAPIError } = await import("@perplexity-ai/perplexity_ai");
     mockCreate.mockRejectedValue(
       new PerplexityAPIError(500, {}, "Internal Server Error", new Headers()),
     );

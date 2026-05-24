@@ -2,13 +2,7 @@ import { Streamdown } from "streamdown";
 import { twMerge } from "tailwind-merge";
 import { ActiveLink } from "~/components/ui/ActiveLink";
 import { Badge } from "~/components/ui/Badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/Card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
 import { requireSiteAccess } from "~/lib/auth.server";
@@ -72,9 +66,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   return { citation, site, directUrls, indirectUrls };
 }
 
-export default function SiteCitationsPage({
-  loaderData,
-}: Route.ComponentProps) {
+export default function SiteCitationsPage({ loaderData }: Route.ComponentProps) {
   const { citation, site, directUrls, indirectUrls } = loaderData;
   const { platform, model } = citation.run;
 

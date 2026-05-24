@@ -1,5 +1,5 @@
 import { data } from "react-router";
-import { DEVICE_CODE_EXPIRY, generateToken } from "~/lib/oauth/server";
+import { authenticateClient, DEVICE_CODE_EXPIRY, generateToken } from "~/lib/oauth/server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/oauth.device.authorize";
 
@@ -9,13 +9,7 @@ export async function action({ request }: Route.ActionArgs) {
   const clientSecret = formData.get("client_secret") as string;
   const scope = (formData.get("scope") as string) || "";
 
-  const client = await prisma.oAuthClient.findUnique({
-    where: { clientId },
-    select: { id: true, clientSecret: true },
-  });
-
-  if (!client || client.clientSecret !== clientSecret)
-    throw data({ error: "invalid_client" }, { status: 401 });
+  const client = await authenticateClient(clientId, clientSecret);
 
   const deviceCode = generateToken();
   const userCode = generateToken(4).toUpperCase();

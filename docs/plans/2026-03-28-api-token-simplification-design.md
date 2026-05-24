@@ -44,10 +44,7 @@ Before (nested joins through apiKey):
 prisma.site.findFirst({
   where: {
     domain,
-    OR: [
-      { owner: { apiKey: token } },
-      { siteUsers: { some: { user: { apiKey: token } } } },
-    ],
+    OR: [{ owner: { apiKey: token } }, { siteUsers: { some: { user: { apiKey: token } } } }],
   },
 });
 ```

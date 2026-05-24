@@ -54,9 +54,7 @@ describe("get_site", () => {
       expect(content.id).toBeDefined();
       expect(content.domain).toBe("mcp-test-site-1.example");
       expect(content.summary).toBe("Test summary");
-      expect(content.createdAt).toMatch(
-        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,
-      );
+      expect(content.createdAt).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
       expect(content.owner).toBe("mcp-test-user-1@example.com");
       expect(typeof content.queryCount).toBe("number");
       expect(typeof content.runCount).toBe("number");

@@ -5,9 +5,7 @@ import { normalizeDomain } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
 import { topCompetitors } from "~/routes/site.$domain_.citations/TopCompetitors";
 
-export default async function loadSetupMetrics(
-  siteId: string,
-): Promise<SetupMetrics> {
+export default async function loadSetupMetrics(siteId: string): Promise<SetupMetrics> {
   const site = await prisma.site.findUniqueOrThrow({
     where: { id: siteId },
     select: { domain: true },
@@ -33,18 +31,14 @@ export default async function loadSetupMetrics(
     byPlatform[run.platform] = {
       count: sum(run.queries, (q) => q.citations.length),
       sentimentLabel: run.sentimentLabel ?? "neutral",
-      sentimentSummary:
-        run.sentimentSummary ?? "No sentiment analysis available.",
+      sentimentSummary: run.sentimentSummary ?? "No sentiment analysis available.",
     };
   }
 
   const queryCounts = new Map<string, number>();
   for (const run of runs)
     for (const q of run.queries)
-      queryCounts.set(
-        q.query,
-        (queryCounts.get(q.query) ?? 0) + q.citations.length,
-      );
+      queryCounts.set(q.query, (queryCounts.get(q.query) ?? 0) + q.citations.length);
 
   const topQueries = [...queryCounts.entries()]
     .sort((a, b) => b[1] - a[1])
@@ -56,10 +50,7 @@ export default async function loadSetupMetrics(
     .flatMap((q) => q.citations)
     .map((c) => ({ url: c.url, domain: normalizeDomain(c.url) }))
     .filter((c) => c.domain !== "");
-  const { competitors: rawCompetitors } = topCompetitors(
-    allCitations,
-    site.domain,
-  );
+  const { competitors: rawCompetitors } = topCompetitors(allCitations, site.domain);
   const competitors = await Promise.all(
     rawCompetitors.map(async (c) => ({
       ...c,

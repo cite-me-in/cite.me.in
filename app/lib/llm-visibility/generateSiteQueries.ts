@@ -57,18 +57,14 @@ Rules:
     messages: [
       {
         role: "user",
-        content: [
-          { text: `Website content:\n\n${site.content}`, type: "text" },
-        ],
+        content: [{ text: `Website content:\n\n${site.content}`, type: "text" }],
       },
     ],
     max_tokens: 5_000,
   });
 
   const text = content.filter((c) => c.type === "text")[0].text;
-  const json = z
-    .array(z.object({ group: z.string(), query: z.string() }))
-    .parse(JSON.parse(text));
+  const json = z.array(z.object({ group: z.string(), query: z.string() })).parse(JSON.parse(text));
 
   const suggestions = await prisma.siteQuerySuggestion.createManyAndReturn({
     data: json.map(({ group, query }) => ({ siteId, group, query })),

@@ -233,8 +233,8 @@ function SiteSetupComplete({
       </Text>
 
       <Text className="my-4 text-base text-text leading-relaxed">
-        We've crawled your site, generated search queries, and checked how
-        ChatGPT, Claude, Perplexity, and Gemini cite you. Here's what we found.
+        We've crawled your site, generated search queries, and checked how ChatGPT, Claude,
+        Perplexity, and Gemini cite you. Here's what we found.
       </Text>
 
       <PlatformCitations byPlatform={metrics.byPlatform} />
@@ -260,15 +260,8 @@ function SiteSetupComplete({
   );
 }
 
-function PlatformCitations({
-  byPlatform,
-}: {
-  byPlatform: SetupMetrics["byPlatform"];
-}) {
-  const platforms = alphabetical(
-    Object.entries(byPlatform),
-    ([name]) => name,
-  ).slice(0, 4);
+function PlatformCitations({ byPlatform }: { byPlatform: SetupMetrics["byPlatform"] }) {
+  const platforms = alphabetical(Object.entries(byPlatform), ([name]) => name).slice(0, 4);
 
   return (
     <Card title="Citations found">
@@ -297,18 +290,10 @@ function PlatformCitations({
   );
 }
 
-function SetupTopQueries({
-  topQueries,
-}: {
-  topQueries: SetupMetrics["topQueries"];
-}) {
+function SetupTopQueries({ topQueries }: { topQueries: SetupMetrics["topQueries"] }) {
   if (topQueries.length === 0) return null;
   return (
-    <Card
-      title="↑ Top queries"
-      subtitle="Queries most cited in your first run"
-      withBorder
-    >
+    <Card title="↑ Top queries" subtitle="Queries most cited in your first run" withBorder>
       <table>
         <thead>
           <tr className="text-center text-light text-xs uppercase tracking-wide">
@@ -329,15 +314,9 @@ function SetupTopQueries({
   );
 }
 
-function SetupSentiment({
-  byPlatform,
-}: {
-  byPlatform: SetupMetrics["byPlatform"];
-}) {
+function SetupSentiment({ byPlatform }: { byPlatform: SetupMetrics["byPlatform"] }) {
   const platforms = alphabetical(
-    Object.entries(byPlatform).filter(
-      ([, { sentimentSummary }]) => sentimentSummary,
-    ),
+    Object.entries(byPlatform).filter(([, { sentimentSummary }]) => sentimentSummary),
     ([name]) => name,
   );
   if (platforms.length === 0) return null;
@@ -355,9 +334,7 @@ function SetupSentiment({
         <Section key={platform} className="border-border border-b py-3">
           <Row>
             <Column className="w-1/4">
-              <Text className="text-light text-xs uppercase tracking-wide">
-                {platform}
-              </Text>
+              <Text className="text-light text-xs uppercase tracking-wide">{platform}</Text>
               <Text
                 className={twMerge(
                   "text-sm font-semibold uppercase",
@@ -368,9 +345,7 @@ function SetupSentiment({
               </Text>
             </Column>
             <Column>
-              <Text className="text-light text-sm leading-6">
-                {sentimentSummary}
-              </Text>
+              <Text className="text-light text-sm leading-6">{sentimentSummary}</Text>
             </Column>
           </Row>
         </Section>
@@ -379,18 +354,10 @@ function SetupSentiment({
   );
 }
 
-function SetupTopCompetitors({
-  competitors,
-}: {
-  competitors: SetupMetrics["competitors"];
-}) {
+function SetupTopCompetitors({ competitors }: { competitors: SetupMetrics["competitors"] }) {
   if (competitors.length === 0) return null;
   return (
-    <Card
-      title="Top competitors"
-      subtitle="Sites appearing in your queries"
-      withBorder
-    >
+    <Card title="Top competitors" subtitle="Sites appearing in your queries" withBorder>
       <table>
         <tbody>
           {competitors.map(({ domain, brandName, url, count, pct }) => (
@@ -401,8 +368,7 @@ function SetupTopCompetitors({
                 </Link>
               </td>
               <td className="w-30 whitespace-nowrap px-2 py-4 font-bold tabular-nums">
-                {count.toLocaleString()}{" "}
-                {count === 1 ? "citation" : "citations"}
+                {count.toLocaleString()} {count === 1 ? "citation" : "citations"}
               </td>
               <td className="w-15 px-2 py-4 text-right tabular-nums">{pct}%</td>
             </tr>
@@ -437,9 +403,7 @@ function Card({
       {(title || subtitle) && (
         <Row>
           <Column className="px-5 pt-4">
-            {title && (
-              <Text className="font-bold text-2xl text-dark">{title}</Text>
-            )}
+            {title && <Text className="font-bold text-2xl text-dark">{title}</Text>}
             {subtitle && <Text className="text-light text-sm">{subtitle}</Text>}
           </Column>
         </Row>
@@ -491,9 +455,7 @@ import { getDomainMeta } from "~/lib/domainMeta.server";
 import prisma from "~/lib/prisma.server";
 import { topCompetitors } from "~/routes/site.$domain_.citations/TopCompetitors";
 
-export default async function loadSetupMetrics(
-  siteId: string,
-): Promise<SetupMetrics> {
+export default async function loadSetupMetrics(siteId: string): Promise<SetupMetrics> {
   const site = await prisma.site.findUniqueOrThrow({
     where: { id: siteId },
     select: { domain: true },
@@ -524,10 +486,7 @@ export default async function loadSetupMetrics(
   const queryCounts = new Map<string, number>();
   for (const run of runs)
     for (const q of run.queries)
-      queryCounts.set(
-        q.query,
-        (queryCounts.get(q.query) ?? 0) + q.citations.length,
-      );
+      queryCounts.set(q.query, (queryCounts.get(q.query) ?? 0) + q.citations.length);
 
   const topQueries = [...queryCounts.entries()]
     .sort((a, b) => b[1] - a[1])
@@ -535,10 +494,7 @@ export default async function loadSetupMetrics(
     .map(([query, count]) => ({ query, count }));
 
   const allQueries = runs.flatMap((r) => r.queries);
-  const { competitors: rawCompetitors } = topCompetitors(
-    allQueries,
-    site.domain,
-  );
+  const { competitors: rawCompetitors } = topCompetitors(allQueries, site.domain);
   const competitors = await Promise.all(
     rawCompetitors.map(async (c) => ({
       ...c,

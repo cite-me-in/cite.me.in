@@ -41,8 +41,7 @@ export default function GroupOfQueries({
           <Alert variant="outline">
             <AlertCircleIcon className="h-4 w-4" />
             <AlertTitle>
-              {renameFetcher.data.error ??
-                "Failed to rename. Please try again."}
+              {renameFetcher.data.error ?? "Failed to rename. Please try again."}
             </AlertTitle>
           </Alert>
         )}
@@ -50,8 +49,7 @@ export default function GroupOfQueries({
           <Alert variant="outline">
             <AlertCircleIcon className="h-4 w-4" />
             <AlertTitle>
-              {deleteFetcher.data.error ??
-                "Failed to delete group. Please try again."}
+              {deleteFetcher.data.error ?? "Failed to delete group. Please try again."}
             </AlertTitle>
           </Alert>
         )}
@@ -59,8 +57,7 @@ export default function GroupOfQueries({
           <Alert variant="outline">
             <AlertCircleIcon className="h-4 w-4" />
             <AlertTitle>
-              {addFetcher.data.error ??
-                "Failed to add query. Please try again."}
+              {addFetcher.data.error ?? "Failed to add query. Please try again."}
             </AlertTitle>
           </Alert>
         )}
@@ -86,15 +83,8 @@ export default function GroupOfQueries({
           />
           <TrashButton
             onClick={() => {
-              if (
-                confirm(
-                  `Delete group "${group}" and all its queries? This cannot be undone.`,
-                )
-              )
-                void deleteFetcher.submit(
-                  { _intent: "delete-group", group },
-                  { method: "post" },
-                );
+              if (confirm(`Delete group "${group}" and all its queries? This cannot be undone.`))
+                void deleteFetcher.submit({ _intent: "delete-group", group }, { method: "post" });
             }}
             title="Delete this group of queries"
           />

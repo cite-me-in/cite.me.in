@@ -7,12 +7,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   const token = url.searchParams.get("token");
   const email = url.searchParams.get("email");
 
-  if (!token || !email)
-    return new Response("Invalid unsubscribe link", { status: 400 });
+  if (!token || !email) return new Response("Invalid unsubscribe link", { status: 400 });
 
   const expectedToken = generateUnsubscribeToken(email);
-  if (token !== expectedToken)
-    return new Response("Invalid unsubscribe token", { status: 400 });
+  if (token !== expectedToken) return new Response("Invalid unsubscribe token", { status: 400 });
 
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) return new Response("User not found", { status: 400 });

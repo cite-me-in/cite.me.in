@@ -177,9 +177,7 @@ describe("emitWebhookEvent", () => {
     it("should include X-Webhook-Event header", async () => {
       await emitWebhookEvent("user.created", { userId: USER_ID });
       expect(capturedRequests).toHaveLength(1);
-      expect(capturedRequests[0].headers.get("X-Webhook-Event")).toBe(
-        "user.created",
-      );
+      expect(capturedRequests[0].headers.get("X-Webhook-Event")).toBe("user.created");
     });
   });
 

@@ -20,8 +20,7 @@ export async function verifyUserAccess(request: Request): Promise<{
   const auth = request.headers.get("authorization");
   if (!auth) throw new Response("Unauthorized", { status: 401 });
   const [tokenType, token] = auth.split(/\s+/);
-  if (tokenType !== "Bearer")
-    throw new Response("Unauthorized", { status: 401 });
+  if (tokenType !== "Bearer") throw new Response("Unauthorized", { status: 401 });
 
   const userId = parseTokenUserId(token);
   if (!userId) throw new Response("Forbidden", { status: 403 });

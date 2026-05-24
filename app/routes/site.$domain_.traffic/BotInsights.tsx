@@ -1,12 +1,6 @@
 import { BrainIcon } from "lucide-react";
 import { Streamdown } from "streamdown";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/Card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "~/components/ui/Card";
 import { formatDateShort } from "~/lib/formatDate";
 
 export default function BotInsights({

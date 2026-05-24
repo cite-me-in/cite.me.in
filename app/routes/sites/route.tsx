@@ -35,8 +35,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const trialEnd = new Date(user.createdAt);
   trialEnd.setDate(trialEnd.getDate() + 25);
   const trialExpired =
-    user.plan === "cancelled" ||
-    (user.plan === "trial" && new Date() > trialEnd);
+    user.plan === "cancelled" || (user.plan === "trial" && new Date() > trialEnd);
 
   return { sites, trialExpired, canAddSite, isPro };
 }
@@ -44,8 +43,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 export async function action({ request }: Route.ActionArgs) {
   const { user } = await requireUserAccess(request);
   const formData = await request.formData();
-  if (request.method !== "POST")
-    throw new Response("Method not allowed", { status: 405 });
+  if (request.method !== "POST") throw new Response("Method not allowed", { status: 405 });
 
   // Add a new site to the account
   const url = (formData.get("url") as string).trim();
@@ -56,10 +54,7 @@ export async function action({ request }: Route.ActionArgs) {
     const existing = await prisma.site.findFirst({
       where: {
         domain,
-        OR: [
-          { ownerId: user.id },
-          { siteUsers: { some: { userId: user.id } } },
-        ],
+        OR: [{ ownerId: user.id }, { siteUsers: { some: { userId: user.id } } }],
       },
     });
     if (existing) return redirect(`/site/${domain}/citations`);
@@ -69,21 +64,14 @@ export async function action({ request }: Route.ActionArgs) {
   } catch (error) {
     return {
       error:
-        error instanceof Error
-          ? error.message
-          : "An unknown error occurred while adding the site",
+        error instanceof Error ? error.message : "An unknown error occurred while adding the site",
     };
   }
 }
 
-export default function SitesPage({
-  loaderData,
-  actionData,
-}: Route.ComponentProps) {
+export default function SitesPage({ loaderData, actionData }: Route.ComponentProps) {
   const { sites, trialExpired, canAddSite, isPro } = loaderData;
-  const [isAddSiteFormOpen, setIsAddSiteFormOpen] = useState(
-    sites.length === 0 && canAddSite,
-  );
+  const [isAddSiteFormOpen, setIsAddSiteFormOpen] = useState(sites.length === 0 && canAddSite);
   const fetcher = useFetcher<typeof action>();
 
   return (
@@ -95,9 +83,7 @@ export default function SitesPage({
       </Heading>
 
       {canAddSite
-        ? isAddSiteFormOpen && (
-            <AddSiteForm actionData={actionData} fetcher={fetcher} />
-          )
+        ? isAddSiteFormOpen && <AddSiteForm actionData={actionData} fetcher={fetcher} />
         : trialExpired && <TrialExpired />}
 
       {sites.length > 0 && (

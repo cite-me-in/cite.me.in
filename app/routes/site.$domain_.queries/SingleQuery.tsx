@@ -44,10 +44,7 @@ export default function SingleQuery({
                 ) as HTMLElement | null;
                 if (input) input.focus();
               } else {
-                void updateFetcher.submit(
-                  { _intent: "add-query", group },
-                  { method: "post" },
-                );
+                void updateFetcher.submit({ _intent: "add-query", group }, { method: "post" });
                 // Defer focus until after submit; we can't focus new input synchronously.
                 // So, set a short timeout to poll for the new input.
                 setTimeout(() => {
@@ -72,15 +69,8 @@ export default function SingleQuery({
         />
         <TrashButton
           onClick={() => {
-            if (
-              confirm(
-                `Delete query "${query}" from group "${group}"? This cannot be undone.`,
-              )
-            )
-              void deleteFetcher.submit(
-                { _intent: "delete-query", id },
-                { method: "post" },
-              );
+            if (confirm(`Delete query "${query}" from group "${group}"? This cannot be undone.`))
+              void deleteFetcher.submit({ _intent: "delete-query", id }, { method: "post" });
           }}
           title="Delete this query"
         />
@@ -88,9 +78,7 @@ export default function SingleQuery({
       {updateFetcher.data?.ok === false && (
         <Alert variant="outline">
           <AlertCircleIcon className="h-4 w-4" />
-          <AlertTitle>
-            {updateFetcher.data.error ?? "Failed to save. Please try again."}
-          </AlertTitle>
+          <AlertTitle>{updateFetcher.data.error ?? "Failed to save. Please try again."}</AlertTitle>
         </Alert>
       )}
       {deleteFetcher.data?.ok === false && (

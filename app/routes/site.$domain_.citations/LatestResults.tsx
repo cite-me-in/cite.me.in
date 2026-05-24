@@ -1,13 +1,7 @@
 import { ArrowRightIcon } from "lucide-react";
 import { Link } from "react-router";
 import { twMerge } from "tailwind-merge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/Card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/Card";
 import {
   Table,
   TableBody,
@@ -39,12 +33,8 @@ export default function LatestResults({
     indirect: { url: string; reason: string | null }[];
   };
 }) {
-  const directUrls = new Set(
-    classifications.direct.map((c) => normalizeURL(c.url)),
-  );
-  const indirectUrls = new Set(
-    classifications.indirect.map((c) => normalizeURL(c.url)),
-  );
+  const directUrls = new Set(classifications.direct.map((c) => normalizeURL(c.url)));
+  const indirectUrls = new Set(classifications.indirect.map((c) => normalizeURL(c.url)));
 
   return (
     <Card>
@@ -60,20 +50,14 @@ export default function LatestResults({
             <TableRow>
               <TableHead className="text-foreground font-bold">Group</TableHead>
               <TableHead className="text-foreground font-bold">Query</TableHead>
-              <TableHead className="text-foreground text-right font-bold">
-                Citations
-              </TableHead>
-              <TableHead className="text-foreground text-right font-bold">
-                Date
-              </TableHead>
+              <TableHead className="text-foreground text-right font-bold">Citations</TableHead>
+              <TableHead className="text-foreground text-right font-bold">Date</TableHead>
               <TableHead />
             </TableRow>
           </TableHeader>
           <TableBody>
             {queries.map((query) => {
-              const hasDirect = query.citations.some((c) =>
-                directUrls.has(normalizeURL(c.url)),
-              );
+              const hasDirect = query.citations.some((c) => directUrls.has(normalizeURL(c.url)));
               const hasIndirect = query.citations.some((c) =>
                 indirectUrls.has(normalizeURL(c.url)),
               );
@@ -83,17 +67,11 @@ export default function LatestResults({
                   key={query.id}
                   className={twMerge(
                     hasDirect && "bg-green-100 hover:bg-green-100/80",
-                    !hasDirect &&
-                      hasIndirect &&
-                      "bg-blue-50 hover:bg-blue-50/80",
+                    !hasDirect && hasIndirect && "bg-blue-50 hover:bg-blue-50/80",
                   )}
                 >
-                  <TableCell className="text-foreground/60 text-xs">
-                    {query.group}
-                  </TableCell>
-                  <TableCell className="max-w-xs truncate">
-                    {query.query}
-                  </TableCell>
+                  <TableCell className="text-foreground/60 text-xs">{query.group}</TableCell>
+                  <TableCell className="max-w-xs truncate">{query.query}</TableCell>
                   <TableCell className="text-right">
                     {citationCounts(
                       query.citations.map((c) => c.url),
@@ -119,11 +97,7 @@ export default function LatestResults({
   );
 }
 
-function citationCounts(
-  citations: string[],
-  directUrls: Set<string>,
-  indirectUrls: Set<string>,
-) {
+function citationCounts(citations: string[], directUrls: Set<string>, indirectUrls: Set<string>) {
   let direct = 0;
   let indirect = 0;
 

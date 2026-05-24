@@ -15,8 +15,8 @@ export default function AboutCTA() {
           Start monitoring your citations
         </h2>
         <p className="mb-8 text-xl leading-relaxed font-medium text-black">
-          Find out if AI platforms are citing your domain — and track whether
-          that's improving over time.
+          Find out if AI platforms are citing your domain — and track whether that's improving over
+          time.
         </p>
         <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
           <ActiveLink variant="button" to="/sign-up" bg="yellow" size="xl">

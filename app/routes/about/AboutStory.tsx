@@ -9,28 +9,23 @@ export default function AboutStory() {
             <LightbulbIcon className="h-6 w-6" />
           </div>
           <div>
-            <h2 className="mb-4 text-3xl leading-tight font-bold text-black">
-              Our Story
-            </h2>
+            <h2 className="mb-4 text-3xl leading-tight font-bold text-black">Our Story</h2>
             <div className="flex flex-col gap-4 text-lg leading-relaxed font-medium text-black">
               <p>
-                Cite.me.in started with a question we couldn't answer: when
-                someone asks Claude or ChatGPT about our space, do they mention
-                us? The answer mattered — AI platforms are increasingly where
-                people discover products and services — but there was no easy
-                way to find out.
+                Cite.me.in started with a question we couldn't answer: when someone asks Claude or
+                ChatGPT about our space, do they mention us? The answer mattered — AI platforms are
+                increasingly where people discover products and services — but there was no easy way
+                to find out.
               </p>
               <p>
-                In 2026, we built the tool we needed: run your search queries
-                across every major AI platform, record exactly which URLs appear
-                in responses, and show you the trend over time. No guessing, no
-                manual spot-checking.
+                In 2026, we built the tool we needed: run your search queries across every major AI
+                platform, record exactly which URLs appear in responses, and show you the trend over
+                time. No guessing, no manual spot-checking.
               </p>
               <p>
-                It worked better than expected. We spent nothing on ads, yet 12%
-                of visitors converted. That's when we knew this wasn't just a
-                side project — we turned it into Cite.me.in so other brands
-                could see the same clarity.
+                It worked better than expected. We spent nothing on ads, yet 12% of visitors
+                converted. That's when we knew this wasn't just a side project — we turned it into
+                Cite.me.in so other brands could see the same clarity.
               </p>
             </div>
           </div>

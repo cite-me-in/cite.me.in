@@ -19,9 +19,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/Dialog";
-import buildPrompt from "~/lib/aiLegibility/buildPrompt";
 import CATEGORIES from "~/lib/aiLegibility/checkDetails";
 import type { CheckResult, ScanResult } from "~/lib/aiLegibility/types";
+import useCopyPrompt from "~/lib/aiLegibility/useCopyPrompt";
 
 export default function ScanResults({
   result,
@@ -179,15 +179,8 @@ function UpgradeCard({ user }: { user: unknown }) {
 }
 
 function ImproveSiteModal({ failedChecks }: { failedChecks: CheckResult[] }) {
-  const allPrompts = failedChecks.map(buildPrompt).join("\n\n---\n\n");
+  const { allPrompts, copied, copy } = useCopyPrompt(failedChecks);
   const [open, setOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
-
-  const handleCopyAll = async () => {
-    await navigator.clipboard.writeText(allPrompts);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -225,7 +218,7 @@ function ImproveSiteModal({ failedChecks }: { failedChecks: CheckResult[] }) {
               {failedChecks.length > 1 ? "s" : ""} to fix
             </span>
             <button
-              onClick={handleCopyAll}
+              onClick={copy}
               className="rounded-base inline-flex items-center gap-2 border-2 border-black bg-amber-400 px-6 py-3 font-bold shadow-[3px_3px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_black]"
             >
               {copied ? (
@@ -349,17 +342,13 @@ function QuickWinCard({ failedChecks }: { failedChecks: CheckResult[] }) {
       ? c
       : best;
   }, null);
-  const [copied, setCopied] = useState(false);
+  const {
+    allPrompts: prompt,
+    copied,
+    copy,
+  } = useCopyPrompt(quickWin?.detail ? [quickWin] : []);
 
   if (!quickWin?.detail) return null;
-
-  const prompt = buildPrompt(quickWin);
-
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(prompt);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   return (
     <div className="rounded-base border-2 border-emerald-500 bg-emerald-50 p-5 shadow-[4px_4px_0px_0px_#059669]">
@@ -395,7 +384,7 @@ function QuickWinCard({ failedChecks }: { failedChecks: CheckResult[] }) {
           Cursor, Copilot, Codex) — it will fix the code in minutes.
         </span>
         <button
-          onClick={handleCopy}
+          onClick={copy}
           className="rounded-base inline-flex shrink-0 items-center gap-2 border-2 border-emerald-600 bg-emerald-400 px-4 py-2 font-bold shadow-[3px_3px_0px_0px_#059669] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_0px_#059669]"
         >
           {copied ? (

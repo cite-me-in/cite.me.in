@@ -54,9 +54,7 @@ describe("create_site", () => {
       };
       expect(content.id).toBeDefined();
       expect(content.domain).toBe(NEW_DOMAIN);
-      expect(content.createdAt).toMatch(
-        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,
-      );
+      expect(content.createdAt).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
       expect(content.message).toContain("created");
     });
   });

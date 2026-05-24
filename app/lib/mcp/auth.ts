@@ -1,8 +1,6 @@
 import prisma from "~/lib/prisma.server";
 
-export async function verifyBearerToken(
-  token: string | undefined,
-): Promise<string> {
+export async function verifyBearerToken(token: string | undefined): Promise<string> {
   if (!token) throw new Error("Missing token");
   const accessToken = await prisma.oAuthAccessToken.findUnique({
     where: { token },

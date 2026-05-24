@@ -1,5 +1,5 @@
 import { data } from "react-router";
-import { createAccessToken } from "~/lib/oauth/server";
+import { authenticateClient, createAccessToken } from "~/lib/oauth/server";
 import prisma from "~/lib/prisma.server";
 import type { Route } from "./+types/oauth.device.token";
 
@@ -13,13 +13,7 @@ export async function action({ request }: Route.ActionArgs) {
   if (grantType !== "urn:ietf:params:oauth:grant-type:device_code")
     throw data({ error: "unsupported_grant_type" }, { status: 400 });
 
-  const client = await prisma.oAuthClient.findUnique({
-    where: { clientId },
-    select: { id: true, clientSecret: true },
-  });
-
-  if (!client || client.clientSecret !== clientSecret)
-    throw data({ error: "invalid_client" }, { status: 401 });
+  const client = await authenticateClient(clientId, clientSecret);
 
   const storedDeviceCode = await prisma.oAuthDeviceCode.findUnique({
     where: { code: deviceCode },
@@ -45,8 +39,7 @@ export async function action({ request }: Route.ActionArgs) {
     throw data({ error: "expired_token" }, { status: 400 });
   }
 
-  if (!storedDeviceCode.userId)
-    throw data({ error: "authorization_pending" }, { status: 400 });
+  if (!storedDeviceCode.userId) throw data({ error: "authorization_pending" }, { status: 400 });
 
   await prisma.oAuthDeviceCode.delete({ where: { code: deviceCode } });
 

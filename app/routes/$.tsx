@@ -3,10 +3,7 @@ import Main from "~/components/ui/Main";
 import type { Route } from "./+types/$";
 
 export function meta(): Route.MetaDescriptors {
-  return [
-    { title: "404 — Page not found" },
-    { name: "description", content: "Page not found" },
-  ];
+  return [{ title: "404 — Page not found" }, { name: "description", content: "Page not found" }];
 }
 
 export default function FourOhFour() {

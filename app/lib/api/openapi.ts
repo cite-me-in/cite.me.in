@@ -6,42 +6,28 @@ export const UserSchema = z.object({
   email: z.email().describe("The email address of the user"),
   plan: z
     .enum(["trial", "paid", "gratis", "cancelled"])
-    .describe(
-      "The plan of the user e.g. `trial`, `paid`, `gratis`, `cancelled`",
-    ),
+    .describe("The plan of the user e.g. `trial`, `paid`, `gratis`, `cancelled`"),
   sites: z.array(
     z.object({
       domain: z.string().describe("The domain of the site e.g. `example.com`"),
-      summary: z
-        .string()
-        .describe("The summary of the site e.g. `This product is fantastic`"),
-      createdAt: z.iso
-        .date()
-        .describe("The date the site was created e.g. `2024-01-01`"),
+      summary: z.string().describe("The summary of the site e.g. `This product is fantastic`"),
+      createdAt: z.iso.date().describe("The date the site was created e.g. `2024-01-01`"),
     }),
   ),
 });
 
 export const SiteSchema = z.object({
-  createdAt: z.iso
-    .date()
-    .describe("The date the site was created e.g. `2024-01-01`"),
+  createdAt: z.iso.date().describe("The date the site was created e.g. `2024-01-01`"),
   domain: z.string().describe("The domain of the site e.g. `example.com`"),
-  summary: z
-    .string()
-    .describe("The summary of the site e.g. `This product is fantastic`"),
+  summary: z.string().describe("The summary of the site e.g. `This product is fantastic`"),
   users: z.array(
     z
       .object({
         id: z.string().describe("The ID of the user"),
-        email: z
-          .email()
-          .describe("The email address of the user e.g. `user@example.com`"),
+        email: z.email().describe("The email address of the user e.g. `user@example.com`"),
         role: z
           .enum(["owner", "member"])
-          .describe(
-            "The role of the user on the site e.g. `owner` or `member`",
-          ),
+          .describe("The role of the user on the site e.g. `owner` or `member`"),
       })
       .describe("The users of the site"),
   ),
@@ -77,15 +63,9 @@ export const SiteMetricsSchema = z.object({
 export const SiteQueriesSchema = z.object({
   platforms: z.array(
     z.object({
-      model: z
-        .string()
-        .describe("The model used for the queries e.g. `gpt-5-chat-latest`"),
-      onDate: z.iso
-        .date()
-        .describe("The date these queries were inspected e.g. `2024-01-01`"),
-      platform: z
-        .string()
-        .describe("The platform used for the queries e.g. `chatgpt`"),
+      model: z.string().describe("The model used for the queries e.g. `gpt-5-chat-latest`"),
+      onDate: z.iso.date().describe("The date these queries were inspected e.g. `2024-01-01`"),
+      platform: z.string().describe("The platform used for the queries e.g. `chatgpt`"),
       queries: z.array(
         z.object({
           citations: z
@@ -98,35 +78,22 @@ export const SiteQueriesSchema = z.object({
                   .describe(
                     "Classification: direct=your domain, indirect=related content, unrelated=not relevant",
                   ),
-                reason: z
-                  .string()
-                  .optional()
-                  .describe("Explanation of the classification"),
+                reason: z.string().optional().describe("Explanation of the classification"),
               }),
             )
-            .describe(
-              "The citations in the query response with classification",
-            ),
-          group: z
-            .string()
-            .describe("The group this query belongs to e.g. `1. discovery`"),
+            .describe("The citations in the query response with classification"),
+          group: z.string().describe("The group this query belongs to e.g. `1. discovery`"),
 
           query: z
             .string()
-            .describe(
-              'The query itself e.g. `"What are the best retail platforms?"`',
-            ),
-          response: z
-            .string()
-            .describe("The complete response from the LLM to this query"),
+            .describe('The query itself e.g. `"What are the best retail platforms?"`'),
+          response: z.string().describe("The complete response from the LLM to this query"),
         }),
       ),
       sentiment: z.object({
         label: z
           .enum(["positive", "negative", "neutral", "mixed"])
-          .describe(
-            "The overall sentiment e.g. `positive`, `negative`, `neutral`, `mixed`",
-          ),
+          .describe("The overall sentiment e.g. `positive`, `negative`, `neutral`, `mixed`"),
         summary: z
           .string()
           .describe(
@@ -186,8 +153,7 @@ export function generateOpenApiSpec(): ReturnType<typeof createDocument> {
           security: [{ BearerAuth: [] }],
           parameters: [
             {
-              description:
-                "The ID of the user to get details for e.g. `clxyz123abc`",
+              description: "The ID of the user to get details for e.g. `clxyz123abc`",
               in: "path",
               name: "id",
               required: true,
@@ -215,8 +181,7 @@ export function generateOpenApiSpec(): ReturnType<typeof createDocument> {
           security: [{ BearerAuth: [] }],
           parameters: [
             {
-              description:
-                "The domain of the site to get queries for e.g. `example.com`",
+              description: "The domain of the site to get queries for e.g. `example.com`",
               in: "path",
               name: "domain",
               required: true,
@@ -244,8 +209,7 @@ export function generateOpenApiSpec(): ReturnType<typeof createDocument> {
           security: [{ BearerAuth: [] }],
           parameters: [
             {
-              description:
-                "The domain of the site to get metrics for e.g. `example.com`",
+              description: "The domain of the site to get metrics for e.g. `example.com`",
               in: "path",
               name: "domain",
               required: true,
@@ -272,8 +236,7 @@ export function generateOpenApiSpec(): ReturnType<typeof createDocument> {
           security: [{ BearerAuth: [] }],
           parameters: [
             {
-              description:
-                "The domain of the site to get queries for e.g. `example.com`",
+              description: "The domain of the site to get queries for e.g. `example.com`",
               in: "path",
               name: "domain",
               required: true,

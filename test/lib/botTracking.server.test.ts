@@ -54,9 +54,7 @@ describe("trackBotVisit", () => {
 
   it("should track a known bot by type", async () => {
     await recordBotVisit(
-      await makeRequest(
-        "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
-      ),
+      await makeRequest("Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"),
     );
     const last = await prisma.botVisit.findFirstOrThrow();
     expect(last.botType).toBe("Google");
@@ -70,10 +68,7 @@ describe("trackBotVisit", () => {
 
   it("should record domain and path from request URL", async () => {
     await recordBotVisit(
-      await makeRequest(
-        "Googlebot/2.1",
-        new URL("/blog/post", envVars.VITE_APP_URL).toString(),
-      ),
+      await makeRequest("Googlebot/2.1", new URL("/blog/post", envVars.VITE_APP_URL).toString()),
     );
     const last = await prisma.botVisit.findFirstOrThrow();
     expect(last.path).toBe("/blog/post");

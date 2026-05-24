@@ -13,9 +13,7 @@ import type {
  * @param spec - The OpenAPI spec to generate documentation for.
  * @returns The generated Markdown documentation as a string
  */
-export function generateApiDocsMarkdown(
-  spec: ReturnType<typeof createDocument>,
-): string {
+export function generateApiDocsMarkdown(spec: ReturnType<typeof createDocument>): string {
   if (!spec.servers) return "";
   const baseUrl = spec.servers[0]?.url;
   const sections: string[] = [];
@@ -50,8 +48,7 @@ Retrieve your API key from your [profile page](/profile).`);
     if (queryTable) parts.push(queryTable);
 
     const okResponse = op.responses?.["200"] as ZodOpenApiResponseObject;
-    const schema = okResponse?.content?.["application/json"]
-      ?.schema as ZodOpenApiSchemaObject;
+    const schema = okResponse?.content?.["application/json"]?.schema as ZodOpenApiSchemaObject;
     if (schema) {
       parts.push("#### Response: 200");
       parts.push(responseTable(schema));
@@ -74,12 +71,8 @@ Retrieve your API key from your [profile page](/profile).`);
  * @param params - The path parameters to generate the table from.
  * @returns The generated Markdown table of path parameters as a string.
  */
-function pathParamsTable(
-  params: (ZodOpenApiParameterObject | ZodOpenApiHeaderObject)[],
-): string {
-  const pathParams = params.filter(
-    (param) => "in" in param && param.in === "path",
-  );
+function pathParamsTable(params: (ZodOpenApiParameterObject | ZodOpenApiHeaderObject)[]): string {
+  const pathParams = params.filter((param) => "in" in param && param.in === "path");
   if (!pathParams.length) return "";
 
   const lines = [
@@ -91,9 +84,7 @@ function pathParamsTable(
     if ("name" in param)
       lines.push(
         `| \`${new String(param.name).toString()}\` | \`${
-          param.schema && "type" in param.schema
-            ? (param.schema.type as string)
-            : "string"
+          param.schema && "type" in param.schema ? (param.schema.type as string) : "string"
         }\` | ${param.description ?? ""} |`,
       );
   }
@@ -106,12 +97,8 @@ function pathParamsTable(
  * @param params - The query parameters to generate the table from.
  * @returns The generated Markdown table of query parameters as a string.
  */
-function queryParamsTable(
-  params: (ZodOpenApiParameterObject | ZodOpenApiHeaderObject)[],
-): string {
-  const queryParams = params.filter(
-    (param) => "in" in param && param.in === "query",
-  );
+function queryParamsTable(params: (ZodOpenApiParameterObject | ZodOpenApiHeaderObject)[]): string {
+  const queryParams = params.filter((param) => "in" in param && param.in === "query");
   if (!queryParams.length) return "";
   const lines = [
     "#### Query Parameters",
@@ -122,9 +109,7 @@ function queryParamsTable(
     if ("name" in param)
       lines.push(
         `| \`${param.name}\` | \`${
-          param.schema && "type" in param.schema
-            ? param.schema.type?.toString()
-            : "string"
+          param.schema && "type" in param.schema ? param.schema.type?.toString() : "string"
         }\` | ${param.required ? "Yes" : "No"} | ${param.description ?? ""} |`,
       );
   }
@@ -139,9 +124,7 @@ function queryParamsTable(
  */
 function responseTable(schema: ZodOpenApiSchemaObject): string {
   const properties =
-    "properties" in schema && schema.properties
-      ? Object.entries(schema.properties)
-      : [];
+    "properties" in schema && schema.properties ? Object.entries(schema.properties) : [];
   if (!properties.length) return "";
 
   const lines = ["| Field | Type | Description |", "| --- | --- | --- |"];
@@ -171,26 +154,15 @@ function addSchemaProperty({
   prop: ZodOpenApiSchemaObject;
 }) {
   const type = "type" in prop ? (prop.type as string) : "unknown";
-  if (
-    type === "array" &&
-    "items" in prop &&
-    prop.items &&
-    "properties" in prop.items
-  ) {
+  if (type === "array" && "items" in prop && prop.items && "properties" in prop.items) {
     const properties = prop.items.properties ?? {};
     const thisParent = `${parent ?? ""}${name}[].`;
-    for (const [name, prop] of alphabetical(
-      Object.entries(properties),
-      ([n]) => n,
-    ))
+    for (const [name, prop] of alphabetical(Object.entries(properties), ([n]) => n))
       addSchemaProperty({ name, prop, lines, parent: thisParent });
   } else if (type === "object" && "properties" in prop && prop.properties) {
     const properties = prop.properties;
     const thisParent = `${parent ?? ""}${name}.`;
-    for (const [name, prop] of alphabetical(
-      Object.entries(properties),
-      ([n]) => n,
-    ))
+    for (const [name, prop] of alphabetical(Object.entries(properties), ([n]) => n))
       addSchemaProperty({ name, prop, lines, parent: thisParent });
   } else {
     lines.push(
@@ -207,9 +179,7 @@ function addSchemaProperty({
  * @param responses - The status codes and descriptions to generate the table for.
  * @returns The generated Markdown table of status codes and descriptions as a string.
  */
-function statusCodesTable(
-  responses: Record<string, ZodOpenApiResponseObject>,
-): string {
+function statusCodesTable(responses: Record<string, ZodOpenApiResponseObject>): string {
   const lines = ["#### Status Codes", "| Code | Meaning |", "| --- | --- |"];
   for (const [code, resp] of Object.entries(responses))
     lines.push(`| ${code} | ${resp.description ?? ""} |`);
@@ -224,9 +194,7 @@ function statusCodesTable(
  * @returns The generated fetch example as a string.
  */
 function fetchExample(baseUrl: string, path: string): string {
-  const url =
-    baseUrl +
-    path.replace("{domain}", "example.com").replace("{runId}", "clxyz456");
+  const url = baseUrl + path.replace("{domain}", "example.com").replace("{runId}", "clxyz456");
 
   const hasQuery = path.includes("/runs") && !path.includes("{runId}");
   const fullUrl = hasQuery ? `${url}?since=2024-01-01T00:00:00.000Z` : url;

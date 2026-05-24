@@ -1,6 +1,4 @@
-import Perplexity, {
-  APIError as PerplexityAPIError,
-} from "@perplexity-ai/perplexity_ai";
+import Perplexity, { APIError as PerplexityAPIError } from "@perplexity-ai/perplexity_ai";
 import envVars from "~/lib/envVars.server";
 import { InsufficientCreditError } from "./insufficientCreditError";
 import type { QueryFn } from "./queryFn";
@@ -36,9 +34,7 @@ export default async function queryPerplexity({
     const text = response.results
       .map((result) => `[${result.title}](${result.url})\n\n${result.snippet}`)
       .join("\n\n");
-    const citations = response.results
-      .map((result) => result.url)
-      .filter(Boolean);
+    const citations = response.results.map((result) => result.url).filter(Boolean);
 
     return {
       citations,
@@ -50,10 +46,7 @@ export default async function queryPerplexity({
       },
     };
   } catch (error) {
-    if (
-      error instanceof PerplexityAPIError &&
-      (error.status === 402 || error.status === 429)
-    )
+    if (error instanceof PerplexityAPIError && (error.status === 402 || error.status === 429))
       throw new InsufficientCreditError("perplexity", error.status);
     throw error;
   }

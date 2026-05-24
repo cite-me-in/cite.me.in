@@ -28,9 +28,7 @@ export default async function checkCitingPages({
   });
 
   return await parallel({ limit: 10 }, pages, async (page) => {
-    const { statusCode, contentHash, isHealthy } = await checkCitingPageHealth(
-      page.url,
-    );
+    const { statusCode, contentHash, isHealthy } = await checkCitingPageHealth(page.url);
 
     await prisma.citingPage.update({
       where: { id: page.id },

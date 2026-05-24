@@ -37,8 +37,7 @@ export default function LoadingImage({
     <figure
       className={twMerge("w-full overflow-hidden", figureClassName)}
       style={{
-        background:
-          "repeating-linear-gradient(135deg, #e5e7eb 0 24px, #fff 24px 48px)",
+        background: "repeating-linear-gradient(135deg, #e5e7eb 0 24px, #fff 24px 48px)",
         maxHeight,
         minHeight,
       }}

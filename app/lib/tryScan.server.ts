@@ -108,8 +108,7 @@ async function runScan(domain: string) {
     await redis.setex(statusKey(lower), TTL, "complete");
     redis.disconnect();
   } catch (err) {
-    const message =
-      err instanceof Error ? err.message : "Scan failed. Try again.";
+    const message = err instanceof Error ? err.message : "Scan failed. Try again.";
     const redis = getRedis();
     await redis.setex(errorKey(lower), TTL, message);
     await redis.setex(statusKey(lower), TTL, "error");

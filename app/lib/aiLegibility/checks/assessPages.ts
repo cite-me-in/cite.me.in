@@ -13,11 +13,7 @@ type AssessedPage = {
   error?: string;
 };
 
-export default async function assessPages({
-  urls,
-}: {
-  urls: string[];
-}): Promise<AssessedPage[]> {
+export default async function assessPages({ urls }: { urls: string[] }): Promise<AssessedPage[]> {
   return await map(urls, async (url) => {
     try {
       const response = await fetch(url, {
@@ -58,9 +54,7 @@ export default async function assessPages({
 
       if (!content.useful) {
         const signals =
-          content.usefulnessSignals.length > 0
-            ? `: ${content.usefulnessSignals.join(", ")}`
-            : "";
+          content.usefulnessSignals.length > 0 ? `: ${content.usefulnessSignals.join(", ")}` : "";
         return {
           url,
           html,
@@ -105,11 +99,8 @@ export default async function assessPages({
           message: "Timed out (10s limit)",
         };
 
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
-      const isDnsError =
-        errorMessage.includes("ENOTFOUND") ||
-        errorMessage.includes("EAI_AGAIN");
+      const errorMessage = error instanceof Error ? error.message : "Unknown error";
+      const isDnsError = errorMessage.includes("ENOTFOUND") || errorMessage.includes("EAI_AGAIN");
       return {
         url,
         html: "",

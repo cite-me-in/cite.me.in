@@ -147,9 +147,7 @@ export async function createSite(
     if (!res.ok && res.status !== 405) throw new Error(`HTTP ${res.status}`);
   } catch (error) {
     if (error instanceof Error && error.message.startsWith("HTTP "))
-      throw new Error(
-        `Could not reach ${domain} (${error.message}). Check the URL.`,
-      );
+      throw new Error(`Could not reach ${domain} (${error.message}). Check the URL.`);
     throw new Error(`Could not reach ${domain}. Check the URL and try again.`);
   }
 
@@ -217,11 +215,7 @@ export default async function sendSiteSetupEmail({
   await sendEmail({
     canUnsubscribe: false,
     render: ({ subject }) => (
-      <SiteSetupComplete
-        subject={subject}
-        domain={domain}
-        citationsUrl={citationsUrl}
-      />
+      <SiteSetupComplete subject={subject} domain={domain} citationsUrl={citationsUrl} />
     ),
     subject: `${domain} is set up on cite.me.in`,
     user,
@@ -244,9 +238,8 @@ function SiteSetupComplete({
       </Text>
 
       <Text className="my-4 text-base text-text leading-relaxed">
-        We've crawled your site, generated search queries, and checked how
-        ChatGPT, Claude, Perplexity, and Gemini cite you. Your results are
-        ready.
+        We've crawled your site, generated search queries, and checked how ChatGPT, Claude,
+        Perplexity, and Gemini cite you. Your results are ready.
       </Text>
 
       <Section className="my-8 text-center">
@@ -341,8 +334,7 @@ const PLATFORMS: {
 ];
 
 export async function action({ request, params }: Route.ActionArgs) {
-  if (request.method !== "POST")
-    throw new Response("Method not allowed", { status: 405 });
+  if (request.method !== "POST") throw new Response("Method not allowed", { status: 405 });
 
   const { site, user } = await requireSiteAccess({
     domain: params.domain,
@@ -351,8 +343,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 
   // Idempotency: don't start a second pipeline if one is running or done.
   const current = await getStatus(site.id, user.id);
-  if (current === "running" || current === "complete")
-    return new Response(null, { status: 204 });
+  if (current === "running" || current === "complete") return new Response(null, { status: 204 });
 
   await setStatus(site.id, user.id, "running");
 
@@ -380,8 +371,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     // Phase 3: Generate queries
     await log("Generating queries...");
     const suggestions = await generateSiteQueries(site);
-    for (const { group, query } of suggestions)
-      await log(`  [${group}] ${query}`);
+    for (const { group, query } of suggestions) await log(`  [${group}] ${query}`);
 
     // Phase 4: Save queries to DB
     const queries = suggestions.filter((q) => q.query.trim());
@@ -605,11 +595,8 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
     if (done) return;
     const id = setInterval(async () => {
       try {
-        const res = await fetch(
-          `/site/${domain}/setup/status?offset=${offsetRef.current}`,
-        );
-        const data: { lines: string[]; done: boolean; nextOffset: number } =
-          await res.json();
+        const res = await fetch(`/site/${domain}/setup/status?offset=${offsetRef.current}`);
+        const data: { lines: string[]; done: boolean; nextOffset: number } = await res.json();
         if (data.lines.length > 0) {
           setLines((prev) => [...prev, ...data.lines]);
           offsetRef.current = data.nextOffset;
@@ -633,10 +620,7 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
   // Redirect to citations after pipeline completes.
   useEffect(() => {
     if (!done) return;
-    const timer = setTimeout(
-      () => navigate(`/site/${domain}/citations`),
-      2_000,
-    );
+    const timer = setTimeout(() => navigate(`/site/${domain}/citations`), 2_000);
     return () => clearTimeout(timer);
   }, [done, domain, navigate]);
 
@@ -655,11 +639,7 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             {!done && !error && <Spinner />}
-            {done
-              ? "Setup complete"
-              : error
-                ? "Something went wrong"
-                : "Running…"}
+            {done ? "Setup complete" : error ? "Something went wrong" : "Running…"}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -667,16 +647,12 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
             ref={logRef}
             className="h-96 overflow-y-auto rounded border border-border bg-muted p-4 font-mono text-sm leading-relaxed"
           >
-            {lines.length === 0 && !done && (
-              <span className="text-foreground/40">Starting…</span>
-            )}
+            {lines.length === 0 && !done && <span className="text-foreground/40">Starting…</span>}
             {lines.map((line, i) => (
               <div key={i}>{line}</div>
             ))}
             {done && (
-              <div className="mt-2 font-semibold text-green-700">
-                ✓ Redirecting to citations…
-              </div>
+              <div className="mt-2 font-semibold text-green-700">✓ Redirecting to citations…</div>
             )}
           </pre>
         </CardContent>

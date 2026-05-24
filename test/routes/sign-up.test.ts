@@ -10,48 +10,28 @@ const EXISTING_EMAIL = "sign-up-existing@example.com";
 describe("sign-up route", () => {
   it("should show the sign-up form", async () => {
     const page = await goto("/sign-up");
-    await expect(
-      page.getByRole("textbox", { name: "Email", exact: true }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("textbox", { name: "Password", exact: true }),
-    ).toBeVisible();
+    await expect(page.getByRole("textbox", { name: "Email", exact: true })).toBeVisible();
+    await expect(page.getByRole("textbox", { name: "Password", exact: true })).toBeVisible();
     await expect(
       page.getByRole("textbox", { name: "Confirm password", exact: true }),
     ).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "Create account" }),
-    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "Create account" })).toBeVisible();
   });
 
   it("should show error when password is too short", async () => {
     const page = await goto("/sign-up");
-    await page
-      .getByRole("textbox", { name: "Email", exact: true })
-      .fill("newuser@example.com");
-    await page
-      .getByRole("textbox", { name: "Password", exact: true })
-      .fill("abc");
-    await page
-      .getByRole("textbox", { name: "Confirm password", exact: true })
-      .fill("abc");
+    await page.getByRole("textbox", { name: "Email", exact: true }).fill("newuser@example.com");
+    await page.getByRole("textbox", { name: "Password", exact: true }).fill("abc");
+    await page.getByRole("textbox", { name: "Confirm password", exact: true }).fill("abc");
     await page.getByRole("button", { name: "Create account" }).click();
-    await expect(
-      page.getByText("Password must be at least 6 characters"),
-    ).toBeVisible();
+    await expect(page.getByText("Password must be at least 6 characters")).toBeVisible();
   });
 
   it("should show error when passwords do not match", async () => {
     const page = await goto("/sign-up");
-    await page
-      .getByRole("textbox", { name: "Email", exact: true })
-      .fill("newuser@example.com");
-    await page
-      .getByRole("textbox", { name: "Password", exact: true })
-      .fill("password123");
-    await page
-      .getByRole("textbox", { name: "Confirm password", exact: true })
-      .fill("different");
+    await page.getByRole("textbox", { name: "Email", exact: true }).fill("newuser@example.com");
+    await page.getByRole("textbox", { name: "Password", exact: true }).fill("password123");
+    await page.getByRole("textbox", { name: "Confirm password", exact: true }).fill("different");
     await page.getByRole("button", { name: "Create account" }).click();
     await expect(page.getByText("Passwords do not match")).toBeVisible();
   });
@@ -66,19 +46,11 @@ describe("sign-up route", () => {
     });
 
     const page = await goto("/sign-up");
-    await page
-      .getByRole("textbox", { name: "Email", exact: true })
-      .fill(EXISTING_EMAIL);
-    await page
-      .getByRole("textbox", { name: "Password", exact: true })
-      .fill("password123");
-    await page
-      .getByRole("textbox", { name: "Confirm password", exact: true })
-      .fill("password123");
+    await page.getByRole("textbox", { name: "Email", exact: true }).fill(EXISTING_EMAIL);
+    await page.getByRole("textbox", { name: "Password", exact: true }).fill("password123");
+    await page.getByRole("textbox", { name: "Confirm password", exact: true }).fill("password123");
     await page.getByRole("button", { name: "Create account" }).click();
-    await expect(
-      page.getByText("An account with this email already exists"),
-    ).toBeVisible();
+    await expect(page.getByText("An account with this email already exists")).toBeVisible();
   });
 
   describe("valid sign-up", () => {
@@ -86,12 +58,8 @@ describe("sign-up route", () => {
 
     beforeAll(async () => {
       page = await goto("/sign-up");
-      await page
-        .getByRole("textbox", { name: "Email", exact: true })
-        .fill("brand-new@example.com");
-      await page
-        .getByRole("textbox", { name: "Password", exact: true })
-        .fill("password123");
+      await page.getByRole("textbox", { name: "Email", exact: true }).fill("brand-new@example.com");
+      await page.getByRole("textbox", { name: "Password", exact: true }).fill("password123");
       await page
         .getByRole("textbox", { name: "Confirm password", exact: true })
         .fill("password123");

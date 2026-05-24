@@ -9,8 +9,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/Dialog";
-import buildPrompt from "~/lib/aiLegibility/buildPrompt";
 import type { CheckResult } from "~/lib/aiLegibility/types";
+import useCopyPrompt from "~/lib/aiLegibility/useCopyPrompt";
 
 export default function ImproveScoreModal({
   failedChecks,
@@ -19,15 +19,8 @@ export default function ImproveScoreModal({
   size?: ButtonProps["size"];
   failedChecks: CheckResult[];
 }) {
-  const allPrompts = failedChecks.map(buildPrompt).join("\n\n---\n\n");
+  const { allPrompts, copied, copy } = useCopyPrompt(failedChecks);
   const [open, setOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
-
-  const handleCopyAll = async () => {
-    await navigator.clipboard.writeText(allPrompts);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -61,10 +54,7 @@ export default function ImproveScoreModal({
             {failedChecks.length} issue{failedChecks.length > 1 ? "s" : ""} to
             fix
           </span>
-          <Button
-            variant={copied ? "default" : "outline"}
-            onClick={handleCopyAll}
-          >
+          <Button variant={copied ? "default" : "outline"} onClick={copy}>
             {copied ? (
               <>
                 <CheckIcon className="size-4" />

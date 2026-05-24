@@ -4,10 +4,7 @@ import { setupServer } from "msw/node";
 
 const logger = debug("msw");
 
-const EXAMPLE_COM_RESPONSES: Record<
-  string,
-  { body: string; contentType: string }
-> = {
+const EXAMPLE_COM_RESPONSES: Record<string, { body: string; contentType: string }> = {
   "https://example.com": {
     body: `<!DOCTYPE html>
 <html>
@@ -117,12 +114,9 @@ const handlers = [
       }),
   ),
   http.get("https://acme.com/robots.txt", () =>
-    HttpResponse.text(
-      "User-agent: *\nDisallow: /admin/\nSitemap: https://acme.com/sitemap.xml\n",
-      {
-        headers: { "Content-Type": "text/plain" },
-      },
-    ),
+    HttpResponse.text("User-agent: *\nDisallow: /admin/\nSitemap: https://acme.com/sitemap.xml\n", {
+      headers: { "Content-Type": "text/plain" },
+    }),
   ),
   http.head(
     "https://acme.com/robots.txt",
@@ -177,35 +171,25 @@ const handlers = [
 
   // .md routes for acme.com
   http.get("https://acme.com.md", () =>
-    HttpResponse.text(
-      "# Acme Corp\n\nWelcome to Acme Corp. We build great software.",
-      {
-        headers: { "Content-Type": "text/markdown" },
-      },
-    ),
+    HttpResponse.text("# Acme Corp\n\nWelcome to Acme Corp. We build great software.", {
+      headers: { "Content-Type": "text/markdown" },
+    }),
   ),
   http.head(
     "https://acme.com.md",
-    () =>
-      new HttpResponse(null, { headers: { "Content-Type": "text/markdown" } }),
+    () => new HttpResponse(null, { headers: { "Content-Type": "text/markdown" } }),
   ),
   http.get("https://acme.com/index.md", () =>
-    HttpResponse.text(
-      "# Acme Corp\n\nWelcome to Acme Corp. We build great software.",
-      {
-        headers: { "Content-Type": "text/markdown" },
-      },
-    ),
+    HttpResponse.text("# Acme Corp\n\nWelcome to Acme Corp. We build great software.", {
+      headers: { "Content-Type": "text/markdown" },
+    }),
   ),
   http.head(
     "https://acme.com/index.md",
-    () =>
-      new HttpResponse(null, { headers: { "Content-Type": "text/markdown" } }),
+    () => new HttpResponse(null, { headers: { "Content-Type": "text/markdown" } }),
   ),
 
-  http.get("https://serpapi.com/search", () =>
-    HttpResponse.json({ organic_results: [] }),
-  ),
+  http.get("https://serpapi.com/search", () => HttpResponse.json({ organic_results: [] })),
 
   http.post("https://api.resend.com/emails", () => {
     throw new Error(
@@ -349,8 +333,7 @@ const handlers = [
   ),
 
   http.all(
-    ({ request }: { request: Request }) =>
-      new URL(request.url).hostname === "localhost",
+    ({ request }: { request: Request }) => new URL(request.url).hostname === "localhost",
     () => passthrough(), // Pass through to real server
   ),
 
@@ -382,28 +365,18 @@ msw.events
   .on("request:start", ({ request }: { request: Request }) =>
     logger("%s", request.method, request.url),
   )
-  .on(
-    "response:mocked",
-    ({ request, response }: { request: Request; response: Response }) => {
-      logger("%s %s => %s", request.method, request.url, response.status);
-    },
-  )
+  .on("response:mocked", ({ request, response }: { request: Request; response: Response }) => {
+    logger("%s %s => %s", request.method, request.url, response.status);
+  })
   .on("request:unhandled", ({ request }: { request: Request }) => {
     // Only log external requests that are being bypassed
     const url = new URL(request.url);
     if (url.hostname !== "localhost" && url.hostname !== "127.0.0.1") {
-      logger(
-        "Unhandled external request (bypassed): %s %s",
-        request.method,
-        request.url,
-      );
+      logger("Unhandled external request (bypassed): %s %s", request.method, request.url);
     }
   })
-  .on(
-    "unhandledException",
-    ({ request, error }: { request: Request; error: Error }) => {
-      debug("server:msw")("%s %s errored!", request.method, request.url, error);
-    },
-  );
+  .on("unhandledException", ({ request, error }: { request: Request; error: Error }) => {
+    debug("server:msw")("%s %s errored!", request.method, request.url, error);
+  });
 
 export default msw;

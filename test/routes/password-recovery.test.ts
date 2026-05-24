@@ -20,19 +20,13 @@ describe("password recovery route", () => {
 
   it("should show the recovery form", async () => {
     const page = await goto("/password-recovery");
-    await expect(
-      page.getByRole("textbox", { name: "Email", exact: true }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole("button", { name: "Send recovery link" }),
-    ).toBeVisible();
+    await expect(page.getByRole("textbox", { name: "Email", exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Send recovery link" })).toBeVisible();
   });
 
   it("should show confirmation for unknown email without creating a token", async () => {
     const page = await goto("/password-recovery");
-    await page
-      .getByRole("textbox", { name: "Email", exact: true })
-      .fill("nobody@example.com");
+    await page.getByRole("textbox", { name: "Email", exact: true }).fill("nobody@example.com");
     await page.getByRole("button", { name: "Send recovery link" }).click();
     await expect(page.getByText("Check your email")).toBeVisible();
     const count = await prisma.passwordRecoveryToken.count({

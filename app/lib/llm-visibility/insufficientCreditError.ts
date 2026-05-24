@@ -8,8 +8,6 @@ export class InsufficientCreditError extends Error {
   }
 }
 
-export function isInsufficientCreditError(
-  error: unknown,
-): error is InsufficientCreditError {
+export function isInsufficientCreditError(error: unknown): error is InsufficientCreditError {
   return error instanceof InsufficientCreditError;
 }

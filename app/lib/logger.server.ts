@@ -16,9 +16,7 @@ const colors = {
 };
 
 const logFile =
-  process.env.NODE_ENV === "test"
-    ? createWriteStream(resolve("server.log"), { flags: "a" })
-    : null;
+  process.env.NODE_ENV === "test" ? createWriteStream(resolve("server.log"), { flags: "a" }) : null;
 
 const logtail =
   process.env.NODE_ENV !== "test" &&
@@ -40,10 +38,7 @@ for (const level of ["debug", "error", "info", "log", "trace", "warn"]) {
   ) => void;
   const logtailFunction =
     logtail &&
-    (Reflect.get(logtail, level) as (
-      message: string,
-      ...metadata: unknown[]
-    ) => Promise<void>);
+    (Reflect.get(logtail, level) as (message: string, ...metadata: unknown[]) => Promise<void>);
   const colorCode = colors[level as keyof typeof colors];
 
   Reflect.set(console, level, (message: string, ...metadata: unknown[]) => {
@@ -51,21 +46,15 @@ for (const level of ["debug", "error", "info", "log", "trace", "warn"]) {
     if (logFile) logFile.write(`${formattedMessage}\n`);
 
     process.stdout.write(
-      isColorEnabled
-        ? `${colorCode(formattedMessage)}\n`
-        : `${formattedMessage}\n`,
+      isColorEnabled ? `${colorCode(formattedMessage)}\n` : `${formattedMessage}\n`,
     );
 
     try {
-      if (sentryFunction)
-        sentryFunction.call(sentry, formattedMessage, ...metadata);
+      if (sentryFunction) sentryFunction.call(sentry, formattedMessage, ...metadata);
       if (logtailFunction)
-        logtailFunction
-          .call(logtail, formattedMessage, ...metadata)
-          .catch(() => {});
+        logtailFunction.call(logtail, formattedMessage, ...metadata).catch(() => {});
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
       process.stderr.write(`${errorMessage}\n`);
     }
   });

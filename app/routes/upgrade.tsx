@@ -22,13 +22,10 @@ export async function action({ request }: Route.ActionArgs) {
   const { user } = await requireUserAccess(request);
   const form = await request.formData();
   const intervalValue = form.get("interval");
-  const interval =
-    typeof intervalValue === "string" ? intervalValue : "monthly";
+  const interval = typeof intervalValue === "string" ? intervalValue : "monthly";
 
   const priceId =
-    interval === "annual"
-      ? envVars.STRIPE_PRICE_ANNUAL_ID
-      : envVars.STRIPE_PRICE_MONTHLY_ID;
+    interval === "annual" ? envVars.STRIPE_PRICE_ANNUAL_ID : envVars.STRIPE_PRICE_MONTHLY_ID;
 
   const session = await getStripe().checkout.sessions.create({
     mode: "subscription",
@@ -51,18 +48,15 @@ export default function UpgradePage() {
       <div className="mx-auto max-w-lg py-16">
         <h1 className="font-heading mb-2 text-4xl">Upgrade to Pro</h1>
         <p className="text-foreground/70 mb-10">
-          25 days free, no credit card. Most tools give you a week — we give you
-          enough time to actually see results. When you're ready, $
-          {prices.monthlyAmount}/mo keeps it all running.
+          25 days free, no credit card. Most tools give you a week — we give you enough time to
+          actually see results. When you're ready, ${prices.monthlyAmount}/mo keeps it all running.
         </p>
 
         <div className="rounded-base mb-6 border-2 border-black p-8 shadow-[4px_4px_0px_0px_black]">
           <div className="mb-6 flex items-start justify-between">
             <div>
               <h2 className="font-heading text-2xl">Pro</h2>
-              <p className="text-foreground/60">
-                For founders building in public
-              </p>
+              <p className="text-foreground/60">For founders building in public</p>
             </div>
             <div className="text-right">
               <p className="font-heading text-3xl">
@@ -103,13 +97,11 @@ export default function UpgradePage() {
         </div>
 
         <p className="text-foreground/60 text-center text-sm">
-          cite.me.in is built by one person. Your ${prices.monthlyAmount}/mo is
-          what keeps it independent, updated, and not acquired by someone with
-          an alt product vision.
+          cite.me.in is built by one person. Your ${prices.monthlyAmount}/mo is what keeps it
+          independent, updated, and not acquired by someone with an alt product vision.
         </p>
         <p className="text-foreground/60 mt-2 text-center text-sm">
-          cite.me.in is open-source. If we ever shut down, you take the code and
-          run it yourself.
+          cite.me.in is open-source. If we ever shut down, you take the code and run it yourself.
         </p>
       </div>
     </Main>

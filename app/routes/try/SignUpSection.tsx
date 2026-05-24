@@ -4,13 +4,10 @@ export default function SignUpSection({ domain }: { domain: string }) {
   return (
     <section className="border-b-2 border-black bg-[hsl(47,100%,95%)] px-6 py-20">
       <div className="mx-auto max-w-3xl text-center">
-        <h2 className="mb-4 text-3xl font-bold md:text-4xl">
-          Turn this into weekly monitoring
-        </h2>
+        <h2 className="mb-4 text-3xl font-bold md:text-4xl">Turn this into weekly monitoring</h2>
         <p className="mb-10 text-lg font-medium text-black/70">
-          Create a free account. We'll add your site, run 9 queries across
-          ChatGPT, Claude, Gemini, Copilot, and Perplexity every week — so you
-          know exactly which fixes moved the needle.
+          Create a free account. We'll add your site, run 9 queries across ChatGPT, Claude, Gemini,
+          Copilot, and Perplexity every week — so you know exactly which fixes moved the needle.
         </p>
         <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <a

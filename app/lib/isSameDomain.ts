@@ -10,13 +10,7 @@
  * @param url - The URL to check, or a string URL.
  * @returns True if the URL is on the same domain or a subdomain.
  */
-export function isSameDomain({
-  domain,
-  url,
-}: {
-  domain: string;
-  url: string | URL;
-}): boolean {
+export function isSameDomain({ domain, url }: { domain: string; url: string | URL }): boolean {
   try {
     const { hostname } = url instanceof URL ? url : new URL(url);
     const normalizedHostname = hostname.toLowerCase();

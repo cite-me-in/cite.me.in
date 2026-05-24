@@ -22,10 +22,7 @@ describe("GET /api/openapi.json", () => {
   });
 
   it("should document BearerAuth security scheme", async () => {
-    invariant(
-      body.components?.securitySchemes,
-      "Security schemes are required",
-    );
+    invariant(body.components?.securitySchemes, "Security schemes are required");
     expect(body.components.securitySchemes.BearerAuth).toBeDefined();
     invariant(
       "scheme" in body.components.securitySchemes.BearerAuth,

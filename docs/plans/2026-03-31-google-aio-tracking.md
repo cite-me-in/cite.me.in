@@ -144,10 +144,7 @@ describe("fetchAioResults", () => {
       makeResponse([
         {
           type: "ai_overview",
-          references: [
-            { url: "https://example.com/page" },
-            { url: "https://other.com/" },
-          ],
+          references: [{ url: "https://example.com/page" }, { url: "https://other.com/" }],
         },
         { type: "organic", url: "https://example.com" },
       ]),
@@ -164,9 +161,7 @@ describe("fetchAioResults", () => {
   it("should return aioPresent=false and empty citations when no AIO block", async () => {
     global.fetch = vi
       .fn()
-      .mockResolvedValue(
-        makeResponse([{ type: "organic", url: "https://example.com" }]),
-      );
+      .mockResolvedValue(makeResponse([{ type: "organic", url: "https://example.com" }]));
 
     const result = await fetchAioResults("niche query with no AIO");
 
@@ -176,9 +171,7 @@ describe("fetchAioResults", () => {
   it("should return aioPresent=true and empty citations when AIO has no references", async () => {
     global.fetch = vi
       .fn()
-      .mockResolvedValue(
-        makeResponse([{ type: "ai_overview", references: [] }]),
-      );
+      .mockResolvedValue(makeResponse([{ type: "ai_overview", references: [] }]));
 
     const result = await fetchAioResults("query");
 
@@ -192,9 +185,7 @@ describe("fetchAioResults", () => {
       text: async () => "Unauthorized",
     } as Response);
 
-    await expect(fetchAioResults("query")).rejects.toThrow(
-      "DataForSEO error 401",
-    );
+    await expect(fetchAioResults("query")).rejects.toThrow("DataForSEO error 401");
   });
 });
 ```
@@ -214,15 +205,12 @@ Create `app/lib/serp/dataForSeo.server.ts`:
 ```ts
 import envVars from "~/lib/envVars.server";
 
-const ENDPOINT =
-  "https://api.dataforseo.com/v3/serp/google/organic/live/advanced";
+const ENDPOINT = "https://api.dataforseo.com/v3/serp/google/organic/live/advanced";
 
 export default async function fetchAioResults(
   keyword: string,
 ): Promise<{ aioPresent: boolean; citations: string[] }> {
-  const credentials = btoa(
-    `${envVars.DATAFORSEO_LOGIN}:${envVars.DATAFORSEO_PASSWORD}`,
-  );
+  const credentials = btoa(`${envVars.DATAFORSEO_LOGIN}:${envVars.DATAFORSEO_PASSWORD}`);
 
   const response = await fetch(ENDPOINT, {
     method: "POST",
@@ -230,9 +218,7 @@ export default async function fetchAioResults(
       Authorization: `Basic ${credentials}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify([
-      { keyword, location_code: 2840, language_code: "en", depth: 10 },
-    ]),
+    body: JSON.stringify([{ keyword, location_code: 2840, language_code: "en", depth: 10 }]),
   });
 
   if (!response.ok) {
@@ -342,10 +328,7 @@ describe("queryGoogleAio", () => {
 
     const [q1, q2] = run!.queries;
     expect(q1.aioPresent).toBe(true);
-    expect(q1.citations).toEqual([
-      "https://rentail.space/listings",
-      "https://other.com",
-    ]);
+    expect(q1.citations).toEqual(["https://rentail.space/listings", "https://other.com"]);
 
     expect(q2.aioPresent).toBe(false);
     expect(q2.citations).toEqual([]);
@@ -391,15 +374,9 @@ import fetchAioResults from "./dataForSeo.server";
 
 const logger = debug("server");
 
-export default async function queryGoogleAio(site: {
-  id: string;
-  domain: string;
-}): Promise<void> {
+export default async function queryGoogleAio(site: { id: string; domain: string }): Promise<void> {
   if (!envVars.DATAFORSEO_LOGIN || !envVars.DATAFORSEO_PASSWORD) {
-    logger(
-      "[%s:google-aio] Skipping — DATAFORSEO credentials not set",
-      site.id,
-    );
+    logger("[%s:google-aio] Skipping — DATAFORSEO credentials not set", site.id);
     return;
   }
 
@@ -428,9 +405,7 @@ export default async function queryGoogleAio(site: {
       }
 
       try {
-        const { aioPresent, citations } = await fetchAioResults(
-          siteQuery.query,
-        );
+        const { aioPresent, citations } = await fetchAioResults(siteQuery.query);
         await prisma.serpQuery.create({
           data: {
             runId: run.id,
@@ -501,11 +476,7 @@ await Promise.all([nextCitationRun(site), updateBotInsight(site)]);
 Change to:
 
 ```ts
-await Promise.all([
-  nextCitationRun(site),
-  updateBotInsight(site),
-  queryGoogleAio(site),
-]);
+await Promise.all([nextCitationRun(site), updateBotInsight(site), queryGoogleAio(site)]);
 ```
 
 **Step 2: Run typecheck**

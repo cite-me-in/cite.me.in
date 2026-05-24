@@ -149,9 +149,7 @@ describe("checkJsonLd", () => {
     });
 
     expect(result.passed).toBe(false);
-    expect(result.message).toContain(
-      "No JSON-LD found on https://acme.com/no-ld",
-    );
+    expect(result.message).toContain("No JSON-LD found on https://acme.com/no-ld");
   });
 
   it("should fail when any reviewed page has invalid JSON-LD", async () => {
@@ -172,9 +170,7 @@ describe("checkJsonLd", () => {
 
 describe("validateSchema", () => {
   it("returns null for NewsArticle with headline", () => {
-    expect(
-      validateSchema("NewsArticle", { headline: "Breaking News" }),
-    ).toBeNull();
+    expect(validateSchema("NewsArticle", { headline: "Breaking News" })).toBeNull();
   });
 
   it("returns error for NewsArticle missing headline/name", () => {
@@ -224,9 +220,7 @@ describe("validateSchema", () => {
   });
 
   it("returns null for BreadcrumbList with itemListElement", () => {
-    expect(
-      validateSchema("BreadcrumbList", { itemListElement: [] }),
-    ).toBeNull();
+    expect(validateSchema("BreadcrumbList", { itemListElement: [] })).toBeNull();
   });
 
   it("returns null for BreadcrumbList with itemList (alternative field)", () => {
@@ -234,9 +228,7 @@ describe("validateSchema", () => {
   });
 
   it("returns error for Product missing name", () => {
-    expect(validateSchema("Product", {})).toBe(
-      "Missing required field 'name' in Product schema",
-    );
+    expect(validateSchema("Product", {})).toBe("Missing required field 'name' in Product schema");
   });
 
   it("returns null for Product with name", () => {
@@ -244,9 +236,7 @@ describe("validateSchema", () => {
   });
 
   it("returns error for Person missing name", () => {
-    expect(validateSchema("Person", {})).toBe(
-      "Missing required field 'name' in Person schema",
-    );
+    expect(validateSchema("Person", {})).toBe("Missing required field 'name' in Person schema");
   });
 
   it("returns null for Person with name", () => {
@@ -264,9 +254,7 @@ describe("validateSchema", () => {
   });
 
   it("returns error for HowTo missing name", () => {
-    expect(validateSchema("HowTo", {})).toBe(
-      "Missing required field 'name' in HowTo schema",
-    );
+    expect(validateSchema("HowTo", {})).toBe("Missing required field 'name' in HowTo schema");
   });
 
   it("returns null for HowTo with name", () => {
