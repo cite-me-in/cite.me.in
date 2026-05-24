@@ -1,9 +1,11 @@
 import { redirect } from "react-router";
+
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
 import { requireSiteAccess, requireSiteOwner } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
 import { deleteSite } from "~/lib/sites.server";
+
 import type { Route } from "./+types/route";
 import MembersSection from "./MembersSection";
 import SiteContentButton from "./SiteContentButton";
@@ -71,7 +73,11 @@ export default function SiteSettingsPage({ loaderData }: Route.ComponentProps) {
       <SitePageHeader site={site} title="Settings" />
 
       <section className="space-y-8">
-        <SiteContentButton content={content} isOwner={isOwner} domain={site.domain} />
+        <SiteContentButton
+          content={content}
+          isOwner={isOwner}
+          domain={site.domain}
+        />
         <TrackingScript script={trackingScript} />
         <MembersSection site={site} isOwner={isOwner} />
       </section>

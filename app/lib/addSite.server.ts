@@ -1,4 +1,5 @@
 import invariant from "tiny-invariant";
+
 import sendSiteSetupEmail from "~/emails/SiteSetupComplete";
 import addSiteQueries from "~/lib/addSiteQueries";
 import runAILegibilityScan from "~/lib/aiLegibility/runAILegibilityScan";
@@ -55,7 +56,8 @@ export default async function addSite({
     // Phase 3: Generate queries
     await log("Generating queries...");
     const suggestions = await generateSiteQueries(site.id);
-    for (const { group, query } of suggestions) await log(`  [${group}] ${query}`);
+    for (const { group, query } of suggestions)
+      await log(`  [${group}] ${query}`);
 
     // Phase 4: Save queries to DB
     const queries = suggestions.filter((q) => q.query.trim());

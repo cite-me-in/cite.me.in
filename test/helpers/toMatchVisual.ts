@@ -3,9 +3,11 @@
 import { readdirSync, unlinkSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
+
 import { expect } from "@playwright/test";
 import type { Locator, Page } from "playwright";
 import { sleep } from "radashi";
+
 import { baseDir, getTestName } from "./shared";
 import "~/test/helpers/toMatchInnerHTML";
 import "~/test/helpers/toMatchScreenshot";
@@ -46,7 +48,10 @@ expect.extend({
 
     // Wait for the page to finish rendering/animations before capturing screenshots or HTML.
     // This can use Playwright's waitForLoadState and a small additional delay for UI transitions.
-    if ("waitForLoadState" in locator && typeof locator.waitForLoadState === "function") {
+    if (
+      "waitForLoadState" in locator &&
+      typeof locator.waitForLoadState === "function"
+    ) {
       await locator.waitForLoadState("networkidle");
       await locator.evaluate(() => document.fonts.ready);
     }
@@ -68,7 +73,8 @@ expect.extend({
       expect(locator).toMatchScreenshot({ name, ...options }),
       expect(locator).toMatchInnerHTML({ name, ...options }),
     ]);
-    if (screenshot.status === "rejected") throw new Error(screenshot.reason.message);
+    if (screenshot.status === "rejected")
+      throw new Error(screenshot.reason.message);
     if (html.status === "rejected") throw new Error(html.reason.message);
 
     return { message: () => "Visual matches baseline", pass: true };

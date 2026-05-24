@@ -1,5 +1,6 @@
 import { expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vitest";
+
 import prisma from "~/lib/prisma.server";
 import type { User } from "~/prisma";
 import { goto } from "~/test/helpers/launchBrowser";
@@ -22,9 +23,12 @@ const RESPONSE_TEXT =
 
 describe("unauthenticated access", () => {
   it("should redirect to /sign-in", async () => {
-    const response = await fetch(`http://localhost:${port}/site/${HOSTNAME}/citation/${QUERY_ID}`, {
-      redirect: "manual",
-    });
+    const response = await fetch(
+      `http://localhost:${port}/site/${HOSTNAME}/citation/${QUERY_ID}`,
+      {
+        redirect: "manual",
+      },
+    );
     expect(response.status).toBe(302);
     expect(response.headers.get("location")).toContain("/sign-in");
   });
@@ -87,7 +91,9 @@ describe("single citation page", () => {
     const ctx = await signIn(user.id);
     const page = await goto(`/site/${HOSTNAME}/citation/${QUERY_ID}`, ctx);
     await expect(page.getByText(`Q: ${QUERY_TEXT}`)).toBeVisible();
-    await expect(page.getByText(/chatgpt · gpt-4o · 1\. discovery/)).toBeVisible();
+    await expect(
+      page.getByText(/chatgpt · gpt-4o · 1\. discovery/),
+    ).toBeVisible();
   });
 
   it("should list all citations with same-domain highlighted", async () => {
@@ -108,7 +114,9 @@ describe("single citation page", () => {
     const ctx = await signIn(user.id);
     const page = await goto(`/site/${HOSTNAME}/citation/${QUERY_ID}`, ctx);
     await expect(page.getByText("gpt-4o")).toBeVisible();
-    await expect(page.getByText(/Short-term retail space in malls/)).toBeVisible();
+    await expect(
+      page.getByText(/Short-term retail space in malls/),
+    ).toBeVisible();
   });
 
   it("should match visually", async () => {

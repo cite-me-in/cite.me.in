@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { topCompetitors } from "~/routes/site.$domain_.citations/TopCompetitors";
 
 describe("topCompetitors", () => {
@@ -9,7 +10,10 @@ describe("topCompetitors", () => {
       { url: "https://other.com/b", domain: "other.com" },
     ];
     const { competitors } = topCompetitors(citations, "mysite.com");
-    expect(competitors.map((c) => c.domain)).toEqual(["competitor.com", "other.com"]);
+    expect(competitors.map((c) => c.domain)).toEqual([
+      "competitor.com",
+      "other.com",
+    ]);
     expect(competitors.find((c) => c.domain === "mysite.com")).toBeUndefined();
   });
 
@@ -49,7 +53,9 @@ describe("topCompetitors", () => {
     expect(competitors.map((c) => c.domain)).not.toContain("d.com");
     // Remaining order: sort stable by count desc; just verify counts are non-increasing
     for (let i = 1; i < competitors.length; i++)
-      expect(competitors[i].count).toBeLessThanOrEqual(competitors[i - 1].count);
+      expect(competitors[i].count).toBeLessThanOrEqual(
+        competitors[i - 1].count,
+      );
   });
 
   it("should calculate percentage of total citations", () => {

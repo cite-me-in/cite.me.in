@@ -1,4 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
+
 import prisma from "~/lib/prisma.server";
 import { port } from "~/test/helpers/launchServer";
 
@@ -82,7 +83,9 @@ describe("GET /api/me", () => {
       expect(body.email).toBe(EMAIL);
       expect(Array.isArray(body.sites)).toBe(true);
       expect(body.sites[0].domain).toBe(DOMAIN);
-      expect(body.sites[0].createdAt).toBe(new Date().toISOString().split("T")[0]);
+      expect(body.sites[0].createdAt).toBe(
+        new Date().toISOString().split("T")[0],
+      );
     });
   });
 });

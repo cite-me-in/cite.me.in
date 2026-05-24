@@ -8,6 +8,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { Link, useRouteLoaderData } from "react-router";
 import { twMerge } from "tailwind-merge";
+
 import { Button, buttonVariants } from "~/components/ui/Button";
 import type { loader as rootLoader } from "~/root";
 
@@ -19,8 +20,14 @@ export default function AccountMenu({ className }: { className?: string }) {
 
   // Show sign-in link for non-authenticated users
   return (
-    <div className={twMerge("inline-flex items-center justify-center", className)}>
-      {user ? <DropdownMenu user={user} sites={sites} isPro={isPro} /> : <SignInButton />}
+    <div
+      className={twMerge("inline-flex items-center justify-center", className)}
+    >
+      {user ? (
+        <DropdownMenu user={user} sites={sites} isPro={isPro} />
+      ) : (
+        <SignInButton />
+      )}
     </div>
   );
 }
@@ -52,14 +59,18 @@ function DropdownMenu({
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
 
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [isOpen]);
 

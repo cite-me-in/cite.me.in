@@ -1,6 +1,8 @@
 import { Line, LineChart } from "recharts";
+
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import { ChartContainer } from "~/components/ui/Chart";
+
 import ChartAxes from "./ChartAxes";
 
 const colors = [
@@ -31,13 +33,22 @@ export default function BotTrafficTrend({
       <CardContent>
         <ChartContainer
           config={Object.fromEntries(
-            topBots.map((bot, i) => [bot, { label: bot, color: colors[i % colors.length] }]),
+            topBots.map((bot, i) => [
+              bot,
+              { label: bot, color: colors[i % colors.length] },
+            ]),
           )}
           className="h-48 w-full"
         >
           <LineChart data={chartData}>
             <ChartAxes />
-            <Line dataKey="total" name="Total" stroke="#111111" strokeWidth={2} type="monotone" />
+            <Line
+              dataKey="total"
+              name="Total"
+              stroke="#111111"
+              strokeWidth={2}
+              type="monotone"
+            />
             {topBots.slice(0, 5).map((bot, i) => (
               <Line
                 dataKey={bot}

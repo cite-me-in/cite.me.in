@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { redirect } from "react-router";
+
 import { sessionCookie, utmCookie } from "~/lib/cookies.server";
 import prisma from "~/lib/prisma.server";
 
@@ -20,7 +21,10 @@ export async function hashPassword(password: string): Promise<string> {
  * @param hash - The hash to verify against
  * @returns True if the password matches the hash, otherwise false (boolean)
  */
-export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+export async function verifyPassword(
+  password: string,
+  hash: string,
+): Promise<boolean> {
   return bcrypt.compare(password, hash);
 }
 
@@ -31,7 +35,10 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
  * @param request - The request object
  * @returns The session cookie (string)
  */
-export async function createSession(userId: string, request: Request): Promise<string> {
+export async function createSession(
+  userId: string,
+  request: Request,
+): Promise<string> {
   const cookieHeader = request.headers.get("Cookie");
   const utm = (await utmCookie.parse(cookieHeader)) as {
     referer?: string;

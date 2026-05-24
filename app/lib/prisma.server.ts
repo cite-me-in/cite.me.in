@@ -5,9 +5,12 @@
 
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+
 import { PrismaPg } from "@prisma/adapter-pg";
 import debug from "debug";
+
 import { PrismaClient } from "~/prisma";
+
 import envVars from "./envVars.server";
 
 export default new PrismaClient({

@@ -1,4 +1,5 @@
 import { diff, map, unique } from "radashi";
+
 import { isInsufficientCreditError } from "./llm-visibility/insufficientCreditError";
 import PLATFORMS from "./llm-visibility/platformQueries.server";
 import { singleQueryRepetition } from "./llm-visibility/queryPlatform";
@@ -41,7 +42,10 @@ export default async function addSiteQueries(
   });
 }
 
-export async function addSiteQueryGroup(site: { id: string; domain: string }, group: string) {
+export async function addSiteQueryGroup(
+  site: { id: string; domain: string },
+  group: string,
+) {
   await prisma.siteQuery.create({
     data: { siteId: site.id, group: trimQuery(group), query: "" },
   });

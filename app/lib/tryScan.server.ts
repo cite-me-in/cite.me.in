@@ -1,8 +1,10 @@
 import { convert } from "convert";
 import Redis from "ioredis";
+
 import { runScanSteps } from "~/lib/aiLegibility/runAILegibilityScan";
 import type { ScanResult } from "~/lib/aiLegibility/types";
 import { getDomainMeta } from "~/lib/domainMeta.server";
+
 import envVars from "./envVars.server";
 
 const TTL = convert(5, "minutes").to("seconds");
@@ -108,7 +110,8 @@ async function runScan(domain: string) {
     await redis.setex(statusKey(lower), TTL, "complete");
     redis.disconnect();
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Scan failed. Try again.";
+    const message =
+      err instanceof Error ? err.message : "Scan failed. Try again.";
     const redis = getRedis();
     await redis.setex(errorKey(lower), TTL, message);
     await redis.setex(statusKey(lower), TTL, "error");

@@ -1,14 +1,23 @@
 # Cited Page Health Monitor & Citation Gap Analysis — Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:executing-plans to implement this plan task-by-task.
+> **For Claude:** REQUIRED SUB-SKILL: Use
+> superpowers-extended-cc:executing-plans to implement this plan task-by-task.
 
-**Goal:** Attract SEO professionals by adding (A) a Cited Page Health Monitor that alerts when AI-cited pages break, and (B) a Citation Gap Analysis that shows which competitor domains are cited where yours isn't.
+**Goal:** Attract SEO professionals by adding (A) a Cited Page Health Monitor
+that alerts when AI-cited pages break, and (B) a Citation Gap Analysis that
+shows which competitor domains are cited where yours isn't.
 
-**Architecture:** Three phases: first normalize citation storage into a proper `Citation` table (expand → backfill → contract), then build the page health monitor (new `CitedPage` table + daily cron + alert email + UI), then add gap analysis (pure query logic + UI panel in Citations). All phases build on existing `CitationQueryRun` / `CitationQuery` data.
+**Architecture:** Three phases: first normalize citation storage into a proper
+`Citation` table (expand → backfill → contract), then build the page health
+monitor (new `CitedPage` table + daily cron + alert email + UI), then add gap
+analysis (pure query logic + UI panel in Citations). All phases build on
+existing `CitationQueryRun` / `CitationQuery` data.
 
-**Tech Stack:** Prisma + PostgreSQL, React Router loaders, existing cron pattern (`app/routes/cron.*.ts`), React Email, Vitest integration tests against real DB.
+**Tech Stack:** Prisma + PostgreSQL, React Router loaders, existing cron pattern
+(`app/routes/cron.*.ts`), React Email, Vitest integration tests against real DB.
 
-**Design doc:** `docs/plans/2026-04-13-cited-page-health-and-gap-analysis-design.md`
+**Design doc:**
+`docs/plans/2026-04-13-cited-page-health-and-gap-analysis-design.md`
 
 ---
 
@@ -46,7 +55,8 @@ model Citation {
 }
 ```
 
-Also add `citations Citation[]` relation field to `CitationQuery`, `CitationQueryRun`, and `Site` models.
+Also add `citations Citation[]` relation field to `CitationQuery`,
+`CitationQueryRun`, and `Site` models.
 
 **Step 2: Push schema and regenerate**
 
@@ -125,7 +135,8 @@ Expected: FAIL — `citation.findMany` returns empty array.
 
 **Step 3: Implement dual-write in `singleQueryRepetition`**
 
-In `app/lib/llm-visibility/queryPlatform.ts`, after `prisma.citationQuery.create`, add:
+In `app/lib/llm-visibility/queryPlatform.ts`, after
+`prisma.citationQuery.create`, add:
 
 ```ts
 const citationRecord = await prisma.citationQuery.create({
@@ -278,7 +289,9 @@ const classifications = await prisma.citationClassification.findMany({
   select: { url: true, runId: true, relationship: true, reason: true },
 });
 
-const classMap = new Map(classifications.map((c) => [`${c.runId}:${c.url}`, c]));
+const classMap = new Map(
+  classifications.map((c) => [`${c.runId}:${c.url}`, c]),
+);
 
 let created = 0;
 for (const q of queries) {
@@ -347,7 +360,9 @@ git commit -m "feat: add backfill script for Citation records"
 
 **Step 1: Update the `topCompetitors` function signature**
 
-`topCompetitors` currently takes `{ citations: string[] }[]`. Change it to accept `{ url: string }[]` directly (flat array), removing the per-query nesting:
+`topCompetitors` currently takes `{ citations: string[] }[]`. Change it to
+accept `{ url: string }[]` directly (flat array), removing the per-query
+nesting:
 
 ```ts
 export function topCompetitors(
@@ -372,7 +387,8 @@ export function topCompetitors(
 
 **Step 2: Update topCompetitors tests**
 
-In `test/lib/topCompetitors.test.ts`, update all test data from `[{ citations: ["url1", "url2"] }]` to `[{ url: "url1" }, { url: "url2" }]`.
+In `test/lib/topCompetitors.test.ts`, update all test data from
+`[{ citations: ["url1", "url2"] }]` to `[{ url: "url1" }, { url: "url2" }]`.
 
 **Step 3: Run topCompetitors tests**
 
@@ -384,7 +400,9 @@ Expected: PASS.
 
 **Step 4: Update the citations route loader**
 
-In `app/routes/site.$domain_.citations/route.tsx`, replace the `CitationQueryRun` query that fetches nested `queries` with a direct `Citation` query:
+In `app/routes/site.$domain_.citations/route.tsx`, replace the
+`CitationQueryRun` query that fetches nested `queries` with a direct `Citation`
+query:
 
 ```ts
 const [citations, siteQueries] = await Promise.all([
@@ -446,17 +464,20 @@ In `prisma/schema.prisma`:
 
 In `queryPlatform.ts`:
 
-- Remove `prisma.citationClassification.createMany(...)` call in `updateRunSentiment`
+- Remove `prisma.citationClassification.createMany(...)` call in
+  `updateRunSentiment`
 - Remove the `CitationClassification` import/usage
 - Keep `prisma.citation.updateMany(...)` for relationship updates
 
 In `singleQueryRepetition`:
 
-- Change `prisma.citationQuery.create({ data: { citations, ... } })` → remove `citations` from the data
+- Change `prisma.citationQuery.create({ data: { citations, ... } })` → remove
+  `citations` from the data
 
 **Step 3: Update `analyzeSentiment` caller**
 
-The `analyzeSentiment` function needs `citations: string[]` per query. Feed it from the `Citation` table. In `updateRunSentiment`, fetch query citations:
+The `analyzeSentiment` function needs `citations: string[]` per query. Feed it
+from the `Citation` table. In `updateRunSentiment`, fetch query citations:
 
 ```ts
 const completedQueries = await prisma.citationQuery.findMany({
@@ -590,7 +611,8 @@ Expected: FAIL.
 
 **Step 3: Add upsert in `queryPlatform`**
 
-At the end of `queryPlatform` (after all queries complete, before the function returns), add a helper call:
+At the end of `queryPlatform` (after all queries complete, before the function
+returns), add a helper call:
 
 ```ts
 await upsertCitedPages({ siteId: site.id, runId: run.id });
@@ -599,14 +621,21 @@ await upsertCitedPages({ siteId: site.id, runId: run.id });
 Add the helper:
 
 ```ts
-async function upsertCitedPages({ siteId, runId }: { siteId: string; runId: string }) {
+async function upsertCitedPages({
+  siteId,
+  runId,
+}: {
+  siteId: string;
+  runId: string;
+}) {
   const ownCitations = await prisma.citation.findMany({
     where: { runId, siteId },
     select: { url: true },
   });
 
   const urlCounts = new Map<string, number>();
-  for (const { url } of ownCitations) urlCounts.set(url, (urlCounts.get(url) ?? 0) + 1);
+  for (const { url } of ownCitations)
+    urlCounts.set(url, (urlCounts.get(url) ?? 0) + 1);
 
   for (const [url, count] of urlCounts) {
     await prisma.citedPage.upsert({
@@ -618,7 +647,9 @@ async function upsertCitedPages({ siteId, runId }: { siteId: string; runId: stri
 }
 ```
 
-Wait — the `Citation` table stores all domains, not just own-domain URLs. We need to filter to own domain. The `Citation` table has a `domain` field. But we need to know the site's domain. Pass it:
+Wait — the `Citation` table stores all domains, not just own-domain URLs. We
+need to filter to own domain. The `Citation` table has a `domain` field. But we
+need to know the site's domain. Pass it:
 
 ```ts
 await upsertCitedPages({ siteId: site.id, runId: run.id, domain: site.domain });
@@ -704,7 +735,10 @@ describe("checkCitedPageHealth", () => {
   });
 
   it("should return unhealthy when fetch throws", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("ECONNREFUSED")));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockRejectedValue(new Error("ECONNREFUSED")),
+    );
 
     const result = await checkCitedPageHealth("https://down.example.com");
     expect(result.statusCode).toBeNull();
@@ -740,7 +774,9 @@ export async function checkCitedPageHealth(url: string): Promise<{
       redirect: "follow",
     });
     const text = await response.text();
-    const contentHash = createHash("sha256").update(text.slice(0, 50_000)).digest("hex");
+    const contentHash = createHash("sha256")
+      .update(text.slice(0, 50_000))
+      .digest("hex");
     const isHealthy = response.status >= 200 && response.status < 400;
     return { statusCode: response.status, contentHash, isHealthy };
   } catch {
@@ -841,7 +877,9 @@ describe("cron.check-cited-pages", () => {
   it("should reject requests without auth", async () => {
     const { loader } = await import("~/routes/cron.check-cited-pages");
     const request = new Request("http://localhost/cron/check-cited-pages");
-    await expect(loader({ request, params: {}, context: {} } as never)).rejects.toThrow();
+    await expect(
+      loader({ request, params: {}, context: {} } as never),
+    ).rejects.toThrow();
   });
 });
 ```
@@ -876,7 +914,10 @@ export async function loader({ request }: Route.LoaderArgs) {
     const staleThreshold = new Date(Date.now() - STALE_HOURS * 60 * 60 * 1000);
     const pages = await prisma.citedPage.findMany({
       where: {
-        OR: [{ lastCheckedAt: null }, { lastCheckedAt: { lt: staleThreshold } }],
+        OR: [
+          { lastCheckedAt: null },
+          { lastCheckedAt: { lt: staleThreshold } },
+        ],
       },
       include: { site: { select: { domain: true, ownerId: true } } },
       take: 100,
@@ -885,7 +926,9 @@ export async function loader({ request }: Route.LoaderArgs) {
 
     const results = [];
     for (const page of pages) {
-      const { statusCode, contentHash, isHealthy } = await checkCitedPageHealth(page.url);
+      const { statusCode, contentHash, isHealthy } = await checkCitedPageHealth(
+        page.url,
+      );
       const wasHealthy = page.isHealthy;
 
       await prisma.citedPage.update({
@@ -936,7 +979,9 @@ git commit -m "feat: add cron job for cited page health checks"
 
 **Step 1: Implement**
 
-Follow the pattern of existing email helpers (e.g. `app/emails/TrialEnded.ts`). Use `SentEmail` for deduplication — don't re-alert for the same broken page within 7 days.
+Follow the pattern of existing email helpers (e.g. `app/emails/TrialEnded.ts`).
+Use `SentEmail` for deduplication — don't re-alert for the same broken page
+within 7 days.
 
 ```tsx
 // app/emails/CitedPageAlert.tsx
@@ -1060,7 +1105,9 @@ export default function SitePagesRoute({ loaderData }: Route.ComponentProps) {
       <SitePageHeader title="Cited Pages" domain={site.domain} />
       <div className="mb-4 flex gap-6 text-sm">
         <span className="text-green-700">{healthy} healthy</span>
-        {broken > 0 && <span className="text-red-700 font-medium">{broken} broken</span>}
+        {broken > 0 && (
+          <span className="text-red-700 font-medium">{broken} broken</span>
+        )}
       </div>
       {pages.length === 0 ? (
         <p className="text-foreground/60">
@@ -1088,7 +1135,9 @@ export default function SitePagesRoute({ loaderData }: Route.ComponentProps) {
                   >
                     {new URL(page.url).pathname}
                   </a>
-                  <span className="text-foreground/50 text-xs">{new URL(page.url).hostname}</span>
+                  <span className="text-foreground/50 text-xs">
+                    {new URL(page.url).hostname}
+                  </span>
                 </td>
                 <td className="py-2 text-right">{page.citationCount}</td>
                 <td className="py-2 text-right">
@@ -1103,7 +1152,9 @@ export default function SitePagesRoute({ loaderData }: Route.ComponentProps) {
                   )}
                 </td>
                 <td className="py-2 text-right text-foreground/50">
-                  {page.lastCheckedAt ? new Date(page.lastCheckedAt).toLocaleDateString() : "—"}
+                  {page.lastCheckedAt
+                    ? new Date(page.lastCheckedAt).toLocaleDateString()
+                    : "—"}
                 </td>
               </tr>
             ))}
@@ -1117,7 +1168,8 @@ export default function SitePagesRoute({ loaderData }: Route.ComponentProps) {
 
 **Step 3: Add "Pages" to site nav**
 
-Find the nav definition (likely in `app/components/ui/SiteHeading.tsx` or a nav component) and add a "Pages" link pointing to `/site/${domain}/pages`.
+Find the nav definition (likely in `app/components/ui/SiteHeading.tsx` or a nav
+component) and add a "Pages" link pointing to `/site/${domain}/pages`.
 
 **Step 4: Typecheck**
 
@@ -1256,7 +1308,8 @@ export function getCitationGaps({
     if (c.domain === ownDomain) continue;
     if (nonCompetitors.has(c.domain)) continue;
     if (nonCompetitors.has(c.domain.split(".").slice(1).join("."))) continue;
-    if (!competitorQueries.has(c.domain)) competitorQueries.set(c.domain, new Set());
+    if (!competitorQueries.has(c.domain))
+      competitorQueries.set(c.domain, new Set());
     competitorQueries.get(c.domain)!.add(c.queryId);
   }
 
@@ -1323,7 +1376,13 @@ return { site, citations, siteQueries, competitors, shareOfVoice, gaps };
 ```tsx
 // app/routes/site.$domain_.citations/CitationGapAnalysis.tsx
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/Card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/Card";
 import { Badge } from "~/components/ui/Badge";
 
 export default function CitationGapAnalysis({
@@ -1353,7 +1412,11 @@ export default function CitationGapAnalysis({
               <button
                 type="button"
                 className="flex w-full items-center justify-between py-1 font-medium hover:text-foreground/70"
-                onClick={() => setExpanded(expanded === competitorDomain ? null : competitorDomain)}
+                onClick={() =>
+                  setExpanded(
+                    expanded === competitorDomain ? null : competitorDomain,
+                  )
+                }
               >
                 <span>{competitorDomain}</span>
                 <Badge variant="neutral">
@@ -1380,7 +1443,8 @@ export default function CitationGapAnalysis({
 
 **Step 3: Add to Citations page**
 
-In `route.tsx` component, add `<CitationGapAnalysis gaps={gaps} />` alongside `<TopCompetitors ... />`.
+In `route.tsx` component, add `<CitationGapAnalysis gaps={gaps} />` alongside
+`<TopCompetitors ... />`.
 
 **Step 4: Typecheck and run tests**
 

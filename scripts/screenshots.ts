@@ -49,7 +49,10 @@ console.info(`Found ${newScreenshots.length} new screenshot(s) to review.`);
 const htmlPath = join(screenshotsDir, "review.html");
 
 const items = newScreenshots.map((p) => ({
-  name: p.replace(screenshotsDir, "").replace(/^\//, "").replace(".new.png", ""),
+  name: p
+    .replace(screenshotsDir, "")
+    .replace(/^\//, "")
+    .replace(".new.png", ""),
   newPath: p.replace(screenshotsDir, ""),
   oldPath: p.replace(".new.png", ".png").replace(screenshotsDir, ""),
 }));

@@ -1,6 +1,12 @@
 import { data } from "react-router";
-import { authenticateClient, DEVICE_CODE_EXPIRY, generateToken } from "~/lib/oauth/server";
+
+import {
+  authenticateClient,
+  DEVICE_CODE_EXPIRY,
+  generateToken,
+} from "~/lib/oauth/server";
 import prisma from "~/lib/prisma.server";
+
 import type { Route } from "./+types/oauth.device.authorize";
 
 export async function action({ request }: Route.ActionArgs) {

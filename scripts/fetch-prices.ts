@@ -9,7 +9,9 @@
 
 import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+
 import Stripe from "stripe";
+
 import envVars from "~/lib/envVars.server";
 
 const stripe = new Stripe(envVars.STRIPE_SECRET_KEY);
@@ -27,6 +29,9 @@ const prices = { monthlyAmount, annualAmount, annualSavings, sites: 5 };
 const json = JSON.stringify(prices, null, 2);
 console.info("JSON:", json);
 
-writeFileSync(resolve(import.meta.dirname, "../app/data/stripe-prices.json"), json);
+writeFileSync(
+  resolve(import.meta.dirname, "../app/data/stripe-prices.json"),
+  json,
+);
 
 console.info("Fetched Stripe prices:", prices);

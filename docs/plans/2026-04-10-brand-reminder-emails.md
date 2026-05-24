@@ -1,12 +1,19 @@
 # Brand Reminder Emails — Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:executing-plans to implement this plan task-by-task.
+> **For Claude:** REQUIRED SUB-SKILL: Use
+> superpowers-extended-cc:executing-plans to implement this plan task-by-task.
 
-**Goal:** Add a personalised brand reminder to every outgoing email so recipients always know what cite.me.in does and why they signed up.
+**Goal:** Add a personalised brand reminder to every outgoing email so
+recipients always know what cite.me.in does and why they signed up.
 
-**Architecture:** A shared `BrandReminder.tsx` exports two things: a `BrandReminderCard` React component (card block for data emails) and a `brandReminderText()` function (string for weaving into prose). Data emails (WeeklyDigest, SiteSetupComplete) get the card at the bottom. Text emails (TrialEnding, TrialEnded) get the text woven into existing paragraphs.
+**Architecture:** A shared `BrandReminder.tsx` exports two things: a
+`BrandReminderCard` React component (card block for data emails) and a
+`brandReminderText()` function (string for weaving into prose). Data emails
+(WeeklyDigest, SiteSetupComplete) get the card at the bottom. Text emails
+(TrialEnding, TrialEnded) get the text woven into existing paragraphs.
 
-**Tech Stack:** React Email, Tailwind CSS (via `@react-email/components`), existing `Card` email component at `app/components/email/Card.tsx`.
+**Tech Stack:** React Email, Tailwind CSS (via `@react-email/components`),
+existing `Card` email component at `app/components/email/Card.tsx`.
 
 ---
 
@@ -16,7 +23,8 @@
 
 - Create: `app/components/email/BrandReminder.tsx`
 
-No test needed — the component is covered by the visual regression tests in Tasks 3 and 4.
+No test needed — the component is covered by the visual regression tests in
+Tasks 3 and 4.
 
 **Step 1: Create the file**
 
@@ -24,15 +32,22 @@ No test needed — the component is covered by the visual regression tests in Ta
 import { Text } from "@react-email/components";
 import Card from "~/components/email/Card";
 
-export function BrandReminderCard({ domain, citations }: { domain: string; citations: number }) {
+export function BrandReminderCard({
+  domain,
+  citations,
+}: {
+  domain: string;
+  citations: number;
+}) {
   const n = citations.toLocaleString();
   const noun = citations === 1 ? "citation" : "citations";
   return (
     <Card withBorder>
       <Text className="text-base text-text leading-relaxed">
-        cite.me.in is your window into how AI talks about your brand. Every day it asks ChatGPT,
-        Claude, Gemini, and Perplexity the questions your customers ask — and records every time{" "}
-        <strong>{domain}</strong> shows up. So far:{" "}
+        cite.me.in is your window into how AI talks about your brand. Every day
+        it asks ChatGPT, Claude, Gemini, and Perplexity the questions your
+        customers ask — and records every time <strong>{domain}</strong> shows
+        up. So far:{" "}
         <strong>
           {n} {noun}
         </strong>{" "}
@@ -78,7 +93,10 @@ git commit -m "feat: add BrandReminderCard component and brandReminderText helpe
 
 ### Task 2: Thread `domain` through WeeklyDigest
 
-`WeeklyDigestEmailProps` does not currently include `domain`, but it's needed by `BrandReminderCard`. The `domain` value is already computed in `weeklyDigest.server.ts` at line 46 (`const { domain } = metrics.site`) but not returned.
+`WeeklyDigestEmailProps` does not currently include `domain`, but it's needed by
+`BrandReminderCard`. The `domain` value is already computed in
+`weeklyDigest.server.ts` at line 46 (`const { domain } = metrics.site`) but not
+returned.
 
 **Files:**
 
@@ -88,7 +106,8 @@ git commit -m "feat: add BrandReminderCard component and brandReminderText helpe
 
 **Step 1: Add `domain` to `WeeklyDigestEmailProps`**
 
-In `app/emails/WeeklyDigest.tsx`, add `domain: string` to the type and destructure it in `WeeklyDigestEmail`:
+In `app/emails/WeeklyDigest.tsx`, add `domain: string` to the type and
+destructure it in `WeeklyDigestEmail`:
 
 ```ts
 // In WeeklyDigestEmailProps type — add:
@@ -107,7 +126,8 @@ export function WeeklyDigestEmail({
 
 **Step 2: Return `domain` from `loadWeeklyDigestMetrics`**
 
-In `app/lib/weeklyDigest.server.ts`, the return object at line 169 is missing `domain`. Add it:
+In `app/lib/weeklyDigest.server.ts`, the return object at line 169 is missing
+`domain`. Add it:
 
 ```ts
 return {
@@ -119,7 +139,8 @@ return {
 
 **Step 3: Add `domain` to the test fixture**
 
-In `test/routes/email.weekly-digest.test.ts`, add `domain: "rentail.space"` to the `sendSiteDigestEmails(...)` call (alongside `siteId`, `subject`, etc.):
+In `test/routes/email.weekly-digest.test.ts`, add `domain: "rentail.space"` to
+the `sendSiteDigestEmails(...)` call (alongside `siteId`, `subject`, etc.):
 
 ```ts
 await sendSiteDigestEmails({
@@ -188,7 +209,8 @@ rm __screenshots__/email/weekly-digest.png __screenshots__/email/weekly-digest.h
 pnpm vitest run test/routes/email.weekly-digest.test.ts
 ```
 
-Expected: all tests pass; new baselines created at `__screenshots__/email/weekly-digest.{png,html}`.
+Expected: all tests pass; new baselines created at
+`__screenshots__/email/weekly-digest.{png,html}`.
 
 **Step 4: Commit**
 
@@ -257,7 +279,9 @@ import { brandReminderText } from "~/components/email/BrandReminder";
 
 **Step 2: Rewrite the body paragraphs**
 
-The current email has three `<Text>` blocks plus a button. Replace paragraphs 2 and 3 with a single paragraph that fuses the brand reminder with the upgrade CTA:
+The current email has three `<Text>` blocks plus a button. Replace paragraphs 2
+and 3 with a single paragraph that fuses the brand reminder with the upgrade
+CTA:
 
 Before:
 
@@ -277,8 +301,9 @@ After:
 
 ```tsx
 <Text>
-  {brandReminderText({ domain, citations: citationCount })} If you'd like to keep your history and
-  continue daily runs, upgrade to Pro for ${prices.monthlyAmount}/month.
+  {brandReminderText({ domain, citations: citationCount })} If you'd like to
+  keep your history and continue daily runs, upgrade to Pro for $
+  {prices.monthlyAmount}/month.
 </Text>
 ```
 
@@ -311,7 +336,8 @@ import { brandReminderText } from "~/components/email/BrandReminder";
 
 **Step 2: Rewrite the body paragraphs**
 
-The current email has two `<Text>` blocks plus a button. Merge them into one paragraph that fuses the brand reminder with the upgrade CTA:
+The current email has two `<Text>` blocks plus a button. Merge them into one
+paragraph that fuses the brand reminder with the upgrade CTA:
 
 Before:
 
@@ -332,8 +358,9 @@ After:
 
 ```tsx
 <Text>
-  {brandReminderText({ domain, citations: citationCount })} Your free trial has ended and daily runs
-  have paused. Upgrade to Pro to keep your history and resume monitoring — ${prices.monthlyAmount}
+  {brandReminderText({ domain, citations: citationCount })} Your free trial has
+  ended and daily runs have paused. Upgrade to Pro to keep your history and
+  resume monitoring — ${prices.monthlyAmount}
   /month or ${prices.annualAmount}/year.
 </Text>
 ```

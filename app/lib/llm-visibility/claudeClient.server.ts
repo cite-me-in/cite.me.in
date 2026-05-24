@@ -1,6 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { BetaWebSearchResultBlock } from "@anthropic-ai/sdk/resources/beta/messages/messages.mjs";
+
 import envVars from "~/lib/envVars.server";
+
 import { InsufficientCreditError } from "./insufficientCreditError";
 import type { QueryFn } from "./queryFn";
 
@@ -49,7 +51,10 @@ references, with a link to each source URL.`,
       { timeout },
     ));
   } catch (error) {
-    if (error instanceof Anthropic.APIError && (error.status === 402 || error.status === 429))
+    if (
+      error instanceof Anthropic.APIError &&
+      (error.status === 402 || error.status === 429)
+    )
       throw new InsufficientCreditError("claude", error.status);
     throw error;
   }

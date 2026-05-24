@@ -1,4 +1,5 @@
 import { Link, Text } from "react-email";
+
 import Card from "~/components/email/Card";
 import type { Prisma } from "~/prisma";
 
@@ -17,9 +18,10 @@ export function BrandReminderCard({
   return (
     <Card withBorder>
       <Text className="text-text text-base leading-relaxed">
-        <Link href="https://cite.me.in">cite.me.in</Link> is your window into how AI talks about
-        your brand. Every day it asks ChatGPT, Claude, Gemini, and Perplexity the questions your
-        customers ask — and records every time <strong>{site.domain}</strong> shows up. So far:{" "}
+        <Link href="https://cite.me.in">cite.me.in</Link> is your window into
+        how AI talks about your brand. Every day it asks ChatGPT, Claude,
+        Gemini, and Perplexity the questions your customers ask — and records
+        every time <strong>{site.domain}</strong> shows up. So far:{" "}
         <strong>
           {n} {noun}
         </strong>{" "}

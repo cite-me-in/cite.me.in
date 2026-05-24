@@ -54,8 +54,8 @@ The token is already generated for the unsubscribe URL — reuse it.
 
 ## Template updates
 
-Swap `Button` / `Link` imports in these files from `@react-email/components`
-to `~/components/email/`:
+Swap `Button` / `Link` imports in these files from `@react-email/components` to
+`~/components/email/`:
 
 - `app/emails/EmailLayout.tsx`
 - `app/emails/PasswordRecovery.tsx`

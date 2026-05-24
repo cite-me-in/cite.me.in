@@ -1,12 +1,21 @@
 # Site Setup Pipeline Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:executing-plans to implement this plan task-by-task.
+> **For Claude:** REQUIRED SUB-SKILL: Use
+> superpowers-extended-cc:executing-plans to implement this plan task-by-task.
 
-**Goal:** Replace the synchronous crawl→suggestions→query flow with a fully async pipeline that streams progress to a live setup page, showing one log line per operation like LLM thinking output.
+**Goal:** Replace the synchronous crawl→suggestions→query flow with a fully
+async pipeline that streams progress to a live setup page, showing one log line
+per operation like LLM thinking output.
 
-**Architecture:** POST `/sites` validates the URL (HEAD request) and creates a minimal site record, then redirects to `/site/{domain}/setup`. The setup page fires a POST to `/site/{domain}/setup/run` (via useFetcher), which runs the full pipeline — crawl, summarize, generate queries, query 4 platforms in parallel, send email — writing each step to a Redis log list. A polling endpoint reads from Redis; the UI appends lines every 2s and redirects to citations when done.
+**Architecture:** POST `/sites` validates the URL (HEAD request) and creates a
+minimal site record, then redirects to `/site/{domain}/setup`. The setup page
+fires a POST to `/site/{domain}/setup/run` (via useFetcher), which runs the full
+pipeline — crawl, summarize, generate queries, query 4 platforms in parallel,
+send email — writing each step to a Redis log list. A polling endpoint reads
+from Redis; the UI appends lines every 2s and redirects to citations when done.
 
-**Tech Stack:** React Router v7, Prisma/PostgreSQL, ioredis, React Email/Resend, Vercel AI SDK, es-toolkit
+**Tech Stack:** React Router v7, Prisma/PostgreSQL, ioredis, React Email/Resend,
+Vercel AI SDK, es-toolkit
 
 ---
 
@@ -16,7 +25,8 @@
 
 - Create: `app/lib/redis.server.ts`
 
-The `sendEmails.tsx` file creates Redis instances inline for test use only. Production code needs a shared client.
+The `sendEmails.tsx` file creates Redis instances inline for test use only.
+Production code needs a shared client.
 
 **Step 1: Create the file**
 
@@ -103,7 +113,9 @@ git commit -m "feat: add setup progress helpers for Redis log streaming"
 
 - Modify: `app/lib/sites.server.ts`
 
-Replace `addSiteToUser` with `createSite`: validates the URL, checks for existing, checks limits, does a HEAD request for reachability, then creates the site record with empty `content`/`summary`. Crawling moves to the worker.
+Replace `addSiteToUser` with `createSite`: validates the URL, checks for
+existing, checks limits, does a HEAD request for reachability, then creates the
+site record with empty `content`/`summary`. Crawling moves to the worker.
 
 **Step 1: Rewrite `addSiteToUser` → `createSite`**
 
@@ -147,7 +159,9 @@ export async function createSite(
     if (!res.ok && res.status !== 405) throw new Error(`HTTP ${res.status}`);
   } catch (error) {
     if (error instanceof Error && error.message.startsWith("HTTP "))
-      throw new Error(`Could not reach ${domain} (${error.message}). Check the URL.`);
+      throw new Error(
+        `Could not reach ${domain} (${error.message}). Check the URL.`,
+      );
     throw new Error(`Could not reach ${domain}. Check the URL and try again.`);
   }
 
@@ -195,7 +209,8 @@ git commit -m "refactor: replace addSiteToUser with fast createSite (crawl moved
 
 - Create: `app/emails/SiteSetupComplete.tsx`
 
-A simple transactional email sent when the pipeline finishes. Pattern follows `EmailVerification.tsx`.
+A simple transactional email sent when the pipeline finishes. Pattern follows
+`EmailVerification.tsx`.
 
 **Step 1: Create the file**
 
@@ -215,7 +230,11 @@ export default async function sendSiteSetupEmail({
   await sendEmail({
     canUnsubscribe: false,
     render: ({ subject }) => (
-      <SiteSetupComplete subject={subject} domain={domain} citationsUrl={citationsUrl} />
+      <SiteSetupComplete
+        subject={subject}
+        domain={domain}
+        citationsUrl={citationsUrl}
+      />
     ),
     subject: `${domain} is set up on cite.me.in`,
     user,
@@ -238,8 +257,9 @@ function SiteSetupComplete({
       </Text>
 
       <Text className="my-4 text-base text-text leading-relaxed">
-        We've crawled your site, generated search queries, and checked how ChatGPT, Claude,
-        Perplexity, and Gemini cite you. Your results are ready.
+        We've crawled your site, generated search queries, and checked how
+        ChatGPT, Claude, Perplexity, and Gemini cite you. Your results are
+        ready.
       </Text>
 
       <Section className="my-8 text-center">
@@ -276,7 +296,10 @@ git commit -m "feat: add site setup complete email"
 
 - Create: `app/routes/site.$domain_.setup.run.ts`
 
-This is the pipeline. It must only handle POST. Auth via `requireSiteAccess`. Guards against double-start with the Redis status key. Runs crawl → summarize → generate queries → add queries to DB → query all 4 platforms in parallel (each platform logs per-query) → send email → set status `complete`.
+This is the pipeline. It must only handle POST. Auth via `requireSiteAccess`.
+Guards against double-start with the Redis status key. Runs crawl → summarize →
+generate queries → add queries to DB → query all 4 platforms in parallel (each
+platform logs per-query) → send email → set status `complete`.
 
 **Step 1: Create the file**
 
@@ -334,7 +357,8 @@ const PLATFORMS: {
 ];
 
 export async function action({ request, params }: Route.ActionArgs) {
-  if (request.method !== "POST") throw new Response("Method not allowed", { status: 405 });
+  if (request.method !== "POST")
+    throw new Response("Method not allowed", { status: 405 });
 
   const { site, user } = await requireSiteAccess({
     domain: params.domain,
@@ -343,7 +367,8 @@ export async function action({ request, params }: Route.ActionArgs) {
 
   // Idempotency: don't start a second pipeline if one is running or done.
   const current = await getStatus(site.id, user.id);
-  if (current === "running" || current === "complete") return new Response(null, { status: 204 });
+  if (current === "running" || current === "complete")
+    return new Response(null, { status: 204 });
 
   await setStatus(site.id, user.id, "running");
 
@@ -371,7 +396,8 @@ export async function action({ request, params }: Route.ActionArgs) {
     // Phase 3: Generate queries
     await log("Generating queries...");
     const suggestions = await generateSiteQueries(site);
-    for (const { group, query } of suggestions) await log(`  [${group}] ${query}`);
+    for (const { group, query } of suggestions)
+      await log(`  [${group}] ${query}`);
 
     // Phase 4: Save queries to DB
     const queries = suggestions.filter((q) => q.query.trim());
@@ -479,7 +505,8 @@ async function runPlatformWithProgress({
 pnpm check:type
 ```
 
-Fix any type errors. The generated `+types/site.$domain_.setup.run` should be created automatically by react-router typegen.
+Fix any type errors. The generated `+types/site.$domain_.setup.run` should be
+created automatically by react-router typegen.
 
 **Step 3: Commit**
 
@@ -496,7 +523,8 @@ git commit -m "feat: add setup pipeline worker route"
 
 - Create: `app/routes/site.$domain_.setup.status.ts`
 
-Simple GET resource route. Reads offset from search params, calls `getProgress`, returns JSON.
+Simple GET resource route. Reads offset from search params, calls `getProgress`,
+returns JSON.
 
 **Step 1: Create the file**
 
@@ -538,7 +566,8 @@ git commit -m "feat: add setup status polling endpoint"
 
 - Create: `app/routes/site.$domain_.setup/route.tsx`
 
-Shows the live log. On mount, fires the worker if not already started. Polls the status endpoint every 2s and appends lines. Redirects to citations when done.
+Shows the live log. On mount, fires the worker if not already started. Polls the
+status endpoint every 2s and appends lines. Redirects to citations when done.
 
 **Step 1: Create the directory and file**
 
@@ -595,8 +624,11 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
     if (done) return;
     const id = setInterval(async () => {
       try {
-        const res = await fetch(`/site/${domain}/setup/status?offset=${offsetRef.current}`);
-        const data: { lines: string[]; done: boolean; nextOffset: number } = await res.json();
+        const res = await fetch(
+          `/site/${domain}/setup/status?offset=${offsetRef.current}`,
+        );
+        const data: { lines: string[]; done: boolean; nextOffset: number } =
+          await res.json();
         if (data.lines.length > 0) {
           setLines((prev) => [...prev, ...data.lines]);
           offsetRef.current = data.nextOffset;
@@ -620,7 +652,10 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
   // Redirect to citations after pipeline completes.
   useEffect(() => {
     if (!done) return;
-    const timer = setTimeout(() => navigate(`/site/${domain}/citations`), 2_000);
+    const timer = setTimeout(
+      () => navigate(`/site/${domain}/citations`),
+      2_000,
+    );
     return () => clearTimeout(timer);
   }, [done, domain, navigate]);
 
@@ -639,7 +674,11 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             {!done && !error && <Spinner />}
-            {done ? "Setup complete" : error ? "Something went wrong" : "Running…"}
+            {done
+              ? "Setup complete"
+              : error
+                ? "Something went wrong"
+                : "Running…"}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -647,12 +686,16 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
             ref={logRef}
             className="h-96 overflow-y-auto rounded border border-border bg-muted p-4 font-mono text-sm leading-relaxed"
           >
-            {lines.length === 0 && !done && <span className="text-foreground/40">Starting…</span>}
+            {lines.length === 0 && !done && (
+              <span className="text-foreground/40">Starting…</span>
+            )}
             {lines.map((line, i) => (
               <div key={i}>{line}</div>
             ))}
             {done && (
-              <div className="mt-2 font-semibold text-green-700">✓ Redirecting to citations…</div>
+              <div className="mt-2 font-semibold text-green-700">
+                ✓ Redirecting to citations…
+              </div>
             )}
           </pre>
         </CardContent>
@@ -732,7 +775,11 @@ git commit -m "feat: redirect new sites to setup page instead of suggestions"
 
 - Modify: `app/routes/site.$domain_.suggestions/route.tsx`
 
-New sites will never reach the suggestions route (redirected to setup instead). Old sites still have suggestions in the DB, so the route stays functional. The only change: remove the `queryAccount` call from the POST action (queries are now run by the setup worker) and redirect to citations instead of running queries inline.
+New sites will never reach the suggestions route (redirected to setup instead).
+Old sites still have suggestions in the DB, so the route stays functional. The
+only change: remove the `queryAccount` call from the POST action (queries are
+now run by the setup worker) and redirect to citations instead of running
+queries inline.
 
 **Step 1: In the POST case of the action, replace the body**
 
@@ -768,7 +815,10 @@ case "POST": {
 
 **Step 2: Remove now-unused imports** (`queryAccount` import on line 18).
 
-**Step 3: Remove the `GradualProgress` component and its import** (`useInterval`, `ProgressIndicator`), and the `isProcessing` block in the JSX that shows the coffee icon + progress bar, since no long-running inline query is happening anymore.
+**Step 3: Remove the `GradualProgress` component and its import**
+(`useInterval`, `ProgressIndicator`), and the `isProcessing` block in the JSX
+that shows the coffee icon + progress bar, since no long-running inline query is
+happening anymore.
 
 **Step 4: Typecheck and test**
 
@@ -817,7 +867,10 @@ test("should complete site setup and show citations", async ({ page }) => {
 });
 ```
 
-> Note: A full end-to-end test that waits for the pipeline to finish would take 2+ minutes and require real API keys. The smoke test above validates the redirect and page render. The polling behavior is tested by running the app manually.
+> Note: A full end-to-end test that waits for the pipeline to finish would take
+> 2+ minutes and require real API keys. The smoke test above validates the
+> redirect and page render. The polling behavior is tested by running the app
+> manually.
 
 **Step 2: Run the test**
 
@@ -836,7 +889,16 @@ git commit -m "test: add smoke test for site setup page"
 
 ## Notes
 
-- **Vercel timeout**: The worker runs for ~60–80s (crawl 15s + summarize 3s + generate queries 5s + parallel queries ~52s). Well within the 300s Pro limit. The client-side `fetch` to `/setup/run` keeps the connection open; even if the browser navigates away, Vercel continues executing the function.
-- **Idempotency**: The worker checks Redis status on entry — calling `/setup/run` twice has no effect if a pipeline is already running or complete.
-- **Error recovery**: If the worker errors, status is set to `error` and the log shows the last message. The setup page shows the error state. Users can retry by navigating away and back to `/sites` to start fresh (which would require deleting and re-adding the site — a known limitation for now).
-- **Suggestions route**: Left in place for existing sites that have `SiteQuerySuggestion` records. New sites bypass it entirely. The worker deletes suggestion records after promoting them to `SiteQuery`.
+- **Vercel timeout**: The worker runs for ~60–80s (crawl 15s + summarize 3s +
+  generate queries 5s + parallel queries ~52s). Well within the 300s Pro limit.
+  The client-side `fetch` to `/setup/run` keeps the connection open; even if the
+  browser navigates away, Vercel continues executing the function.
+- **Idempotency**: The worker checks Redis status on entry — calling
+  `/setup/run` twice has no effect if a pipeline is already running or complete.
+- **Error recovery**: If the worker errors, status is set to `error` and the log
+  shows the last message. The setup page shows the error state. Users can retry
+  by navigating away and back to `/sites` to start fresh (which would require
+  deleting and re-adding the site — a known limitation for now).
+- **Suggestions route**: Left in place for existing sites that have
+  `SiteQuerySuggestion` records. New sites bypass it entirely. The worker
+  deletes suggestion records after promoting them to `SiteQuery`.

@@ -13,6 +13,7 @@ import {
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useRouteLoaderData } from "react-router";
 import { twMerge } from "tailwind-merge";
+
 import { DialogOverlay, DialogPortal } from "~/components/ui/Dialog";
 import type { loader as rootLoader } from "~/root";
 
@@ -121,7 +122,9 @@ export default function CommandPalette() {
       : groups
           .map((g) => ({
             ...g,
-            items: g.items.filter((i) => i.label.toLowerCase().includes(normalizedQuery)),
+            items: g.items.filter((i) =>
+              i.label.toLowerCase().includes(normalizedQuery),
+            ),
           }))
           .filter((g) => g.items.length > 0);
 
@@ -152,7 +155,8 @@ export default function CommandPalette() {
 
   useEffect(() => {
     const item = flatItems[activeIndex];
-    if (item) itemRefs.current.get(item.id)?.scrollIntoView({ block: "nearest" });
+    if (item)
+      itemRefs.current.get(item.id)?.scrollIntoView({ block: "nearest" });
   }, [activeIndex, flatItems]);
 
   function setItemRef(id: string, el: HTMLButtonElement | null) {
@@ -225,7 +229,9 @@ export default function CommandPalette() {
           </div>
           <div className="max-h-[60vh] overflow-y-auto">
             {filteredGroups.length === 0 ? (
-              <p className="px-4 py-6 text-center text-sm text-gray-400">No commands found.</p>
+              <p className="px-4 py-6 text-center text-sm text-gray-400">
+                No commands found.
+              </p>
             ) : (
               filteredGroups.map((group) => (
                 <CommandGroup

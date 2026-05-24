@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import checkSitemapXml from "~/lib/aiLegibility/checks/sitemapXml";
 import {
   CHILD_SITEMAP_1_XML,

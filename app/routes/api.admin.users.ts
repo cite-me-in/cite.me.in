@@ -1,7 +1,9 @@
 import { data } from "react-router";
 import z from "zod";
+
 import { requireAdmin } from "~/lib/api/apiAuth.server";
 import prisma from "~/lib/prisma.server";
+
 import type { Route } from "./+types/api.admin.users";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -42,7 +44,11 @@ export async function loader({ request }: Route.LoaderArgs) {
           domain,
         })),
         updatedAt: new Date(
-          Math.max(...[account?.updatedAt, user.updatedAt].map((date) => date?.getTime() ?? 0)),
+          Math.max(
+            ...[account?.updatedAt, user.updatedAt].map(
+              (date) => date?.getTime() ?? 0,
+            ),
+          ),
         )
           .toISOString()
           .split("T")[0],

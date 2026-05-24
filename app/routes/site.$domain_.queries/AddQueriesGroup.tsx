@@ -1,9 +1,11 @@
 import { AlertCircleIcon, PlusIcon, XIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useFetcher } from "react-router";
+
 import { Alert, AlertTitle } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
 import { Input } from "~/components/ui/Input";
+
 import type { action } from "./route";
 
 export default function AddQueriesGroup() {
@@ -19,7 +21,10 @@ export default function AddQueriesGroup() {
   function submitNewGroup() {
     const name = newGroupName.trim();
     if (!name) return;
-    void addGroupFetcher.submit({ _intent: "add-group", group: name }, { method: "post" });
+    void addGroupFetcher.submit(
+      { _intent: "add-group", group: name },
+      { method: "post" },
+    );
     setIsAddingGroup(false);
     setNewGroupName("");
   }
@@ -73,7 +78,8 @@ export default function AddQueriesGroup() {
         <Alert variant="outline">
           <AlertCircleIcon className="h-4 w-4" />
           <AlertTitle>
-            {addGroupFetcher.data.error ?? "Failed to add group. Please try again."}
+            {addGroupFetcher.data.error ??
+              "Failed to add group. Please try again."}
           </AlertTitle>
         </Alert>
       )}

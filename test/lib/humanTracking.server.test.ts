@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
+
 import envVars from "~/lib/envVars.server";
 import recordHumanVisit, {
   classifyBrowser,
@@ -39,7 +40,8 @@ async function makeVisit(
 const UA = {
   chrome:
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-  firefox: "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/125.0",
+  firefox:
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/125.0",
   safari:
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
   edge: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0",
@@ -49,7 +51,8 @@ const UA = {
     "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.6367.82 Mobile Safari/537.36",
   iphone:
     "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1",
-  googlebot: "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+  googlebot:
+    "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
   curl: "curl/8.6.0",
   python: "python-requests/2.31.0",
 };
@@ -123,11 +126,15 @@ describe("detectAiReferral", () => {
   });
 
   it("should detect chatgpt.com from referer", () => {
-    expect(detectAiReferral({ referer: "https://chatgpt.com/", utmSource: null })).toBe("chatgpt");
+    expect(
+      detectAiReferral({ referer: "https://chatgpt.com/", utmSource: null }),
+    ).toBe("chatgpt");
   });
 
   it("should detect Claude from referer", () => {
-    expect(detectAiReferral({ referer: "https://claude.ai/", utmSource: null })).toBe("claude");
+    expect(
+      detectAiReferral({ referer: "https://claude.ai/", utmSource: null }),
+    ).toBe("claude");
   });
 
   it("should detect Gemini from referer", () => {
@@ -149,7 +156,9 @@ describe("detectAiReferral", () => {
   });
 
   it("should fall back to utmSource when referer is null", () => {
-    expect(detectAiReferral({ referer: null, utmSource: "gemini.google.com" })).toBe("gemini");
+    expect(
+      detectAiReferral({ referer: null, utmSource: "gemini.google.com" }),
+    ).toBe("gemini");
   });
 
   it("should prefer referer over utmSource when both are present", () => {
@@ -162,7 +171,9 @@ describe("detectAiReferral", () => {
   });
 
   it("should return null for non-AI referer", () => {
-    expect(detectAiReferral({ referer: "https://google.com", utmSource: null })).toBe(null);
+    expect(
+      detectAiReferral({ referer: "https://google.com", utmSource: null }),
+    ).toBe(null);
   });
 
   it("should return null when both referer and utmSource are null", () => {
@@ -170,7 +181,9 @@ describe("detectAiReferral", () => {
   });
 
   it("should return null for malformed referer without throwing", () => {
-    expect(detectAiReferral({ referer: "not a url", utmSource: null })).toBe(null);
+    expect(detectAiReferral({ referer: "not a url", utmSource: null })).toBe(
+      null,
+    );
   });
 });
 
@@ -275,7 +288,9 @@ describe("recordHumanVisit", () => {
   });
 
   it("should store AI referral from utmSource when referer is absent", async () => {
-    await recordHumanVisit(await makeVisit(UA.chrome, { utmSource: "chatgpt.com" }));
+    await recordHumanVisit(
+      await makeVisit(UA.chrome, { utmSource: "chatgpt.com" }),
+    );
     const record = await prisma.humanVisit.findFirstOrThrow();
     expect(record.aiReferral).toBe("chatgpt");
   });

@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
+
 import discoverURLs from "~/lib/scrape/discover";
+
 import {
   HOMEPAGE_HTML,
   RSS_FEED,
@@ -33,7 +35,8 @@ describe("discoverUrls", () => {
           headers: {
             get: (h: string) => (h === "content-type" ? "text/plain" : null),
           },
-          text: async () => "https://acme.com/about\nhttps://acme.com/admin/secret\n",
+          text: async () =>
+            "https://acme.com/about\nhttps://acme.com/admin/secret\n",
         },
       }),
     );
@@ -43,7 +46,9 @@ describe("discoverUrls", () => {
       signal: AbortSignal.timeout(5000),
     });
     expect(urls.map((url) => url.href)).toContain("https://acme.com/about");
-    expect(urls.map((url) => url.href)).not.toContain("https://acme.com/admin/secret");
+    expect(urls.map((url) => url.href)).not.toContain(
+      "https://acme.com/admin/secret",
+    );
   });
 
   it("should use sitemap.txt when available (not sitemap.xml)", async () => {
@@ -55,9 +60,11 @@ describe("discoverUrls", () => {
           ok: true,
           status: 200,
           headers: {
-            get: (h: string) => (h === "content-type" ? "application/xml" : null),
+            get: (h: string) =>
+              h === "content-type" ? "application/xml" : null,
           },
-          text: async () => "<urlset><url><loc>https://acme.com/xml-only-page</loc></url></urlset>",
+          text: async () =>
+            "<urlset><url><loc>https://acme.com/xml-only-page</loc></url></urlset>",
         },
       }),
     );
@@ -67,14 +74,19 @@ describe("discoverUrls", () => {
       signal: AbortSignal.timeout(5000),
     });
     expect(urls.map((url) => url.href)).toContain("https://acme.com/about");
-    expect(urls.map((url) => url.href)).not.toContain("https://acme.com/xml-only-page");
+    expect(urls.map((url) => url.href)).not.toContain(
+      "https://acme.com/xml-only-page",
+    );
   });
 
   it("should fall back to sitemap.xml when no sitemap.txt exists", async () => {
     vi.stubGlobal("fetch", mockFetch(sitemapXmlSite()));
     const urls = await discoverURLs({
       url: new URL("https://acme.com"),
-      homepage: HOMEPAGE_HTML.replace('href="/sitemap.txt"', 'href="/sitemap.xml"'),
+      homepage: HOMEPAGE_HTML.replace(
+        'href="/sitemap.txt"',
+        'href="/sitemap.xml"',
+      ),
       signal: AbortSignal.timeout(5000),
     });
     expect(urls.map((url) => url.href)).toContain("https://acme.com/about");
@@ -86,7 +98,10 @@ describe("discoverUrls", () => {
     vi.stubGlobal("fetch", mockFetch(site));
     const urls = await discoverURLs({
       url: new URL("https://acme.com"),
-      homepage: HOMEPAGE_HTML.replace('<link rel="sitemap" href="/sitemap.txt" />', "").replace(
+      homepage: HOMEPAGE_HTML.replace(
+        '<link rel="sitemap" href="/sitemap.txt" />',
+        "",
+      ).replace(
         '<link rel="alternate" type="application/rss+xml" href="/feed.xml" />',
         "",
       ),
@@ -114,7 +129,8 @@ describe("discoverUrls", () => {
           ok: true,
           status: 200,
           headers: {
-            get: (h: string) => (h === "content-type" ? "application/rss+xml" : null),
+            get: (h: string) =>
+              h === "content-type" ? "application/rss+xml" : null,
           },
           text: async () => RSS_FEED,
         },
@@ -125,7 +141,11 @@ describe("discoverUrls", () => {
       homepage: HOMEPAGE_HTML,
       signal: AbortSignal.timeout(5000),
     });
-    expect(urls.map((url) => url.href)).toContain("https://acme.com/blog/post-1");
-    expect(urls.map((url) => url.href)).toContain("https://acme.com/blog/post-2");
+    expect(urls.map((url) => url.href)).toContain(
+      "https://acme.com/blog/post-1",
+    );
+    expect(urls.map((url) => url.href)).toContain(
+      "https://acme.com/blog/post-2",
+    );
   });
 });

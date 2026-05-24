@@ -19,7 +19,10 @@ type MockResponse = {
 type FixtureMap = Record<string, MockResponse>;
 
 export function mockFetch(responses: FixtureMap) {
-  return async (url: string | URL, _init?: RequestInit): Promise<MockResponse> => {
+  return async (
+    url: string | URL,
+    _init?: RequestInit,
+  ): Promise<MockResponse> => {
     const key = url.toString();
     return responses[key] ?? notFound();
   };
@@ -298,7 +301,10 @@ export function passingSite(): Record<
     "https://acme.com/about": text(SAMPLE_PAGE_WITH_LD),
     "https://acme.com/pricing": text(SAMPLE_PAGE_CONTENT),
     "https://acme.com/blog": text(SAMPLE_PAGE_CONTENT),
-    "https://acme.com.md": text("# Acme Corp\n\nWelcome to Acme Corp.", "text/markdown"),
+    "https://acme.com.md": text(
+      "# Acme Corp\n\nWelcome to Acme Corp.",
+      "text/markdown",
+    ),
   };
 }
 

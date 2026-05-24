@@ -1,6 +1,8 @@
 import { data } from "react-router";
+
 import { getProgress } from "~/lib/aiLegibility/progress.server";
 import { requireSiteAccess } from "~/lib/auth.server";
+
 import type { Route } from "./+types/site.$domain_.ai-legibility.status";
 
 export async function loader({ request, params }: Route.LoaderArgs) {

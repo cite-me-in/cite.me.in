@@ -5,6 +5,7 @@
  */
 
 import { parseHTML } from "linkedom";
+
 import type { CheckResult } from "~/lib/aiLegibility/types";
 
 const OG_PROPERTIES = ["og:title", "og:type", "og:image", "og:url"] as const;
@@ -25,13 +26,17 @@ function checkPage(html: string): {
   const description = descriptionEl?.getAttribute("content") ?? undefined;
   const hasDescription = !!description && description.length > 0;
 
-  const canonicalEl = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+  const canonicalEl = document.querySelector(
+    'link[rel="canonical"]',
+  ) as HTMLLinkElement | null;
   const canonical = canonicalEl?.getAttribute("href") ?? undefined;
   const hasCanonical = !!canonical;
 
   const ogMatches: Record<string, string | undefined> = {};
   for (const prop of OG_PROPERTIES) {
-    const el = document.querySelector(`meta[property="${prop}"]`) as HTMLMetaElement | null;
+    const el = document.querySelector(
+      `meta[property="${prop}"]`,
+    ) as HTMLMetaElement | null;
     ogMatches[prop] = el?.getAttribute("content") ?? undefined;
   }
 

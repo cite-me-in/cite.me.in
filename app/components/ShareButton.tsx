@@ -1,6 +1,7 @@
 import { toPng } from "html-to-image";
 import { Loader2Icon, Share2Icon } from "lucide-react";
 import { useState } from "react";
+
 import { Button, type ButtonProps } from "~/components/ui/Button";
 import base64ToBlob from "~/lib/base64ToBlob";
 
@@ -29,7 +30,11 @@ export default function ShareButton({
             skipFonts: true,
             backgroundColor: "white",
             type: "image/png",
-            filter: (node) => !(node instanceof HTMLElement && node.dataset.slot === "card-footer"),
+            filter: (node) =>
+              !(
+                node instanceof HTMLElement &&
+                node.dataset.slot === "card-footer"
+              ),
           });
           const blob = base64ToBlob(dataUrl);
           const file = new File([blob], "ai-legibility-score.png", {

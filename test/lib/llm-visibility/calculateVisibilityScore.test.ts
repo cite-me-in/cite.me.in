@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import calculateVisibilityScore from "~/lib/llm-visibility/calculateVisibilityScore";
 
 const DOMAIN = "example.com";
@@ -99,7 +100,12 @@ describe("calculateVisibilityScore", () => {
     // domain gets 1 of 4 total citations → 25%
     const queries = [
       {
-        citations: ["https://example.com/a", "https://b.com", "https://c.com", "https://d.com"],
+        citations: [
+          "https://example.com/a",
+          "https://b.com",
+          "https://c.com",
+          "https://d.com",
+        ],
         text: "",
       },
     ];

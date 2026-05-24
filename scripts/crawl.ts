@@ -8,6 +8,7 @@
  */
 
 import { execSync } from "node:child_process";
+
 import { normalizeDomain } from "~/lib/isSameDomain";
 import prisma from "~/lib/prisma.server";
 import crawl from "~/lib/scrape/crawl";
@@ -15,7 +16,9 @@ import summarize from "~/lib/scrape/summarize";
 
 const domain = normalizeDomain(process.argv[2]);
 if (!domain) {
-  console.error("Usage: ./scripts/crawl.ts <domain> [maxPages] [maxWords] [maxSeconds]");
+  console.error(
+    "Usage: ./scripts/crawl.ts <domain> [maxPages] [maxWords] [maxSeconds]",
+  );
   process.exit(1);
 }
 

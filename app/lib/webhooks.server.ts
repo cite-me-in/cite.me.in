@@ -1,7 +1,9 @@
 import crypto from "node:crypto";
+
 import { ms } from "convert";
 import debug from "debug";
 import { parallel } from "radashi";
+
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import prisma from "~/lib/prisma.server";
 import type { Prisma, WebhookDelivery } from "~/prisma";
@@ -103,7 +105,10 @@ export async function attemptDelivery(
   }
 }
 
-async function scheduleRetry(delivery: WebhookDelivery, lastError: string): Promise<void> {
+async function scheduleRetry(
+  delivery: WebhookDelivery,
+  lastError: string,
+): Promise<void> {
   const attempts = delivery.attempts + 1;
   await prisma.webhookDelivery.update({
     where: { id: delivery.id },

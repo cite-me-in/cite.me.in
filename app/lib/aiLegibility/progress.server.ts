@@ -1,7 +1,9 @@
 import { convert } from "convert";
 import debug from "debug";
 import Redis from "ioredis";
+
 import envVars from "~/lib/envVars.server";
+
 import type { ScanProgress, ScanResult } from "./types";
 
 const logger = debug("ai-legibility:redis");
@@ -17,7 +19,11 @@ export async function appendLog({
   return await getRedis().rpush(logKey(domain), line);
 }
 
-export async function startNewScan({ domain }: { domain: string }): Promise<void> {
+export async function startNewScan({
+  domain,
+}: {
+  domain: string;
+}): Promise<void> {
   const redis = getRedis();
   const pipeline = redis.pipeline();
   pipeline.del(logKey(domain));
@@ -38,7 +44,13 @@ export async function setStatus({
   await redis.expire(logKey(domain), TTL);
 }
 
-export async function setResult({ result, domain }: { result: ScanResult; domain: string }) {
+export async function setResult({
+  result,
+  domain,
+}: {
+  result: ScanResult;
+  domain: string;
+}) {
   const redis = getRedis();
   await redis.set(resultKey(domain), JSON.stringify(result), "EX", TTL);
 }
@@ -59,7 +71,8 @@ export async function getProgress({
       return { lines, done: false, nextOffset: offset + lines.length };
     case "complete": {
       const resultJson = await redis.get(resultKey(domain));
-      if (!resultJson) return { lines, done: true, nextOffset: offset + lines.length };
+      if (!resultJson)
+        return { lines, done: true, nextOffset: offset + lines.length };
       const result = JSON.parse(resultJson) as ScanResult;
       return { lines, done: true, nextOffset: offset + lines.length, result };
     }

@@ -1,5 +1,7 @@
 import { Section, Text } from "react-email";
+
 import Button from "~/components/email/Button";
+
 import { sendEmail } from "./sendEmails";
 
 export default async function sendSiteInvitationEmail({
@@ -16,7 +18,11 @@ export default async function sendSiteInvitationEmail({
   await sendEmail({
     isTransactional: true,
     email: (
-      <SiteInvitationEmail siteDomain={siteDomain} invitedByEmail={invitedByEmail} url={url} />
+      <SiteInvitationEmail
+        siteDomain={siteDomain}
+        invitedByEmail={invitedByEmail}
+        url={url}
+      />
     ),
     subject: `${invitedByEmail} invited you to ${siteDomain} on Cite.me.in`,
     sendTo: { email, unsubscribed: false },
@@ -36,14 +42,15 @@ function SiteInvitationEmail({
     <Section>
       <Text className="text-text my-4 text-base leading-relaxed">Hello,</Text>
       <Text className="text-text my-4 text-base leading-relaxed">
-        {invitedByEmail} has invited you to join <strong>{siteDomain}</strong> on Cite.me.in.
+        {invitedByEmail} has invited you to join <strong>{siteDomain}</strong>{" "}
+        on Cite.me.in.
       </Text>
       <Section className="my-8 text-center">
         <Button href={url}>Accept Invitation</Button>
       </Section>
       <Text className="text-text my-4 text-base leading-relaxed">
-        This invitation expires in 7 days. If you don't have an account yet, you'll be asked to
-        create one.
+        This invitation expires in 7 days. If you don't have an account yet,
+        you'll be asked to create one.
       </Text>
       <Text className="text-text my-4 text-base leading-relaxed">
         Best regards,

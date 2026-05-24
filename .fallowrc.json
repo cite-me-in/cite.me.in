@@ -24,9 +24,21 @@
     "test/helpers/suite.setup.ts"
   ],
   "ignoreExports": [
-    { "file": "app/lib/llm-visibility/claudeClient.server.ts", "exports": ["*"] },
-    { "file": "app/lib/llm-visibility/geminiClient.server.ts", "exports": ["*"] },
-    { "file": "app/lib/llm-visibility/openaiClient.server.ts", "exports": ["*"] },
-    { "file": "app/lib/llm-visibility/perplexityClient.server.ts", "exports": ["*"] }
+    {
+      "file": "app/lib/llm-visibility/claudeClient.server.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "app/lib/llm-visibility/geminiClient.server.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "app/lib/llm-visibility/openaiClient.server.ts",
+      "exports": ["*"]
+    },
+    {
+      "file": "app/lib/llm-visibility/perplexityClient.server.ts",
+      "exports": ["*"]
+    }
   ]
 }

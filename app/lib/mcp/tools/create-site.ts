@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import { verifyBearerToken } from "~/lib/mcp/auth";
 import prisma from "~/lib/prisma.server";
 
@@ -9,7 +10,10 @@ export default {
     domain: z.string().describe("The domain (e.g., example.com)"),
   }),
 
-  handler: async ({ domain }: { domain: string }, extra: { authInfo?: { token?: string } }) => {
+  handler: async (
+    { domain }: { domain: string },
+    extra: { authInfo?: { token?: string } },
+  ) => {
     try {
       const userId = await verifyBearerToken(extra.authInfo?.token);
 
@@ -38,7 +42,11 @@ export default {
         content: [
           {
             type: "text" as const,
-            text: JSON.stringify({ ...site, message: `Site ${domain} created` }, null, 2),
+            text: JSON.stringify(
+              { ...site, message: `Site ${domain} created` },
+              null,
+              2,
+            ),
           },
         ],
       };

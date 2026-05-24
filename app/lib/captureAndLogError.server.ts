@@ -1,15 +1,18 @@
 import { createWriteStream } from "node:fs";
 import { resolve } from "node:path";
+
 import { Logtail } from "@logtail/node";
 import {
   captureException as sentryCaptureException,
   type ExclusiveEventHintOrCaptureContext,
 } from "@sentry/react-router";
 import debug from "debug";
+
 import envVars from "./envVars.server";
 
 const logFile =
-  process.env.NODE_ENV === "test" && createWriteStream(resolve("server.log"), { flags: "a" });
+  process.env.NODE_ENV === "test" &&
+  createWriteStream(resolve("server.log"), { flags: "a" });
 
 const logger = debug("server");
 
@@ -37,7 +40,10 @@ export default function captureAndLogError(
   } else {
     logger(error);
     console.error(error);
-    if (logFile) logFile.write(`${error instanceof Error ? error.message : String(error)}\n`);
+    if (logFile)
+      logFile.write(
+        `${error instanceof Error ? error.message : String(error)}\n`,
+      );
     if (logtail) logtail.error(String(error), hints).catch(() => {});
   }
 }

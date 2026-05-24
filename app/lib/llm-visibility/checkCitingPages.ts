@@ -1,4 +1,5 @@
 import { parallel } from "radashi";
+
 import checkCitingPageHealth from "~/lib/citingPageHealth.server";
 import { daysAgo } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
@@ -28,7 +29,9 @@ export default async function checkCitingPages({
   });
 
   return await parallel({ limit: 10 }, pages, async (page) => {
-    const { statusCode, contentHash, isHealthy } = await checkCitingPageHealth(page.url);
+    const { statusCode, contentHash, isHealthy } = await checkCitingPageHealth(
+      page.url,
+    );
 
     await prisma.citingPage.update({
       where: { id: page.id },

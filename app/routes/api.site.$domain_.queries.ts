@@ -1,7 +1,9 @@
 import { data } from "react-router";
+
 import { verifySiteAccess } from "~/lib/api/apiAuth.server";
 import { SiteQueriesSchema } from "~/lib/api/openapi";
 import prisma from "~/lib/prisma.server";
+
 import type { Route } from "./+types/api.site.$domain_.queries";
 
 export async function loader({ request, params }: Route.LoaderArgs) {
@@ -35,7 +37,14 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   return data(
     SiteQueriesSchema.parse({
       platforms: platforms.map(
-        ({ model, onDate, platform, queries, sentimentLabel, sentimentSummary }) => ({
+        ({
+          model,
+          onDate,
+          platform,
+          queries,
+          sentimentLabel,
+          sentimentSummary,
+        }) => ({
           model,
           onDate,
           platform,

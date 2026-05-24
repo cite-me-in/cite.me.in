@@ -1,4 +1,5 @@
 import debug from "debug";
+
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
 import addSiteQueries, {
@@ -10,9 +11,13 @@ import addSiteQueries, {
 import { requireSiteAccess } from "~/lib/auth.server";
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
-import { hasWordChanges, isMeaningfulSentence } from "~/lib/llm-visibility/queryValidation";
+import {
+  hasWordChanges,
+  isMeaningfulSentence,
+} from "~/lib/llm-visibility/queryValidation";
 import upsertCitingPages from "~/lib/llm-visibility/upsertCitingPages";
 import prisma from "~/lib/prisma.server";
+
 import type { Route } from "./+types/route";
 import AddQueriesGroup from "./AddQueriesGroup";
 import GroupOfQueries from "./GroupOfQueries";
@@ -23,7 +28,9 @@ const logger = debug("server");
 export const handle = { siteNav: true };
 
 export function meta({ loaderData }: Route.MetaArgs) {
-  return [{ title: `Citation Queries — ${loaderData?.site.domain} | Cite.me.in` }];
+  return [
+    { title: `Citation Queries — ${loaderData?.site.domain} | Cite.me.in` },
+  ];
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
@@ -144,8 +151,9 @@ export default function SiteQueriesPage({ loaderData }: Route.ComponentProps) {
       />
 
       <p className="text-foreground/60 text-base">
-        These queries are run against AI platforms to check where your site is cited. Organize them
-        into groups by topic or intent (e.g. <code className="font-mono">1. discovery</code>,{" "}
+        These queries are run against AI platforms to check where your site is
+        cited. Organize them into groups by topic or intent (e.g.{" "}
+        <code className="font-mono">1. discovery</code>,{" "}
         <code className="font-mono">2. active_search</code>).
       </p>
 
@@ -156,7 +164,8 @@ export default function SiteQueriesPage({ loaderData }: Route.ComponentProps) {
           <div className="rounded-base bg-secondary-background shadow-shadow border-2 border-black p-12 text-center">
             <p className="mb-2 text-xl font-bold">No queries yet</p>
             <p className="text-foreground/60 text-base">
-              Add groups and queries to track your citation visibility across AI platforms.
+              Add groups and queries to track your citation visibility across AI
+              platforms.
             </p>
           </div>
         ) : (

@@ -9,7 +9,8 @@ const categories: { group: string; intent: string }[] = [
   },
   {
     group: "3. comparison",
-    intent: "User is comparing options; your site should appear as a credible choice",
+    intent:
+      "User is comparing options; your site should appear as a credible choice",
   },
 ];
 

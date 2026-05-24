@@ -1,8 +1,10 @@
 # AI Legibility Checker
 
-A diagnostic tool that validates whether a website is readable by AI agents — ChatGPT, Claude, Gemini, Perplexity, and others — and provides actionable fixes.
+A diagnostic tool that validates whether a website is readable by AI agents —
+ChatGPT, Claude, Gemini, Perplexity, and others — and provides actionable fixes.
 
-The scan runs **16 checks** organized into **3 categories** that correspond to the AI agent's experience: discovery, comprehension, and access.
+The scan runs **16 checks** organized into **3 categories** that correspond to
+the AI agent's experience: discovery, comprehension, and access.
 
 ---
 
@@ -10,15 +12,18 @@ The scan runs **16 checks** organized into **3 categories** that correspond to t
 
 ### Discovered — "Can AI agents find all my content?"
 
-Tests whether AI crawlers can locate your pages through standard and emerging discovery mechanisms.
+Tests whether AI crawlers can locate your pages through standard and emerging
+discovery mechanisms.
 
 ### Trusted — "Does my content present well when cited?"
 
-Tests whether your pages return real, parseable content with proper metadata so AI agents can accurately reference and summarize them.
+Tests whether your pages return real, parseable content with proper metadata so
+AI agents can accurately reference and summarize them.
 
 ### Welcomed — "Are AI crawlers allowed on my site?"
 
-Tests access control signals — robots.txt, noindex directives, content permissions, and real-world bot traffic behavior.
+Tests access control signals — robots.txt, noindex directives, content
+permissions, and real-world bot traffic behavior.
 
 ---
 
@@ -59,7 +64,8 @@ Tests access control signals — robots.txt, noindex directives, content permiss
 
 ## Diagnostic Flow
 
-The checks have data dependencies — earlier checks produce results consumed by later ones. The execution order is:
+The checks have data dependencies — earlier checks produce results consumed by
+later ones. The execution order is:
 
 ```
   ┌─────────────────────────────────────────────────────────────┐
@@ -143,7 +149,8 @@ The checks have data dependencies — earlier checks produce results consumed by
 
 ## Effort Estimation
 
-Estimated time to implement a fix for each check, ordered from quickest to most involved:
+Estimated time to implement a fix for each check, ordered from quickest to most
+involved:
 
 | Effort     | Checks                                                                                                               |
 | ---------- | -------------------------------------------------------------------------------------------------------------------- |
@@ -208,15 +215,20 @@ One contextual suggestion is always generated:
 
 **Hidden LLM hint** (2 min)
 
-> Add a visually-hidden `<div>` to your pages that tells AI agents where to find clean Markdown versions. When someone pastes your URL into ChatGPT or Claude, the AI reads the rendered text and can follow the hint to get better content.
+> Add a visually-hidden `<div>` to your pages that tells AI agents where to find
+> clean Markdown versions. When someone pastes your URL into ChatGPT or Claude,
+> the AI reads the rendered text and can follow the hint to get better content.
 
-Dynamic per-check suggestions (e.g., "Add llms.txt", "Fix noindex on homepage") are planned for a future release.
+Dynamic per-check suggestions (e.g., "Add llms.txt", "Fix noindex on homepage")
+are planned for a future release.
 
 ---
 
 ## AI Bot Traffic — Detailed Methodology
 
-The "AI bot traffic" check makes real HTTP requests using **7 AI bot User-Agent strings** against the homepage and up to 2 randomly selected sample pages (21 total requests).
+The "AI bot traffic" check makes real HTTP requests using **7 AI bot User-Agent
+strings** against the homepage and up to 2 randomly selected sample pages (21
+total requests).
 
 **User-Agents tested:**
 
@@ -230,7 +242,14 @@ The "AI bot traffic" check makes real HTTP requests using **7 AI bot User-Agent 
 
 **Block detection criteria:**
 
-- **HTTP status code** — Any response with status 401 (Unauthorized), 403 (Forbidden), or 429 (Too Many Requests) is treated as a block.
-- **Content pattern matching** — If the response body is unusually short for the requested page and matches common WAF/CDN block page patterns (e.g., containing "blocked", "access denied", "challenge", "verify your browser", CAPTCHA-related content), it's treated as a block even if the status code is 200.
+- **HTTP status code** — Any response with status 401 (Unauthorized), 403
+  (Forbidden), or 429 (Too Many Requests) is treated as a block.
+- **Content pattern matching** — If the response body is unusually short for the
+  requested page and matches common WAF/CDN block page patterns (e.g.,
+  containing "blocked", "access denied", "challenge", "verify your browser",
+  CAPTCHA-related content), it's treated as a block even if the status code
+  is 200.
 
-**Scoring:** Each page gets a pass/fail per User-Agent. A page passes if all 7 User-Agents receive real content. The overall check passes if 0 out of 21 requests are blocked.
+**Scoring:** Each page gets a pass/fail per User-Agent. A page passes if all 7
+User-Agents receive real content. The overall check passes if 0 out of 21
+requests are blocked.

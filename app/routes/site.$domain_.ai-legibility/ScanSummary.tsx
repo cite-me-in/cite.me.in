@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { twMerge } from "tailwind-merge";
+
 import ShareButton from "~/components/ShareButton";
 import { Badge } from "~/components/ui/Badge";
 import {
@@ -49,7 +50,9 @@ export default function ScanSummary({
     <Card ref={scoreCardRef}>
       <CardHeader>
         <CardTitle>AI Legibility Score</CardTitle>
-        <p className="text-foreground/60 text-center font-mono text-base">{domain}</p>
+        <p className="text-foreground/60 text-center font-mono text-base">
+          {domain}
+        </p>
       </CardHeader>
       <CardContent className="mb-0 flex flex-col items-center gap-4">
         <RadialGauge summary={summary} />
@@ -68,7 +71,9 @@ export default function ScanSummary({
                   onClick={() => handleCategoryClick(category.key)}
                   className="flex min-h-11 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg px-4 py-2 transition-all hover:scale-105"
                 >
-                  <div className={twMerge("text-base font-bold", category.color)}>
+                  <div
+                    className={twMerge("text-base font-bold", category.color)}
+                  >
                     {category.title}
                   </div>
                   <div className="text-foreground/50 text-xl">

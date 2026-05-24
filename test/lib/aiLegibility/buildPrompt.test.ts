@@ -1,4 +1,5 @@
 import { expect, it } from "vitest";
+
 import buildPrompt from "~/lib/aiLegibility/buildPrompt";
 import type { CheckResult } from "~/lib/aiLegibility/types";
 
@@ -44,7 +45,9 @@ it("should include skillURL when present", () => {
 
 it("should include resource links when present", () => {
   const result = buildPrompt(baseCheck);
-  expect(result).toContain("Docs: https://developers.google.com/search/docs/robots");
+  expect(result).toContain(
+    "Docs: https://developers.google.com/search/docs/robots",
+  );
 });
 
 it("should skip skillURL and fixExample when absent", () => {

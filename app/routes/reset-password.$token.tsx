@@ -1,8 +1,10 @@
 import { Link, redirect } from "react-router";
 import invariant from "tiny-invariant";
+
 import AuthForm from "~/components/ui/AuthForm";
 import { createSession } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
+
 import type { Route } from "./+types/reset-password.$token";
 
 export async function loader({ params, request }: Route.LoaderArgs) {
@@ -32,7 +34,8 @@ export default function ResetPassword() {
       title="Link expired"
       form={
         <p>
-          This link is invalid or has already been used. Request a new one from the{" "}
+          This link is invalid or has already been used. Request a new one from
+          the{" "}
           <Link to="/password-recovery" className="text-blue-500 underline">
             password recovery page
           </Link>

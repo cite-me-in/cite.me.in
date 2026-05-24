@@ -2,7 +2,10 @@
 
 ## Overview
 
-Introduce four explicit access tiers — `trial`, `paid`, `cancelled`, `gratis` — stored as a `plan` enum on the `User` model. All tier-based decisions (processing eligibility, digest eligibility, processing frequency) flow through one central module: `app/lib/userPlan.server.ts`.
+Introduce four explicit access tiers — `trial`, `paid`, `cancelled`, `gratis` —
+stored as a `plan` enum on the `User` model. All tier-based decisions
+(processing eligibility, digest eligibility, processing frequency) flow through
+one central module: `app/lib/userPlan.server.ts`.
 
 ## Tiers
 
@@ -35,7 +38,9 @@ model User {
 
 ### Add `Site.lastProcessedAt`
 
-Decouples "when was a citation run done" from `digestSentAt` ("when was the digest email sent"). The cron previously conflated these — all processing was gated behind `digestSentAt < 7 days ago`, preventing daily runs for paid users.
+Decouples "when was a citation run done" from `digestSentAt` ("when was the
+digest email sent"). The cron previously conflated these — all processing was
+gated behind `digestSentAt < 7 days ago`, preventing daily runs for paid users.
 
 ```prisma
 model Site {
@@ -46,7 +51,9 @@ model Site {
 
 ### Remove `Account.status`
 
-`User.plan` is now the single authoritative source of truth. `Account` becomes a pure Stripe metadata store (`stripeCustomerId`, `stripeSubscriptionId`, `interval`).
+`User.plan` is now the single authoritative source of truth. `Account` becomes a
+pure Stripe metadata store (`stripeCustomerId`, `stripeSubscriptionId`,
+`interval`).
 
 ### Backfill migration
 
@@ -82,7 +89,10 @@ export function processingIntervalHours(plan: Plan): number {
 
 // Whether a site should be processed right now.
 // Trial expires after 25 days.
-export function isProcessingEligible(user: { plan: Plan; createdAt: Date }): boolean {
+export function isProcessingEligible(user: {
+  plan: Plan;
+  createdAt: Date;
+}): boolean {
   if (user.plan === "cancelled") return false;
   if (user.plan === "trial") return daysSince(user.createdAt) < TRIAL_DAYS;
   return true; // paid, gratis
@@ -90,14 +100,18 @@ export function isProcessingEligible(user: { plan: Plan; createdAt: Date }): boo
 
 // Whether to include this site in the weekly digest.
 // Same eligibility as processing.
-export function isDigestEligible(user: { plan: Plan; createdAt: Date }): boolean {
+export function isDigestEligible(user: {
+  plan: Plan;
+  createdAt: Date;
+}): boolean {
   return isProcessingEligible(user);
 }
 ```
 
 ## Processing pipeline (`prepareSites`)
 
-The Prisma query filters by plan and trial age at the DB level, then the in-memory filter applies the per-tier `lastProcessedAt` interval:
+The Prisma query filters by plan and trial age at the DB level, then the
+in-memory filter applies the per-tier `lastProcessedAt` interval:
 
 ```ts
 // DB query: only eligible owners
@@ -118,11 +132,14 @@ const due = sites.filter((site) => {
 });
 ```
 
-After processing, `lastProcessedAt` is set to `now()`. `digestSentAt` is only updated when the digest email is actually sent. The cron schedule remains hourly — no second cron needed.
+After processing, `lastProcessedAt` is set to `now()`. `digestSentAt` is only
+updated when the digest email is actually sent. The cron schedule remains hourly
+— no second cron needed.
 
 ## Stripe webhook (`api.stripe.webhook.ts`)
 
-**`checkout.session.completed`** — set `User.plan = "paid"` and upsert Account for Stripe metadata:
+**`checkout.session.completed`** — set `User.plan = "paid"` and upsert Account
+for Stripe metadata:
 
 ```ts
 await prisma.$transaction([
@@ -131,7 +148,8 @@ await prisma.$transaction([
 ]);
 ```
 
-**`customer.subscription.deleted`** — set `User.plan = "cancelled"` and emit webhook notification (currently missing):
+**`customer.subscription.deleted`** — set `User.plan = "cancelled"` and emit
+webhook notification (currently missing):
 
 ```ts
 await prisma.user.update({
@@ -141,7 +159,10 @@ await prisma.user.update({
 await emitWebhookEvent("subscription.cancelled", { userId: account.userId });
 ```
 
-**21-day payment failure rule** — configure in Stripe dashboard: _Subscriptions → Settings → Manage failed payments → Cancel after 21 days_. This fires `customer.subscription.deleted` which the code already handles. No custom logic needed.
+**21-day payment failure rule** — configure in Stripe dashboard: _Subscriptions
+→ Settings → Manage failed payments → Cancel after 21 days_. This fires
+`customer.subscription.deleted` which the code already handles. No custom logic
+needed.
 
 ## Callsites to update
 

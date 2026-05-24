@@ -1,9 +1,11 @@
 import { Section, Text } from "react-email";
+
 import { brandReminderText } from "~/components/email/BrandReminder";
 import Button from "~/components/email/Button";
 import prices from "~/data/stripe-prices.json";
 import { daysAgo } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
+
 import { sendEmail } from "./sendEmails";
 
 export default async function sendTrialEndingEmails() {
@@ -54,11 +56,14 @@ export async function sendTrialEndingEmail({
       <Section>
         <Text>Your free trial for {domain} ends in 2 days.</Text>
         <Text>
-          {brandReminderText({ domain, citations: citationCount })} If you'd like to keep your
-          history and continue daily runs, upgrade to Pro for ${prices.monthlyAmount}/month.
+          {brandReminderText({ domain, citations: citationCount })} If you'd
+          like to keep your history and continue daily runs, upgrade to Pro for
+          ${prices.monthlyAmount}/month.
         </Text>
         <Section className="my-8 text-center">
-          <Button href={new URL("/upgrade", import.meta.env.VITE_APP_URL).toString()}>
+          <Button
+            href={new URL("/upgrade", import.meta.env.VITE_APP_URL).toString()}
+          >
             Upgrade to Pro
           </Button>
         </Section>

@@ -1,6 +1,8 @@
 import { data } from "react-router";
+
 import { authenticateClient, createAccessToken } from "~/lib/oauth/server";
 import prisma from "~/lib/prisma.server";
+
 import type { Route } from "./+types/oauth.device.token";
 
 export async function action({ request }: Route.ActionArgs) {
@@ -39,7 +41,8 @@ export async function action({ request }: Route.ActionArgs) {
     throw data({ error: "expired_token" }, { status: 400 });
   }
 
-  if (!storedDeviceCode.userId) throw data({ error: "authorization_pending" }, { status: 400 });
+  if (!storedDeviceCode.userId)
+    throw data({ error: "authorization_pending" }, { status: 400 });
 
   await prisma.oAuthDeviceCode.delete({ where: { code: deviceCode } });
 

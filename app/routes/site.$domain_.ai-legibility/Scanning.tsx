@@ -2,6 +2,7 @@ import { ms } from "convert";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useInterval } from "usehooks-ts";
+
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import Spinner from "~/components/ui/Spinner";
 import type { ScanResult } from "~/lib/aiLegibility/types";
@@ -16,7 +17,9 @@ export default function Scanning({ domain }: { domain: string }) {
 
   const handlePoll = useCallback(async () => {
     try {
-      const res = await fetch(`/site/${domain}/ai-legibility/status?offset=${offsetRef.current}`);
+      const res = await fetch(
+        `/site/${domain}/ai-legibility/status?offset=${offsetRef.current}`,
+      );
       const data = (await res.json()) as {
         lines: string[];
         done: boolean;
@@ -49,7 +52,11 @@ export default function Scanning({ domain }: { domain: string }) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          {done ? <span className="text-xl text-green-600">✓</span> : <Spinner />}
+          {done ? (
+            <span className="text-xl text-green-600">✓</span>
+          ) : (
+            <Spinner />
+          )}
           {done ? "Scan Complete!" : "Scanning\u2026"}
         </CardTitle>
       </CardHeader>
@@ -62,7 +69,9 @@ export default function Scanning({ domain }: { domain: string }) {
           ref={logRef}
           className="border-border bg-muted text-foreground/60 h-96 overflow-y-auto rounded border p-4 font-mono text-sm leading-relaxed whitespace-break-spaces"
         >
-          {lines.length === 0 && <span className="text-foreground/40">Starting ...</span>}
+          {lines.length === 0 && (
+            <span className="text-foreground/40">Starting ...</span>
+          )}
           {lines.map((line, i) => (
             <div key={i.toString()}>{line}</div>
           ))}

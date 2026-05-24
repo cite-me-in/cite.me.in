@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+
 import envVars from "~/lib/envVars.server";
 
 const client = new OpenAI({

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import checkRobotsDirectives from "~/lib/aiLegibility/checks/robotsDirectives";
 
 describe("checkRobotsDirectives", () => {

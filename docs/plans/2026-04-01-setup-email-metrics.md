@@ -1,12 +1,23 @@
 # Setup Email First-Run Metrics Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:executing-plans to implement this plan task-by-task.
+> **For Claude:** REQUIRED SUB-SKILL: Use
+> superpowers-extended-cc:executing-plans to implement this plan task-by-task.
 
-**Goal:** Enhance the site setup complete email to show first-run metrics (citations per platform, top queries, sentiment, top competitors) drawn from the initial setup pipeline run.
+**Goal:** Enhance the site setup complete email to show first-run metrics
+(citations per platform, top queries, sentiment, top competitors) drawn from the
+initial setup pipeline run.
 
-**Architecture:** `sendSiteSetupEmail` is updated to accept a `SetupMetrics` object (caller's responsibility to load it). A new `loadSetupMetrics(siteId)` helper queries `citationQueryRun` records. `setup.run.ts` calls `loadSetupMetrics` and passes the result to `sendSiteSetupEmail`. The visual test passes hardcoded fixture data directly, matching the weekly digest test pattern.
+**Architecture:** `sendSiteSetupEmail` is updated to accept a `SetupMetrics`
+object (caller's responsibility to load it). A new `loadSetupMetrics(siteId)`
+helper queries `citationQueryRun` records. `setup.run.ts` calls
+`loadSetupMetrics` and passes the result to `sendSiteSetupEmail`. The visual
+test passes hardcoded fixture data directly, matching the weekly digest test
+pattern.
 
-**Tech Stack:** React Email (`@react-email/components`), Prisma (`citationQueryRun` model), `radashi` (sum), `topCompetitors` from citations route, `getDomainMeta` from `domainMeta.server.ts`, Playwright visual regression.
+**Tech Stack:** React Email (`@react-email/components`), Prisma
+(`citationQueryRun` model), `radashi` (sum), `topCompetitors` from citations
+route, `getDomainMeta` from `domainMeta.server.ts`, Playwright visual
+regression.
 
 ---
 
@@ -124,7 +135,8 @@ cd /Users/assaf/Projects/cite.me.in
 pnpm vitest run test/routes/email.site-setup.test.ts
 ```
 
-Expected: TypeScript error — `metrics` is not a valid prop on `sendSiteSetupEmail`.
+Expected: TypeScript error — `metrics` is not a valid prop on
+`sendSiteSetupEmail`.
 
 ---
 
@@ -136,7 +148,8 @@ Expected: TypeScript error — `metrics` is not a valid prop on `sendSiteSetupEm
 
 **Step 1: Add the `SetupMetrics` type and update the function signature**
 
-After line 4 (`import { sendEmail } from "./sendEmails";`), add the type. Then update the function signature to accept `metrics`:
+After line 4 (`import { sendEmail } from "./sendEmails";`), add the type. Then
+update the function signature to accept `metrics`:
 
 ```ts
 import { Button, Column, Link, Row, Section, Text } from "@react-email/components";
@@ -202,7 +215,8 @@ export default async function sendSiteSetupEmail({
 pnpm check:type 2>&1 | head -30
 ```
 
-Expected: errors about `SiteSetupComplete` component not accepting `metrics` yet — that's fine, we'll fix in Task 3.
+Expected: errors about `SiteSetupComplete` component not accepting `metrics` yet
+— that's fine, we'll fix in Task 3.
 
 ---
 
@@ -212,7 +226,9 @@ Expected: errors about `SiteSetupComplete` component not accepting `metrics` yet
 
 - Modify: `app/emails/SiteSetupComplete.tsx`
 
-Replace the `SiteSetupComplete` component and add all helper components. The full new bottom half of the file (replacing everything from `function SiteSetupComplete` onwards):
+Replace the `SiteSetupComplete` component and add all helper components. The
+full new bottom half of the file (replacing everything from
+`function SiteSetupComplete` onwards):
 
 ```tsx
 function SiteSetupComplete({
@@ -233,8 +249,8 @@ function SiteSetupComplete({
       </Text>
 
       <Text className="my-4 text-base text-text leading-relaxed">
-        We've crawled your site, generated search queries, and checked how ChatGPT, Claude,
-        Perplexity, and Gemini cite you. Here's what we found.
+        We've crawled your site, generated search queries, and checked how
+        ChatGPT, Claude, Perplexity, and Gemini cite you. Here's what we found.
       </Text>
 
       <PlatformCitations byPlatform={metrics.byPlatform} />
@@ -260,8 +276,15 @@ function SiteSetupComplete({
   );
 }
 
-function PlatformCitations({ byPlatform }: { byPlatform: SetupMetrics["byPlatform"] }) {
-  const platforms = alphabetical(Object.entries(byPlatform), ([name]) => name).slice(0, 4);
+function PlatformCitations({
+  byPlatform,
+}: {
+  byPlatform: SetupMetrics["byPlatform"];
+}) {
+  const platforms = alphabetical(
+    Object.entries(byPlatform),
+    ([name]) => name,
+  ).slice(0, 4);
 
   return (
     <Card title="Citations found">
@@ -290,10 +313,18 @@ function PlatformCitations({ byPlatform }: { byPlatform: SetupMetrics["byPlatfor
   );
 }
 
-function SetupTopQueries({ topQueries }: { topQueries: SetupMetrics["topQueries"] }) {
+function SetupTopQueries({
+  topQueries,
+}: {
+  topQueries: SetupMetrics["topQueries"];
+}) {
   if (topQueries.length === 0) return null;
   return (
-    <Card title="↑ Top queries" subtitle="Queries most cited in your first run" withBorder>
+    <Card
+      title="↑ Top queries"
+      subtitle="Queries most cited in your first run"
+      withBorder
+    >
       <table>
         <thead>
           <tr className="text-center text-light text-xs uppercase tracking-wide">
@@ -314,9 +345,15 @@ function SetupTopQueries({ topQueries }: { topQueries: SetupMetrics["topQueries"
   );
 }
 
-function SetupSentiment({ byPlatform }: { byPlatform: SetupMetrics["byPlatform"] }) {
+function SetupSentiment({
+  byPlatform,
+}: {
+  byPlatform: SetupMetrics["byPlatform"];
+}) {
   const platforms = alphabetical(
-    Object.entries(byPlatform).filter(([, { sentimentSummary }]) => sentimentSummary),
+    Object.entries(byPlatform).filter(
+      ([, { sentimentSummary }]) => sentimentSummary,
+    ),
     ([name]) => name,
   );
   if (platforms.length === 0) return null;
@@ -334,7 +371,9 @@ function SetupSentiment({ byPlatform }: { byPlatform: SetupMetrics["byPlatform"]
         <Section key={platform} className="border-border border-b py-3">
           <Row>
             <Column className="w-1/4">
-              <Text className="text-light text-xs uppercase tracking-wide">{platform}</Text>
+              <Text className="text-light text-xs uppercase tracking-wide">
+                {platform}
+              </Text>
               <Text
                 className={twMerge(
                   "text-sm font-semibold uppercase",
@@ -345,7 +384,9 @@ function SetupSentiment({ byPlatform }: { byPlatform: SetupMetrics["byPlatform"]
               </Text>
             </Column>
             <Column>
-              <Text className="text-light text-sm leading-6">{sentimentSummary}</Text>
+              <Text className="text-light text-sm leading-6">
+                {sentimentSummary}
+              </Text>
             </Column>
           </Row>
         </Section>
@@ -354,10 +395,18 @@ function SetupSentiment({ byPlatform }: { byPlatform: SetupMetrics["byPlatform"]
   );
 }
 
-function SetupTopCompetitors({ competitors }: { competitors: SetupMetrics["competitors"] }) {
+function SetupTopCompetitors({
+  competitors,
+}: {
+  competitors: SetupMetrics["competitors"];
+}) {
   if (competitors.length === 0) return null;
   return (
-    <Card title="Top competitors" subtitle="Sites appearing in your queries" withBorder>
+    <Card
+      title="Top competitors"
+      subtitle="Sites appearing in your queries"
+      withBorder
+    >
       <table>
         <tbody>
           {competitors.map(({ domain, brandName, url, count, pct }) => (
@@ -368,7 +417,8 @@ function SetupTopCompetitors({ competitors }: { competitors: SetupMetrics["compe
                 </Link>
               </td>
               <td className="w-30 whitespace-nowrap px-2 py-4 font-bold tabular-nums">
-                {count.toLocaleString()} {count === 1 ? "citation" : "citations"}
+                {count.toLocaleString()}{" "}
+                {count === 1 ? "citation" : "citations"}
               </td>
               <td className="w-15 px-2 py-4 text-right tabular-nums">{pct}%</td>
             </tr>
@@ -403,7 +453,9 @@ function Card({
       {(title || subtitle) && (
         <Row>
           <Column className="px-5 pt-4">
-            {title && <Text className="font-bold text-2xl text-dark">{title}</Text>}
+            {title && (
+              <Text className="font-bold text-2xl text-dark">{title}</Text>
+            )}
             {subtitle && <Text className="text-light text-sm">{subtitle}</Text>}
           </Column>
         </Row>
@@ -429,7 +481,8 @@ rm /Users/assaf/Projects/cite.me.in/__screenshots__/email/site-setup.html
 pnpm vitest run test/routes/email.site-setup.test.ts
 ```
 
-Expected: all tests pass; new baselines written to `__screenshots__/email/site-setup.{png,html}`.
+Expected: all tests pass; new baselines written to
+`__screenshots__/email/site-setup.{png,html}`.
 
 **Step 4: Commit**
 
@@ -455,7 +508,9 @@ import { getDomainMeta } from "~/lib/domainMeta.server";
 import prisma from "~/lib/prisma.server";
 import { topCompetitors } from "~/routes/site.$domain_.citations/TopCompetitors";
 
-export default async function loadSetupMetrics(siteId: string): Promise<SetupMetrics> {
+export default async function loadSetupMetrics(
+  siteId: string,
+): Promise<SetupMetrics> {
   const site = await prisma.site.findUniqueOrThrow({
     where: { id: siteId },
     select: { domain: true },
@@ -486,7 +541,10 @@ export default async function loadSetupMetrics(siteId: string): Promise<SetupMet
   const queryCounts = new Map<string, number>();
   for (const run of runs)
     for (const q of run.queries)
-      queryCounts.set(q.query, (queryCounts.get(q.query) ?? 0) + q.citations.length);
+      queryCounts.set(
+        q.query,
+        (queryCounts.get(q.query) ?? 0) + q.citations.length,
+      );
 
   const topQueries = [...queryCounts.entries()]
     .sort((a, b) => b[1] - a[1])
@@ -494,7 +552,10 @@ export default async function loadSetupMetrics(siteId: string): Promise<SetupMet
     .map(([query, count]) => ({ query, count }));
 
   const allQueries = runs.flatMap((r) => r.queries);
-  const { competitors: rawCompetitors } = topCompetitors(allQueries, site.domain);
+  const { competitors: rawCompetitors } = topCompetitors(
+    allQueries,
+    site.domain,
+  );
   const competitors = await Promise.all(
     rawCompetitors.map(async (c) => ({
       ...c,

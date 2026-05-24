@@ -1,12 +1,23 @@
 # Email Link Verification Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:executing-plans to implement this plan task-by-task.
+> **For Claude:** REQUIRED SUB-SKILL: Use
+> superpowers-extended-cc:executing-plans to implement this plan task-by-task.
 
-**Goal:** Verify a user's email address when they click any link in any outgoing email, by routing all email links through a server-side proxy that sets `emailVerifiedAt` before redirecting.
+**Goal:** Verify a user's email address when they click any link in any outgoing
+email, by routing all email links through a server-side proxy that sets
+`emailVerifiedAt` before redirecting.
 
-**Architecture:** A new `/r` route acts as a proxy — it validates an HMAC token, marks the user's email as verified, then redirects. Custom `Link` and `Button` components in `app/components/email/` consume a React context set up in `sendEmails.tsx` to rewrite `href` values through `/r` before the email HTML is rendered. The dedicated email verification flow (token table, verification email, `verify-email` route) is removed.
+**Architecture:** A new `/r` route acts as a proxy — it validates an HMAC token,
+marks the user's email as verified, then redirects. Custom `Link` and `Button`
+components in `app/components/email/` consume a React context set up in
+`sendEmails.tsx` to rewrite `href` values through `/r` before the email HTML is
+rendered. The dedicated email verification flow (token table, verification
+email, `verify-email` route) is removed.
 
-**Tech Stack:** React Router (flat routes, loaders), React Email (`render()` from `@react-email/components`), Prisma (PostgreSQL), Node `crypto` HMAC (already used by `generateUnsubscribeToken`), React context (`createContext` / `useContext`).
+**Tech Stack:** React Router (flat routes, loaders), React Email (`render()`
+from `@react-email/components`), Prisma (PostgreSQL), Node `crypto` HMAC
+(already used by `generateUnsubscribeToken`), React context (`createContext` /
+`useContext`).
 
 ---
 
@@ -31,7 +42,9 @@ import envVars from "~/lib/envVars.server";
 const BASE = `http://localhost:${process.env.PORT ?? 3000}`;
 const DEST = `${envVars.VITE_APP_URL}/sites`;
 
-afterEach(() => prisma.user.deleteMany({ where: { email: { contains: "r-route-test" } } }));
+afterEach(() =>
+  prisma.user.deleteMany({ where: { email: { contains: "r-route-test" } } }),
+);
 
 describe("/r proxy route", () => {
   it("should redirect to url and mark emailVerifiedAt when token is valid", async () => {
@@ -158,7 +171,8 @@ git commit -m "feat: add /r proxy route for email link verification"
 - Create: `app/components/email/Link.tsx`
 - Create: `app/components/email/Button.tsx`
 
-No separate unit tests — these are thin wrappers verified by the email visual tests in Task 4.
+No separate unit tests — these are thin wrappers verified by the email visual
+tests in Task 4.
 
 **Step 1: Create the context**
 
@@ -205,7 +219,9 @@ export default function Link({ href, ...props }: LinkProps) {
 
 **Step 3: Create the custom Button component**
 
-All email Buttons use identical styles (`rounded-md bg-primary px-4 py-2 text-white hover:bg-primary-hover`) — bake them in as default.
+All email Buttons use identical styles
+(`rounded-md bg-primary px-4 py-2 text-white hover:bg-primary-hover`) — bake
+them in as default.
 
 Create `app/components/email/Button.tsx`:
 
@@ -259,7 +275,8 @@ git commit -m "feat: add email Link and Button components with proxy link wrappi
 
 **Step 1: Update the render call**
 
-In `app/emails/sendEmails.tsx`, add the import at the top (after existing imports):
+In `app/emails/sendEmails.tsx`, add the import at the top (after existing
+imports):
 
 ```ts
 import { EmailLinkContext } from "~/components/email/context";
@@ -267,14 +284,18 @@ import { EmailLinkContext } from "~/components/email/context";
 
 Then update the `render(...)` call (lines 58–67) to wrap with the provider.
 
-The existing token variable (line 52) is already the HMAC of `user.email` — reuse it.
+The existing token variable (line 52) is already the HMAC of `user.email` —
+reuse it.
 
 Change:
 
 ```tsx
 const html = await pretty(
   await render(
-    <EmailLayout subject={subject} unsubscribeURL={canUnsubscribe ? unsubscribeURL : undefined}>
+    <EmailLayout
+      subject={subject}
+      unsubscribeURL={canUnsubscribe ? unsubscribeURL : undefined}
+    >
       {email}
     </EmailLayout>,
   ),
@@ -287,7 +308,10 @@ To:
 const html = await pretty(
   await render(
     <EmailLinkContext.Provider value={{ email: user.email, token }}>
-      <EmailLayout subject={subject} unsubscribeURL={canUnsubscribe ? unsubscribeURL : undefined}>
+      <EmailLayout
+        subject={subject}
+        unsubscribeURL={canUnsubscribe ? unsubscribeURL : undefined}
+      >
         {email}
       </EmailLayout>
     </EmailLinkContext.Provider>,
@@ -306,7 +330,9 @@ git commit -m "feat: inject email link context into sendEmail render"
 
 ### Task 4: Update email templates to use custom components
 
-For each file below, swap the `Button` / `Link` import from `@react-email/components` to `~/components/email/`. Remove the now-redundant `className` from `<Button>` calls since it's baked into the component.
+For each file below, swap the `Button` / `Link` import from
+`@react-email/components` to `~/components/email/`. Remove the now-redundant
+`className` from `<Button>` calls since it's baked into the component.
 
 **Files:**
 
@@ -342,7 +368,9 @@ import Button from "~/components/email/Button";
 
 Remove `Button` from the `@react-email/components` import.
 
-Remove `className="rounded-md bg-primary px-4 py-2 text-white hover:bg-primary-hover"` from the `<Button>` — it's now the default.
+Remove
+`className="rounded-md bg-primary px-4 py-2 text-white hover:bg-primary-hover"`
+from the `<Button>` — it's now the default.
 
 **Step 3: Update SiteInvitation.tsx**
 
@@ -352,7 +380,8 @@ Same as PasswordRecovery — swap import, remove className.
 
 Swap `Button` import. Remove className from `<Button>`.
 
-The `<Link>` in SiteSetupComplete (line 251) uses `className="text-dark no-underline"` — keep that className, it's not a default.
+The `<Link>` in SiteSetupComplete (line 251) uses
+`className="text-dark no-underline"` — keep that className, it's not a default.
 
 **Step 5: Update WeeklyDigest.tsx**
 
@@ -362,13 +391,16 @@ The `<Link>` on line 310 uses `className="text-dark no-underline"` — keep it.
 
 **Step 6: Verify email tests still pass**
 
-The visual tests render email HTML and compare screenshots — run them to catch any rendering regressions:
+The visual tests render email HTML and compare screenshots — run them to catch
+any rendering regressions:
 
 ```bash
 infisical --env dev run -- vitest run test/routes/email.site-setup.test.ts test/routes/email.weekly-digest.test.ts
 ```
 
-Expected: all passing. If visual snapshots fail, delete the stale `.png` / `.html` baselines in `__screenshots__/email/` and re-run — they regenerate automatically.
+Expected: all passing. If visual snapshots fail, delete the stale `.png` /
+`.html` baselines in `__screenshots__/email/` and re-run — they regenerate
+automatically.
 
 **Step 7: Commit**
 
@@ -385,7 +417,8 @@ git commit -m "feat: swap email templates to use custom Link/Button components"
 
 - Delete: `app/emails/EmailVerification.tsx`
 - Delete: `app/routes/verify-email.$token.tsx`
-- Modify: `prisma/schema.prisma` — remove `EmailVerificationToken` model and `emailVerificationTokens` relation from `User`
+- Modify: `prisma/schema.prisma` — remove `EmailVerificationToken` model and
+  `emailVerificationTokens` relation from `User`
 - Modify: `app/lib/auth.server.ts` — remove `createEmailVerificationToken`
 - Modify: `app/routes/sign-up.tsx` — remove verification email call
 
@@ -430,15 +463,23 @@ Expected: Prisma drops the `email_verification_tokens` table.
 
 **Step 4: Update auth.server.ts**
 
-Remove the `createEmailVerificationToken` function (lines 69–84) from `app/lib/auth.server.ts`.
+Remove the `createEmailVerificationToken` function (lines 69–84) from
+`app/lib/auth.server.ts`.
 
 **Step 5: Update sign-up.tsx**
 
-Remove the email verification call from the `action` in `app/routes/sign-up.tsx`. The try/catch block that calls `createEmailVerificationToken` and `sendEmailVerificationEmail` (lines 63–71) can be deleted entirely. Also remove the now-unused imports:
+Remove the email verification call from the `action` in
+`app/routes/sign-up.tsx`. The try/catch block that calls
+`createEmailVerificationToken` and `sendEmailVerificationEmail` (lines 63–71)
+can be deleted entirely. Also remove the now-unused imports:
 
 ```ts
 import sendEmailVerificationEmail from "~/emails/EmailVerification";
-import { createEmailVerificationToken, createSession, hashPassword } from "~/lib/auth.server";
+import {
+  createEmailVerificationToken,
+  createSession,
+  hashPassword,
+} from "~/lib/auth.server";
 ```
 
 Becomes:
@@ -463,7 +504,8 @@ Expected: no errors. Fix any remaining references to removed symbols.
 infisical --env dev run -- vitest run test/routes/sign-up.test.ts
 ```
 
-Expected: all passing (sign-up no longer sends a verification email, which is fine — the test doesn't check for one).
+Expected: all passing (sign-up no longer sends a verification email, which is
+fine — the test doesn't check for one).
 
 **Step 8: Commit**
 

@@ -1,10 +1,16 @@
 # API Token Simplification Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:executing-plans to implement this plan task-by-task.
+> **For Claude:** REQUIRED SUB-SKILL: Use
+> superpowers-extended-cc:executing-plans to implement this plan task-by-task.
 
-**Goal:** Encode the user ID into the API token so `/api/me` needs no email URL param and auth lookups hit the primary key.
+**Goal:** Encode the user ID into the API token so `/api/me` needs no email URL
+param and auth lookups hit the primary key.
 
-**Architecture:** Token format changes from `cite.me.in_{random}` to `cite.me.in_{userId}_{random}`. A `parseApiToken` helper extracts the userId. `verifyUserAccess` drops the `email` param; `verifySiteAccess` delegates to it then checks site membership by userId. The `api/me/$email` route becomes `api/me`.
+**Architecture:** Token format changes from `cite.me.in_{random}` to
+`cite.me.in_{userId}_{random}`. A `parseApiToken` helper extracts the userId.
+`verifyUserAccess` drops the `email` param; `verifySiteAccess` delegates to it
+then checks site membership by userId. The `api/me/$email` route becomes
+`api/me`.
 
 **Tech Stack:** React Router v7, Prisma, TypeScript, Vitest
 
@@ -21,7 +27,8 @@ The new token format embeds the userId: `cite.me.in_{userId}_{24chars}`.
 
 **Step 1: Update the test file**
 
-Replace the entire `verifyUserAccess` describe block and the token constant in `verifySiteAccess`:
+Replace the entire `verifyUserAccess` describe block and the token constant in
+`verifySiteAccess`:
 
 ```ts
 // At the top of both describe blocks, change userApiKey to:
@@ -57,13 +64,17 @@ describe("verifyUserAccess", () => {
   it("should throw 404 Response when token is unknown", async () => {
     // Wrong secret — userId exists but token doesn't match stored key
     await expect(
-      verifyUserAccess(makeRequest("cite.me.in_api-auth-test-user-1_wrongsecret")),
+      verifyUserAccess(
+        makeRequest("cite.me.in_api-auth-test-user-1_wrongsecret"),
+      ),
     ).rejects.toThrow(Response);
   });
 
   it("should throw 404 when userId in token doesn't exist", async () => {
     await expect(
-      verifyUserAccess(makeRequest("cite.me.in_nonexistent-user-id_testabcdef")),
+      verifyUserAccess(
+        makeRequest("cite.me.in_nonexistent-user-id_testabcdef"),
+      ),
     ).rejects.toThrow(Response);
   });
 });
@@ -75,7 +86,8 @@ describe("verifyUserAccess", () => {
 cd /Users/assaf/Projects/cite.me.in && infisical --env dev run -- pnpm vitest run test/lib/apiAuth.test.ts
 ```
 
-Expected: `verifyUserAccess` tests fail (wrong signature), `verifySiteAccess` tests fail (token format mismatch).
+Expected: `verifyUserAccess` tests fail (wrong signature), `verifySiteAccess`
+tests fail (token format mismatch).
 
 ---
 
@@ -95,7 +107,8 @@ export async function requireAdminApiKey(request: Request): Promise<void> {
   const auth = request.headers.get("authorization");
   if (!auth) throw new Response("Unauthorized", { status: 401 });
   const [tokenType, token] = auth.split(/\s+/);
-  if (tokenType !== "Bearer") throw new Response("Unauthorized", { status: 401 });
+  if (tokenType !== "Bearer")
+    throw new Response("Unauthorized", { status: 401 });
   if (!envVars.ADMIN_API_SECRET || token !== envVars.ADMIN_API_SECRET)
     throw new Response("Unauthorized", { status: 401 });
 }
@@ -116,7 +129,8 @@ export async function verifyUserAccess(request: Request): Promise<{
   const auth = request.headers.get("authorization");
   if (!auth) throw new Response("Unauthorized", { status: 401 });
   const [tokenType, token] = auth.split(/\s+/);
-  if (tokenType !== "Bearer") throw new Response("Unauthorized", { status: 401 });
+  if (tokenType !== "Bearer")
+    throw new Response("Unauthorized", { status: 401 });
 
   const userId = parseTokenUserId(token);
   if (!userId) throw new Response("Not found", { status: 404 });
@@ -375,7 +389,8 @@ git commit -m "feat: update OpenAPI spec — /api/me has no email param"
 
 **Step 1: Rewrite the test file**
 
-The token must now embed the user ID (`api-sites-route-user-1`), and the URL is `/api/me` (no email segment).
+The token must now embed the user ID (`api-sites-route-user-1`), and the URL is
+`/api/me` (no email segment).
 
 ```ts
 import { beforeAll, describe, expect, it } from "vitest";
@@ -421,7 +436,10 @@ beforeAll(async () => {
                   extraQueries: [],
                   text: "Some answer",
                   position: 1,
-                  citations: [`https://${DOMAIN}/page1`, `https://${DOMAIN}/page2`],
+                  citations: [
+                    `https://${DOMAIN}/page1`,
+                    `https://${DOMAIN}/page2`,
+                  ],
                 },
               },
             },
@@ -464,7 +482,9 @@ describe("GET /api/me", () => {
       expect(body.email).toBe(EMAIL);
       expect(Array.isArray(body.sites)).toBe(true);
       expect(body.sites[0].domain).toBe(DOMAIN);
-      expect(body.sites[0].createdAt).toBe(new Date().toISOString().split("T")[0]);
+      expect(body.sites[0].createdAt).toBe(
+        new Date().toISOString().split("T")[0],
+      );
     });
   });
 });
@@ -489,7 +509,8 @@ git commit -m "test: update api.me tests for new token format and /api/me route"
 
 ### Task 7: Clear existing API keys via Prisma migration
 
-Existing tokens in the database use the old format (no userId encoded). They must be cleared so users regenerate.
+Existing tokens in the database use the old format (no userId encoded). They
+must be cleared so users regenerate.
 
 **Step 1: Run the clear via Prisma in a one-off script**
 

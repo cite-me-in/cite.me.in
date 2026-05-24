@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import checkLinkHeaders from "~/lib/aiLegibility/checks/linkHeaders";
 import { HOMEPAGE_WITH_CONTENT } from "~/test/lib/aiLegibility/fixtures";
 
@@ -18,7 +19,9 @@ describe("checkLinkHeaders", () => {
     expect(result.passed).toBe(true);
     expect(result.name).toBe("Sitemap link headers");
     expect(result.message).toContain("HTTP header");
-    const headerLinks = result.details?.headerSitemapLinks as { uri: string }[] | undefined;
+    const headerLinks = result.details?.headerSitemapLinks as
+      | { uri: string }[]
+      | undefined;
     expect(headerLinks).toHaveLength(1);
     expect(headerLinks?.[0].uri).toBe("/sitemap.xml");
   });
@@ -32,7 +35,9 @@ describe("checkLinkHeaders", () => {
     });
 
     expect(result.passed).toBe(true);
-    const headerLinks = result.details?.headerSitemapLinks as { uri: string }[] | undefined;
+    const headerLinks = result.details?.headerSitemapLinks as
+      | { uri: string }[]
+      | undefined;
     expect(headerLinks).toHaveLength(2);
   });
 

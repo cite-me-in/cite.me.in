@@ -1,8 +1,10 @@
 import { TrashIcon } from "lucide-react";
 import { useFetcher } from "react-router";
+
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import { Input } from "~/components/ui/Input";
+
 import type { action } from "./route";
 
 export default function MembersSection({
@@ -34,13 +36,21 @@ export default function MembersSection({
               </span>
             </li>
             {site.siteUsers.map(({ user }) => (
-              <li key={user.id} className="flex items-center justify-between px-4 py-3">
+              <li
+                key={user.id}
+                className="flex items-center justify-between px-4 py-3"
+              >
                 <span className="font-mono text-sm">{user.email}</span>
                 {isOwner && (
                   <fetcher.Form method="post">
                     <input type="hidden" name="intent" value="remove-member" />
                     <input type="hidden" name="userId" value={user.id} />
-                    <Button type="submit" variant="destructive" size="sm" className="gap-2">
+                    <Button
+                      type="submit"
+                      variant="destructive"
+                      size="sm"
+                      className="gap-2"
+                    >
                       <TrashIcon className="size-4" />
                       Remove
                     </Button>
@@ -52,7 +62,9 @@ export default function MembersSection({
         </CardContent>
       </Card>
 
-      {isOwner && <InviteSection site={site} invitations={site.siteInvitations} />}
+      {isOwner && (
+        <InviteSection site={site} invitations={site.siteInvitations} />
+      )}
     </>
   );
 }
@@ -72,7 +84,11 @@ function InviteSection({
         <CardTitle>Invite Member</CardTitle>
       </CardHeader>
       <CardContent>
-        <fetcher.Form method="post" action={`/site/${site.domain}/invite`} className="flex gap-3">
+        <fetcher.Form
+          method="post"
+          action={`/site/${site.domain}/invite`}
+          className="flex gap-3"
+        >
           <Input
             type="email"
             name="email"
@@ -80,7 +96,11 @@ function InviteSection({
             required
             className="rounded-base flex-1 border-2 border-black bg-white px-4 py-2 font-mono text-sm focus:ring-2 focus:ring-[#F59E0B] focus:outline-none"
           />
-          <Button type="submit" disabled={fetcher.state !== "idle"} variant="secondary">
+          <Button
+            type="submit"
+            disabled={fetcher.state !== "idle"}
+            variant="secondary"
+          >
             Send Invite
           </Button>
         </fetcher.Form>
@@ -90,7 +110,10 @@ function InviteSection({
             <h3 className="text-sm font-bold">Pending Invitations</h3>
             <ul className="divide-y-2 divide-black border-2 border-black">
               {invitations.map((invitation) => (
-                <li key={invitation.id} className="flex items-center justify-between px-4 py-3">
+                <li
+                  key={invitation.id}
+                  className="flex items-center justify-between px-4 py-3"
+                >
                   <span className="font-mono text-sm">{invitation.email}</span>
                   <span className="text-foreground/60 text-xs">
                     {new Date(invitation.createdAt).toLocaleDateString()}

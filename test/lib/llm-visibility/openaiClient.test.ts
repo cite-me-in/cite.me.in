@@ -8,7 +8,10 @@ const mockCreate = vi.hoisted(() =>
         content: {
           type: "output_text";
           text: string;
-          annotations: ({ type: "url_citation"; url: string } | { type: "other"; id: string })[];
+          annotations: (
+            | { type: "url_citation"; url: string }
+            | { type: "other"; id: string }
+          )[];
         }[];
       }[];
       usage: {
@@ -61,7 +64,8 @@ describe("openaiClient", () => {
       usage: { input_tokens: 100, output_tokens: 50 },
     });
 
-    const { default: openaiClient } = await import("~/lib/llm-visibility/openaiClient.server");
+    const { default: openaiClient } =
+      await import("~/lib/llm-visibility/openaiClient.server");
 
     const result = await openaiClient({
       maxRetries: 0,
@@ -69,7 +73,10 @@ describe("openaiClient", () => {
       query: "What is the capital of France?",
     });
 
-    expect(result.citations).toEqual(["https://example.com", "https://other.com"]);
+    expect(result.citations).toEqual([
+      "https://example.com",
+      "https://other.com",
+    ]);
     expect(result.text).toBe("Paris is the capital of France.");
     expect(result.extraQueries).toEqual([]);
   });
@@ -94,7 +101,8 @@ describe("openaiClient", () => {
       usage: { input_tokens: 100, output_tokens: 50 },
     });
 
-    const { default: openaiClient } = await import("~/lib/llm-visibility/openaiClient.server");
+    const { default: openaiClient } =
+      await import("~/lib/llm-visibility/openaiClient.server");
 
     const result = await openaiClient({
       maxRetries: 0,
@@ -125,7 +133,8 @@ describe("openaiClient", () => {
       usage: { input_tokens: 100, output_tokens: 50 },
     });
 
-    const { default: openaiClient } = await import("~/lib/llm-visibility/openaiClient.server");
+    const { default: openaiClient } =
+      await import("~/lib/llm-visibility/openaiClient.server");
 
     const result = await openaiClient({
       maxRetries: 0,
@@ -138,24 +147,30 @@ describe("openaiClient", () => {
 
   it("should throw InsufficientCreditError on 402 response", async () => {
     const { APIError } = await import("openai");
-    mockCreate.mockRejectedValue(new APIError(402, {}, "Payment required", new Headers()));
-
-    const { default: openaiClient } = await import("~/lib/llm-visibility/openaiClient.server");
-
-    await expect(openaiClient({ maxRetries: 0, timeout: 0, query: "query" })).rejects.toThrow(
-      "chatgpt: insufficient credit (HTTP 402)",
+    mockCreate.mockRejectedValue(
+      new APIError(402, {}, "Payment required", new Headers()),
     );
+
+    const { default: openaiClient } =
+      await import("~/lib/llm-visibility/openaiClient.server");
+
+    await expect(
+      openaiClient({ maxRetries: 0, timeout: 0, query: "query" }),
+    ).rejects.toThrow("chatgpt: insufficient credit (HTTP 402)");
   });
 
   it("should throw InsufficientCreditError on 429 response", async () => {
     const { APIError } = await import("openai");
-    mockCreate.mockRejectedValue(new APIError(429, {}, "Rate limit exceeded", new Headers()));
-
-    const { default: openaiClient } = await import("~/lib/llm-visibility/openaiClient.server");
-
-    await expect(openaiClient({ maxRetries: 0, timeout: 0, query: "query" })).rejects.toThrow(
-      "chatgpt: insufficient credit (HTTP 429)",
+    mockCreate.mockRejectedValue(
+      new APIError(429, {}, "Rate limit exceeded", new Headers()),
     );
+
+    const { default: openaiClient } =
+      await import("~/lib/llm-visibility/openaiClient.server");
+
+    await expect(
+      openaiClient({ maxRetries: 0, timeout: 0, query: "query" }),
+    ).rejects.toThrow("chatgpt: insufficient credit (HTTP 429)");
   });
 
   it("should throw InsufficientCreditError on insufficient_quota error code", async () => {
@@ -169,22 +184,26 @@ describe("openaiClient", () => {
 
     mockCreate.mockRejectedValue(error);
 
-    const { default: openaiClient } = await import("~/lib/llm-visibility/openaiClient.server");
+    const { default: openaiClient } =
+      await import("~/lib/llm-visibility/openaiClient.server");
 
-    await expect(openaiClient({ maxRetries: 0, timeout: 0, query: "query" })).rejects.toThrow(
-      "chatgpt: insufficient credit (HTTP 429)",
-    );
+    await expect(
+      openaiClient({ maxRetries: 0, timeout: 0, query: "query" }),
+    ).rejects.toThrow("chatgpt: insufficient credit (HTTP 429)");
   });
 
   it("should not throw InsufficientCreditError on other errors", async () => {
     const { APIError } = await import("openai");
-    mockCreate.mockRejectedValue(new APIError(500, {}, "Internal Server Error", new Headers()));
-
-    const { default: openaiClient } = await import("~/lib/llm-visibility/openaiClient.server");
-
-    await expect(openaiClient({ maxRetries: 0, timeout: 0, query: "query" })).rejects.toThrow(
-      "500",
+    mockCreate.mockRejectedValue(
+      new APIError(500, {}, "Internal Server Error", new Headers()),
     );
+
+    const { default: openaiClient } =
+      await import("~/lib/llm-visibility/openaiClient.server");
+
+    await expect(
+      openaiClient({ maxRetries: 0, timeout: 0, query: "query" }),
+    ).rejects.toThrow("500");
   });
 
   it("should return empty citations when there are no annotations", async () => {
@@ -204,7 +223,8 @@ describe("openaiClient", () => {
       usage: { input_tokens: 100, output_tokens: 50 },
     });
 
-    const { default: openaiClient } = await import("~/lib/llm-visibility/openaiClient.server");
+    const { default: openaiClient } =
+      await import("~/lib/llm-visibility/openaiClient.server");
 
     const result = await openaiClient({
       maxRetries: 0,

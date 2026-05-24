@@ -1,4 +1,5 @@
 import { group, listify } from "radashi";
+
 import PLATFORMS from "~/lib/llm-visibility/platformQueries.server";
 import prisma from "~/lib/prisma.server";
 
@@ -38,10 +39,10 @@ export default async function upsertCitingPages({
   const grouped = group(citations, (c) => c.url) as {
     [url: string]: { url: string }[];
   };
-  const counts = listify<{ url: string }[], string, [string, number]>(grouped, (url, citations) => [
-    url,
-    citations.length,
-  ]);
+  const counts = listify<{ url: string }[], string, [string, number]>(
+    grouped,
+    (url, citations) => [url, citations.length],
+  );
 
   // Insert new URLs and delete URLs that are no longer cited.
   await prisma.citingPage.createMany({

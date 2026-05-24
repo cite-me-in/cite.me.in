@@ -1,11 +1,22 @@
 import { HttpResponse, http } from "msw";
-import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterAll,
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
+
 import runAILegibilityScan from "~/lib/aiLegibility/runAILegibilityScan";
 import msw from "~/test/mocks/msw";
+
 import { failingSite, partialSite, passingSite } from "./fixtures";
 
 const mockAppendLog = vi.fn<({ line }: { line: string }) => void>();
-const mockGetProgress = vi.fn<() => { lines: never[]; done: boolean; nextOffset: number }>();
+const mockGetProgress =
+  vi.fn<() => { lines: never[]; done: boolean; nextOffset: number }>();
 
 vi.mock("~/lib/aiLegibility/progress.server", () => ({
   appendLog: (line: string) => mockAppendLog({ line }),
@@ -78,7 +89,9 @@ describe("runScan", () => {
 
   beforeEach(() => {
     logs.length = 0;
-    mockAppendLog.mockImplementation(async ({ line }: { line: string }) => logs.push(line));
+    mockAppendLog.mockImplementation(async ({ line }: { line: string }) =>
+      logs.push(line),
+    );
     mockGetProgress.mockResolvedValue({ lines: [], done: true, nextOffset: 0 });
   });
 
@@ -188,7 +201,8 @@ describe("runScan", () => {
   });
 
   it("should normalize URL with www prefix", async () => {
-    const responses: Record<string, { body: string; contentType?: string }> = {};
+    const responses: Record<string, { body: string; contentType?: string }> =
+      {};
     for (const [key, value] of Object.entries(passingSite())) {
       responses[key.replace("https://acme.com", "https://www.acme.com")] = {
         body: value.body,
@@ -249,11 +263,19 @@ describe("runScan", () => {
 
     expect(logs.some((l) => l.includes("Checking page content"))).toBe(true);
     expect(logs.some((l) => l.includes("Checking sitemap.txt"))).toBe(true);
-    expect(logs.some((l) => l.includes("Checking sitemap link headers"))).toBe(true);
-    expect(logs.some((l) => l.includes("Checking markdown alternate links"))).toBe(true);
+    expect(logs.some((l) => l.includes("Checking sitemap link headers"))).toBe(
+      true,
+    );
+    expect(
+      logs.some((l) => l.includes("Checking markdown alternate links")),
+    ).toBe(true);
     expect(logs.some((l) => l.includes("Checking .md routes"))).toBe(true);
-    expect(logs.some((l) => l.includes("Checking markdown content negotiation"))).toBe(true);
-    expect(logs.some((l) => l.includes("Checking Content-Signal in robots.txt"))).toBe(true);
+    expect(
+      logs.some((l) => l.includes("Checking markdown content negotiation")),
+    ).toBe(true);
+    expect(
+      logs.some((l) => l.includes("Checking Content-Signal in robots.txt")),
+    ).toBe(true);
     expect(logs.some((l) => l.includes("Discovered:"))).toBe(true);
     expect(logs.some((l) => l.includes("Trusted:"))).toBe(true);
     expect(logs.some((l) => l.includes("Welcomed:"))).toBe(true);
@@ -271,7 +293,9 @@ describe("runScan", () => {
     });
 
     expect(result?.scannedAt).toBeDefined();
-    expect(new Date(result?.scannedAt ?? "").toISOString()).toBe(result?.scannedAt ?? "");
+    expect(new Date(result?.scannedAt ?? "").toISOString()).toBe(
+      result?.scannedAt ?? "",
+    );
   });
 
   it("should continue running all checks even when some fail", async () => {
@@ -286,7 +310,9 @@ describe("runScan", () => {
     });
 
     expect(result?.checks.length).toBe(16);
-    expect(result?.checks.every((c) => c.name && c.category && c.message)).toBe(true);
+    expect(result?.checks.every((c) => c.name && c.category && c.message)).toBe(
+      true,
+    );
   });
 
   it("should categorize checks correctly", async () => {
@@ -300,9 +326,15 @@ describe("runScan", () => {
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
 
-    const discoveredChecks = result?.checks.filter((c) => c.category === "discovered");
-    const trustedChecks = result?.checks.filter((c) => c.category === "trusted");
-    const welcomedChecks = result?.checks.filter((c) => c.category === "welcomed");
+    const discoveredChecks = result?.checks.filter(
+      (c) => c.category === "discovered",
+    );
+    const trustedChecks = result?.checks.filter(
+      (c) => c.category === "trusted",
+    );
+    const welcomedChecks = result?.checks.filter(
+      (c) => c.category === "welcomed",
+    );
 
     expect(discoveredChecks?.map((c) => c.name)).toEqual(
       expect.arrayContaining([

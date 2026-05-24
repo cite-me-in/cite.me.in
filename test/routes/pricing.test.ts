@@ -1,6 +1,7 @@
 import { expect } from "@playwright/test";
 import { ms } from "convert";
 import { beforeEach, describe, it } from "vitest";
+
 import prisma from "~/lib/prisma.server";
 import { goto } from "~/test/helpers/launchBrowser";
 import { port } from "~/test/helpers/launchServer";
@@ -12,8 +13,12 @@ const PASSWORD = "password123";
 
 async function fillSignUp(page: import("playwright").Page, email: string) {
   await page.getByRole("textbox", { name: "Email", exact: true }).fill(email);
-  await page.getByRole("textbox", { name: "Password", exact: true }).fill(PASSWORD);
-  await page.getByRole("textbox", { name: "Confirm password", exact: true }).fill(PASSWORD);
+  await page
+    .getByRole("textbox", { name: "Password", exact: true })
+    .fill(PASSWORD);
+  await page
+    .getByRole("textbox", { name: "Confirm password", exact: true })
+    .fill(PASSWORD);
   await page.getByRole("button", { name: "Create account" }).click();
 }
 
@@ -42,12 +47,19 @@ describe("pricing user flows", () => {
 
       await page.goto("/upgrade");
       await page.reload({ waitUntil: "load" });
-      await page.waitForFunction(() => document.body.getAttribute("data-hydrated") === "true", {
-        timeout: ms("15s"),
-      });
+      await page.waitForFunction(
+        () => document.body.getAttribute("data-hydrated") === "true",
+        {
+          timeout: ms("15s"),
+        },
+      );
 
-      await expect(page.getByRole("heading", { name: "Upgrade to Pro" })).toBeVisible();
-      await expect(page.getByRole("button", { name: /Subscribe — \$\d+\/month/ })).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: "Upgrade to Pro" }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: /Subscribe — \$\d+\/month/ }),
+      ).toBeVisible();
     });
 
     it("should show Subscribe buttons with correct form structure", async () => {
@@ -57,7 +69,9 @@ describe("pricing user flows", () => {
       const ctx = await signIn(user.id);
       const page = await goto("/upgrade", ctx);
 
-      await expect(page.getByRole("button", { name: /Subscribe — \$\d+\/month/ })).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: /Subscribe — \$\d+\/month/ }),
+      ).toBeVisible();
 
       // Verify the monthly form posts interval=monthly
       const monthlyForm = page.locator("form", {
@@ -96,7 +110,9 @@ describe("pricing user flows", () => {
     it("should show the pricing page with three tier cards", async () => {
       const page = await goto("/pricing");
 
-      await expect(page.getByRole("heading", { name: "Pricing" })).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: "Pricing" }),
+      ).toBeVisible();
       await expect(page.getByText("Free Trial", { exact: true })).toBeVisible();
       await expect(page.getByText("Pro", { exact: true })).toBeVisible();
       await expect(page.getByText("Custom", { exact: true })).toBeVisible();
@@ -128,7 +144,9 @@ describe("pricing user flows", () => {
       await page.waitForURL(`http://localhost:${port}/upgrade`);
       expect(new URL(page.url()).pathname).toBe("/upgrade");
 
-      await expect(page.getByRole("heading", { name: "Upgrade to Pro" })).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: "Upgrade to Pro" }),
+      ).toBeVisible();
     });
   });
 });

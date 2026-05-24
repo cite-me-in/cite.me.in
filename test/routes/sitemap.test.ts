@@ -1,6 +1,7 @@
 import { XMLParser } from "fast-xml-parser";
 import { expect } from "playwright/test";
 import { beforeAll, describe, it } from "vitest";
+
 import { port } from "~/test/helpers/launchServer";
 
 async function fetchSitemapMain() {
@@ -27,7 +28,9 @@ describe("sitemap.xml", () => {
 
   beforeAll(async () => {
     ({ sitemapContent, xml } = await fetchSitemapMain());
-    const urls = Array.isArray(xml.urlset.url) ? xml.urlset.url : [xml.urlset.url];
+    const urls = Array.isArray(xml.urlset.url)
+      ? xml.urlset.url
+      : [xml.urlset.url];
     locs = urls.map((u) => u.loc);
   });
 
@@ -104,9 +107,9 @@ describe("sitemap.txt", () => {
 
   it("should have URLs that are all present in sitemap-main.xml", async () => {
     const { xml } = await fetchSitemapMain();
-    const xmlUrls = (Array.isArray(xml.urlset.url) ? xml.urlset.url : [xml.urlset.url]).map(
-      (u: { loc: string }) => u.loc,
-    );
+    const xmlUrls = (
+      Array.isArray(xml.urlset.url) ? xml.urlset.url : [xml.urlset.url]
+    ).map((u: { loc: string }) => u.loc);
     for (const url of urls) {
       expect(xmlUrls).toContain(url);
     }

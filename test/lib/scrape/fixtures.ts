@@ -138,7 +138,10 @@ export const HTML_ID_ROOT = `<!DOCTYPE html>
 </body></html>`;
 
 export function mockFetch(responses: FixtureMap) {
-  return async (url: string | URL, _init?: RequestInit): Promise<MockResponse> => {
+  return async (
+    url: string | URL,
+    _init?: RequestInit,
+  ): Promise<MockResponse> => {
     const key = url.toString();
     return responses[key] ?? notFound();
   };
@@ -170,7 +173,9 @@ export function sitemapTxtSite(): FixtureMap {
 
 export function sitemapXmlSite(): FixtureMap {
   return {
-    "https://acme.com/": html(HOMEPAGE_HTML.replace('href="/sitemap.txt"', 'href="/sitemap.xml"')),
+    "https://acme.com/": html(
+      HOMEPAGE_HTML.replace('href="/sitemap.txt"', 'href="/sitemap.xml"'),
+    ),
     "https://acme.com/llms.txt": notFound(),
     "https://acme.com/robots.txt": notFound(),
     "https://acme.com/sitemap.txt": notFound(),
@@ -184,7 +189,10 @@ export function navOnlySite(): FixtureMap {
   const homepageNoSitemap = HOMEPAGE_HTML.replace(
     '<link rel="sitemap" href="/sitemap.txt" />',
     "",
-  ).replace('<link rel="alternate" type="application/rss+xml" href="/feed.xml" />', "");
+  ).replace(
+    '<link rel="alternate" type="application/rss+xml" href="/feed.xml" />',
+    "",
+  );
   return {
     "https://acme.com/": html(homepageNoSitemap),
     "https://acme.com/llms.txt": notFound(),

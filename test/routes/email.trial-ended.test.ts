@@ -1,5 +1,6 @@
 import { expect } from "@playwright/test";
 import { beforeAll, describe, it } from "vitest";
+
 import { sendTrialEndedEmail } from "~/emails/TrialEnded";
 import prisma from "~/lib/prisma.server";
 import getLastEmailSent from "~/test/helpers/getLastEmailSent";

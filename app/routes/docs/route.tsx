@@ -1,8 +1,10 @@
 import { Link } from "react-router";
 import remarkGfm from "remark-gfm";
 import { Streamdown } from "streamdown";
+
 import { generateApiDocsMarkdown } from "~/lib/api/docs.server";
 import { generateOpenApiSpec } from "~/lib/api/openapi";
+
 import type { Route } from "./+types/route";
 
 export function meta(): Route.MetaDescriptors {
@@ -10,7 +12,8 @@ export function meta(): Route.MetaDescriptors {
     { title: "API Documentation | Cite.me.in" },
     {
       name: "description",
-      content: "Monitoring API reference for cite.me.in — endpoints, parameters, and examples.",
+      content:
+        "Monitoring API reference for cite.me.in — endpoints, parameters, and examples.",
     },
   ];
 }
@@ -72,7 +75,9 @@ export default function ApiDocs({ loaderData }: Route.ComponentProps) {
               <thead className="border-b-2 border-b-gray-600">{children}</thead>
             ),
             code: ({ children }) => (
-              <code className="font-mono font-light before:hidden after:hidden">{children}</code>
+              <code className="font-mono font-light before:hidden after:hidden">
+                {children}
+              </code>
             ),
           }}
         >

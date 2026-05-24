@@ -19,6 +19,7 @@ import {
 import { SERPAPI_PRICING } from "~/lib/llm-visibility/serpApi.server";
 import prisma from "~/lib/prisma.server";
 import { Prisma } from "~/prisma";
+
 import UsageLimitExceededError from "./UsageLimitExceededError";
 
 export async function recordUsageEvent({
@@ -32,7 +33,9 @@ export async function recordUsageEvent({
   inputTokens: number;
   outputTokens: number;
 }): Promise<void> {
-  const cost = new Prisma.Decimal(calculateCostUSD(model, inputTokens, outputTokens));
+  const cost = new Prisma.Decimal(
+    calculateCostUSD(model, inputTokens, outputTokens),
+  );
   await prisma.usageEvent.create({
     data: { siteId, cost, inputTokens, model, outputTokens },
   });
@@ -100,7 +103,11 @@ export async function checkUsageLimits(siteId: string): Promise<void> {
   );
 }
 
-function calculateCostUSD(model: string, inputTokens: number, outputTokens: number): number {
+function calculateCostUSD(
+  model: string,
+  inputTokens: number,
+  outputTokens: number,
+): number {
   const cost = {
     [CLAUDE_MODEL_ID]: CLAUDE_PRICING,
     [OPENAI_MODEL_ID]: OPENAI_PRICING,

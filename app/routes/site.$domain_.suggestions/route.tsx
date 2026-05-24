@@ -3,6 +3,7 @@ import { alphabetical, group } from "radashi";
 import { useState } from "react";
 import { redirect, useFetcher } from "react-router";
 import z from "zod";
+
 import { ActiveLink } from "~/components/ui/ActiveLink";
 import { Alert, AlertTitle } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
@@ -17,12 +18,15 @@ import captureAndLogError from "~/lib/captureAndLogError.server";
 import generateSiteQueries from "~/lib/llm-visibility/generateSiteQueries";
 import queryGroups from "~/lib/llm-visibility/queryGroups";
 import prisma from "~/lib/prisma.server";
+
 import type { Route } from "./+types/route";
 
 export const handle = { siteNav: true };
 
 export function meta({ loaderData }: Route.MetaArgs) {
-  return [{ title: `Suggested Queries — ${loaderData?.site.domain} | Cite.me.in` }];
+  return [
+    { title: `Suggested Queries — ${loaderData?.site.domain} | Cite.me.in` },
+  ];
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
@@ -30,7 +34,8 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const suggestions = await prisma.siteQuerySuggestion.findMany({
     where: { siteId: site.id },
   });
-  if (suggestions.length === 0) throw redirect(`/site/${params.domain}/queries`);
+  if (suggestions.length === 0)
+    throw redirect(`/site/${params.domain}/queries`);
   return { site, suggestions };
 }
 
@@ -71,9 +76,9 @@ export async function action({ params, request }: Route.ActionArgs) {
 }
 
 export default function Index({ loaderData }: Route.ComponentProps) {
-  const [suggestions, setSuggestions] = useState<{ id: string; group: string; query: string }[]>(
-    loaderData.suggestions,
-  );
+  const [suggestions, setSuggestions] = useState<
+    { id: string; group: string; query: string }[]
+  >(loaderData.suggestions);
   const groupedQueries = alphabetical(
     Object.entries(group(suggestions, (s) => s.group)),
     ([g]) => g,
@@ -92,7 +97,9 @@ export default function Index({ loaderData }: Route.ComponentProps) {
   }
 
   function updateQuery(id: string, query: string) {
-    setSuggestions((prev) => prev.map((q) => (q.id === id ? { ...q, query } : q)));
+    setSuggestions((prev) =>
+      prev.map((q) => (q.id === id ? { ...q, query } : q)),
+    );
   }
 
   function removeQuery(id: string) {
@@ -119,7 +126,8 @@ export default function Index({ loaderData }: Route.ComponentProps) {
           <Card key={group}>
             <CardContent className="space-y-2">
               <p className="font-heading text-base">
-                {queryGroups.find((c: { group: string }) => c.group === group)?.intent ?? group}
+                {queryGroups.find((c: { group: string }) => c.group === group)
+                  ?.intent ?? group}
               </p>
               <ul className="space-y-1">
                 {queries?.map(({ query, id }, pos) => (
@@ -147,7 +155,12 @@ export default function Index({ loaderData }: Route.ComponentProps) {
                   </li>
                 ))}
               </ul>
-              <Button variant="outline" size="sm" type="button" onClick={() => addQuery(group)}>
+              <Button
+                variant="outline"
+                size="sm"
+                type="button"
+                onClick={() => addQuery(group)}
+              >
                 <PlusIcon className="h-4 w-4" />
                 Add query
               </Button>

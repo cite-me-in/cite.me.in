@@ -22,8 +22,8 @@ data.
 ## Sharing
 
 We share data only with service providers acting on our behalf (hosting,
-analytics, error tracking), when required by law, or in connection with a
-merger or acquisition.
+analytics, error tracking), when required by law, or in connection with a merger
+or acquisition.
 
 ## Cookies
 

@@ -1,12 +1,19 @@
 # Email Deduplication Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:executing-plans to implement this plan task-by-task.
+> **For Claude:** REQUIRED SUB-SKILL: Use
+> superpowers-extended-cc:executing-plans to implement this plan task-by-task.
 
-**Goal:** Replace fragile date-range window deduplication for trial emails with a generic `SentEmail` table that records every automated email sent to a user.
+**Goal:** Replace fragile date-range window deduplication for trial emails with
+a generic `SentEmail` table that records every automated email sent to a user.
 
-**Architecture:** A new `sent_emails` table stores `(userId, type, sentAt)`. Eligibility queries filter out users who already have a matching record using Prisma's `sentEmails: { none: { type: "..." } }` filter. After each successful send, a record is inserted. WeeklyDigest is unchanged (stays on `site.digestSentAt`).
+**Architecture:** A new `sent_emails` table stores `(userId, type, sentAt)`.
+Eligibility queries filter out users who already have a matching record using
+Prisma's `sentEmails: { none: { type: "..." } }` filter. After each successful
+send, a record is inserted. WeeklyDigest is unchanged (stays on
+`site.digestSentAt`).
 
-**Tech Stack:** Prisma, PostgreSQL, TypeScript, Temporal (via `@js-temporal/polyfill`), Vitest
+**Tech Stack:** Prisma, PostgreSQL, TypeScript, Temporal (via
+`@js-temporal/polyfill`), Vitest
 
 ---
 
@@ -74,7 +81,9 @@ At the end of the file, add:
 
 ```ts
 export function daysAgo(days: number): Date {
-  return new Date(Temporal.Now.instant().subtract({ hours: days * 24 }).epochMilliseconds);
+  return new Date(
+    Temporal.Now.instant().subtract({ hours: days * 24 }).epochMilliseconds,
+  );
 }
 ```
 
@@ -111,7 +120,9 @@ describe("trial emails", () => {
         id: "user-trial-email-1",
         email: "trial-email-ended@test.com",
         passwordHash: "test",
-        createdAt: new Date(Temporal.Now.instant().subtract({ hours: 24 * 26 }).epochMilliseconds),
+        createdAt: new Date(
+          Temporal.Now.instant().subtract({ hours: 24 * 26 }).epochMilliseconds,
+        ),
         ownedSites: {
           create: {
             id: "site-trial-email-1",
@@ -147,7 +158,8 @@ describe("trial emails", () => {
 pnpm vitest run test/routes/cron.process-sites.test.ts
 ```
 
-Expected: FAIL — `expect(after1.length).toBe(1)` fails with `received 0` (no SentEmail record created yet).
+Expected: FAIL — `expect(after1.length).toBe(1)` fails with `received 0` (no
+SentEmail record created yet).
 
 **Step 3: Commit**
 
@@ -208,7 +220,8 @@ export default async function sendTrialEndedEmails() {
 }
 ```
 
-Remove the `trialDays` parameter — it's no longer needed. Also remove the `Temporal` import if it's no longer used elsewhere in the file.
+Remove the `trialDays` parameter — it's no longer needed. Also remove the
+`Temporal` import if it's no longer used elsewhere in the file.
 
 **Step 2: Run test — expect PASS**
 
@@ -243,7 +256,9 @@ it("should not send TrialEnding if TrialEnded already sent", async () => {
       id: "user-trial-email-2",
       email: "trial-email-ending-skip@test.com",
       passwordHash: "test",
-      createdAt: new Date(Temporal.Now.instant().subtract({ hours: 24 * 25 }).epochMilliseconds),
+      createdAt: new Date(
+        Temporal.Now.instant().subtract({ hours: 24 * 25 }).epochMilliseconds,
+      ),
       sentEmails: { create: { type: "TrialEnded" } },
       ownedSites: {
         create: {
@@ -271,7 +286,9 @@ it("should send TrialEnding once and not again", async () => {
       id: "user-trial-email-3",
       email: "trial-email-ending@test.com",
       passwordHash: "test",
-      createdAt: new Date(Temporal.Now.instant().subtract({ hours: 24 * 24 }).epochMilliseconds),
+      createdAt: new Date(
+        Temporal.Now.instant().subtract({ hours: 24 * 24 }).epochMilliseconds,
+      ),
       ownedSites: {
         create: {
           id: "site-trial-email-3",
@@ -381,7 +398,10 @@ git commit -m "feat: refactor TrialEnding to use SentEmail deduplication"
 Find:
 
 ```ts
-await Promise.all([sendTrialEndingEmails(trialDays), sendTrialEndedEmails(trialDays)]);
+await Promise.all([
+  sendTrialEndingEmails(trialDays),
+  sendTrialEndedEmails(trialDays),
+]);
 ```
 
 Replace with:
@@ -391,7 +411,8 @@ await sendTrialEndedEmails();
 await sendTrialEndingEmails();
 ```
 
-Also remove the `trialDays` constant if it's no longer used elsewhere in the file (it's still used in `prepareSites(trialDays)` — check before removing).
+Also remove the `trialDays` constant if it's no longer used elsewhere in the
+file (it's still used in `prepareSites(trialDays)` — check before removing).
 
 **Step 2: Run full test suite for affected files**
 
@@ -440,7 +461,9 @@ await prisma.sentEmail.createMany({
   data: oldEnding.map((u) => ({ userId: u.id, type: "TrialEnding" })),
 });
 
-console.log(`Backfilled: ${oldEnded.length} TrialEnded, ${oldEnding.length} TrialEnding`);
+console.log(
+  `Backfilled: ${oldEnded.length} TrialEnded, ${oldEnding.length} TrialEnding`,
+);
 ```
 
 **Step 2: Run against dev database**

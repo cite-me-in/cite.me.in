@@ -1,6 +1,8 @@
 import { CSPProvider } from "@base-ui/react";
 import { Links, Meta, Scripts, ScrollRestoration } from "react-router";
+
 import PageLoadingBouncer from "~/components/ui/PageLoadingBouncer";
+
 import "~/global.css";
 import CommandPalette from "./CommandPalette";
 import PageAnalytics from "./PageAnalytics";
@@ -42,7 +44,10 @@ export default function PageLayout({
         {/* Google / Search Engine Tags */}
         <meta
           itemProp="image"
-          content={new URL("/images/og-image.png", import.meta.env.VITE_APP_URL).toString()}
+          content={new URL(
+            "/images/og-image.png",
+            import.meta.env.VITE_APP_URL,
+          ).toString()}
         />
         <meta itemProp="name" content={title} />
 

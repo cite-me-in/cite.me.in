@@ -1,6 +1,8 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { fork, sum } from "radashi";
+
 import type { Site } from "~/prisma";
+
 import { normalizeDomain, normalizeURL } from "./isSameDomain";
 import calculateVisibilityScore from "./llm-visibility/calculateVisibilityScore";
 import prisma from "./prisma.server";
@@ -32,7 +34,10 @@ export default async function getSiteMetrics(
     where:
       "userId" in filter
         ? {
-            OR: [{ ownerId: filter.userId }, { siteUsers: { some: { userId: filter.userId } } }],
+            OR: [
+              { ownerId: filter.userId },
+              { siteUsers: { some: { userId: filter.userId } } },
+            ],
           }
         : { id: { in: filter.siteIds } },
   });
@@ -135,7 +140,11 @@ export default async function getSiteMetrics(
         for (const c of q.citations) {
           const normalized = normalizeURL(c.url);
           const host = normalizeDomain(c.url);
-          if (host === domain || directUrls.has(normalized) || indirectUrls.has(normalized)) {
+          if (
+            host === domain ||
+            directUrls.has(normalized) ||
+            indirectUrls.has(normalized)
+          ) {
             count++;
           }
         }
@@ -149,7 +158,12 @@ export default async function getSiteMetrics(
         previous: sum(previousQueries, (q) => q.citations.length),
       },
       yourCitations: {
-        current: countYourCitations(currentQueries, domain, currentDirectUrls, currentIndirectUrls),
+        current: countYourCitations(
+          currentQueries,
+          domain,
+          currentDirectUrls,
+          currentIndirectUrls,
+        ),
         previous: countYourCitations(
           previousQueries,
           domain,

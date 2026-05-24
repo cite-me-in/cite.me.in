@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import checkContentSignals from "~/lib/aiLegibility/checks/contentSignals";
 import { ROBOTS_TXT_WITH_SIGNAL } from "~/test/lib/aiLegibility/fixtures";
 
@@ -23,7 +24,9 @@ describe("checkContentSignals", () => {
     });
 
     expect(result.passed).toBe(true);
-    const signals = result.details?.signals as { key: string; value: string }[] | undefined;
+    const signals = result.details?.signals as
+      | { key: string; value: string }[]
+      | undefined;
     expect(signals).toHaveLength(1);
     expect(signals![0].key).toBe("search");
     expect(signals![0].value).toBe("yes");
@@ -40,7 +43,8 @@ describe("checkContentSignals", () => {
 
   it("should report warnings for invalid keys alongside valid ones", async () => {
     const result = await checkContentSignals({
-      robotsContent: "User-agent: *\n\nContent-Signal: search=yes, unknown=maybe\n",
+      robotsContent:
+        "User-agent: *\n\nContent-Signal: search=yes, unknown=maybe\n",
     });
 
     expect(result.passed).toBe(true);

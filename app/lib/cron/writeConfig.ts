@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+
 import { loadCronTasks } from "./loadTasks";
 
 const outputPath = path.resolve("build", "cron-config.json");

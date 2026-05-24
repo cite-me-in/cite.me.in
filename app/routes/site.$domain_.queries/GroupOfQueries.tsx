@@ -1,10 +1,12 @@
 import { AlertCircleIcon, PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useFetcher } from "react-router";
+
 import { Alert, AlertTitle } from "~/components/ui/Alert";
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent, CardFooter } from "~/components/ui/Card";
 import { Input } from "~/components/ui/Input";
+
 import type { action } from "./route";
 import SingleQuery from "./SingleQuery";
 import TrashButton from "./TrashButton";
@@ -41,7 +43,8 @@ export default function GroupOfQueries({
           <Alert variant="outline">
             <AlertCircleIcon className="h-4 w-4" />
             <AlertTitle>
-              {renameFetcher.data.error ?? "Failed to rename. Please try again."}
+              {renameFetcher.data.error ??
+                "Failed to rename. Please try again."}
             </AlertTitle>
           </Alert>
         )}
@@ -49,7 +52,8 @@ export default function GroupOfQueries({
           <Alert variant="outline">
             <AlertCircleIcon className="h-4 w-4" />
             <AlertTitle>
-              {deleteFetcher.data.error ?? "Failed to delete group. Please try again."}
+              {deleteFetcher.data.error ??
+                "Failed to delete group. Please try again."}
             </AlertTitle>
           </Alert>
         )}
@@ -57,7 +61,8 @@ export default function GroupOfQueries({
           <Alert variant="outline">
             <AlertCircleIcon className="h-4 w-4" />
             <AlertTitle>
-              {addFetcher.data.error ?? "Failed to add query. Please try again."}
+              {addFetcher.data.error ??
+                "Failed to add query. Please try again."}
             </AlertTitle>
           </Alert>
         )}
@@ -83,8 +88,15 @@ export default function GroupOfQueries({
           />
           <TrashButton
             onClick={() => {
-              if (confirm(`Delete group "${group}" and all its queries? This cannot be undone.`))
-                void deleteFetcher.submit({ _intent: "delete-group", group }, { method: "post" });
+              if (
+                confirm(
+                  `Delete group "${group}" and all its queries? This cannot be undone.`,
+                )
+              )
+                void deleteFetcher.submit(
+                  { _intent: "delete-group", group },
+                  { method: "post" },
+                );
             }}
             title="Delete this group of queries"
           />

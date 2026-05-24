@@ -1,5 +1,9 @@
-import { McpServer, type ToolCallback } from "@modelcontextprotocol/sdk/server/mcp.js";
+import {
+  McpServer,
+  type ToolCallback,
+} from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { AnySchema } from "@modelcontextprotocol/sdk/server/zod-compat";
+
 import createSite from "./tools/create-site";
 import getAiLegibilityReports from "./tools/get-ai-legibility-reports";
 import getSite from "./tools/get-site";
@@ -13,7 +17,13 @@ const tools: {
   inputSchema: AnySchema;
   outputSchema?: AnySchema;
   handler: ToolCallback<AnySchema>;
-}[] = [listSites, createSite, getSite, getSiteCitations, getAiLegibilityReports];
+}[] = [
+  listSites,
+  createSite,
+  getSite,
+  getSiteCitations,
+  getAiLegibilityReports,
+];
 
 export function createMcpServer(): McpServer {
   const server = new McpServer({

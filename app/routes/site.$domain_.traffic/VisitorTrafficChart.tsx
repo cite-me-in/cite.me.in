@@ -1,6 +1,14 @@
 import { Area, AreaChart } from "recharts";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/Card";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/Card";
 import { ChartContainer } from "~/components/ui/Chart";
+
 import ChartAxes from "./ChartAxes";
 
 const NON_AI_COLOR = "#d1d5db";
@@ -43,8 +51,8 @@ export default function VisitorTrafficChart({
       <CardHeader>
         <CardTitle>Human Visitors by Source</CardTitle>
         <CardDescription className="text-foreground/60">
-          This chart shows human visitors and highlights the portion of people who were referred by
-          AI.
+          This chart shows human visitors and highlights the portion of people
+          who were referred by AI.
         </CardDescription>
       </CardHeader>
       <CardContent>

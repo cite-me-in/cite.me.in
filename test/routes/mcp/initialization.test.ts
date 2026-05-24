@@ -1,4 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
+
 import { accessToken, mcpRequest, parseResponse } from "./setup";
 
 describe("initialization", () => {

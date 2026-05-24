@@ -1,10 +1,14 @@
 import type { Temporal } from "@js-temporal/polyfill";
 import { sum } from "radashi";
-import DateRangeSelector, { parseDateRange } from "~/components/ui/DateRangeSelector";
+
+import DateRangeSelector, {
+  parseDateRange,
+} from "~/components/ui/DateRangeSelector";
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
 import { requireSiteAccess } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
+
 import type { Route } from "./+types/route";
 import AiPlatformBreakdown from "./AiPlatformBreakdown";
 import BotActivity from "./BotActivity";
@@ -31,7 +35,11 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   return { site, ...visitorData, ...botData, insight };
 }
 
-async function getVisitorData(siteId: string, from: Temporal.PlainDate, until: Temporal.PlainDate) {
+async function getVisitorData(
+  siteId: string,
+  from: Temporal.PlainDate,
+  until: Temporal.PlainDate,
+) {
   const visits = await prisma.humanVisit.findMany({
     where: {
       siteId,
@@ -73,7 +81,9 @@ async function getVisitorData(siteId: string, from: Temporal.PlainDate, until: T
       date,
       total: sum(Object.values(dailyBySource[date]), (c) => c),
       nonAi: dailyBySource[date].nonAi ?? 0,
-      ...Object.fromEntries(platforms.map((p) => [p, dailyBySource[date][p] ?? 0])),
+      ...Object.fromEntries(
+        platforms.map((p) => [p, dailyBySource[date][p] ?? 0]),
+      ),
     }));
 
   const platformBreakdown = platforms.map((p) => ({
@@ -82,7 +92,8 @@ async function getVisitorData(siteId: string, from: Temporal.PlainDate, until: T
     pct: totalVisitors > 0 ? (platformTotals[p] / totalVisitors) * 100 : 0,
   }));
 
-  const aiPct = totalVisitors > 0 ? (aiReferredVisitors / totalVisitors) * 100 : 0;
+  const aiPct =
+    totalVisitors > 0 ? (aiReferredVisitors / totalVisitors) * 100 : 0;
 
   return {
     visitorChartData,
@@ -95,7 +106,11 @@ async function getVisitorData(siteId: string, from: Temporal.PlainDate, until: T
   };
 }
 
-async function getBotTotals(siteId: string, from: Temporal.PlainDate, until: Temporal.PlainDate) {
+async function getBotTotals(
+  siteId: string,
+  from: Temporal.PlainDate,
+  until: Temporal.PlainDate,
+) {
   const visits = await prisma.botVisit.findMany({
     where: {
       siteId,
@@ -115,7 +130,8 @@ async function getBotTotals(siteId: string, from: Temporal.PlainDate, until: Tem
   }
 
   const botTotals: Record<string, number> = {};
-  for (const v of visits) botTotals[v.botType] = (botTotals[v.botType] ?? 0) + v.count;
+  for (const v of visits)
+    botTotals[v.botType] = (botTotals[v.botType] ?? 0) + v.count;
 
   const topBots = Object.entries(botTotals)
     .sort(([, a], [, b]) => b - a)
@@ -127,7 +143,9 @@ async function getBotTotals(siteId: string, from: Temporal.PlainDate, until: Tem
     .map((date) => ({
       date,
       total: sum(Object.values(dailyByBot[date]), (c) => c),
-      ...Object.fromEntries(topBots.map((bot) => [bot, dailyByBot[date][bot] ?? 0])),
+      ...Object.fromEntries(
+        topBots.map((bot) => [bot, dailyByBot[date][bot] ?? 0]),
+      ),
     }));
 
   const byBot: Record<
@@ -230,7 +248,10 @@ export default function TrafficPage({ loaderData }: Route.ComponentProps) {
               aiReferredVisitors={aiReferredVisitors}
               aiPct={aiPct}
             />
-            <VisitorTrafficChart platforms={platforms} chartData={visitorChartData} />
+            <VisitorTrafficChart
+              platforms={platforms}
+              chartData={visitorChartData}
+            />
             <AiPlatformBreakdown platformBreakdown={platformBreakdown} />
           </>
         ) : (

@@ -4,10 +4,12 @@ import Redis from "ioredis";
 import { sleep } from "radashi";
 import { pretty, render } from "react-email";
 import { Resend } from "resend";
+
 import { EmailLinkContext } from "~/components/email/context";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
 import type { LastEmailSent } from "~/test/helpers/getLastEmailSent";
+
 import EmailLayout from "./EmailLayout";
 import generateUnsubscribeToken from "./generateUnsubscribeToken";
 

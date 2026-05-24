@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { daysAgo, hoursAgo } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
 
@@ -135,7 +136,9 @@ describe("cron.process-sites", () => {
         },
       });
       const results = await makeRequest("test-cron-secret");
-      expect(results.find((r) => r.domain === "paid-site.example.com")).toBeUndefined();
+      expect(
+        results.find((r) => r.domain === "paid-site.example.com"),
+      ).toBeUndefined();
     });
 
     it("should process a trial site created today (lastProcessedAt null)", async () => {
@@ -173,7 +176,9 @@ describe("cron.process-sites", () => {
         },
       });
       const results = await makeRequest("test-cron-secret");
-      expect(results.find((r) => r.domain === "free-trial.example.com")).toBeUndefined();
+      expect(
+        results.find((r) => r.domain === "free-trial.example.com"),
+      ).toBeUndefined();
     });
 
     it("should skip a trial site older than 25 days", async () => {
@@ -192,7 +197,9 @@ describe("cron.process-sites", () => {
         },
       });
       const results = await makeRequest("test-cron-secret");
-      expect(results.find((r) => r.domain === "old-free.example.com")).toBeUndefined();
+      expect(
+        results.find((r) => r.domain === "old-free.example.com"),
+      ).toBeUndefined();
     });
 
     it("should process a gratis site not processed in 24 hours", async () => {
@@ -231,7 +238,9 @@ describe("cron.process-sites", () => {
         },
       });
       const results = await makeRequest("test-cron-secret");
-      expect(results.find((r) => r.domain === "cancelled-site.example.com")).toBeUndefined();
+      expect(
+        results.find((r) => r.domain === "cancelled-site.example.com"),
+      ).toBeUndefined();
     });
   });
 

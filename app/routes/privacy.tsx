@@ -1,8 +1,10 @@
 import { Link } from "react-router";
 import remarkGfm from "remark-gfm";
 import { Streamdown } from "streamdown";
+
 import Main from "~/components/ui/Main";
 import privacy from "~/data/privacy.md?raw";
+
 import type { Route } from "./+types/privacy";
 
 export function meta(): Route.MetaDescriptors {
@@ -37,7 +39,8 @@ export default function PrivacyPolicy() {
           mode="static"
           remarkPlugins={[remarkGfm]}
           components={{
-            a: ({ children, href }) => (href ? <Link to={href}>{children}</Link> : children),
+            a: ({ children, href }) =>
+              href ? <Link to={href}>{children}</Link> : children,
           }}
         >
           {privacy}

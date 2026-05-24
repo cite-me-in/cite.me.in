@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
+
 import generateUnsubscribeToken from "~/emails/generateUnsubscribeToken";
 import prisma from "~/lib/prisma.server";
 import { port } from "~/test/helpers/launchServer";

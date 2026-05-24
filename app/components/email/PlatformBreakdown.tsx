@@ -1,5 +1,7 @@
 import { sum } from "radashi";
+
 import type { SentimentLabel } from "~/prisma";
+
 import Card from "./Card";
 import KeyMetrics from "./KeyMetric";
 

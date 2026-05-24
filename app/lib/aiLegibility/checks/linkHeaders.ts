@@ -5,6 +5,7 @@
  */
 
 import { parseHTML } from "linkedom";
+
 import type { CheckResult } from "~/lib/aiLegibility/types";
 
 export default async function checkLinkHeaders({
@@ -20,7 +21,8 @@ export default async function checkLinkHeaders({
     const linkHeader = links.get("link");
     const { document } = parseHTML(html);
     const htmlSitemapHref =
-      document.querySelector('link[rel="sitemap"]')?.getAttribute("href") ?? null;
+      document.querySelector('link[rel="sitemap"]')?.getAttribute("href") ??
+      null;
 
     const headerSitemapLinks: { uri: string }[] = [];
 
@@ -33,7 +35,8 @@ export default async function checkLinkHeaders({
         const params: Record<string, string> = {};
         const paramRegex = /(\w+)\s*=\s*"([^"]*)"/g;
         let pm;
-        while ((pm = paramRegex.exec(paramsStr)) !== null) params[pm[1]] = pm[2];
+        while ((pm = paramRegex.exec(paramsStr)) !== null)
+          params[pm[1]] = pm[2];
         if (params["rel"] === "sitemap") headerSitemapLinks.push({ uri });
       }
     }
@@ -41,7 +44,9 @@ export default async function checkLinkHeaders({
     if (headerSitemapLinks.length > 0 || htmlSitemapHref) {
       const sources: string[] = [];
       if (headerSitemapLinks.length > 0)
-        sources.push(`HTTP header (${headerSitemapLinks.map((l) => l.uri).join(", ")})`);
+        sources.push(
+          `HTTP header (${headerSitemapLinks.map((l) => l.uri).join(", ")})`,
+        );
       if (htmlSitemapHref) sources.push(`HTML <link> tag (${htmlSitemapHref})`);
       return {
         name: "Sitemap link headers",

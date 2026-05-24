@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+
 import checkRobotsTxt from "~/lib/aiLegibility/checks/robotsTxt";
 import {
   ROBOTS_EMPTY,
@@ -130,7 +131,12 @@ Disallow: /admin/`;
     }[];
     expect(bots).toHaveLength(4);
     expect(bots.map((b) => b.agent)).toEqual(
-      expect.arrayContaining(["GPTBot", "ClaudeBot", "Google-Extended", "CCBot"]),
+      expect.arrayContaining([
+        "GPTBot",
+        "ClaudeBot",
+        "Google-Extended",
+        "CCBot",
+      ]),
     );
     expect(result.details?.suggestedFix).toContain("Allow: /");
   });

@@ -2,6 +2,7 @@ import { type Locator, type Page, expect } from "@playwright/test";
 import { ms } from "convert";
 import type { BrowserContext } from "playwright";
 import { afterAll, beforeAll, describe, it } from "vitest";
+
 import { hashPassword } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
 import type { Site, User } from "~/prisma";
@@ -43,13 +44,19 @@ describe("sites route", () => {
 
   describe("empty state", () => {
     it("should show URL input and descriptive text", async () => {
-      await expect(page.getByRole("textbox", { name: "Website URL or domain" })).toBeVisible();
-      await expect(page.getByRole("button", { name: "Add Site" })).toBeVisible();
+      await expect(
+        page.getByRole("textbox", { name: "Website URL or domain" }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Add Site" }),
+      ).toBeVisible();
       await expect(page.getByText("Enter a full URL")).toBeVisible();
     });
 
     it("should show add site button", async () => {
-      await expect(page.getByRole("button", { name: "Add Site" })).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Add Site" }),
+      ).toBeVisible();
     });
 
     it("should match visually", async () => {
@@ -64,15 +71,22 @@ describe("sites route", () => {
     beforeAll(async () => {
       await page.goto("/sites", { timeout: ms("10s") });
       await page.reload({ waitUntil: "load" });
-      await page.waitForFunction(() => document.body.getAttribute("data-hydrated") === "true", {
-        timeout: ms("15s"),
-      });
-      await page.getByRole("textbox", { name: "Website URL or domain" }).fill("http://192.168.1.1");
+      await page.waitForFunction(
+        () => document.body.getAttribute("data-hydrated") === "true",
+        {
+          timeout: ms("15s"),
+        },
+      );
+      await page
+        .getByRole("textbox", { name: "Website URL or domain" })
+        .fill("http://192.168.1.1");
       await page.getByRole("button", { name: "Add Site" }).click();
     });
 
     it("should show error for invalid URL", async () => {
-      await expect(page.getByText("Enter a valid website URL or domain name")).toBeVisible();
+      await expect(
+        page.getByText("Enter a valid website URL or domain name"),
+      ).toBeVisible();
     });
   });
 
@@ -80,15 +94,22 @@ describe("sites route", () => {
     beforeAll(async () => {
       await page.goto("/sites", { timeout: ms("10s") });
       await page.reload({ waitUntil: "load" });
-      await page.waitForFunction(() => document.body.getAttribute("data-hydrated") === "true", {
-        timeout: ms("15s"),
-      });
-      await page.getByRole("textbox", { name: "Website URL or domain" }).fill("localhost");
+      await page.waitForFunction(
+        () => document.body.getAttribute("data-hydrated") === "true",
+        {
+          timeout: ms("15s"),
+        },
+      );
+      await page
+        .getByRole("textbox", { name: "Website URL or domain" })
+        .fill("localhost");
       await page.getByRole("button", { name: "Add Site" }).click();
     });
 
     it("should show error for localhost", async () => {
-      await expect(page.getByText("Enter a valid website URL or domain name")).toBeVisible();
+      await expect(
+        page.getByText("Enter a valid website URL or domain name"),
+      ).toBeVisible();
     });
   });
 
@@ -109,11 +130,16 @@ describe("sites route", () => {
       page = await ctx.newPage();
       await page.goto("/sites", { timeout: ms("10s") });
       await page.reload({ waitUntil: "load" });
-      await page.waitForFunction(() => document.body.getAttribute("data-hydrated") === "true", {
-        timeout: ms("15s"),
-      });
+      await page.waitForFunction(
+        () => document.body.getAttribute("data-hydrated") === "true",
+        {
+          timeout: ms("15s"),
+        },
+      );
       await page.getByRole("button", { name: "Add Site" }).click();
-      await page.getByRole("textbox", { name: "Website URL or domain" }).fill("duplicate-test.com");
+      await page
+        .getByRole("textbox", { name: "Website URL or domain" })
+        .fill("duplicate-test.com");
       await page.getByRole("button", { name: "Add Site" }).click();
     });
 
@@ -136,10 +162,15 @@ describe("sites route", () => {
       page = await ctx.newPage();
       await page.goto("/sites", { timeout: ms("10s") });
       await page.reload({ waitUntil: "load" });
-      await page.waitForFunction(() => document.body.getAttribute("data-hydrated") === "true", {
-        timeout: ms("15s"),
-      });
-      await page.getByRole("textbox", { name: "Website URL or domain" }).fill("acme.com");
+      await page.waitForFunction(
+        () => document.body.getAttribute("data-hydrated") === "true",
+        {
+          timeout: ms("15s"),
+        },
+      );
+      await page
+        .getByRole("textbox", { name: "Website URL or domain" })
+        .fill("acme.com");
       await page.getByRole("button", { name: "Add Site" }).click();
       await page.waitForURL(/\/site\/[^/]+\/setup/, { timeout: 15_000 });
 
@@ -153,11 +184,15 @@ describe("sites route", () => {
     });
 
     it("should redirect to setup page", async () => {
-      expect(new URL(page.url()).pathname).toMatch(`/site/${site.domain}/setup`);
+      expect(new URL(page.url()).pathname).toMatch(
+        `/site/${site.domain}/setup`,
+      );
     });
 
     it("should show setup page heading", async () => {
-      await expect(page.getByRole("heading", { name: /Setting up/ })).toBeVisible();
+      await expect(
+        page.getByRole("heading", { name: /Setting up/ }),
+      ).toBeVisible();
     });
   });
 
@@ -176,17 +211,28 @@ describe("sites route", () => {
       });
       await page.goto("/sites", { timeout: ms("10s") });
       await page.reload({ waitUntil: "load" });
-      await page.waitForFunction(() => document.body.getAttribute("data-hydrated") === "true", {
-        timeout: ms("15s"),
-      });
+      await page.waitForFunction(
+        () => document.body.getAttribute("data-hydrated") === "true",
+        {
+          timeout: ms("15s"),
+        },
+      );
     });
 
     it("should show column headers", async () => {
       const container = page.locator('a:has-text("Your citations")').last();
-      await expect(container.getByText("Your citations", { exact: true })).toBeVisible();
-      await expect(container.getByText("All citations", { exact: true })).toBeVisible();
-      await expect(container.getByText("Visibility Score", { exact: true })).toBeVisible();
-      await expect(container.getByText("Query Coverage", { exact: true })).toBeVisible();
+      await expect(
+        container.getByText("Your citations", { exact: true }),
+      ).toBeVisible();
+      await expect(
+        container.getByText("All citations", { exact: true }),
+      ).toBeVisible();
+      await expect(
+        container.getByText("Visibility Score", { exact: true }),
+      ).toBeVisible();
+      await expect(
+        container.getByText("Query Coverage", { exact: true }),
+      ).toBeVisible();
     });
 
     it("should match visually", async () => {
@@ -218,11 +264,14 @@ describe("sites route", () => {
         deleteConfirmBtn = settingsPage.getByRole("button", {
           name: "Delete Site",
         });
-        confirmDomainInput = settingsPage.getByPlaceholder("dashboard-test.com");
+        confirmDomainInput =
+          settingsPage.getByPlaceholder("dashboard-test.com");
       });
 
       it("should open confirmation dialog", async () => {
-        await expect(settingsPage.getByText("Are you sure you want to delete")).toBeVisible();
+        await expect(
+          settingsPage.getByText("Are you sure you want to delete"),
+        ).toBeVisible();
       });
 
       it("should require domain name match", async () => {
@@ -244,7 +293,9 @@ describe("sites route", () => {
         beforeAll(async () => {
           await confirmDomainInput.fill("dashboard-test.com");
           await expect(deleteConfirmBtn).toBeEnabled();
-          await settingsPage.getByRole("button", { name: "Delete Site" }).click();
+          await settingsPage
+            .getByRole("button", { name: "Delete Site" })
+            .click();
           await settingsPage.waitForURL("/sites");
         });
 
@@ -385,9 +436,12 @@ describe("sites route", () => {
         page = await ctx.newPage();
         await page.goto("/sites", { timeout: ms("10s") });
         await page.reload({ waitUntil: "load" });
-        await page.waitForFunction(() => document.body.getAttribute("data-hydrated") === "true", {
-          timeout: ms("15s"),
-        });
+        await page.waitForFunction(
+          () => document.body.getAttribute("data-hydrated") === "true",
+          {
+            timeout: ms("15s"),
+          },
+        );
       });
 
       it("should match visually", async () => {
@@ -402,10 +456,15 @@ describe("sites route", () => {
 
 function fixBaseline(doc: Document) {
   for (const el of doc.querySelectorAll("*")) {
-    if (el.tagName === "A" && /\/site\/[^/]+/.test(el.getAttribute("href") ?? ""))
+    if (
+      el.tagName === "A" &&
+      /\/site\/[^/]+/.test(el.getAttribute("href") ?? "")
+    )
       el.setAttribute("href", "/site/id");
-    if (el.tagName === "INPUT" || el.tagName === "BUTTON") el.removeAttribute("id");
-    if (el.getAttribute("class")?.includes("recharts-responsive-container")) el.remove();
+    if (el.tagName === "INPUT" || el.tagName === "BUTTON")
+      el.removeAttribute("id");
+    if (el.getAttribute("class")?.includes("recharts-responsive-container"))
+      el.remove();
   }
   return doc;
 }

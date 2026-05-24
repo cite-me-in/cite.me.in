@@ -2,7 +2,11 @@
 
 ## Overview
 
-When a user adds a new site, the entire pipeline (crawl → summarize → generate queries → run against all 4 LLM platforms) runs fully automatically. The user watches a live scrolling log on a dedicated setup page — one line per operation, like LLM thinking output. When complete, they receive a confirmation email and are redirected to citations.
+When a user adds a new site, the entire pipeline (crawl → summarize → generate
+queries → run against all 4 LLM platforms) runs fully automatically. The user
+watches a live scrolling log on a dedicated setup page — one line per operation,
+like LLM thinking output. When complete, they receive a confirmation email and
+are redirected to citations.
 
 ## Flow
 
@@ -13,7 +17,8 @@ POST `/sites` does only:
 - Parse and validate the URL format
 - Make a single HEAD request to confirm the site is reachable
 - Create a minimal `Site` record in DB
-- Fire the pipeline worker as a background fetch (fire-and-forget) to `POST /site/{domain}/setup/run`, passing `userId`
+- Fire the pipeline worker as a background fetch (fire-and-forget) to
+  `POST /site/{domain}/setup/run`, passing `userId`
 - Redirect immediately to `/site/{domain}/setup`
 
 ### 2. Setup Page
@@ -27,7 +32,9 @@ POST `/sites` does only:
 
 ### 3. Pipeline Worker
 
-`POST /site/{domain}/setup/run` — runs in its own Vercel function invocation with its own timeout budget. Executes the full pipeline sequentially, writing to Redis after each operation:
+`POST /site/{domain}/setup/run` — runs in its own Vercel function invocation
+with its own timeout budget. Executes the full pipeline sequentially, writing to
+Redis after each operation:
 
 **Steps and example log lines:**
 
@@ -59,17 +66,21 @@ All queries complete — sending confirmation email
 Done
 ```
 
-Platforms are queried sequentially (not in parallel) during setup so progress is granular and readable.
+Platforms are queried sequentially (not in parallel) during setup so progress is
+granular and readable.
 
 ### 4. Confirmation Email
 
-Sent when the pipeline completes. Simple transactional email: site has been set up, here's a link to your citations dashboard.
+Sent when the pipeline completes. Simple transactional email: site has been set
+up, here's a link to your citations dashboard.
 
 ## Redis Schema
 
-Keys are scoped to both site and user so no other user can read another's progress:
+Keys are scoped to both site and user so no other user can read another's
+progress:
 
-- `setup:{siteId}:{userId}:log` — Redis List; worker appends one entry per log line (`RPUSH`)
+- `setup:{siteId}:{userId}:log` — Redis List; worker appends one entry per log
+  line (`RPUSH`)
 - `setup:{siteId}:{userId}:status` — String; `running` | `complete` | `error`
 
 TTL: set to 24 hours on both keys after pipeline completes.
@@ -84,8 +95,10 @@ TTL: set to 24 hours on both keys after pipeline completes.
 
 ## Removed
 
-- `/site/{domain}/suggestions` route — no longer needed; query review step is eliminated
-- The `SiteQuerySuggestion` table entries are still created internally but the review UI is bypassed
+- `/site/{domain}/suggestions` route — no longer needed; query review step is
+  eliminated
+- The `SiteQuerySuggestion` table entries are still created internally but the
+  review UI is bypassed
 
 ## Routes Added / Changed
 

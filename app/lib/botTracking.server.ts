@@ -1,5 +1,7 @@
 import { Temporal } from "@js-temporal/polyfill";
+
 import prisma from "~/lib/prisma.server";
+
 import captureAndLogError from "./captureAndLogError.server";
 import { normalizeDomain } from "./isSameDomain";
 
@@ -152,7 +154,9 @@ export default async function recordBotVisit({
   const classification = classifyBot(userAgent);
   if (!classification) return { tracked: false, reason: "not a bot" };
 
-  const date = new Date(Temporal.Now.zonedDateTimeISO("UTC").startOfDay().epochMilliseconds);
+  const date = new Date(
+    Temporal.Now.zonedDateTimeISO("UTC").startOfDay().epochMilliseconds,
+  );
   try {
     await prisma.botVisit.upsert({
       where: {
@@ -203,7 +207,8 @@ function parseReferer(referer: string | null, requestURL: URL): string | null {
   if (!referer) return null;
   try {
     const refererURL = new URL(referer);
-    if (normalizeDomain(refererURL) === normalizeDomain(requestURL)) return null;
+    if (normalizeDomain(refererURL) === normalizeDomain(requestURL))
+      return null;
   } catch {
     // ignore parse errors, keep referer as is
   }

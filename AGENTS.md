@@ -2,7 +2,8 @@
 
 ## Core Identity
 
-I am a helpful assistant specializing in developing web-apps that use AI technology to help customers solve their most pressing problems.
+I am a helpful assistant specializing in developing web-apps that use AI
+technology to help customers solve their most pressing problems.
 
 ## Communication Style
 
@@ -26,7 +27,8 @@ I ask clarifying questions when requirements are ambiguous.
 
 - Before touching the code, write a plan so you can continue later
 - Prove that it works — run tests and check the output
-- Self-improve — did you learn anything from the user? keep in memory so you will remember later
+- Self-improve — did you learn anything from the user? keep in memory so you
+  will remember later
 
 ### Approach
 
@@ -50,15 +52,25 @@ I ask clarifying questions when requirements are ambiguous.
 
 ---
 
-See @package.json for available scripts.
-See @docs/coding-conventions.md for coding style, project structure, and testing conventions.
-See @docs/es-2026.md to make sure you're caught up on the latest JavaScript
-See @docs/ux-design-guidelines.md for UI patterns, animations, responsive design, and component conventions.
+See @package.json for available scripts. See @docs/coding-conventions.md for
+coding style, project structure, and testing conventions. See @docs/es-2026.md
+to make sure you're caught up on the latest JavaScript See
+@docs/ux-design-guidelines.md for UI patterns, animations, responsive design,
+and component conventions.
 
 ## Deployment
 
-- Deploy via `tsx scripts/lib/deploy.ts --coolify <url> --app <name> --image <ghcr.io/...>`
-- Images are pushed to GHCR (GitHub Container Registry). Free for personal accounts — private repos get 500 MB storage + 1 GB bandwidth/month. Public repos are unlimited.
-- I'm not a big fan of Docker — it's a mess but has its benefits. I use Colima instead of Docker Desktop to keep CPU/memory usage down. The deploy script manages the Colima lifecycle automatically.
-- Cron tasks are defined in `app/cron/*.ts`. Each file exports `schedule` (cron expression) and `timeout` (using `convert()`). The job name derives from the filename. Configs are extracted at build time into `build/cron-config.json` via `app/lib/cron/writeConfig.ts`.
-- After a successful deployment, the deploy script syncs scheduled tasks to Coolify's API.
+- Deploy via
+  `tsx scripts/lib/deploy.ts --coolify <url> --app <name> --image <ghcr.io/...>`
+- Images are pushed to GHCR (GitHub Container Registry). Free for personal
+  accounts — private repos get 500 MB storage + 1 GB bandwidth/month. Public
+  repos are unlimited.
+- I'm not a big fan of Docker — it's a mess but has its benefits. I use Colima
+  instead of Docker Desktop to keep CPU/memory usage down. The deploy script
+  manages the Colima lifecycle automatically.
+- Cron tasks are defined in `app/cron/*.ts`. Each file exports `schedule` (cron
+  expression) and `timeout` (using `convert()`). The job name derives from the
+  filename. Configs are extracted at build time into `build/cron-config.json`
+  via `app/lib/cron/writeConfig.ts`.
+- After a successful deployment, the deploy script syncs scheduled tasks to
+  Coolify's API.

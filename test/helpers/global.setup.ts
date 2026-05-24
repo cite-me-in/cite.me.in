@@ -7,8 +7,10 @@ import { existsSync, readdirSync } from "node:fs";
 import { rm } from "node:fs/promises";
 import { resolve } from "node:path";
 import { promisify } from "node:util";
+
 import prisma from "~/lib/prisma.server";
 import "~/test/mocks/msw";
+
 import { closeServer, launchServer } from "./launchServer";
 import { removeTemporaryFiles } from "./toMatchVisual";
 
@@ -42,7 +44,12 @@ export default async function setup() {
   }
 }
 
-const screenshotsDir = resolve(import.meta.dirname, "..", "..", "__screenshots__");
+const screenshotsDir = resolve(
+  import.meta.dirname,
+  "..",
+  "..",
+  "__screenshots__",
+);
 
 function hasNewScreenshots(): boolean {
   if (!existsSync(screenshotsDir)) return false;
@@ -65,7 +72,9 @@ export async function teardown() {
   if (process.env.CI) return;
 
   if (hasNewScreenshots()) {
-    console.info("\nVisual differences detected. Suggest: ./scripts/screenshots.ts \n");
+    console.info(
+      "\nVisual differences detected. Suggest: ./scripts/screenshots.ts \n",
+    );
   }
 
   await promisify(execFile)("terminal-notifier", [

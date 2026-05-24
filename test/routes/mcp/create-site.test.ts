@@ -1,5 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+
 import prisma from "~/lib/prisma.server";
+
 import { accessToken, initSession, mcpRequest, parseResponse } from "./setup";
 
 describe("create_site", () => {
@@ -54,7 +56,9 @@ describe("create_site", () => {
       };
       expect(content.id).toBeDefined();
       expect(content.domain).toBe(NEW_DOMAIN);
-      expect(content.createdAt).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+      expect(content.createdAt).toMatch(
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/,
+      );
       expect(content.message).toContain("created");
     });
   });

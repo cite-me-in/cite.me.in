@@ -1,8 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
+
 import { data } from "react-router";
+
 import { requireAdmin } from "~/lib/api/apiAuth.server";
 import prisma from "~/lib/prisma.server";
+
 import type { Route } from "./+types/api.admin.cron";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -46,7 +49,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   return data({
     tasks: tasks.map((task) => {
       const h = healthByJob.get(task.name);
-      const last = lastRun.find((r) => r.job === task.name)?._max.startedAt ?? null;
+      const last =
+        lastRun.find((r) => r.job === task.name)?._max.startedAt ?? null;
       return {
         name: task.name,
         schedule: task.schedule,

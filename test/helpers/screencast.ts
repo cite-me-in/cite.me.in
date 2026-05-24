@@ -1,6 +1,7 @@
 import { existsSync } from "node:fs";
 import { mkdir, unlink } from "node:fs/promises";
 import { dirname, join } from "node:path";
+
 import "playwright";
 import type { Page, ScreencastOptions } from "playwright";
 
@@ -28,7 +29,11 @@ declare module "playwright" {
  * @param options - The options for the screencast.
  * @returns The filename of the screencast.
  */
-export async function startScreencast(page: Page, name: string, options?: ScreencastOptions) {
+export async function startScreencast(
+  page: Page,
+  name: string,
+  options?: ScreencastOptions,
+) {
   const filename = join(process.cwd(), "__screenshots__", `${name}.webm`);
   await mkdir(dirname(filename), { recursive: true });
   if (existsSync(filename)) await unlink(filename);

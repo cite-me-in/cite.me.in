@@ -1,9 +1,11 @@
 import { parallel } from "radashi";
 import { data } from "react-router";
+
 import captureAndLogError from "~/lib/captureAndLogError.server";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
 import { attemptDelivery } from "~/lib/webhooks.server";
+
 import type { Route } from "./+types/cron.webhook-retries";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -17,7 +19,8 @@ export async function loader({ request }: Route.LoaderArgs) {
     });
     await parallel({ limit: 10 }, pending, attemptDelivery);
 
-    if (envVars.HEARTBEAT_CRON_WEBHOOK_RETRIES) await fetch(envVars.HEARTBEAT_CRON_WEBHOOK_RETRIES);
+    if (envVars.HEARTBEAT_CRON_WEBHOOK_RETRIES)
+      await fetch(envVars.HEARTBEAT_CRON_WEBHOOK_RETRIES);
 
     return data({ ok: true, processed: pending.length });
   } catch (error) {

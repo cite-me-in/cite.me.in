@@ -1,5 +1,6 @@
 import { HttpResponse, http } from "msw";
 import { afterEach, describe, expect, it } from "vitest";
+
 import checkLlmsTxt from "~/lib/aiLegibility/checks/llmsTxt";
 import { LLMS_TXT } from "~/test/lib/aiLegibility/fixtures";
 import msw from "~/test/mocks/msw";
@@ -33,9 +34,12 @@ describe("checkLlmsTxt", () => {
   it("should pass with minimal valid structure (H1 + H2 + file links)", async () => {
     msw.use(
       http.get("https://acme.com/llms.txt", () =>
-        HttpResponse.text("# Acme Corp\n\n## Pages\n- [Home](https://acme.com/)", {
-          headers: { "Content-Type": "text/plain" },
-        }),
+        HttpResponse.text(
+          "# Acme Corp\n\n## Pages\n- [Home](https://acme.com/)",
+          {
+            headers: { "Content-Type": "text/plain" },
+          },
+        ),
       ),
     );
 
@@ -97,9 +101,12 @@ describe("checkLlmsTxt", () => {
   it("should pass when llms.txt has no Optional section", async () => {
     msw.use(
       http.get("https://acme.com/llms.txt", () =>
-        HttpResponse.text("# Acme Corp\n\n## Pages\n- [Home](https://acme.com/)", {
-          headers: { "Content-Type": "text/plain" },
-        }),
+        HttpResponse.text(
+          "# Acme Corp\n\n## Pages\n- [Home](https://acme.com/)",
+          {
+            headers: { "Content-Type": "text/plain" },
+          },
+        ),
       ),
     );
 
@@ -143,7 +150,11 @@ describe("checkLlmsTxt", () => {
   });
 
   it("should fail when llms.txt returns 404", async () => {
-    msw.use(http.get("https://acme.com/llms.txt", () => HttpResponse.text("", { status: 404 })));
+    msw.use(
+      http.get("https://acme.com/llms.txt", () =>
+        HttpResponse.text("", { status: 404 }),
+      ),
+    );
 
     const result = await checkLlmsTxt({ url: "https://acme.com/" });
 

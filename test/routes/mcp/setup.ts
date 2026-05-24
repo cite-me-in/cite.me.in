@@ -1,4 +1,5 @@
 import { beforeAll } from "vitest";
+
 import prisma from "~/lib/prisma.server";
 import { resetRateLimit } from "~/lib/rateLimit.server";
 import { port } from "~/test/helpers/launchServer";
@@ -9,7 +10,13 @@ export function parseResponse(body: string): Record<string, unknown> {
   return JSON.parse(body);
 }
 
-export async function mcpRequest({ accessToken, body }: { accessToken: string; body: object }) {
+export async function mcpRequest({
+  accessToken,
+  body,
+}: {
+  accessToken: string;
+  body: object;
+}) {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     Accept: "application/json, text/event-stream",

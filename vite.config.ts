@@ -1,19 +1,28 @@
 import path from "node:path";
+
 import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite-plus";
 
 export default defineConfig({
   fmt: {
-    ignorePatterns: [],
+    ignorePatterns: ["__screenshots__", "docs", "prisma/generated"],
+    printWidth: 80,
+    proseWrap: "always",
+    sortImports: true,
+    sortTailwindcss: true,
   },
   build: {
     sourcemap: true,
   },
   resolve: {
     alias: {
-      "@tailwindcss/typography": path.resolve("node_modules/@tailwindcss/typography/src/index.js"),
-      "@tailwindcss/forms": path.resolve("node_modules/@tailwindcss/forms/src/index.js"),
+      "@tailwindcss/typography": path.resolve(
+        "node_modules/@tailwindcss/typography/src/index.js",
+      ),
+      "@tailwindcss/forms": path.resolve(
+        "node_modules/@tailwindcss/forms/src/index.js",
+      ),
     },
     dedupe: ["react", "react-dom", "react-router"],
     tsconfigPaths: true,

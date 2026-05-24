@@ -1,5 +1,6 @@
 import debug from "debug";
 import Redis from "ioredis";
+
 import captureAndLogError from "./captureAndLogError.server";
 import envVars from "./envVars.server";
 

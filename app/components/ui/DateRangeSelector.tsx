@@ -1,5 +1,6 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { useSearchParams } from "react-router";
+
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/Tabs";
 
 /**
@@ -78,7 +79,9 @@ export function parseDateRange(searchParams: URLSearchParams): {
   const period =
     untilDate === todayDate
       ? Math.floor(
-          from.until(until, { largestUnit: "day", smallestUnit: "day" }).total("hours") / 24,
+          from
+            .until(until, { largestUnit: "day", smallestUnit: "day" })
+            .total("hours") / 24,
         )
       : periods[1];
 

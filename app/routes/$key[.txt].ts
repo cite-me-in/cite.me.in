@@ -1,4 +1,5 @@
 import envVars from "~/lib/envVars.server";
+
 import type { Route } from "./+types/$key[.txt]";
 
 /**
@@ -9,7 +10,8 @@ import type { Route } from "./+types/$key[.txt]";
  * @see https://www.indexnow.org/en/documentation/indexing-with-indexnow
  */
 export function loader({ params }: Route.LoaderArgs) {
-  if (params.key !== envVars.INDEXNOW_KEY) throw new Response(null, { status: 404 });
+  if (params.key !== envVars.INDEXNOW_KEY)
+    throw new Response(null, { status: 404 });
   return new Response(params.key, {
     headers: { "Content-Type": "text/plain" },
   });

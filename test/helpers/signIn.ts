@@ -1,6 +1,8 @@
 import type { BrowserContext } from "playwright";
+
 import { sessionCookie } from "~/lib/cookies.server";
 import prisma from "~/lib/prisma.server";
+
 import { newContext } from "./launchBrowser";
 
 /**
@@ -17,7 +19,11 @@ export async function signIn(userId: string): Promise<BrowserContext> {
 
   const setCookieHeader = await sessionCookie.serialize(token);
   // Extract the raw encoded value from "session=<value>; Path=/; ..."
-  const cookieValue = setCookieHeader.split(";")[0].split("=").slice(1).join("=");
+  const cookieValue = setCookieHeader
+    .split(";")[0]
+    .split("=")
+    .slice(1)
+    .join("=");
 
   const ctx = await newContext();
   await ctx.addCookies([

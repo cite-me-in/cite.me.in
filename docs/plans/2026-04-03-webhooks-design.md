@@ -2,7 +2,10 @@
 
 ## Overview
 
-Outbound webhooks that fire when key events occur in cite.me.in. Initially used to send admin alert emails from a separate server. Designed for multi-tenant use from the start so user-facing webhooks can be added later with UI only — no backend changes needed.
+Outbound webhooks that fire when key events occur in cite.me.in. Initially used
+to send admin alert emails from a separate server. Designed for multi-tenant use
+from the start so user-facing webhooks can be added later with UI only — no
+backend changes needed.
 
 ## Data Model
 
@@ -65,7 +68,8 @@ All webhook logic lives in `app/lib/webhooks.server.ts`.
 
 ### Event Config
 
-Each event declares its scope and how to resolve the target user from the payload:
+Each event declares its scope and how to resolve the target user from the
+payload:
 
 ```ts
 export const WEBHOOK_EVENT_CONFIG = {
@@ -78,7 +82,8 @@ export type WebhookEventType = keyof typeof WEBHOOK_EVENT_CONFIG;
 ```
 
 - `"admin"` scope — only endpoints owned by admin users receive the event
-- `"user"` scope — endpoints owned by the relevant user + admin users receive the event
+- `"user"` scope — endpoints owned by the relevant user + admin users receive
+  the event
 
 ### emitWebhookEvent
 
@@ -94,11 +99,13 @@ export async function emitWebhookEvent(
 Internally:
 
 1. Reads `WEBHOOK_EVENT_CONFIG[eventType]` to determine scope
-2. For `"user"` scope with `resolveBy: "siteId"`: looks up `site.ownerId` from `payload.siteId`
+2. For `"user"` scope with `resolveBy: "siteId"`: looks up `site.ownerId` from
+   `payload.siteId`
 3. Queries active endpoints subscribed to `eventType` matching the scope:
    - Admin: `user.isAdmin = true`
    - User: `userId = ownerId OR user.isAdmin = true`
-4. Creates a `WebhookDelivery` row per endpoint and immediately attempts delivery
+4. Creates a `WebhookDelivery` row per endpoint and immediately attempts
+   delivery
 
 ### Call Sites
 
@@ -151,7 +158,8 @@ New route `app/routes/cron.webhook-retries.tsx`, called every 5 minutes:
 
 - Authenticated via `Authorization: Bearer <CRON_SECRET>`
 - Queries `WebhookDelivery` where `status = RETRY AND nextRetryAt <= now`
-- Calls `attemptDelivery` for each, reusing the same function as immediate delivery
+- Calls `attemptDelivery` for each, reusing the same function as immediate
+  delivery
 
 ## Admin Endpoint Seed
 
@@ -168,14 +176,19 @@ await prisma.webhookEndpoint.create({
 });
 ```
 
-The admin server verifies requests by recomputing `sha256=HMAC-SHA256(body, secret)` and comparing to the `X-Webhook-Signature` header.
+The admin server verifies requests by recomputing
+`sha256=HMAC-SHA256(body, secret)` and comparing to the `X-Webhook-Signature`
+header.
 
 ## Adding User-Facing Webhooks Later
 
 The backend is complete. To expose webhooks to regular users:
 
-1. Add a settings UI for users to register `WebhookEndpoint` rows (URL + secret + event subscriptions)
-2. Restrict the UI to only show `"user"` scoped events (enforce in UI, not backend)
+1. Add a settings UI for users to register `WebhookEndpoint` rows (URL +
+   secret + event subscriptions)
+2. Restrict the UI to only show `"user"` scoped events (enforce in UI, not
+   backend)
 3. No changes to `emitWebhookEvent`, `attemptDelivery`, or the cron route
 
-To add a new event type: add one entry to `WEBHOOK_EVENT_CONFIG` and one `emitWebhookEvent` call in the relevant route action.
+To add a new event type: add one entry to `WEBHOOK_EVENT_CONFIG` and one
+`emitWebhookEvent` call in the relevant route action.

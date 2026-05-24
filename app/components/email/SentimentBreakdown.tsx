@@ -1,7 +1,9 @@
 import { Column, Row, Section, Text } from "react-email";
 import { twMerge } from "tailwind-merge";
+
 import PLATFORMS from "~/lib/llm-visibility/platforms";
 import type { SentimentLabel } from "~/prisma";
+
 import Card from "./Card";
 
 export default function SentimentBreakdown({
@@ -13,7 +15,8 @@ export default function SentimentBreakdown({
   >;
 }) {
   const platforms = Object.entries(byPlatform).filter(
-    ([, { sentimentLabel, sentimentSummary }]) => sentimentLabel && sentimentSummary,
+    ([, { sentimentLabel, sentimentSummary }]) =>
+      sentimentLabel && sentimentSummary,
   );
   if (platforms.length === 0) return null;
 

@@ -1,6 +1,7 @@
 import invariant from "tiny-invariant";
 import { beforeAll, describe, expect, it } from "vitest";
 import type { createDocument } from "zod-openapi";
+
 import { port } from "~/test/helpers/launchServer";
 
 const BASE = `http://localhost:${port}`;
@@ -22,7 +23,10 @@ describe("GET /api/openapi.json", () => {
   });
 
   it("should document BearerAuth security scheme", async () => {
-    invariant(body.components?.securitySchemes, "Security schemes are required");
+    invariant(
+      body.components?.securitySchemes,
+      "Security schemes are required",
+    );
     expect(body.components.securitySchemes.BearerAuth).toBeDefined();
     invariant(
       "scheme" in body.components.securitySchemes.BearerAuth,

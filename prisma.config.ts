@@ -1,4 +1,5 @@
 import { resolve } from "node:path";
+
 import dotenv from "dotenv";
 import { defineConfig, env } from "prisma/config";
 

@@ -1,5 +1,6 @@
 import { ArrowRightIcon } from "lucide-react";
 import { Link } from "react-router";
+
 import { ActiveLink } from "./ActiveLink";
 
 export default function SiteHeading({
@@ -28,13 +29,18 @@ export default function SiteHeading({
           </Link>
         </p>
         <h1 className="font-heading text-3xl">{title}</h1>
-        {subtitle && <p className="text-foreground/60 mt-1 text-base">{subtitle}</p>}
+        {subtitle && (
+          <p className="text-foreground/60 mt-1 text-base">{subtitle}</p>
+        )}
       </div>
 
       {children}
 
       {backTo && (
-        <ActiveLink className="text-foreground/60 text-base hover:underline" to={backTo.path}>
+        <ActiveLink
+          className="text-foreground/60 text-base hover:underline"
+          to={backTo.path}
+        >
           {backTo.label}
           <ArrowRightIcon className="size-4" />
         </ActiveLink>

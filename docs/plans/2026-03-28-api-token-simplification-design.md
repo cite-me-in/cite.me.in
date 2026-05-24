@@ -4,11 +4,17 @@
 
 ## Problem
 
-The current `apiKey` is a random string with no user identity encoded (`cite.me.in_{24chars}`). This forces `verifyUserAccess` to accept an email URL parameter and perform a full-table scan: `findFirst({ where: { email, apiKey: token } })`. The `/api/me/{email}` endpoint is redundant — the caller already knows their email, and the server needs it only to locate the user.
+The current `apiKey` is a random string with no user identity encoded
+(`cite.me.in_{24chars}`). This forces `verifyUserAccess` to accept an email URL
+parameter and perform a full-table scan:
+`findFirst({ where: { email, apiKey: token } })`. The `/api/me/{email}` endpoint
+is redundant — the caller already knows their email, and the server needs it
+only to locate the user.
 
 ## Solution
 
-Encode the user ID into the token so the server can identify the account directly from the token alone.
+Encode the user ID into the token so the server can identify the account
+directly from the token alone.
 
 ## Token Format
 
@@ -44,7 +50,10 @@ Before (nested joins through apiKey):
 prisma.site.findFirst({
   where: {
     domain,
-    OR: [{ owner: { apiKey: token } }, { siteUsers: { some: { user: { apiKey: token } } } }],
+    OR: [
+      { owner: { apiKey: token } },
+      { siteUsers: { some: { user: { apiKey: token } } } },
+    ],
   },
 });
 ```
@@ -64,7 +73,8 @@ prisma.site.findFirst({
 
 ## Schema
 
-No schema change. The `apiKey String? @unique` field on `User` remains. Only the stored value changes format.
+No schema change. The `apiKey String? @unique` field on `User` remains. Only the
+stored value changes format.
 
 ## Migration
 
@@ -74,12 +84,16 @@ Clear all existing `api_key` values so users regenerate with the new format:
 UPDATE users SET api_key = NULL;
 ```
 
-Existing tokens stop working immediately. Users regenerate from the profile page.
+Existing tokens stop working immediately. Users regenerate from the profile
+page.
 
 ## Files to Change
 
 1. `app/routes/profile/route.tsx` — update `regenerateApiKey` to use new format
-2. `app/lib/api/apiAuth.server.ts` — rewrite `verifyUserAccess` and `verifySiteAccess`
-3. `app/routes/api.me.$email.ts` → rename to `api.me.ts`, remove email param usage
-4. `app/lib/api/openapi.ts` — update `/api/me/{email}` → `/api/me`, remove email parameter
+2. `app/lib/api/apiAuth.server.ts` — rewrite `verifyUserAccess` and
+   `verifySiteAccess`
+3. `app/routes/api.me.$email.ts` → rename to `api.me.ts`, remove email param
+   usage
+4. `app/lib/api/openapi.ts` — update `/api/me/{email}` → `/api/me`, remove email
+   parameter
 5. Prisma migration — clear existing api_key values

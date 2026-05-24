@@ -1,7 +1,10 @@
 import { createHash } from "node:crypto";
+
 import { Temporal } from "@js-temporal/polyfill";
+
 import prisma from "~/lib/prisma.server";
 import { Prisma } from "~/prisma";
+
 import captureAndLogError from "./captureAndLogError.server";
 
 /**
@@ -17,7 +20,10 @@ const BROWSER_PATTERNS = [
 ] as const;
 
 export function classifyBrowser(userAgent: string): string {
-  return BROWSER_PATTERNS.find(({ pattern }) => pattern.test(userAgent))?.browser ?? "Other";
+  return (
+    BROWSER_PATTERNS.find(({ pattern }) => pattern.test(userAgent))?.browser ??
+    "Other"
+  );
 }
 
 /**
@@ -55,7 +61,9 @@ export function detectAiReferral({
   if (referer) {
     try {
       const { hostname } = new URL(referer);
-      const match = AI_REFERRAL_PATTERNS.find(({ pattern }) => pattern.test(hostname));
+      const match = AI_REFERRAL_PATTERNS.find(({ pattern }) =>
+        pattern.test(hostname),
+      );
       if (match) return match.source;
     } catch {
       // ignore malformed referer
@@ -63,7 +71,9 @@ export function detectAiReferral({
   }
 
   if (utmSource) {
-    const match = AI_REFERRAL_PATTERNS.find(({ pattern }) => pattern.test(utmSource));
+    const match = AI_REFERRAL_PATTERNS.find(({ pattern }) =>
+      pattern.test(utmSource),
+    );
     if (match) return match.source;
   }
 
@@ -75,7 +85,10 @@ export function detectAiReferral({
  * curl, wget, python-requests, and unknown scripts.
  */
 export function isHumanBrowser(userAgent: string): boolean {
-  return /Mozilla\/5\.0/i.test(userAgent) && /(Chrome|Firefox|Safari|Edg|OPR)\//i.test(userAgent);
+  return (
+    /Mozilla\/5\.0/i.test(userAgent) &&
+    /(Chrome|Firefox|Safari|Edg|OPR)\//i.test(userAgent)
+  );
 }
 
 /**
@@ -84,7 +97,10 @@ export function isHumanBrowser(userAgent: string): boolean {
  * cookieless, and consent-free.
  */
 function visitorFingerprint(ip: string, userAgent: string): string {
-  return createHash("sha256").update(`${ip}:${userAgent}`).digest("hex").slice(0, 16);
+  return createHash("sha256")
+    .update(`${ip}:${userAgent}`)
+    .digest("hex")
+    .slice(0, 16);
 }
 
 /**
@@ -104,7 +120,9 @@ export default async function recordHumanVisit({
   userAgent: string;
   url: string;
 }): Promise<{ tracked: boolean; reason?: string }> {
-  const date = new Date(Temporal.Now.zonedDateTimeISO("UTC").startOfDay().epochMilliseconds);
+  const date = new Date(
+    Temporal.Now.zonedDateTimeISO("UTC").startOfDay().epochMilliseconds,
+  );
 
   const visitorId = visitorFingerprint(ip ?? "unknown", userAgent);
   const browser = classifyBrowser(userAgent);
@@ -132,7 +150,10 @@ export default async function recordHumanVisit({
   } catch (error) {
     // Race condition: two concurrent requests for the same visitor both attempted
     // insert. Retry as a plain update — the row now exists.
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
       await prisma.humanVisit.update({
         where: { date_siteId_visitorId: { date, siteId: site.id, visitorId } },
         data: { count: { increment: 1 }, lastSeen: new Date() },

@@ -1,5 +1,6 @@
 import { HttpResponse, http } from "msw";
 import { afterEach, describe, expect, it } from "vitest";
+
 import checkMdRoutes from "~/lib/aiLegibility/checks/mdRoutes";
 import msw from "~/test/mocks/msw";
 
@@ -67,9 +68,12 @@ describe("checkMdRoutes", () => {
   it("should fail when one of multiple URLs is invalid", async () => {
     msw.use(
       http.get("https://acme.com/index.md", () =>
-        HttpResponse.text("# Acme Corp\n\nWelcome to Acme Corp. We build great software.", {
-          headers: { "Content-Type": "text/markdown" },
-        }),
+        HttpResponse.text(
+          "# Acme Corp\n\nWelcome to Acme Corp. We build great software.",
+          {
+            headers: { "Content-Type": "text/markdown" },
+          },
+        ),
       ),
       http.get("https://acme.com/broken.md", () =>
         HttpResponse.text("<!DOCTYPE html><html><body>404</body></html>", {
@@ -89,9 +93,12 @@ describe("checkMdRoutes", () => {
   it("should fail when URL returns HTML instead of markdown", async () => {
     msw.use(
       http.get("https://acme.com/index.md", () =>
-        HttpResponse.text("<!DOCTYPE html><html><head></head><body>HTML page</body></html>", {
-          headers: { "Content-Type": "text/html" },
-        }),
+        HttpResponse.text(
+          "<!DOCTYPE html><html><head></head><body>HTML page</body></html>",
+          {
+            headers: { "Content-Type": "text/html" },
+          },
+        ),
       ),
     );
 

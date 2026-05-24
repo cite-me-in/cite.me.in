@@ -25,7 +25,9 @@ export default function AiPlatformBreakdown({
         platformBreakdown.map((row) => (
           <TableRow key={row.platform}>
             <TableCell className="font-medium">{row.platform}</TableCell>
-            <TableCell className="text-right">{row.visitors.toLocaleString()}</TableCell>
+            <TableCell className="text-right">
+              {row.visitors.toLocaleString()}
+            </TableCell>
             <TableCell className="text-right">{row.pct.toFixed(2)}%</TableCell>
           </TableRow>
         ))

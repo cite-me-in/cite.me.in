@@ -4,6 +4,7 @@ import openaiClient from "~/lib/llm-visibility/openaiClient.server";
 import queryPerplexity from "~/lib/llm-visibility/perplexityClient.server";
 import PLATFORMS from "~/lib/llm-visibility/platforms";
 import fetchSERPResults from "~/lib/llm-visibility/serpApi.server";
+
 import type { QueryFn } from "./queryFn";
 
 const platforms = Object.fromEntries(
@@ -21,7 +22,8 @@ export default [
   { ...platforms.gemini, queryFn: queryGemini },
   {
     ...platforms.copilot,
-    queryFn: ({ query, timeout }) => fetchSERPResults({ query, engine: "bing_copilot", timeout }),
+    queryFn: ({ query, timeout }) =>
+      fetchSERPResults({ query, engine: "bing_copilot", timeout }),
   },
   { ...platforms.perplexity, queryFn: queryPerplexity },
 ] satisfies {

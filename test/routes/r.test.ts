@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
+
 import generateUnsubscribeToken from "~/emails/generateUnsubscribeToken";
 import { hashPassword } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
@@ -7,7 +8,9 @@ import { port } from "~/test/helpers/launchServer";
 const BASE = `http://localhost:${port}`;
 const DEST = "/sites";
 
-afterEach(() => prisma.user.deleteMany({ where: { email: { contains: "r-route-test" } } }));
+afterEach(() =>
+  prisma.user.deleteMany({ where: { email: { contains: "r-route-test" } } }),
+);
 
 describe("/r proxy route", () => {
   it("should redirect to url and mark emailVerifiedAt when token is valid", async () => {

@@ -1,10 +1,15 @@
 # Admin User Flag Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:executing-plans to implement this plan task-by-task.
+> **For Claude:** REQUIRED SUB-SKILL: Use
+> superpowers-extended-cc:executing-plans to implement this plan task-by-task.
 
-**Goal:** Replace the static `ADMIN_API_SECRET` env var with an `isAdmin` flag on `User`, so admin auth uses the same token-based lookup as regular users.
+**Goal:** Replace the static `ADMIN_API_SECRET` env var with an `isAdmin` flag
+on `User`, so admin auth uses the same token-based lookup as regular users.
 
-**Architecture:** Add `isAdmin Boolean @default(false)` to the Prisma `User` model. Replace `requireAdminApiKey` with `requireAdmin` which calls `verifyUserAccess` then checks the flag. Update the one admin route and remove the env var.
+**Architecture:** Add `isAdmin Boolean @default(false)` to the Prisma `User`
+model. Replace `requireAdminApiKey` with `requireAdmin` which calls
+`verifyUserAccess` then checks the flag. Update the one admin route and remove
+the env var.
 
 **Tech Stack:** Prisma, TypeScript, React Router v7, Vitest
 
@@ -24,7 +29,8 @@ Find the `model User {` block and add this field after `id`:
 isAdmin                 Boolean                  @default(false)           @map("is_admin")
 ```
 
-The full User model field list (alphabetical, matching existing style) should have it between `id` and `ownedSites`:
+The full User model field list (alphabetical, matching existing style) should
+have it between `id` and `ownedSites`:
 
 ```prisma
   id                      String                                             @id @default(cuid())
@@ -66,7 +72,8 @@ cd /Users/assaf/Projects/cite.me.in && git add prisma/schema.prisma && git commi
 
 - Modify: `test/lib/apiAuth.test.ts`
 
-The current `requireAdminApiKey` describe block uses `envVars.ADMIN_API_SECRET`. Replace it with a `requireAdmin` describe block that seeds a real admin user.
+The current `requireAdminApiKey` describe block uses `envVars.ADMIN_API_SECRET`.
+Replace it with a `requireAdmin` describe block that seeds a real admin user.
 
 **Step 1: Update the test file**
 
@@ -118,13 +125,19 @@ describe("requireAdmin", () => {
 });
 ```
 
-Also update the import at the top — change `requireAdminApiKey` to `requireAdmin`:
+Also update the import at the top — change `requireAdminApiKey` to
+`requireAdmin`:
 
 ```ts
-import { requireAdmin, verifySiteAccess, verifyUserAccess } from "~/lib/api/apiAuth.server";
+import {
+  requireAdmin,
+  verifySiteAccess,
+  verifyUserAccess,
+} from "~/lib/api/apiAuth.server";
 ```
 
-And remove the `envVars` import if it's only used for `ADMIN_API_SECRET` (check whether it's used elsewhere in the file — if not, remove the import line).
+And remove the `envVars` import if it's only used for `ADMIN_API_SECRET` (check
+whether it's used elsewhere in the file — if not, remove the import line).
 
 **Step 2: Run test to verify it fails (requireAdmin not yet exported)**
 
@@ -150,7 +163,8 @@ cd /Users/assaf/Projects/cite.me.in && git add test/lib/apiAuth.test.ts && git c
 
 **Step 1: Rewrite the file**
 
-Replace `requireAdminApiKey` with `requireAdmin`. The `verifyUserAccess` query needs to also select `isAdmin`:
+Replace `requireAdminApiKey` with `requireAdmin`. The `verifyUserAccess` query
+needs to also select `isAdmin`:
 
 ```ts
 import prisma from "~/lib/prisma.server";
@@ -182,7 +196,8 @@ export async function verifyUserAccess(request: Request): Promise<{
   const auth = request.headers.get("authorization");
   if (!auth) throw new Response("Unauthorized", { status: 401 });
   const [tokenType, token] = auth.split(/\s+/);
-  if (tokenType !== "Bearer") throw new Response("Unauthorized", { status: 401 });
+  if (tokenType !== "Bearer")
+    throw new Response("Unauthorized", { status: 401 });
 
   const userId = parseTokenUserId(token);
   if (!userId) throw new Response("Not found", { status: 404 });
@@ -220,7 +235,8 @@ export async function verifySiteAccess({
 }
 ```
 
-Note: `requireAdmin`'s return type omits `isAdmin` (callers don't need it) but `verifyUserAccess` now returns it internally.
+Note: `requireAdmin`'s return type omits `isAdmin` (callers don't need it) but
+`verifyUserAccess` now returns it internally.
 
 **Step 2: Run the unit tests**
 
@@ -236,7 +252,8 @@ Expected: all tests pass.
 cd /Users/assaf/Projects/cite.me.in && pnpm check:type 2>&1 | grep -E "error TS" | head -10
 ```
 
-Expected: no errors (there may be a temporary error in `api.admin.users.ts` — that's fixed next).
+Expected: no errors (there may be a temporary error in `api.admin.users.ts` —
+that's fixed next).
 
 **Step 4: Commit**
 

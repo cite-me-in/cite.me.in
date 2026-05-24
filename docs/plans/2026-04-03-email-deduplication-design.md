@@ -4,13 +4,20 @@
 
 ## Problem
 
-The current trial email system uses narrow date-range queries to deduplicate sends (e.g., find users whose `createdAt` falls within a 24-hour window). This is fragile: if the cron runs twice in a day, users get duplicate emails; if it skips a day, users miss the window permanently. There is no record of which emails were actually sent.
+The current trial email system uses narrow date-range queries to deduplicate
+sends (e.g., find users whose `createdAt` falls within a 24-hour window). This
+is fragile: if the cron runs twice in a day, users get duplicate emails; if it
+skips a day, users miss the window permanently. There is no record of which
+emails were actually sent.
 
 ## Decision
 
-Add a generic `SentEmail` table that records every automated email sent to a user. Eligibility queries filter out users who already have a matching record. This replaces the date-range window approach for trial emails.
+Add a generic `SentEmail` table that records every automated email sent to a
+user. Eligibility queries filter out users who already have a matching record.
+This replaces the date-range window approach for trial emails.
 
-WeeklyDigest is **unchanged** — it remains tracked per-site via `site.digestSentAt`, since one send covers all site members.
+WeeklyDigest is **unchanged** — it remains tracked per-site via
+`site.digestSentAt`, since one send covers all site members.
 
 ## Schema
 
@@ -31,7 +38,8 @@ model SentEmail {
 
 Add `sentEmails SentEmail[]` to the `User` model.
 
-No unique constraint — the schema supports future recurring emails. Deduplication is enforced in queries.
+No unique constraint — the schema supports future recurring emails.
+Deduplication is enforced in queries.
 
 ## Shared utility
 
@@ -39,11 +47,14 @@ Add `daysAgo(days: number): Date` to `app/lib/formatDate.ts`:
 
 ```ts
 export function daysAgo(days: number): Date {
-  return new Date(Temporal.Now.instant().subtract({ hours: days * 24 }).epochMilliseconds);
+  return new Date(
+    Temporal.Now.instant().subtract({ hours: days * 24 }).epochMilliseconds,
+  );
 }
 ```
 
-Replaces the inline `Temporal.Now.instant().subtract(...)` pattern in trial email files.
+Replaces the inline `Temporal.Now.instant().subtract(...)` pattern in trial
+email files.
 
 ## Eligibility queries
 
@@ -57,7 +68,8 @@ where: {
 }
 ```
 
-**TrialEnding** — users 24+ days old, no account, never received TrialEnding or TrialEnded:
+**TrialEnding** — users 24+ days old, no account, never received TrialEnding or
+TrialEnded:
 
 ```ts
 where: {
@@ -77,21 +89,29 @@ await prisma.sentEmail.create({
 
 ## Execution order
 
-`sendTrialEndedEmails` must run **before** `sendTrialEndingEmails` — sequentially, not `Promise.all`. This ensures that if a user qualifies for both (e.g., cron skipped a day and the user is 26 days old), the TrialEnded record is written before TrialEnding's query runs, so TrialEnding skips them correctly.
+`sendTrialEndedEmails` must run **before** `sendTrialEndingEmails` —
+sequentially, not `Promise.all`. This ensures that if a user qualifies for both
+(e.g., cron skipped a day and the user is 26 days old), the TrialEnded record is
+written before TrialEnding's query runs, so TrialEnding skips them correctly.
 
 ## Migration
 
-At deploy time, backfill `SentEmail` records to prevent retroactive sends to users already past the eligibility windows:
+At deploy time, backfill `SentEmail` records to prevent retroactive sends to
+users already past the eligibility windows:
 
-- Insert `{ type: "TrialEnded" }` for all users where `createdAt <= daysAgo(25) AND account = null`
-- Insert `{ type: "TrialEnding" }` for all users where `createdAt <= daysAgo(24) AND account = null`
+- Insert `{ type: "TrialEnded" }` for all users where
+  `createdAt <= daysAgo(25) AND account = null`
+- Insert `{ type: "TrialEnding" }` for all users where
+  `createdAt <= daysAgo(24) AND account = null`
 
-Users currently in the 24–25 day window proceed normally through the new system on the next cron run.
+Users currently in the 24–25 day window proceed normally through the new system
+on the next cron run.
 
 ## Adding new email types
 
 To guard a future email (e.g., `WelcomeDay3`):
 
-1. Add the send logic with `sentEmails: { none: { type: "WelcomeDay3" } }` in the eligibility query.
+1. Add the send logic with `sentEmails: { none: { type: "WelcomeDay3" } }` in
+   the eligibility query.
 2. Insert `{ userId, type: "WelcomeDay3" }` after sending.
 3. No schema changes required.

@@ -1,6 +1,8 @@
 import { redirect } from "react-router";
+
 import generateUnsubscribeToken from "~/emails/generateUnsubscribeToken";
 import prisma from "~/lib/prisma.server";
+
 import type { Route } from "./+types/r";
 
 export async function loader({ request }: Route.LoaderArgs) {

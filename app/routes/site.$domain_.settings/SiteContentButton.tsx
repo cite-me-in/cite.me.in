@@ -2,9 +2,11 @@ import { CheckIcon, ChevronRightIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useFetcher } from "react-router";
 import { twMerge } from "tailwind-merge";
+
 import { Button } from "~/components/ui/Button";
 import { Card, CardContent, CardFooter } from "~/components/ui/Card";
 import { Textarea } from "~/components/ui/Textarea";
+
 import DeleteSiteButton from "./DeleteSiteButton";
 import type { action } from "./route";
 
@@ -43,7 +45,12 @@ export default function SiteContentButton({
           <DeleteSiteButton
             domain={domain}
             isSubmitting={deleteFetcher.state !== "idle"}
-            onConfirm={() => deleteFetcher.submit({ intent: "delete-site" }, { method: "post" })}
+            onConfirm={() =>
+              deleteFetcher.submit(
+                { intent: "delete-site" },
+                { method: "post" },
+              )
+            }
           />
         )}
       </div>
@@ -73,9 +80,18 @@ function EditSourceForm({ content }: { content: string }) {
           />
         </CardContent>
         <CardFooter>
-          <Button disabled={fetcher.state !== "idle"} size="sm" type="submit" variant="default">
+          <Button
+            disabled={fetcher.state !== "idle"}
+            size="sm"
+            type="submit"
+            variant="default"
+          >
             {isSaved && <CheckIcon className="size-4" />}
-            {isSaved ? "Saved" : fetcher.state !== "idle" ? "Saving…" : "Save Changes"}
+            {isSaved
+              ? "Saved"
+              : fetcher.state !== "idle"
+                ? "Saving…"
+                : "Save Changes"}
           </Button>
         </CardFooter>
       </Card>

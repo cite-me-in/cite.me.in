@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import CATEGORIES from "~/lib/aiLegibility/checkDetails";
 import type { ScanResult } from "~/lib/aiLegibility/types";
 import scoreColor from "~/lib/scoreColor";

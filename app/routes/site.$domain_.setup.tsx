@@ -2,12 +2,14 @@ import { ms } from "convert";
 import { useEffect, useRef, useState } from "react";
 import { redirect, useNavigate } from "react-router";
 import { useInterval } from "usehooks-ts";
+
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
 import Spinner from "~/components/ui/Spinner";
 import { requireSiteAccess } from "~/lib/auth.server";
 import { getStatus } from "~/lib/setupProgress.server";
+
 import type { Route } from "./+types/site.$domain_.setup";
 
 export const handle = { siteNav: true };
@@ -53,7 +55,9 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
   useInterval(
     async () => {
       try {
-        const res = await fetch(`/site/${domain}/setup/status?offset=${offsetRef.current}`);
+        const res = await fetch(
+          `/site/${domain}/setup/status?offset=${offsetRef.current}`,
+        );
         const data = (await res.json()) as {
           lines: string[];
           done: boolean;
@@ -101,7 +105,11 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             {!done && !error && <Spinner />}
-            {done ? "Setup complete" : error ? "Something went wrong" : "Running…"}
+            {done
+              ? "Setup complete"
+              : error
+                ? "Something went wrong"
+                : "Running…"}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -109,12 +117,16 @@ export default function SetupPage({ loaderData }: Route.ComponentProps) {
             ref={logRef}
             className="border-border bg-muted text-foreground/60 h-96 overflow-y-auto rounded border p-4 font-mono text-sm leading-relaxed whitespace-break-spaces"
           >
-            {lines.length === 0 && !done && <span className="text-foreground/40">Starting…</span>}
+            {lines.length === 0 && !done && (
+              <span className="text-foreground/40">Starting…</span>
+            )}
             {lines.map((line, i) => (
               <div key={i}>{line}</div>
             ))}
             {done && (
-              <div className="mt-2 font-semibold text-green-700">✓ Redirecting to citations…</div>
+              <div className="mt-2 font-semibold text-green-700">
+                ✓ Redirecting to citations…
+              </div>
             )}
           </pre>
         </CardContent>

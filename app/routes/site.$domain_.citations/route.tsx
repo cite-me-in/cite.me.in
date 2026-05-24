@@ -1,5 +1,6 @@
 import { alphabetical, unique } from "radashi";
 import { useSearchParams } from "react-router";
+
 import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
 import { Tabs, TabsList, TabsTrigger } from "~/components/ui/Tabs";
@@ -8,6 +9,7 @@ import { getDomainMeta } from "~/lib/domainMeta.server";
 import { normalizeURL } from "~/lib/isSameDomain";
 import PLATFORMS from "~/lib/llm-visibility/platforms";
 import prisma from "~/lib/prisma.server";
+
 import type { Route } from "./+types/route";
 import BrandSentiment from "./BrandSentiment";
 import LatestResults from "./LatestResults";
@@ -39,7 +41,9 @@ function classifyCitations(citations: Citation[]) {
 function buildClassifiedUrls(citations: Citation[]): Set<string> {
   return new Set(
     citations
-      .filter((c) => c.relationship === "direct" || c.relationship === "indirect")
+      .filter(
+        (c) => c.relationship === "direct" || c.relationship === "indirect",
+      )
       .map((c) => c.url),
   );
 }
@@ -51,12 +55,15 @@ function computeShareOfVoice(
 ) {
   const directUrls = new Set(directCitations.map((c) => normalizeURL(c.url)));
   const indirectUrls = new Set(
-    indirectCitations.map((c) => normalizeURL(c.url)).filter((u) => !directUrls.has(u)),
+    indirectCitations
+      .map((c) => normalizeURL(c.url))
+      .filter((u) => !directUrls.has(u)),
   );
 
   const directCount = directUrls.size;
   const indirectCount = indirectUrls.size;
-  const weightedCitations = directCount + indirectCount * INDIRECT_CITATION_WEIGHT;
+  const weightedCitations =
+    directCount + indirectCount * INDIRECT_CITATION_WEIGHT;
 
   return {
     directUrls,
@@ -83,11 +90,15 @@ function buildRelatedCitations(
   return {
     direct: [...directUrls].map((url) => ({
       url,
-      reason: directCitations.find((c) => normalizeURL(c.url) === url)?.reason ?? null,
+      reason:
+        directCitations.find((c) => normalizeURL(c.url) === url)?.reason ??
+        null,
     })),
     indirect: [...indirectUrls].map((url) => ({
       url,
-      reason: indirectCitations.find((c) => normalizeURL(c.url) === url)?.reason ?? null,
+      reason:
+        indirectCitations.find((c) => normalizeURL(c.url) === url)?.reason ??
+        null,
     })),
   };
 }
@@ -95,7 +106,9 @@ function buildRelatedCitations(
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { site } = await requireSiteAccess({ domain: params.domain, request });
 
-  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .split("T")[0];
 
   const [runs, siteQueries, citationRows] = await Promise.all([
     prisma.citationQueryRun.findMany({
@@ -142,17 +155,24 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   ]);
 
   const activePlatforms = alphabetical(
-    unique(runs.map((r) => PLATFORMS.find((p) => p.name === r.platform)!).filter(Boolean)),
+    unique(
+      runs
+        .map((r) => PLATFORMS.find((p) => p.name === r.platform)!)
+        .filter(Boolean),
+    ),
     ({ label }) => label,
   );
 
   const url = new URL(request.url);
   const platform =
     activePlatforms.length > 0
-      ? (activePlatforms.find((p) => p.name === url.searchParams.get("platform")) ??
-        activePlatforms[0])
+      ? (activePlatforms.find(
+          (p) => p.name === url.searchParams.get("platform"),
+        ) ?? activePlatforms[0])
       : null;
-  const recentRuns = platform ? runs.filter((r) => r.platform === platform.name) : [];
+  const recentRuns = platform
+    ? runs.filter((r) => r.platform === platform.name)
+    : [];
   const recentRunIds = new Set(recentRuns.map((r) => r.id));
   const recentCitations = citationRows.filter((c) => recentRunIds.has(c.runId));
 
@@ -198,7 +218,9 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   };
 }
 
-export default function SiteCitationsPage({ loaderData }: Route.ComponentProps) {
+export default function SiteCitationsPage({
+  loaderData,
+}: Route.ComponentProps) {
   const {
     site,
     activePlatforms,
@@ -212,9 +234,12 @@ export default function SiteCitationsPage({ loaderData }: Route.ComponentProps) 
   const [searchParams, setSearchParams] = useSearchParams();
   const platform =
     activePlatforms.length > 0
-      ? (activePlatforms.find((p) => p.name === searchParams.get("platform")) ?? activePlatforms[0])
+      ? (activePlatforms.find((p) => p.name === searchParams.get("platform")) ??
+        activePlatforms[0])
       : null;
-  const recentRuns = platform ? runs.filter((r) => r.platform === platform.name) : [];
+  const recentRuns = platform
+    ? runs.filter((r) => r.platform === platform.name)
+    : [];
   const run = recentRuns[0];
 
   const mergedQueries = unique(
@@ -232,7 +257,9 @@ export default function SiteCitationsPage({ loaderData }: Route.ComponentProps) 
 
   const sentiment = [...recentRuns]
     .filter((r) => r.sentimentLabel !== null)
-    .sort((a, b) => new Date(b.onDate).getTime() - new Date(a.onDate).getTime())[0];
+    .sort(
+      (a, b) => new Date(b.onDate).getTime() - new Date(a.onDate).getTime(),
+    )[0];
 
   return (
     <Main variant="wide">
@@ -270,10 +297,20 @@ export default function SiteCitationsPage({ loaderData }: Route.ComponentProps) 
             site={site}
             classifications={relatedCitations}
           />
-          <BrandSentiment sentiment={sentiment} platformLabel={platform!.label} />
+          <BrandSentiment
+            sentiment={sentiment}
+            platformLabel={platform!.label}
+          />
           <RelatedCitations relatedCitations={relatedCitations} />
-          <TopCompetitors competitors={competitors} shareOfVoice={shareOfVoice} />
-          <VisibilityCharts recentRuns={recentRuns} site={site} classifications={classifications} />
+          <TopCompetitors
+            competitors={competitors}
+            shareOfVoice={shareOfVoice}
+          />
+          <VisibilityCharts
+            recentRuns={recentRuns}
+            site={site}
+            classifications={classifications}
+          />
         </>
       ) : (
         <p className="text-foreground/60 flex items-center justify-center py-8 text-center text-lg">

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import prisma from "~/lib/prisma.server";
 import type { Site } from "~/prisma";
 
@@ -66,7 +67,9 @@ describe("generateSiteQueries", () => {
 
     const suggestions = await generateSiteQueries(site.id);
     expect(suggestions).toHaveLength(9);
-    expect(suggestions.map((q) => ({ group: q.group, query: q.query }))).toEqual(MOCK_QUERIES);
+    expect(
+      suggestions.map((q) => ({ group: q.group, query: q.query })),
+    ).toEqual(MOCK_QUERIES);
   });
 
   it("should propagate errors from API", async () => {

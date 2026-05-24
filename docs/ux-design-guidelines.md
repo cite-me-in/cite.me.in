@@ -4,16 +4,23 @@
 
 ### Neobrutalist Foundation
 
-- **Shadows**: Hard, no blur — `shadow-[3px_3px_0px_0px_black]`. Theme variable: `--shadow: 4px 4px 0px 0px var(--border)`, utility: `shadow-shadow`.
-- **Borders**: `border-2` default, color `border-border` or `border-black`. Radius: `rounded-base` (5px).
-- **Background**: Light mode `oklch(93.46% 0.0305 255.11)` (soft blue-gray), dark mode `oklch(29.23% 0.0626 270.49)`.
-- **Cards**: `bg-secondary-background` (white light, near-black dark), `border-2`, `shadow-shadow`.
-- **Primary action color**: `#F59E0B` (amber/yellow) — buttons, active tabs, hover highlights.
+- **Shadows**: Hard, no blur — `shadow-[3px_3px_0px_0px_black]`. Theme variable:
+  `--shadow: 4px 4px 0px 0px var(--border)`, utility: `shadow-shadow`.
+- **Borders**: `border-2` default, color `border-border` or `border-black`.
+  Radius: `rounded-base` (5px).
+- **Background**: Light mode `oklch(93.46% 0.0305 255.11)` (soft blue-gray),
+  dark mode `oklch(29.23% 0.0626 270.49)`.
+- **Cards**: `bg-secondary-background` (white light, near-black dark),
+  `border-2`, `shadow-shadow`.
+- **Primary action color**: `#F59E0B` (amber/yellow) — buttons, active tabs,
+  hover highlights.
 
 ### Typography
 
-- **Sans-serif (Archivo)**: `--font-sans`, all UI and headings. Utility: `font-sans`.
-- **Monospace (Atkinson Hyperlegible Mono)**: `--font-mono`, code, URLs, domains.
+- **Sans-serif (Archivo)**: `--font-sans`, all UI and headings. Utility:
+  `font-sans`.
+- **Monospace (Atkinson Hyperlegible Mono)**: `--font-mono`, code, URLs,
+  domains.
 - **Serif (Quando)**: `--font-serif`, content/prose blocks.
 - **Font weight utilities**: `font-base` (500), `font-heading` (700).
 - **Page title**: `font-heading text-3xl`.
@@ -36,23 +43,31 @@ Every page follows this pattern:
 </Main>
 ```
 
-- `Main` variants: `default` (centered narrow), `wide` (max-w-5xl, px-6 py-12), `prose` (prose-lg, centered, large padding).
-- Route handle `{ siteNav: true }` adds nav links to header. `{ hideHeader: true }` hides page header.
+- `Main` variants: `default` (centered narrow), `wide` (max-w-5xl, px-6 py-12),
+  `prose` (prose-lg, centered, large padding).
+- Route handle `{ siteNav: true }` adds nav links to header.
+  `{ hideHeader: true }` hides page header.
 - Auth pages use `hideLayout` on the root route to suppress nav entirely.
 
 ### Navigation
 
-- Site nav links hidden on mobile (`hidden md:flex`). Mobile: logo + AccountMenu only.
+- Site nav links hidden on mobile (`hidden md:flex`). Mobile: logo + AccountMenu
+  only.
 - Active nav link: `text-[#F59E0B]` color.
 - Footer stacks on mobile, `sm:flex-row` on larger screens.
 
 ## Loading States
 
-- **Page loading**: `PageLoadingBouncer` — three bouncing dots (yellow, green, blue) staggered at 0s/0.2s/0.4s. Full-screen white overlay at 20% opacity. Add to every page with async data or tabs.
-- **Button loading**: Disable button, show spinner icon (refresh icon gets `animate-spin`, or `Loader2Icon`).
+- **Page loading**: `PageLoadingBouncer` — three bouncing dots (yellow, green,
+  blue) staggered at 0s/0.2s/0.4s. Full-screen white overlay at 20% opacity. Add
+  to every page with async data or tabs.
+- **Button loading**: Disable button, show spinner icon (refresh icon gets
+  `animate-spin`, or `Loader2Icon`).
 - **Copy button**: Show "Copied!" with check icon for 2s, then revert.
-- **Scanning/process**: Live log viewer (`<pre>` with auto-scroll), polls status endpoint every 1s.
-- **Empty states**: Centered text, muted color, descriptive message. Use Card with `variant="yellow"` and CTA button for actionable empty states.
+- **Scanning/process**: Live log viewer (`<pre>` with auto-scroll), polls status
+  endpoint every 1s.
+- **Empty states**: Centered text, muted color, descriptive message. Use Card
+  with `variant="yellow"` and CTA button for actionable empty states.
 
 ## Animations
 
@@ -72,7 +87,8 @@ Every page follows this pattern:
 
 - `<fetcher.Form method="POST">` for non-navigating submits.
 - Hidden `_intent` field for action routing on the server.
-- Use `FieldSet` / `Field` / `FieldLabel` / `FieldContent` / `FieldError` composition.
+- Use `FieldSet` / `Field` / `FieldLabel` / `FieldContent` / `FieldError`
+  composition.
 - Server actions return `{ ok: true }` or `{ ok: false, error: string }`.
 - Client: `useFetcher<typeof action>()` for typed `.data`.
 
@@ -116,25 +132,32 @@ Every page follows this pattern:
 ## Date/Time
 
 - All date operations via `@js-temporal/polyfill` (never `Date.now()` etc.).
-- Format utilities: `formatDateShort` (compact), `formatDateMed` (readable), `formatDateHuge` (full).
-- Date range selector: query-parameter driven (`?from=...&until=...`), predefined tabs (14/30/90 days).
-- Convert Temporal to JS Date for DB queries: `new Date(from.toZonedDateTime("UTC").epochMilliseconds)`.
+- Format utilities: `formatDateShort` (compact), `formatDateMed` (readable),
+  `formatDateHuge` (full).
+- Date range selector: query-parameter driven (`?from=...&until=...`),
+  predefined tabs (14/30/90 days).
+- Convert Temporal to JS Date for DB queries:
+  `new Date(from.toZonedDateTime("UTC").epochMilliseconds)`.
 
 ## Responsive Design
 
 - **sm (640px)**: Dialog sizing, footer layout, form footer reversal.
-- **md (768px)**: Nav links visible, footer columns constrained, field orientation switch.
-- Container queries: `@container/card-header`, `@container/field-group` with `@md/field-group:flex-row`.
+- **md (768px)**: Nav links visible, footer columns constrained, field
+  orientation switch.
+- Container queries: `@container/card-header`, `@container/field-group` with
+  `@md/field-group:flex-row`.
 - Tables scroll horizontally. Cards full width at all sizes.
 - Button sizes scale down with `size` prop (`sm` in cards).
 - Dialog: `max-w-[calc(100%-2rem)]` → `sm:max-w-lg`.
 
 ## Component Patterns
 
-- Every component accepts `className` merged via `twMerge` (last wins for overrides).
+- Every component accepts `className` merged via `twMerge` (last wins for
+  overrides).
 - `cva` for variant-based styling. `useRender` for polymorphic `render` prop.
 - `data-slot` attributes for child element targeting (e.g., `data-slot="card"`).
-- Component variants: `default`, `ghost`, `destructive`, `outline`, `secondary`, `link`.
+- Component variants: `default`, `ghost`, `destructive`, `outline`, `secondary`,
+  `link`.
 
 ## Copy-to-Clipboard
 

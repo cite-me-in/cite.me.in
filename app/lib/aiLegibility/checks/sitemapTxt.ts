@@ -26,7 +26,9 @@ export default async function checkSitemapTxt({
     return fetchSitemapTxt(urlsToTry[0]);
   }
 
-  let lastError: (Omit<CheckResult, "category"> & { urls: string[] }) | undefined;
+  let lastError:
+    | (Omit<CheckResult, "category"> & { urls: string[] })
+    | undefined;
 
   for (const sitemapUrl of urlsToTry) {
     const result = await fetchSitemapTxt(sitemapUrl);
@@ -92,7 +94,8 @@ async function fetchSitemapTxt(
       return {
         name: "sitemap.txt",
         passed: true,
-        message: "sitemap.txt exists but no valid URLs found (AI agents will skip it)",
+        message:
+          "sitemap.txt exists but no valid URLs found (AI agents will skip it)",
         details: {
           url: sitemapUrl,
           lineCount: lines.length,
@@ -125,7 +128,8 @@ async function fetchSitemapTxt(
       urls,
     };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     if (error instanceof Error && error.name === "TimeoutError") {
       return {
         name: "sitemap.txt",

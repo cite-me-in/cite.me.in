@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { timeago } from "~/lib/relativeTime";
 
 const NOW = new Date("2025-06-15T12:00:00Z").getTime();
@@ -74,7 +75,9 @@ describe("timeago", () => {
   });
 
   it("handles ISO 8601 string timestamps", () => {
-    expect(timeago("2025-06-15T10:00:00Z", "2025-06-15T12:00:00Z")).toBe("2 hours ago");
+    expect(timeago("2025-06-15T10:00:00Z", "2025-06-15T12:00:00Z")).toBe(
+      "2 hours ago",
+    );
   });
 
   it("uses timestamp as reference when omitted", () => {

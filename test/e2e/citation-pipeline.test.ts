@@ -1,4 +1,5 @@
 import test, { type Page, expect } from "@playwright/test";
+
 import prisma from "~/lib/prisma.server";
 import type { Site, User } from "~/prisma";
 import { goto } from "~/test/helpers/launchBrowser";
@@ -12,7 +13,9 @@ test.beforeAll(async () => {
 });
 
 test("loads homepage", async () => {
-  await expect(page.getByRole("heading", { name: /Does ChatGPT mention/i })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /Does ChatGPT mention/i }),
+  ).toBeVisible();
 });
 
 test("signs up", async () => {
@@ -24,8 +27,12 @@ test("signs up", async () => {
   await page
     .getByRole("textbox", { name: "Email", exact: true })
     .fill("citation-pipeline@example.com");
-  await page.getByRole("textbox", { name: "Password", exact: true }).fill("password123");
-  await page.getByRole("textbox", { name: "Confirm password", exact: true }).fill("password123");
+  await page
+    .getByRole("textbox", { name: "Password", exact: true })
+    .fill("password123");
+  await page
+    .getByRole("textbox", { name: "Confirm password", exact: true })
+    .fill("password123");
   await page.getByRole("button", { name: "Create account" }).click();
   await page.waitForURL("/sites");
 });

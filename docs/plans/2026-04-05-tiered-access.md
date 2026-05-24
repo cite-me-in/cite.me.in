@@ -1,12 +1,22 @@
 # Tiered Access Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:executing-plans to implement this plan task-by-task.
+> **For Claude:** REQUIRED SUB-SKILL: Use
+> superpowers-extended-cc:executing-plans to implement this plan task-by-task.
 
-**Goal:** Replace the implicit trial/active/cancelled tier logic (derived from `user.createdAt` + `account.status`) with an explicit `plan` enum on the `User` model, add a `gratis` tier, decouple processing frequency from digest sends via `Site.lastProcessedAt`, and ensure all tier logic flows through a single `app/lib/userPlan.server.ts` module.
+**Goal:** Replace the implicit trial/active/cancelled tier logic (derived from
+`user.createdAt` + `account.status`) with an explicit `plan` enum on the `User`
+model, add a `gratis` tier, decouple processing frequency from digest sends via
+`Site.lastProcessedAt`, and ensure all tier logic flows through a single
+`app/lib/userPlan.server.ts` module.
 
-**Architecture:** Add a `Plan` Prisma enum (`trial | paid | cancelled | gratis`) to `User`. Stripe webhooks write `user.plan` instead of `account.status` (which is removed). `prepareSites` filters by `user.plan` + `lastProcessedAt` so paid/gratis process daily and trial processes weekly. One new file owns all tier decisions.
+**Architecture:** Add a `Plan` Prisma enum (`trial | paid | cancelled | gratis`)
+to `User`. Stripe webhooks write `user.plan` instead of `account.status` (which
+is removed). `prepareSites` filters by `user.plan` + `lastProcessedAt` so
+paid/gratis process daily and trial processes weekly. One new file owns all tier
+decisions.
 
-**Tech Stack:** Prisma (schema + migration), React Router loaders/actions, Vitest integration tests, Stripe webhooks.
+**Tech Stack:** Prisma (schema + migration), React Router loaders/actions,
+Vitest integration tests, Stripe webhooks.
 
 **Design doc:** `docs/plans/2026-04-05-tiered-access-design.md`
 
@@ -18,7 +28,8 @@
 
 - Modify: `prisma/schema.prisma`
 
-**Step 1: Add the `Plan` enum, `User.plan`, `Site.lastProcessedAt`, remove `Account.status`**
+**Step 1: Add the `Plan` enum, `User.plan`, `Site.lastProcessedAt`, remove
+`Account.status`**
 
 In `prisma/schema.prisma`:
 
@@ -59,7 +70,8 @@ Expected: `✔ Your database is now in sync with your Prisma schema.`
 
 **Step 3: Backfill existing users**
 
-Run this SQL directly (Prisma Studio, psql, or `infisical --env dev run -- psql $DATABASE_URL`):
+Run this SQL directly (Prisma Studio, psql, or
+`infisical --env dev run -- psql $DATABASE_URL`):
 
 ```sql
 UPDATE users u
@@ -127,22 +139,34 @@ describe("processingIntervalHours", () => {
 
 describe("isProcessingEligible", () => {
   it("should return true for a paid user", () => {
-    expect(isProcessingEligible({ plan: "paid", createdAt: daysAgo(30) })).toBe(true);
+    expect(isProcessingEligible({ plan: "paid", createdAt: daysAgo(30) })).toBe(
+      true,
+    );
   });
   it("should return true for a gratis user", () => {
-    expect(isProcessingEligible({ plan: "gratis", createdAt: daysAgo(100) })).toBe(true);
+    expect(
+      isProcessingEligible({ plan: "gratis", createdAt: daysAgo(100) }),
+    ).toBe(true);
   });
   it("should return false for a cancelled user", () => {
-    expect(isProcessingEligible({ plan: "cancelled", createdAt: daysAgo(10) })).toBe(false);
+    expect(
+      isProcessingEligible({ plan: "cancelled", createdAt: daysAgo(10) }),
+    ).toBe(false);
   });
   it("should return true for a trial user within 25 days", () => {
-    expect(isProcessingEligible({ plan: "trial", createdAt: daysAgo(10) })).toBe(true);
+    expect(
+      isProcessingEligible({ plan: "trial", createdAt: daysAgo(10) }),
+    ).toBe(true);
   });
   it("should return false for a trial user older than 25 days", () => {
-    expect(isProcessingEligible({ plan: "trial", createdAt: daysAgo(26) })).toBe(false);
+    expect(
+      isProcessingEligible({ plan: "trial", createdAt: daysAgo(26) }),
+    ).toBe(false);
   });
   it("should return false for a trial user at exactly 25 days", () => {
-    expect(isProcessingEligible({ plan: "trial", createdAt: daysAgo(25) })).toBe(false);
+    expect(
+      isProcessingEligible({ plan: "trial", createdAt: daysAgo(25) }),
+    ).toBe(false);
   });
 });
 
@@ -196,7 +220,10 @@ export function processingIntervalHours(plan: Plan): number {
 
 // Whether a site should be processed right now.
 // Trial expires after TRIAL_DAYS — no processing after that.
-export function isProcessingEligible(user: { plan: Plan; createdAt: Date }): boolean {
+export function isProcessingEligible(user: {
+  plan: Plan;
+  createdAt: Date;
+}): boolean {
   if (user.plan === "cancelled") return false;
   if (user.plan === "trial") return daysSince(user.createdAt) < TRIAL_DAYS;
   return true; // paid, gratis
@@ -204,7 +231,10 @@ export function isProcessingEligible(user: { plan: Plan; createdAt: Date }): boo
 
 // Whether to send the weekly digest to this user's sites.
 // Same eligibility as processing.
-export function isDigestEligible(user: { plan: Plan; createdAt: Date }): boolean {
+export function isDigestEligible(user: {
+  plan: Plan;
+  createdAt: Date;
+}): boolean {
   return isProcessingEligible(user);
 }
 
@@ -239,9 +269,11 @@ git commit -m "feat: add userPlan.server.ts with tier logic"
 
 **Step 1: Update the integration tests first**
 
-In `test/routes/cron.process-sites.test.ts`, the `site processing` describe block needs to be rewritten.
+In `test/routes/cron.process-sites.test.ts`, the `site processing` describe
+block needs to be rewritten.
 
-All test seeds that create users with `account: { create: { status: "active", ... } }` must change to:
+All test seeds that create users with
+`account: { create: { status: "active", ... } }` must change to:
 
 - Remove `status` from account create (field no longer exists)
 - Add `plan: "paid"` directly on the user
@@ -297,7 +329,9 @@ describe("site processing", () => {
         domain: "paid-site.example.com",
         id: "site-process-1",
         summary: "Test summary",
-        lastProcessedAt: new Date(Temporal.Now.instant().subtract({ hours: 25 }).epochMilliseconds),
+        lastProcessedAt: new Date(
+          Temporal.Now.instant().subtract({ hours: 25 }).epochMilliseconds,
+        ),
         owner: {
           create: {
             id: "user-process-1",
@@ -328,7 +362,9 @@ describe("site processing", () => {
         domain: "paid-site.example.com",
         id: "site-process-1",
         summary: "Test summary",
-        lastProcessedAt: new Date(Temporal.Now.instant().subtract({ hours: 12 }).epochMilliseconds),
+        lastProcessedAt: new Date(
+          Temporal.Now.instant().subtract({ hours: 12 }).epochMilliseconds,
+        ),
         owner: {
           create: {
             id: "user-process-1",
@@ -412,7 +448,8 @@ describe("site processing", () => {
             email: "owner-process3@test.com",
             passwordHash: "test",
             createdAt: new Date(
-              Temporal.Now.instant().subtract({ hours: 24 * 26 }).epochMilliseconds,
+              Temporal.Now.instant().subtract({ hours: 24 * 26 })
+                .epochMilliseconds,
             ),
           },
         },
@@ -431,7 +468,9 @@ describe("site processing", () => {
         domain: "gratis-site.example.com",
         id: "site-process-5",
         summary: "Test summary",
-        lastProcessedAt: new Date(Temporal.Now.instant().subtract({ hours: 25 }).epochMilliseconds),
+        lastProcessedAt: new Date(
+          Temporal.Now.instant().subtract({ hours: 25 }).epochMilliseconds,
+        ),
         owner: {
           create: {
             id: "user-process-5",
@@ -472,7 +511,9 @@ describe("site processing", () => {
 });
 ```
 
-Also remove the old test "should skip a site with a citation run recently" (lines 152-186) — `citationRuns` are no longer the processing gate; `lastProcessedAt` is.
+Also remove the old test "should skip a site with a citation run recently"
+(lines 152-186) — `citationRuns` are no longer the processing gate;
+`lastProcessedAt` is.
 
 **Step 2: Run tests to confirm they fail**
 
@@ -480,13 +521,18 @@ Also remove the old test "should skip a site with a citation run recently" (line
 pnpm vitest run test/routes/cron.process-sites.test.ts
 ```
 
-Expected: FAIL — seed data has `status` field that no longer exists, and `prepareSites` still uses old logic.
+Expected: FAIL — seed data has `status` field that no longer exists, and
+`prepareSites` still uses old logic.
 
 **Step 3: Rewrite `app/lib/prepareSites.server.ts`**
 
 ```ts
 import type { Plan } from "~/lib/userPlan.server";
-import { TRIAL_DAYS, isProcessingEligible, processingIntervalHours } from "~/lib/userPlan.server";
+import {
+  TRIAL_DAYS,
+  isProcessingEligible,
+  processingIntervalHours,
+} from "~/lib/userPlan.server";
 import { UsageLimitExceededError } from "~/lib/usage/UsageLimitExceededError";
 import { Temporal } from "@js-temporal/polyfill";
 import { map } from "radashi";
@@ -534,7 +580,8 @@ export default async function prepareSites(): Promise<
             plan: "trial",
             createdAt: {
               gte: new Date(
-                Temporal.Now.instant().subtract({ hours: TRIAL_DAYS * 24 }).epochMilliseconds,
+                Temporal.Now.instant().subtract({ hours: TRIAL_DAYS * 24 })
+                  .epochMilliseconds,
               ),
             },
           },
@@ -553,7 +600,11 @@ export default async function prepareSites(): Promise<
     return Date.now() - lastRun.getTime() >= intervalMs;
   });
 
-  logger("[prepareSites] Processing %d sites: %s", due.length, due.map((s) => s.domain).join(", "));
+  logger(
+    "[prepareSites] Processing %d sites: %s",
+    due.length,
+    due.map((s) => s.domain).join(", "),
+  );
 
   await map(due, async (site) => {
     await Promise.all([nextCitationRun(site), updateBotInsight(site)]);
@@ -569,7 +620,9 @@ export default async function prepareSites(): Promise<
 // ... nextCitationRun and updateBotInsight remain unchanged
 ```
 
-Note: remove the `trialDays` parameter from `prepareSites` — it now uses `TRIAL_DAYS` from `userPlan.server.ts` directly. Update the call in `cron.process-sites.ts`:
+Note: remove the `trialDays` parameter from `prepareSites` — it now uses
+`TRIAL_DAYS` from `userPlan.server.ts` directly. Update the call in
+`cron.process-sites.ts`:
 
 ```ts
 // before: const sites = await prepareSites(trialDays);
@@ -605,7 +658,9 @@ git commit -m "feat: prepareSites uses user.plan + lastProcessedAt, daily for pa
 
 In `test/routes/api.stripe.webhook.test.ts`:
 
-The `beforeAll` seed and the `checkout.session.completed` tests check `account?.status`. Remove all `status` from seed data and switch assertions to `user.plan`:
+The `beforeAll` seed and the `checkout.session.completed` tests check
+`account?.status`. Remove all `status` from seed data and switch assertions to
+`user.plan`:
 
 In `beforeAll`:
 
@@ -620,7 +675,8 @@ await prisma.user.create({
 });
 ```
 
-In "should activate account and store Stripe IDs" (line 78), replace the assertion:
+In "should activate account and store Stripe IDs" (line 78), replace the
+assertion:
 
 ```ts
 // before:
@@ -645,7 +701,8 @@ expect(account?.stripeSubscriptionId).toBe("sub_webhook_1");
 
 In "should cancel account when subscription is deleted" (line 129):
 
-- Update the upsert seed to remove `status: "active"` from account, add `plan: "paid"` to user
+- Update the upsert seed to remove `status: "active"` from account, add
+  `plan: "paid"` to user
 - Change assertion from `account?.status` to `user?.plan`:
 
 ```ts
@@ -756,7 +813,11 @@ if (event.type === "checkout.session.completed") {
     }),
   ]);
 
-  logger("[stripe] Activated account for user %s (interval: %s)", userId, interval);
+  logger(
+    "[stripe] Activated account for user %s (interval: %s)",
+    userId,
+    interval,
+  );
 }
 ```
 
@@ -805,11 +866,14 @@ git commit -m "feat: stripe webhook writes user.plan, emits subscription.cancell
 
 - Modify: `app/lib/sites.server.ts`
 
-The `createSite` function currently reads `account.status` to determine the site limit. Switch it to `user.plan`.
+The `createSite` function currently reads `account.status` to determine the site
+limit. Switch it to `user.plan`.
 
 **Step 1: Update `createSite`**
 
-In `app/lib/sites.server.ts`, the function signature already takes `user: { id: string; isAdmin: boolean }`. Add `plan` to the user type and update the isPro check:
+In `app/lib/sites.server.ts`, the function signature already takes
+`user: { id: string; isAdmin: boolean }`. Add `plan` to the user type and update
+the isPro check:
 
 ```ts
 export async function createSite({
@@ -828,7 +892,9 @@ export async function createSite({
 
 Remove the `prisma.account.findUnique` call that was only there to get `status`.
 
-Find every callsite of `createSite` and ensure the `user` object passed includes `plan`. The primary callsite is the sites route loader — check it includes `plan` in its `requireUser` result (or look up the user's plan separately).
+Find every callsite of `createSite` and ensure the `user` object passed includes
+`plan`. The primary callsite is the sites route loader — check it includes
+`plan` in its `requireUser` result (or look up the user's plan separately).
 
 **Step 2: Run typecheck**
 
@@ -858,7 +924,8 @@ git commit -m "refactor: createSite uses user.plan instead of account.status"
 
 In `test/routes/api.admin.users.test.ts`:
 
-Update the seed for `admin-users-test-user-1`: remove `status: "active"` from account, add `plan: "paid"` on user:
+Update the seed for `admin-users-test-user-1`: remove `status: "active"` from
+account, add `plan: "paid"` on user:
 
 ```ts
 await prisma.user.upsert({
@@ -902,7 +969,8 @@ Expected: FAIL.
 
 **Step 3: Update `app/routes/api.admin.users.ts`**
 
-Update the loader to read `plan` from user instead of deriving from `account.status`:
+Update the loader to read `plan` from user instead of deriving from
+`account.status`:
 
 ```ts
 const users = await prisma.user.findMany({
@@ -963,7 +1031,9 @@ git commit -m "refactor: admin users API uses user.plan instead of account.statu
 - Modify: `app/emails/TrialEnded.tsx`
 - Modify: `app/emails/TrialEnding.tsx`
 
-Both files currently find trial users by `account: null` (i.e., no Stripe account). With Option C, every user has a `plan` field — gratis/paid users also have no account in some cases. The correct filter is `plan: "trial"`.
+Both files currently find trial users by `account: null` (i.e., no Stripe
+account). With Option C, every user has a `plan` field — gratis/paid users also
+have no account in some cases. The correct filter is `plan: "trial"`.
 
 **Step 1: Update `TrialEnded.tsx`**
 
@@ -995,7 +1065,9 @@ where: {
 pnpm vitest run test/routes/cron.process-sites.test.ts
 ```
 
-Expected: All PASS (the trial email tests in `describe("trial emails")` still pass — they create users without a `plan` field, so Prisma uses the default `trial`).
+Expected: All PASS (the trial email tests in `describe("trial emails")` still
+pass — they create users without a `plan` field, so Prisma uses the default
+`trial`).
 
 **Step 4: Commit**
 
@@ -1014,7 +1086,8 @@ git commit -m "refactor: trial emails filter by user.plan instead of account: nu
 pnpm check:type
 ```
 
-Expected: No errors. If there are errors, they'll point to remaining references to `account.status` — fix each one.
+Expected: No errors. If there are errors, they'll point to remaining references
+to `account.status` — fix each one.
 
 **Step 2: Run all unit and integration tests**
 

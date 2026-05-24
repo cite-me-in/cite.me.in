@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
+
 import buildPrompt from "./buildPrompt";
 import type { CheckResult } from "./types";
 

@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { InsufficientCreditError } from "~/lib/llm-visibility/insufficientCreditError";
 
 const mockGenerateContent = vi.hoisted(() =>
@@ -76,7 +77,8 @@ describe("queryGemini", () => {
         .mockResolvedValueOnce({ url: "https://example.com/final-2" }),
     );
 
-    const { default: queryGemini } = await import("~/lib/llm-visibility/geminiClient.server");
+    const { default: queryGemini } =
+      await import("~/lib/llm-visibility/geminiClient.server");
 
     const result = await queryGemini({
       maxRetries: 0,
@@ -104,14 +106,17 @@ describe("queryGemini", () => {
         {
           groundingMetadata: {
             webSearchQueries: [],
-            groundingChunks: [{ web: { uri: "https://redirect.example.com", title: "Source" } }],
+            groundingChunks: [
+              { web: { uri: "https://redirect.example.com", title: "Source" } },
+            ],
           },
         },
       ],
       usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5 },
     });
 
-    const { default: queryGemini } = await import("~/lib/llm-visibility/geminiClient.server");
+    const { default: queryGemini } =
+      await import("~/lib/llm-visibility/geminiClient.server");
 
     await queryGemini({
       maxRetries: 0,
@@ -130,11 +135,14 @@ describe("queryGemini", () => {
 
     mockGenerateContent.mockResolvedValue({
       text: "I don't know.",
-      candidates: [{ groundingMetadata: { webSearchQueries: [], groundingChunks: [] } }],
+      candidates: [
+        { groundingMetadata: { webSearchQueries: [], groundingChunks: [] } },
+      ],
       usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5 },
     });
 
-    const { default: queryGemini } = await import("~/lib/llm-visibility/geminiClient.server");
+    const { default: queryGemini } =
+      await import("~/lib/llm-visibility/geminiClient.server");
 
     const result = await queryGemini({
       maxRetries: 0,
@@ -155,7 +163,8 @@ describe("queryGemini", () => {
       usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5 },
     });
 
-    const { default: queryGemini } = await import("~/lib/llm-visibility/geminiClient.server");
+    const { default: queryGemini } =
+      await import("~/lib/llm-visibility/geminiClient.server");
 
     const result = await queryGemini({
       maxRetries: 0,
@@ -174,11 +183,12 @@ describe("queryGemini", () => {
       new GoogleApiError({ status: 429, message: "Rate limit exceeded" }),
     );
 
-    const { default: queryGemini } = await import("~/lib/llm-visibility/geminiClient.server");
+    const { default: queryGemini } =
+      await import("~/lib/llm-visibility/geminiClient.server");
 
-    await expect(queryGemini({ maxRetries: 0, timeout: 0, query: "query" })).rejects.toThrow(
-      InsufficientCreditError,
-    );
+    await expect(
+      queryGemini({ maxRetries: 0, timeout: 0, query: "query" }),
+    ).rejects.toThrow(InsufficientCreditError);
   });
 
   it("should not throw InsufficientCreditError on other errors", async () => {
@@ -188,7 +198,8 @@ describe("queryGemini", () => {
       new GoogleApiError({ status: 500, message: "Internal Server Error" }),
     );
 
-    const { default: queryGemini } = await import("~/lib/llm-visibility/geminiClient.server");
+    const { default: queryGemini } =
+      await import("~/lib/llm-visibility/geminiClient.server");
 
     let caught: unknown;
     try {

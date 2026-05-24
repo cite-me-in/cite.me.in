@@ -1,6 +1,13 @@
 import type { ReactNode } from "react";
+
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/Card";
-import { Table, TableBody, TableHead, TableHeader, TableRow } from "~/components/ui/Table";
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/Table";
 
 /**
  * Shared Card+Table wrapper for traffic data tables.

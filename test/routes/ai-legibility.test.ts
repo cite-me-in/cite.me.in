@@ -1,6 +1,7 @@
 import { expect } from "@playwright/test";
 import type { InputJsonObject } from "@prisma/client/runtime/client";
 import { beforeAll, describe, it } from "vitest";
+
 import sendAiLegibilityReport from "~/emails/AiLegibilityReport";
 import { appendLog, startNewScan } from "~/lib/aiLegibility/progress.server";
 import type { ScanResult } from "~/lib/aiLegibility/types";
@@ -61,9 +62,12 @@ const SCAN_RESULT: ScanResult = {
         goal: "Provide an llms.txt file for AI context",
         issue: "Without llms.txt, LLMs lack structured guidance",
         howToImplement: "Create /llms.txt at your site root",
-        fixExample: "# Example Site\n> Description\n\n## Pages\n- [Home](https://example.com/)",
+        fixExample:
+          "# Example Site\n> Description\n\n## Pages\n- [Home](https://example.com/)",
         effort: "15 min",
-        resourceLinks: [{ label: "llms.txt spec", url: "https://llmstxt.org/" }],
+        resourceLinks: [
+          { label: "llms.txt spec", url: "https://llmstxt.org/" },
+        ],
       },
     },
   ],
@@ -76,9 +80,12 @@ const SCAN_RESULT: ScanResult = {
 
 describe("unauthenticated access", () => {
   it("should redirect to /sign-in", async () => {
-    const response = await fetch(`http://localhost:${port}/site/example.com/ai-legibility`, {
-      redirect: "manual",
-    });
+    const response = await fetch(
+      `http://localhost:${port}/site/example.com/ai-legibility`,
+      {
+        redirect: "manual",
+      },
+    );
     expect(response.status).toBe(302);
     expect(response.headers.get("location")).toContain("/sign-in");
   });
@@ -112,7 +119,9 @@ describe("ai-legibility page - no scan yet", () => {
   });
 
   it("should show the main heading", async () => {
-    await expect(page.getByRole("heading", { name: "AI Legibility" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "AI Legibility" }),
+    ).toBeVisible();
   });
 
   it("should show check AI legibility title", async () => {
@@ -189,7 +198,9 @@ describe("ai-legibility page - with report", () => {
   });
 
   it("should show run new scan button", async () => {
-    await expect(reportPage.getByRole("button", { name: "Run New Scan" })).toBeVisible();
+    await expect(
+      reportPage.getByRole("button", { name: "Run New Scan" }),
+    ).toBeVisible();
   });
 
   it("should match visually - results", async () => {
@@ -255,8 +266,12 @@ describe("ai-legibility page - scanning", () => {
   });
 
   it("should show scan log", async () => {
-    await expect(scanningPage.getByText("Checking homepage content...")).toBeVisible();
-    await expect(scanningPage.getByText("✓ Homepage has meaningful content")).toBeVisible();
+    await expect(
+      scanningPage.getByText("Checking homepage content..."),
+    ).toBeVisible();
+    await expect(
+      scanningPage.getByText("✓ Homepage has meaningful content"),
+    ).toBeVisible();
   });
 
   it("should match visually - scanning", async () => {
@@ -288,7 +303,8 @@ describe("ai-legibility page - accordion and flip card", () => {
           goal: "Allow AI crawlers to access your site",
           issue: "AI agents respect robots.txt directives",
           howToImplement: "Add Allow rules for known AI bot user-agents",
-          fixExample: "User-agent: GPTBot\nAllow: /\nUser-agent: *\nDisallow: /private/",
+          fixExample:
+            "User-agent: GPTBot\nAllow: /\nUser-agent: *\nDisallow: /private/",
           effort: "2 min",
           resourceLinks: [
             {
@@ -341,11 +357,15 @@ describe("ai-legibility page - accordion and flip card", () => {
 
   it("should show accordion open for failed check", async () => {
     // The robots.txt check failed, so its accordion should be expanded
-    await expect(page.getByText("Allow AI crawlers to access your site")).toBeVisible();
+    await expect(
+      page.getByText("Allow AI crawlers to access your site"),
+    ).toBeVisible();
   });
 
   it("should show Goal section in expanded check", async () => {
-    await expect(page.getByText("Allow AI crawlers to access your site")).toBeVisible();
+    await expect(
+      page.getByText("Allow AI crawlers to access your site"),
+    ).toBeVisible();
   });
 
   it("should show Issue section in expanded check", async () => {
@@ -353,7 +373,9 @@ describe("ai-legibility page - accordion and flip card", () => {
   });
 
   it("should show How to implement section", async () => {
-    await expect(page.getByText("Add Allow rules for known AI bot user-agents")).toBeVisible();
+    await expect(
+      page.getByText("Add Allow rules for known AI bot user-agents"),
+    ).toBeVisible();
   });
 
   it("should show Example code block", async () => {
@@ -361,7 +383,9 @@ describe("ai-legibility page - accordion and flip card", () => {
   });
 
   it("should show Copy prompt button in expanded check", async () => {
-    await expect(page.getByRole("button", { name: /copy prompt/i })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /copy prompt/i }),
+    ).toBeVisible();
   });
 
   it("should match visually - accordion open on failed check", async () => {
@@ -442,7 +466,9 @@ describe("ai-legibility page - improve score modal", () => {
       .getByRole("button", { name: /improve your score/i })
       .first()
       .click();
-    await expect(page.getByText("Improve your AI Legibility Score")).toBeVisible();
+    await expect(
+      page.getByText("Improve your AI Legibility Score"),
+    ).toBeVisible();
   });
 
   it("should show prompt textarea with content", async () => {
@@ -454,7 +480,9 @@ describe("ai-legibility page - improve score modal", () => {
   });
 
   it("should show Copy all instructions button", async () => {
-    await expect(page.getByRole("button", { name: /copy all instructions/i })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: /copy all instructions/i }),
+    ).toBeVisible();
   });
 
   it("should show issue count", async () => {
@@ -463,7 +491,9 @@ describe("ai-legibility page - improve score modal", () => {
 
   it("should close modal on Escape", async () => {
     await page.keyboard.press("Escape");
-    await expect(page.getByText("Improve your AI Legibility Score")).not.toBeVisible();
+    await expect(
+      page.getByText("Improve your AI Legibility Score"),
+    ).not.toBeVisible();
   });
 
   it("should match visually - modal open", async () => {
@@ -528,9 +558,15 @@ describe("ai-legibility email", () => {
 
   it("should show category summary", async () => {
     const page = email.page;
-    await expect(page.getByText("Discovered", { exact: false }).first()).toBeVisible();
-    await expect(page.getByText("Trusted", { exact: false }).first()).toBeVisible();
-    await expect(page.getByText("Welcomed", { exact: false }).first()).toBeVisible();
+    await expect(
+      page.getByText("Discovered", { exact: false }).first(),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Trusted", { exact: false }).first(),
+    ).toBeVisible();
+    await expect(
+      page.getByText("Welcomed", { exact: false }).first(),
+    ).toBeVisible();
   });
 
   it("should show code block for fix example", async () => {
@@ -540,7 +576,9 @@ describe("ai-legibility email", () => {
   });
 
   it("should show link to full report", async () => {
-    await expect(email.page.getByRole("link", { name: /view full report/i })).toBeVisible();
+    await expect(
+      email.page.getByRole("link", { name: /view full report/i }),
+    ).toBeVisible();
   });
 
   it("should match visually", async () => {

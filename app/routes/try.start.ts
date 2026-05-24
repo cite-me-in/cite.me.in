@@ -1,4 +1,5 @@
 import { startScan } from "~/lib/tryScan.server";
+
 import type { Route } from "./+types/try.start";
 
 export async function action({ request }: Route.ActionArgs) {
