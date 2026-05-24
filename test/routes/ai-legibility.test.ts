@@ -479,9 +479,9 @@ describe("ai-legibility page - improve score modal", () => {
     expect(text).toContain("Goal:");
   });
 
-  it("should show Copy all instructions button", async () => {
+  it("should show Copy prompt button", async () => {
     await expect(
-      page.getByRole("button", { name: /copy all instructions/i }),
+      page.getByRole("button", { name: /copy prompt/i }),
     ).toBeVisible();
   });
 
