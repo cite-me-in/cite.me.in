@@ -12,7 +12,7 @@
     "test:db:push": "infisical --env test run -- pnpm prisma db push",
     "prod:db:push": "infisical --env prod run -- pnpm prisma db push",
     "test:reset": "rm -rf __screenshots__/*",
-    "test": "NODE_OPTIONS=\"--localstorage-file /tmp/citeup-test-storage\" pnpm run check && pnpm test:db:push && pnpm test:reset && infisical --env test run -- vitest run && infisical --env test run -- playwright test",
+    "test": "pnpm run check && pnpm test:db:push && pnpm test:reset && infisical --env test run -- vitest run && infisical --env test run -- playwright test",
     "ready": "pnpm prisma generate && pnpm prisma db push && pnpm react-router typegen && tsx app/lib/cron/writeConfig.ts"
   },
   "dependencies": {

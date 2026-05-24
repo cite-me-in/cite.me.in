@@ -37,8 +37,7 @@ export default function ImproveScoreModal({
         <DialogHeader>
           <DialogTitle>Improve your AI Legibility Score</DialogTitle>
           <DialogDescription>
-            Use the prompt below with your coding agent to fix the issues found
-            during the scan.
+            Use the prompt below with your coding agent to fix the issues found during the scan.
           </DialogDescription>
         </DialogHeader>
 
@@ -51,8 +50,7 @@ export default function ImproveScoreModal({
 
         <div className="border-border flex items-center justify-between border-t pt-4">
           <span className="text-foreground/60 text-sm">
-            {failedChecks.length} issue{failedChecks.length > 1 ? "s" : ""} to
-            fix
+            {failedChecks.length} issue{failedChecks.length > 1 ? "s" : ""} to fix
           </span>
           <Button variant={copied ? "default" : "outline"} onClick={copy}>
             {copied ? (
