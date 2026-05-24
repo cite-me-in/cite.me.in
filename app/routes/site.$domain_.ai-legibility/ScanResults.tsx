@@ -1,11 +1,4 @@
-import {
-  CheckCircleIcon,
-  CheckIcon,
-  CopyIcon,
-  LightbulbIcon,
-  XCircleIcon,
-} from "lucide-react";
-import { useState } from "react";
+import { CheckCircleIcon, LightbulbIcon, XCircleIcon } from "lucide-react";
 import { Link } from "react-router";
 
 import {
@@ -15,7 +8,7 @@ import {
   AccordionTrigger,
 } from "~/components/ui/Accordion";
 import { Badge } from "~/components/ui/Badge";
-import { Button } from "~/components/ui/Button";
+import CopyPromptButton from "~/components/ui/CopyPromptButton";
 import buildPrompt from "~/lib/aiLegibility/buildPrompt";
 import CATEGORIES from "~/lib/aiLegibility/checkDetails";
 import type { CheckResult, ScanResult } from "~/lib/aiLegibility/types";
@@ -147,14 +140,6 @@ function ExpandableCheckCard({ check }: { check: CheckResult }) {
 }
 
 function CheckSummary({ check }: { check: CheckResult }) {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = async () => {
-    await navigator.clipboard.writeText(buildPrompt(check));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   return (
     <div className="space-y-4">
       {check.detail && (
@@ -222,23 +207,7 @@ function CheckSummary({ check }: { check: CheckResult }) {
       )}
 
       <div className="flex justify-end gap-2">
-        <Button
-          size="sm"
-          variant={copied ? "default" : "outline"}
-          onClick={handleCopy}
-        >
-          {copied ? (
-            <>
-              <CheckIcon className="size-3" />
-              Copied!
-            </>
-          ) : (
-            <>
-              <CopyIcon className="size-3" />
-              Copy prompt
-            </>
-          )}
-        </Button>
+        <CopyPromptButton prompt={buildPrompt(check)} />
       </div>
     </div>
   );

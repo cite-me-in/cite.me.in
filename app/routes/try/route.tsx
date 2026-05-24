@@ -259,7 +259,7 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
                 <div
                   className={`overflow-hidden transition-all duration-500 ease-in-out ${
                     progressVisible
-                      ? "max-h-[3000px] opacity-100"
+                      ? "max-h-750 opacity-100"
                       : "max-h-0 opacity-0"
                   }`}
                 >

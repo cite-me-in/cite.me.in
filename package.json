@@ -7,7 +7,7 @@
     "check": "vp lint && vp fmt && secretlint --format stylish && react-router typegen && infisical --env test run -- knip",
     "fallow": "fallow",
     "clean": "pnpm install --force && rm -rf node_modules/.vite .react-router build",
-    "dev": "infisical --env test run -- portless run -- react-router dev",
+    "dev": "infisical --env dev run -- portless run -- react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "test:db:push": "infisical --env test run -- pnpm prisma db push",
     "prod:db:push": "infisical --env prod run -- pnpm prisma db push",

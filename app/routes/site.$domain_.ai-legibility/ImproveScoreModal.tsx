@@ -1,7 +1,8 @@
-import { ArrowBigUpDashIcon, CheckIcon, CopyIcon } from "lucide-react";
+import { ArrowBigUpDashIcon } from "lucide-react";
 import { useState } from "react";
 
 import { Button, type ButtonProps } from "~/components/ui/Button";
+import CopyPromptButton from "~/components/ui/CopyPromptButton";
 import {
   Dialog,
   DialogContent,
@@ -10,8 +11,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/Dialog";
+import buildPrompt from "~/lib/aiLegibility/buildPrompt";
 import type { CheckResult } from "~/lib/aiLegibility/types";
-import useCopyPrompt from "~/lib/aiLegibility/useCopyPrompt";
 
 export default function ImproveScoreModal({
   failedChecks,
@@ -20,7 +21,7 @@ export default function ImproveScoreModal({
   size?: ButtonProps["size"];
   failedChecks: CheckResult[];
 }) {
-  const { allPrompts, copied, copy } = useCopyPrompt(failedChecks);
+  const allPrompts = failedChecks.map(buildPrompt).join("\n\n---\n\n");
   const [open, setOpen] = useState(false);
 
   return (
@@ -55,19 +56,7 @@ export default function ImproveScoreModal({
             {failedChecks.length} issue{failedChecks.length > 1 ? "s" : ""} to
             fix
           </span>
-          <Button variant={copied ? "default" : "outline"} onClick={copy}>
-            {copied ? (
-              <>
-                <CheckIcon className="size-4" />
-                Copied!
-              </>
-            ) : (
-              <>
-                <CopyIcon className="size-4" />
-                Copy all instructions
-              </>
-            )}
-          </Button>
+          <CopyPromptButton prompt={allPrompts} />
         </div>
       </DialogContent>
     </Dialog>
