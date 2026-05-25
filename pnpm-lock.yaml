@@ -181,8 +181,8 @@ importers:
         specifier: ^9.0.0
         version: 9.0.0
       fallow:
-        specifier: ^2.79.0
-        version: 2.79.0
+        specifier: ^2.80.0
+        version: 2.80.0
       knip:
         specifier: ^6.14.2
         version: 6.14.2(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)
@@ -774,43 +774,43 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@fallow-cli/darwin-arm64@2.79.0':
-    resolution: {integrity: sha512-EmaJwCbb0A2juC4YiKKhcPhtAiiWi9TKUdNsduHF++frA5c9N9U8VV7lLlyH3iXMWW9T2fvuyB6ntCw2BeuUQQ==}
+  '@fallow-cli/darwin-arm64@2.80.0':
+    resolution: {integrity: sha512-+wRfU4YlOoPEqOA6Usc4w5O4r4xiQSS6lpFN5j9gA+0ZbcHn9JvizXh+91trfIDqXt0CYRvSwjTURiUzsrAQOg==}
     cpu: [arm64]
     os: [darwin]
 
-  '@fallow-cli/darwin-x64@2.79.0':
-    resolution: {integrity: sha512-z9u7EXQHntOGIpCGPBBhA6W4Gt8wX9lMFTZscNCtiUrZ9iiINdG67DpTFaeLFCsJlqawQH+/CK5WhGLZUf/+lQ==}
+  '@fallow-cli/darwin-x64@2.80.0':
+    resolution: {integrity: sha512-6ZLStpogktaAJQzRcLllTRlYbrSJYktN+RsHzR1cb/aa3Iw4mmgoT6PFBnvvu009K/q8jHkQkCf9194NwdkNow==}
     cpu: [x64]
     os: [darwin]
 
-  '@fallow-cli/linux-arm64-gnu@2.79.0':
-    resolution: {integrity: sha512-MtaVCfLvtqqyY8jw3+AnUncOYve0+wb7F7YsmEjKannhfnKj5jMoAer1kSZGFHCkMwl3szFJ+hhUgNwyhQuMyA==}
+  '@fallow-cli/linux-arm64-gnu@2.80.0':
+    resolution: {integrity: sha512-/3hqjlSDi7EO90tefuIde2n1wV3MoN8YPYX2SfeKa0iulOh0xVplZw4QHyVV+lCQQnogqzdM2y8mh1zISpJ70g==}
     cpu: [arm64]
     os: [linux]
 
-  '@fallow-cli/linux-arm64-musl@2.79.0':
-    resolution: {integrity: sha512-soyep2LWg2xxPMIN89Yk09c9kAv9xOkixIv5p1f3R3o5lmLkZB63OOKixOIue9Gk0LGLfsfVqPpHjuyNkcNbAw==}
+  '@fallow-cli/linux-arm64-musl@2.80.0':
+    resolution: {integrity: sha512-qv29jC+eOAKCpFnfnhc/ZyO50RfGhNt96Jlt8iw5Y3MwfDqMRzvtA5E8p6t6Ymau6wCJuhCrcphPpjVBIEOcqQ==}
     cpu: [arm64]
     os: [linux]
 
-  '@fallow-cli/linux-x64-gnu@2.79.0':
-    resolution: {integrity: sha512-QaDFHTzKxCIKF2S+AEb1oNkBuAl0G6f93Zt6nbsLSinu7uKjBZXZASzaYnucchICLZnUKHc8BgzXQYgwkL3hgg==}
+  '@fallow-cli/linux-x64-gnu@2.80.0':
+    resolution: {integrity: sha512-NyYciuZQyBNaiz8hvNJgPpYjZuBAHpzp+AjRPGlbcUCSJEov5Nqmrv6cSFRFITa6JmzQ5Vbg64X+Iq2OuiFMEg==}
     cpu: [x64]
     os: [linux]
 
-  '@fallow-cli/linux-x64-musl@2.79.0':
-    resolution: {integrity: sha512-w96maPI7lWvL1kJSR4MYKl2zMgdn0zStRCDtlAHdcYrHUCzi6IQk15oYsWPGRxCxDJkNXR/knB66HJOc9UwAWg==}
+  '@fallow-cli/linux-x64-musl@2.80.0':
+    resolution: {integrity: sha512-BBH1PJgJGzGrdLk/0Nl9CsVr1GzovtSvZlpQ2XJndXEqNaaEEBJHdlQFcJM4AGePjzsvriKVjPqDpyZ5uMICTQ==}
     cpu: [x64]
     os: [linux]
 
-  '@fallow-cli/win32-arm64-msvc@2.79.0':
-    resolution: {integrity: sha512-U6j6a5KN/sx15XXs6uJtP3aJDph+KB8zDHRqEkjcPbAJlCLCvKjDnrHbDsMTpULwfyN92gCdViYqehiga555dw==}
+  '@fallow-cli/win32-arm64-msvc@2.80.0':
+    resolution: {integrity: sha512-2N9itgnTYS6VB8VL5PlwSuHloZoj86NfR6IbvpdYQ6v1ciPOjpC54hbgJEvMnCQCuKD/zEc9+U8+pOXGS/iLfQ==}
     cpu: [arm64]
     os: [win32]
 
-  '@fallow-cli/win32-x64-msvc@2.79.0':
-    resolution: {integrity: sha512-sLpDghyDNxuBQIzAmbrn+IeeafDaFsPYDfOtEAY8gZwMQBy3IeFtKFcS6XV7xpnm+vfKKaiWJ7bj7i9uRX+miw==}
+  '@fallow-cli/win32-x64-msvc@2.80.0':
+    resolution: {integrity: sha512-vbk/bA7EFqR2ECz/mYup7+D2zwv5MVUlKhm/6/n6V+9eeyFW2ZwyTQXYdfzsby/3r/w/uZ+OHjVo9/WANBZMMg==}
     cpu: [x64]
     os: [win32]
 
@@ -3986,8 +3986,8 @@ packages:
   extend@3.0.2:
     resolution: {integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==}
 
-  fallow@2.79.0:
-    resolution: {integrity: sha512-MCVdfp51ZukZAh9OxxU5rN1F/D01jg4z1UiYf1i/LfQ4ayFXW4tU5Ed7OnTLCqG05SHYjoV/sOzxwM+NE6PZ/w==}
+  fallow@2.80.0:
+    resolution: {integrity: sha512-TnBj6P/UF7DgaKjZFz1e69DkGyvlYABE7V9n98cbUmEq+Y+RsOq/rQVBnvbw+8jj7MhNuRRleheULCPQg4GgZA==}
     engines: {node: '>=16'}
     hasBin: true
 
@@ -5751,8 +5751,8 @@ packages:
   tinybench@2.9.0:
     resolution: {integrity: sha512-0+DUvqWMValLmha6lr4kD8iAMK1HzV0/aKnCtWb9v9641TnP/MFb7Pc2bxoxQjTXAErryXVgUOfv2YqNllqGeg==}
 
-  tinyexec@1.1.2:
-    resolution: {integrity: sha512-dAqSqE/RabpBKI8+h26GfLq6Vb3JVXs30XYQjdMjaj/c2tS8IYYMbIzP599KtRj7c57/wYApb3QjgRgXmrCukA==}
+  tinyexec@1.2.2:
+    resolution: {integrity: sha512-M/Q0B2cp4K7kynaT/vnED1j8TlLY+Pp7C6Wl2bl/7u/F0mUVwdyOpwomQb8JpYLitHUssAJRmLZdMCGsrx7i+g==}
     engines: {node: '>=18'}
 
   tinyglobby@0.2.16:
@@ -5767,11 +5767,11 @@ packages:
     resolution: {integrity: sha512-Bf+ILmBgretUrdJxzXM0SgXLZ3XfiaUuOj/IKQHuTXip+05Xn+uyEYdVg0kYDipTBcLrCVyUzAPz7QmArb0mmw==}
     engines: {node: '>=14.0.0'}
 
-  tldts-core@7.0.30:
-    resolution: {integrity: sha512-uiHN8PIB1VmWyS98eZYja4xzlYqeFZVjb4OuYlJQnZAuJhMw4PbKQOKgHKhBdJR3FE/t5mUQ1Kd80++B+qhD1Q==}
+  tldts-core@7.1.1:
+    resolution: {integrity: sha512-v9zYcyFEAJBeyG7g4+y/HFL9i2cHqpV+9cHohNZIhA6xjO2MSVgijFgx6quQaRBDzM5FT8fs5NPjsNITOhlCzg==}
 
-  tldts@7.0.30:
-    resolution: {integrity: sha512-ELrFxuqsDdHUwoh0XxDbxuLD3Wnz49Z57IFvTtvWy1hJdcMZjXLIuonjilCiWHlT2GbE4Wlv1wKVTzDFnXH1aw==}
+  tldts@7.1.1:
+    resolution: {integrity: sha512-VuvOq9QVVdzQyIwynB0MRZlEup+u5BD62FjgmKvRDFO8u1RgAzpeg7Qd70hUmrxwkkecqoz1N6t1yGMygx7rnA==}
     hasBin: true
 
   toidentifier@1.0.1:
@@ -6244,7 +6244,7 @@ snapshots:
   '@antfu/install-pkg@1.1.0':
     dependencies:
       package-manager-detector: 1.6.0
-      tinyexec: 1.1.2
+      tinyexec: 1.2.2
 
   '@anthropic-ai/sdk@0.98.0(zod@4.4.3)':
     dependencies:
@@ -6672,28 +6672,28 @@ snapshots:
   '@esbuild/win32-x64@0.28.0':
     optional: true
 
-  '@fallow-cli/darwin-arm64@2.79.0':
+  '@fallow-cli/darwin-arm64@2.80.0':
     optional: true
 
-  '@fallow-cli/darwin-x64@2.79.0':
+  '@fallow-cli/darwin-x64@2.80.0':
     optional: true
 
-  '@fallow-cli/linux-arm64-gnu@2.79.0':
+  '@fallow-cli/linux-arm64-gnu@2.80.0':
     optional: true
 
-  '@fallow-cli/linux-arm64-musl@2.79.0':
+  '@fallow-cli/linux-arm64-musl@2.80.0':
     optional: true
 
-  '@fallow-cli/linux-x64-gnu@2.79.0':
+  '@fallow-cli/linux-x64-gnu@2.80.0':
     optional: true
 
-  '@fallow-cli/linux-x64-musl@2.79.0':
+  '@fallow-cli/linux-x64-musl@2.80.0':
     optional: true
 
-  '@fallow-cli/win32-arm64-msvc@2.79.0':
+  '@fallow-cli/win32-arm64-msvc@2.80.0':
     optional: true
 
-  '@fallow-cli/win32-x64-msvc@2.79.0':
+  '@fallow-cli/win32-x64-msvc@2.80.0':
     optional: true
 
   '@fastify/otel@0.18.0(@opentelemetry/api@1.9.1)':
@@ -8651,7 +8651,7 @@ snapshots:
       sirv: 3.0.2
       std-env: 4.1.0
       tinybench: 2.9.0
-      tinyexec: 1.1.2
+      tinyexec: 1.2.2
       tinyglobby: 0.2.16
       vite: 8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0)
       ws: 8.21.0
@@ -9570,18 +9570,18 @@ snapshots:
 
   extend@3.0.2: {}
 
-  fallow@2.79.0:
+  fallow@2.80.0:
     dependencies:
       detect-libc: 2.1.2
     optionalDependencies:
-      '@fallow-cli/darwin-arm64': 2.79.0
-      '@fallow-cli/darwin-x64': 2.79.0
-      '@fallow-cli/linux-arm64-gnu': 2.79.0
-      '@fallow-cli/linux-arm64-musl': 2.79.0
-      '@fallow-cli/linux-x64-gnu': 2.79.0
-      '@fallow-cli/linux-x64-musl': 2.79.0
-      '@fallow-cli/win32-arm64-msvc': 2.79.0
-      '@fallow-cli/win32-x64-msvc': 2.79.0
+      '@fallow-cli/darwin-arm64': 2.80.0
+      '@fallow-cli/darwin-x64': 2.80.0
+      '@fallow-cli/linux-arm64-gnu': 2.80.0
+      '@fallow-cli/linux-arm64-musl': 2.80.0
+      '@fallow-cli/linux-x64-gnu': 2.80.0
+      '@fallow-cli/linux-x64-musl': 2.80.0
+      '@fallow-cli/win32-arm64-msvc': 2.80.0
+      '@fallow-cli/win32-x64-msvc': 2.80.0
 
   fast-check@3.23.2:
     dependencies:
@@ -10732,7 +10732,7 @@ snapshots:
     dependencies:
       citty: 0.2.2
       pathe: 2.0.3
-      tinyexec: 1.1.2
+      tinyexec: 1.2.2
 
   object-assign@4.1.1: {}
 
@@ -11823,7 +11823,7 @@ snapshots:
 
   tinybench@2.9.0: {}
 
-  tinyexec@1.1.2: {}
+  tinyexec@1.2.2: {}
 
   tinyglobby@0.2.16:
     dependencies:
@@ -11834,11 +11834,11 @@ snapshots:
 
   tinyrainbow@3.1.0: {}
 
-  tldts-core@7.0.30: {}
+  tldts-core@7.1.1: {}
 
-  tldts@7.0.30:
+  tldts@7.1.1:
     dependencies:
-      tldts-core: 7.0.30
+      tldts-core: 7.1.1
 
   toidentifier@1.0.1: {}
 
@@ -11846,7 +11846,7 @@ snapshots:
 
   tough-cookie@6.0.1:
     dependencies:
-      tldts: 7.0.30
+      tldts: 7.1.1
 
   tr46@0.0.3: {}
 
@@ -12140,7 +12140,7 @@ snapshots:
       picomatch: 4.0.4
       std-env: 4.1.0
       tinybench: 2.9.0
-      tinyexec: 1.1.2
+      tinyexec: 1.2.2
       tinyglobby: 0.2.16
       tinyrainbow: 3.1.0
       vite: 8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0)
