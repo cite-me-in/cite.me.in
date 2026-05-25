@@ -148,7 +148,7 @@ const CATEGORIES: Category[] = [
           issue:
             "AI agents that don't parse HTML body (e.g., autonomous agents, coding assistants) can still discover Markdown versions through HTTP headers. Without these signals, agents may never find your .md routes.",
           howToImplement:
-            'Add <link rel="alternate" type="text/markdown" href="/page.md"> to your HTML <head> and a Link: </page.md>; rel="alternate"; type="text/markdown" HTTP header. The HTML tag catches crawlers that process the DOM. The HTTP header catches headless fetchers that don\'t.',
+            'Add <link rel="alternate" type="text/markdown" href="/…md"> to your HTML <head> for each page, plus a matching HTTP Link header. Use /index.md for your home page and /&lt;path&gt;.md for all other pages (e.g., /about.md, /blog.md). The HTML tag catches crawlers that process the DOM. The HTTP header catches headless fetchers that don\'t.',
           fixExample:
             '# HTTP response header:\nLink: </index.md>; rel="alternate"; type="text/markdown"\n\n# HTML <head>:\n<link rel="alternate" type="text/markdown" title="Markdown version" href="/index.md">',
           effort: "5 min",
@@ -260,9 +260,9 @@ const CATEGORIES: Category[] = [
           issue:
             "AI agents discover Markdown versions of your pages through <link rel='alternate' type='text/markdown'> tags. If those URLs return errors, HTML, or empty content, agents can't use them — defeating the purpose of the alternate link.",
           howToImplement:
-            "Ensure every URL you advertise via <link rel='alternate' type='text/markdown'> responds with Content-Type: text/markdown and meaningful Markdown content (>50 chars). The URL path can be anything (e.g., .md, .markdown, -for-ai) — the link tag tells agents where to find it.",
+            "Ensure every URL you advertise via <link rel='alternate' type='text/markdown'> responds with Content-Type: text/markdown and meaningful Markdown content (>50 chars). Use the convention /index.md for the home page and /&lt;path&gt;.md for all other pages. The link tag tells agents where to find these alternates.",
           fixExample:
-            '# In your HTML <head>:\n<link rel="alternate" type="text/markdown" href="/page.md">\n\n# The URL /page.md must respond:\nHTTP/1.1 200 OK\nContent-Type: text/markdown\n\n# Page content in Markdown format (>50 chars)',
+            '# Home page:\n<link rel="alternate" type="text/markdown" href="/index.md">\n# Other pages:\n<link rel="alternate" type="text/markdown" href="/about.md">\n<link rel="alternate" type="text/markdown" href="/blog.md">\n\n# Each URL must respond:\nHTTP/1.1 200 OK\nContent-Type: text/markdown\n\n# Markdown content (>50 chars)',
           effort: "1 hour",
           resourceLinks: [
             {
