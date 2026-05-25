@@ -73,6 +73,12 @@ export const headers: HeadersFunction = () => ({
 export const links: Route.LinksFunction = () => [
   {
     rel: "alternate",
+    type: "text/markdown",
+    title: "Markdown version",
+    href: "/index.md",
+  },
+  {
+    rel: "alternate",
     type: "application/atom+xml",
     title: "The Cite.me.in Blog",
     href: new URL("/rss.xml", import.meta.env.VITE_APP_URL).toString(),

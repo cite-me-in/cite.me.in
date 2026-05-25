@@ -14,7 +14,10 @@ export async function markdownMiddleware(
   if (!isMdExtension && !acceptsMarkdown) return next();
 
   if (isMdExtension) {
-    const htmlURL = new URL(url.pathname.replace(/\.md$/, ""), request.url);
+    let strippedPath = url.pathname.replace(/\.md$/, "");
+    // /index.md → home page (avoid /index which doesn't exist)
+    if (strippedPath === "/index") strippedPath = "/";
+    const htmlURL = new URL(strippedPath, request.url);
     const htmlResponse = await fetch(htmlURL.toString());
     return htmlResponse.ok
       ? convertHTMLToMarkdown(htmlResponse)
