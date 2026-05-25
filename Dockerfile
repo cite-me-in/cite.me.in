@@ -37,13 +37,6 @@ ENV NODE_ENV=production
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates && rm -rf /var/lib/apt/lists/*
-
-# Retry with timeout (workaround for Colima TCP connection drops to Azure CDN)
-RUN for i in $(seq 1 3); do \
-        timeout 600 npx -y playwright@1.59.1 install chromium --with-deps && break; \
-        echo "Attempt $i failed, retrying in 15s..."; \
-        sleep 15; \
-    done
 RUN corepack enable pnpm
 
 WORKDIR /app
