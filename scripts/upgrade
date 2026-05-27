@@ -21,6 +21,7 @@ echo -e "\033[32m  Running tests …\033[0m"
 rm -rf __screenshots__/*.new.* __screenshots__/*.diff.png
 infisical --env test run -- pnpm run check
 infisical --env test run -- pnpm vitest run
+infisical --env test run -- pnpm playwright test
 
 echo -e "\033[32m  Auditing dependencies …\033[0m"
 pnpm pnpm audit --prod || echo "Security audit failed"

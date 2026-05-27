@@ -31,13 +31,10 @@ export function meta({ params }: Route.MetaArgs) {
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
-  const { site, user } = await requireSiteAccess({
-    domain: params.domain,
-    request,
-  });
+  const { site } = await requireSiteAccess({ domain: params.domain, request });
 
   const report = await prisma.aiLegibilityReport.findFirst({
-    where: { siteId: site.id, userId: user.id },
+    where: { siteId: site.id },
     orderBy: { createdAt: "desc" },
   });
 
