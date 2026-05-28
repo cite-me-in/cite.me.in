@@ -184,6 +184,7 @@ export async function requireSiteAccess({
     const site = await prisma.site.findFirst({
       where: { domain },
       select: { id: true, domain: true, summary: true },
+      orderBy: { updatedAt: "desc" },
     });
     if (site) return { site, user };
   } else {
