@@ -17,4 +17,4 @@ psql postgresql://postgres:postgres@localhost:5432/citeup_dev < prisma/backup.sq
 
 # Open the auth page
 echo -e "\033[32m  Opening dashboard …\033[0m"
-open "http://localhost:5173/"
+open "https://cite-me-in.localhost/"

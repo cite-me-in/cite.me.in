@@ -55,6 +55,7 @@ export interface ButtonProps
 const TAG_MAP_EXTENDED = {
   div: <div />,
   span: <span />,
+  // oxlint-disable control-has-associated-label
   button: <button />,
   a: ({
     href = "",

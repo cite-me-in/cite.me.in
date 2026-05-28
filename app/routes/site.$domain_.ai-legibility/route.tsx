@@ -14,7 +14,6 @@ import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
 import { getProgress } from "~/lib/aiLegibility/progress.server";
 import { ScanResultSchema } from "~/lib/aiLegibility/scanResultSchema";
-import type { ScanResult } from "~/lib/aiLegibility/types";
 import { requireSiteAccess } from "~/lib/auth.server";
 import { formatDateMed } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
@@ -37,38 +36,27 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     where: { siteId: site.id },
     orderBy: { createdAt: "desc" },
   });
-
-  let reportData: {
-    id: string;
-    result: ScanResult;
-    scannedAt: string;
-  } | null = null;
-  if (report) {
-    const parsed = ScanResultSchema.parse(
-      typeof report.result === "string"
-        ? JSON.parse(report.result)
-        : report.result,
-    );
-    reportData = {
-      id: report.id,
-      result: parsed,
-      scannedAt: report.scannedAt.toISOString(),
-    };
-  }
-
   const progress = await getProgress({ offset: 0, domain: site.domain });
   const isRunning = progress && !progress.done;
 
   return {
     site,
-    report: reportData,
+    results: isRunning
+      ? progress.result
+      : (report &&
+          ScanResultSchema.parse(
+            typeof report.result === "string"
+              ? JSON.parse(report.result)
+              : report.result,
+          )) ||
+        progress?.result,
     isRunning,
     scannedAt: report?.scannedAt.toISOString(),
   };
 }
 
 export default function AiLegibilityPage({ loaderData }: Route.ComponentProps) {
-  const { site, report, isRunning, scannedAt } = loaderData;
+  const { site, results, isRunning, scannedAt } = loaderData;
   const [isLoading, setIsLoading] = useState(false);
 
   const startScan = () => {
@@ -97,14 +85,14 @@ export default function AiLegibilityPage({ loaderData }: Route.ComponentProps) {
 
       {isRunning || isLoading ? (
         <Scanning domain={site.domain} />
-      ) : report ? (
+      ) : results ? (
         <>
           <ScanSummary
-            checks={report.result.checks}
-            summary={report.result.summary}
+            checks={results.checks}
+            summary={results.summary}
             domain={site.domain}
           />
-          <ScanResults result={report.result} />
+          <ScanResults result={results} />
         </>
       ) : (
         <Fallback handleStartScan={startScan} />

@@ -17,7 +17,7 @@ export default function CopyPromptButton({
     setCopied(true);
     if (timeoutId) clearTimeout(timeoutId);
     setTimeoutId(setTimeout(() => setCopied(false), 2000));
-  }, [content]);
+  }, [content, timeoutId]);
 
   return (
     <Button
