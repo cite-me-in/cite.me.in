@@ -84,7 +84,6 @@ jobs:
         run: |
           pnpm exec secretlint --format stylish
           pnpm exec react-router typegen
-          # vp check --fix removed (vite-plus replaced with vite + vitest)
           pnpm exec knip
 
       - name: Run tests
