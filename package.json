@@ -5,15 +5,15 @@
   "scripts": {
     "build": "prisma generate && react-router build --force && tsx app/lib/cron/writeConfig.ts",
     "check": "vp check --fix && secretlint --format stylish && react-router typegen && infisical --env test run -- knip",
-    "fallow": "fallow",
     "clean": "pnpm install --force && rm -rf node_modules/.vite .react-router build",
     "dev": "infisical --env dev run -- portless run -- react-router dev",
-    "start": "react-router-serve ./build/server/index.js",
-    "test:db:push": "infisical --env test run -- pnpm prisma db push",
+    "fallow": "fallow",
     "prod:db:push": "infisical --env prod run -- pnpm prisma db push",
-    "test:reset": "rm -rf __screenshots__/*",
+    "ready": "pnpm prisma generate && pnpm prisma db push && pnpm react-router typegen && tsx app/lib/cron/writeConfig.ts",
+    "start": "react-router-serve ./build/server/index.js",
     "test": "pnpm run check && pnpm test:db:push && pnpm test:reset && infisical --env test run -- vitest run && infisical --env test run -- playwright test",
-    "ready": "pnpm prisma generate && pnpm prisma db push && pnpm react-router typegen && tsx app/lib/cron/writeConfig.ts"
+    "test:db:push": "infisical --env test run -- pnpm prisma db push",
+    "test:reset": "rm -rf __screenshots__/*"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.99.0",
@@ -60,6 +60,7 @@
     "streamdown": "^2.5.0",
     "stripe": "^22.1.1",
     "tailwind-merge": "^3.6.0",
+    "tailwindcss": "^4.3.0",
     "tiny-invariant": "^1.3.3",
     "tsx": "^4.22.3",
     "tw-animate-css": "^1.4.0",
@@ -79,7 +80,7 @@
     "@types/react-dom": "^19.2.3",
     "coolify-ghcr-deploy": "^1.4.1",
     "diff": "^9.0.0",
-    "fallow": "^2.82.0",
+    "fallow": "^2.83.0",
     "knip": "^6.14.2",
     "looks-same": "^10.0.1",
     "msw": "^2.14.6",
@@ -89,7 +90,6 @@
     "playwright": "^1.60.0",
     "portless": "^0.13.0",
     "secretlint": "^13.0.2",
-    "tailwindcss": "^4.3.0",
     "vite": "^8.0.14",
     "vitest": "^4.1.7"
   },
