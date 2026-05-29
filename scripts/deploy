@@ -34,17 +34,17 @@ infisical --env prod run -- tsx app/lib/cron/writeConfig.ts
 echo -e "\033[0;32m--- Step 7: Trigger Coolify deployment ---\033[0m"
 infisical export --env prod --format=dotenv > .env
 infisical --env prod run -- coolify-ghcr-deploy \
-  --coolify-url "https://coolify.labnotes.org" \
   --app-name "cite.me.in" \
+  --coolify-url "https://coolify.labnotes.org" \
   --env-file ".env" \
-  --image "ghcr.io/cite-me-in/cite.me.in:latest" \
-  --healthcheck-timeout 60
+  --healthcheck-timeout 60 \
+  --image "ghcr.io/cite-me-in/cite.me.in:latest"
 rm .env
 
 echo -e "\033[0;32m--- Step 8: Sync cron tasks to Coolify ---\033[0m"
 infisical --env prod run -- pnpm exec tsx app/lib/cron/syncTasks.ts \
-  --coolify https://coolify.labnotes.org \
-  --app cite.me.in
+  --app cite.me.in \
+  --coolify https://coolify.labnotes.org
 
 echo -e "\033[0;34m--- Deployed to https://cite.me.in ---\033[0m"
 open https://cite.me.in
