@@ -9,6 +9,8 @@
   --secondary-background: oklch(100% 0 0);
   --foreground: oklch(0% 0 0);
   --main-foreground: oklch(0% 0 0);
+  --muted: oklch(96% 0 0);
+  --muted-foreground: oklch(44% 0 0);
   --main: oklch(67.47% 0.1726 259.49);
   --border: oklch(0% 0 0);
   --ring: oklch(0% 0 0);
@@ -27,6 +29,8 @@
   --secondary-background: oklch(23.93% 0 0);
   --foreground: oklch(92.49% 0 0);
   --main-foreground: oklch(0% 0 0);
+  --muted: oklch(24% 0 0);
+  --muted-foreground: oklch(70% 0 0);
   --main: oklch(67.47% 0.1726 259.49);
   --border: oklch(0% 0 0);
   --ring: oklch(100% 0 0);
@@ -45,6 +49,8 @@
   --color-secondary-background: var(--secondary-background);
   --color-foreground: var(--foreground);
   --color-main-foreground: var(--main-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-overlay: var(--overlay);
   --color-ring: var(--ring);
