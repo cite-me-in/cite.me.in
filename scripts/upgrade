@@ -6,6 +6,9 @@
 
 set -eo pipefail
 
+echo -e "\033[32m  Upgrading pnpm …\033[0m"
+pnpm self-update
+
 echo -e "\033[32m  Upgrading dependencies …\033[0m"
 pnpm update
 
@@ -18,7 +21,7 @@ pnpm install
 git add package.json pnpm-lock.yaml
 
 echo -e "\033[32m  Running tests …\033[0m"
-rm -rf __screenshots__/*.new.* __screenshots__/*.diff.png
+rm -rf __screenshots__
 infisical --env test run -- pnpm run check
 infisical --env test run -- pnpm vitest run
 infisical --env test run -- pnpm playwright test
