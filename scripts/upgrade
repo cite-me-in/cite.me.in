@@ -36,5 +36,8 @@ git commit -m "Upgrade dependencies" || echo
 echo -e "\033[32m  Cleaning up …\033[0m"
 git gc --aggressive --prune=now || echo
 
+echo -e "\033[32m  Checking for outdated dependencies …\033[0m"
+pnpm outdated
+
 terminal-notifier -sound default  -title "$0" -message "Done!"
 exit 0
