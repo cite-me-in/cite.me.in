@@ -15,12 +15,12 @@ import envVars from "./envVars.server";
 
 export default new PrismaClient({
   adapter: new PrismaPg({
-    connectionString: envVars.POSTGRES_URL,
+    connectionString: envVars.DATABASE_URL,
     max: 1,
     idleTimeoutMillis: 0,
     connectionTimeoutMillis: 0,
     allowExitOnIdle: true,
-    ssl: /localhost|127\.0\.0\.1/.test(envVars.POSTGRES_URL)
+    ssl: /localhost|127\.0\.0\.1/.test(envVars.DATABASE_URL)
       ? false
       : {
           ca: readFileSync(resolve("prisma/prod-ca-2021.crt")),

@@ -25,11 +25,11 @@ const envVars = {
   LOGTAIL_TOKEN: env.get("LOGTAIL_TOKEN").required(false).asString(),
   OPENAI_API_KEY: env.get("OPENAI_API_KEY").required(false).asString(),
   PERPLEXITY_API_KEY: env.get("PERPLEXITY_API_KEY").required(false).asString(),
-  POSTGRES_URL_NON_POOLING: env
-    .get("POSTGRES_URL_NON_POOLING")
+  DATABASE_URL_NON_POOLING: env
+    .get("DATABASE_URL_NON_POOLING")
     .required()
     .asUrlString(),
-  POSTGRES_URL: env.get("POSTGRES_URL").required().asUrlString(),
+  DATABASE_URL: env.get("DATABASE_URL").required().asUrlString(),
   REDIS_URL: env.get("REDIS_URL").required().asUrlString(),
   RESEND_API_KEY: env.get("RESEND_API_KEY").required(!isTest).asString(),
   SERPAPI_API_KEY: env.get("SERPAPI_API_KEY").required(!isTest).asString(),
@@ -78,10 +78,10 @@ if (process.env.NODE_ENV === "test") {
   };
 
   try {
-    verifyLocalhost("POSTGRES_URL", envVars.POSTGRES_URL);
+    verifyLocalhost("DATABASE_URL", envVars.DATABASE_URL);
     verifyLocalhost(
-      "POSTGRES_URL_NON_POOLING",
-      envVars.POSTGRES_URL_NON_POOLING,
+      "DATABASE_URL_NON_POOLING",
+      envVars.DATABASE_URL_NON_POOLING,
     );
     verifyLocalhost("REDIS_URL", envVars.REDIS_URL);
   } catch (error) {
