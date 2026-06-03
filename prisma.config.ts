@@ -1,7 +1,7 @@
 import { resolve } from "node:path";
 
 import dotenv from "dotenv";
-import { defineConfig, env } from "prisma/config";
+import { defineConfig } from "prisma/config";
 
 dotenv.config({ path: ".env", quiet: true });
 
@@ -10,7 +10,7 @@ export default defineConfig({
   datasource: {
     // Use process.env directly so prisma generate doesn't throw when the var
     // is absent (e.g. on a build server that has no DB access).
-    url: env("DATABASE_URL_NON_POOLING"),
+    url: process.env.DATABASE_URL_NON_POOLING,
   },
   migrations: {
     path: "prisma/migrations",

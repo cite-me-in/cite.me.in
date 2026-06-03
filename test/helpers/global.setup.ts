@@ -17,14 +17,12 @@ export default async function setup() {
   // Inject secrets from Infisical into process.env before anything else runs.
   // This lets `vitest run` work without wrapping in `infisical run`.
   try {
-    const raw = execSync(
-      "infisical export --env test --format json --silent",
-      { encoding: "utf-8" },
-    );
-    const secrets: Array<{ key: string; value: string }> = JSON.parse(raw);
-    for (const { key, value } of secrets) {
-      if (value != null) process.env[key] = value;
-    }
+    const raw = execSync("infisical export --env test --format json --silent", {
+      encoding: "utf-8",
+    });
+    const secrets = JSON.parse(raw) as Array<{ key: string; value: string }>;
+    for (const { key, value } of secrets)
+      if (value !== null) process.env[key] = value;
   } catch {
     // Infisical may not be available — that's fine if env vars are already set.
   }
