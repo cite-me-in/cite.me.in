@@ -11,60 +11,44 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - name: Get Infisical secrets
-        uses: zerodays/action-infisical@v1
+      - name: Get production secrets
+        uses: Infisical/secrets-action@v1.0.16
         with:
-          environment: "prod"
-          infisical_token: ${{ secrets.INFISICAL_TOKEN }}
-          output_file: ".env"
-          workspace_id: "a89716e5-9232-4ee7-85ea-11977924fe95"
+          client-id: ${{ secrets.INFISICAL_CLIENT_ID }}
+          client-secret: ${{ secrets.INFISICAL_CLIENT_SECRET }}
+          env-slug: "prod"
+          project-slug: ${{ secrets.INFISICAL_PROJECT_SLUG }}
 
-      - name: Install pg_dump matching server version
+      - name: Install pg_dump
         run: |
           sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
           curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq postgresql-client-17
+          sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client-17
 
-      - name: Dump and compress database
+      - name: Dump, upload, and clean up
         shell: bash -eo pipefail {0}
         run: |
-          while IFS='=' read -r key value; do
-            [[ -z "$key" || "$key" =~ ^# ]] && continue
-            export "$key=$value"
-          done < .env
+          FILE="backup-$(date +%Y-%m-%d).sql.gz"
+          ENDPOINT="https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com"
+
+          # Dump
           /usr/lib/postgresql/17/bin/pg_dump --no-owner --clean --if-exists "$DATABASE_URL_NON_POOLING" \
-            | gzip > "backup-$(date +%Y-%m-%d).sql.gz"
+            | gzip > "$FILE"
 
-      - name: Upload to R2
-        run: |
-          while IFS='=' read -r key value; do
-            [[ -z "$key" || "$key" =~ ^# ]] && continue
-            export "$key=$value"
-          done < .env
-          export AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID"
-          export AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY"
-          aws s3 cp "backup-$(date +%Y-%m-%d).sql.gz" "s3://$R2_BUCKET/" \
-            --endpoint-url "https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com" \
-            --no-progress
+          # Upload to R2
+          AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID" \
+          AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY" \
+            aws s3 cp "$FILE" "s3://$R2_BUCKET/" \
+              --endpoint-url "$ENDPOINT" --no-progress
 
-      - name: Delete backups older than 7 days
-        run: |
-          while IFS='=' read -r key value; do
-            [[ -z "$key" || "$key" =~ ^# ]] && continue
-            export "$key=$value"
-          done < .env
-          export AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID"
-          export AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY"
+          # Delete backups older than 7 days
           cutoff=$(date -d '7 days ago' +%s)
-          endpoint="https://$R2_ACCOUNT_ID.r2.cloudflarestorage.com"
-          aws s3 ls "s3://$R2_BUCKET/" --endpoint-url "$endpoint" \
+          aws s3 ls "s3://$R2_BUCKET/" --endpoint-url "$ENDPOINT" \
             | awk '/backup-/ {print $NF}' \
             | while read -r key; do
-                datepart=$(echo "$key" | sed 's/backup-\(.*\)\.sql\.gz/\1/')
+                datepart="${key#backup-}"; datepart="${datepart%.sql.gz}"
                 filesec=$(date -d "$datepart" +%s 2>/dev/null || true)
-                if [ -n "$filesec" ] && [ "$filesec" -lt "$cutoff" ]; then
-                  echo "Deleting $key"
-                  aws s3 rm "s3://$R2_BUCKET/$key" --endpoint-url "$endpoint"
-                fi
+                [ -n "$filesec" ] && [ "$filesec" -lt "$cutoff" ] || continue
+                echo "Deleting $key"
+                aws s3 rm "s3://$R2_BUCKET/$key" --endpoint-url "$ENDPOINT"
               done
