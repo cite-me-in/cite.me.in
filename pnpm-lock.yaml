@@ -27,8 +27,8 @@ importers:
         specifier: ^1.29.0
         version: 1.29.0(zod@4.4.3)
       '@perplexity-ai/perplexity_ai':
-        specifier: ^0.31.0
-        version: 0.31.0
+        specifier: ^0.32.0
+        version: 0.32.0
       '@prisma/adapter-pg':
         specifier: ^7.8.0
         version: 7.8.0
@@ -1783,8 +1783,8 @@ packages:
     resolution: {integrity: sha512-nkOyZEF1vH527CkdQtOp1HMrVFEM4ResURvI2JFeGoup+h+43J/k/FgdOR9b9Isxg+Yae7qVDa7y3nssE8b3TQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
 
-  '@perplexity-ai/perplexity_ai@0.31.0':
-    resolution: {integrity: sha512-fGDgzMF0RLoEDFDufit74d3Gbv+29l9Slcujdjl6VfUVLL9LMblrPVce/J+lj9B2SiEOZBH2QqVngeKqOq2Dcw==}
+  '@perplexity-ai/perplexity_ai@0.32.0':
+    resolution: {integrity: sha512-eUClClCpoDEZduXZBPu6NQxuCxB6+ac0RUqhrPOVxNogluRing0XiCRTwZTsFEGZc/5hn9iOltC38jfGPUOlBg==}
 
   '@playwright/test@1.60.0':
     resolution: {integrity: sha512-O71yZIbAh/PxDMNGns37GHBIfrVkEVyn+AXyIa5dOTfb4/xNvRWV+Vv/NMbNCtODB/pO7vLlF2OTmMVLhmr7Ag==}
@@ -6224,7 +6224,7 @@ snapshots:
     dependencies:
       '@babel/code-frame': 7.29.7
       '@babel/generator': 7.29.7
-      '@babel/parser': 7.29.7
+      '@babel/parser': 7.27.0
       '@babel/template': 7.29.7
       '@babel/types': 7.29.7
       debug: 4.4.3
@@ -7088,7 +7088,7 @@ snapshots:
 
   '@oxlint/plugins@1.61.0': {}
 
-  '@perplexity-ai/perplexity_ai@0.31.0': {}
+  '@perplexity-ai/perplexity_ai@0.32.0': {}
 
   '@playwright/test@1.60.0':
     dependencies:
@@ -7374,7 +7374,7 @@ snapshots:
       immer: 11.1.8
       redux: 5.0.1
       redux-thunk: 3.1.0(redux@5.0.1)
-      reselect: 5.2.0
+      reselect: 5.1.1
     optionalDependencies:
       react: 19.2.7
       react-redux: 9.3.0(@types/react@19.2.16)(react@19.2.7)(redux@5.0.1)

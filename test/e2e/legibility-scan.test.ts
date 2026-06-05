@@ -51,15 +51,28 @@ test("shows the full scan result including CTA", async () => {
   // Wait for scan results to appear after the progress→results CSS transition chain.
   await page.waitForSelector("text=AI Legibility Report", { timeout: 10_000 });
 
+  // Wait for the results container to become visible (pointer-events: auto = resultVisible).
+  // The transition chain takes hold=300ms + fade=100ms in test mode before results appear.
+  await page.waitForFunction(
+    () => {
+      const el = document.querySelector(
+        '#scan-results div[style*="pointer-events: auto"]',
+      );
+      return el !== null;
+    },
+    { timeout: 5_000 },
+  );
+
   await page.evaluate(() => document.fonts.ready);
   await page.locator("#scan-results").scrollIntoViewIfNeeded();
   await expect(page.locator("main")).toMatchVisual({
     name: "e2e/legibility-scan/3.final",
     // "Starting scan..." spinner is SSR-rendered and remains in the DOM inside
-    // the collapsed progress wrapper. Strip it from the HTML comparison.
+    // the collapsed progress wrapper. Strip its entire card from the comparison.
     modify: (doc) => {
       for (const el of doc.querySelectorAll('[data-slot="card-title"]')) {
-        if (el.textContent?.includes("Starting scan")) el.remove();
+        if (el.textContent?.includes("Starting scan"))
+          el.closest('[data-slot="card"]')?.remove();
       }
     },
   });
