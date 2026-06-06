@@ -52,7 +52,7 @@ COPY --from=builder /app/prisma/prod-ca-2021.crt ./prisma/prod-ca-2021.crt
 COPY --from=builder /app/app ./app
 COPY --from=builder /app/.env .env
 COPY --from=builder /app/tsconfig.json ./tsconfig.json
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 RUN chmod 644 .env
 
