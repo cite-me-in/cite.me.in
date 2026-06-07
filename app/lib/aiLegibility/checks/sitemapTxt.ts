@@ -18,12 +18,12 @@ export default async function checkSitemapTxt({
   robotsSitemapUrls,
 }: {
   url: string;
-  robotsSitemapUrls?: string[];
+  robotsSitemapUrls?: string[] | undefined;
 }): Promise<Omit<CheckResult, "category"> & { urls: string[] }> {
   const urlsToTry = robotsSitemapUrls ?? [new URL("/sitemap.txt", url).href];
 
   if (urlsToTry.length === 1) {
-    return fetchSitemapTxt(urlsToTry[0]);
+    return fetchSitemapTxt(urlsToTry[0]!);
   }
 
   let lastError:

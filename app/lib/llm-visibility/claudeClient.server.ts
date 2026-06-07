@@ -65,7 +65,7 @@ references, with a link to each source URL.`,
     .filter(Boolean)
     .join("\n");
 
-  const sources = content.filter((c) => c.type === "web_search_tool_result")[0]
+  const sources = content.filter((c) => c.type === "web_search_tool_result")[0]!
     .content as BetaWebSearchResultBlock[];
   const urlSources = sources.filter((source) => source.url);
   const citations = [...new Set(urlSources.map(({ url }) => url))];

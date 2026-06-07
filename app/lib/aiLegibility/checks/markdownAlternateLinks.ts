@@ -78,10 +78,10 @@ function extractMarkdownUrlsFromHeader(linkHeader: string | null): string[] {
   return Array.from(linkHeader.matchAll(linkRegex))
     .filter(
       (match) =>
-        /rel\s*=\s*"alternate"/i.test(match[2]) &&
-        /type\s*=\s*"text\/markdown"/i.test(match[2]),
+        /rel\s*=\s*"alternate"/i.test(match[2]!) &&
+        /type\s*=\s*"text\/markdown"/i.test(match[2]!),
     )
-    .map((match) => match[1]);
+    .map((match) => match[1]!);
 }
 
 function extractMarkdownUrlsFromHtml(html: string): string[] {

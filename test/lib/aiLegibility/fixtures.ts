@@ -5,7 +5,12 @@ function text(
   return { body, contentType, status: 200 };
 }
 
-function notFound(): { body: string; contentType: string; status: number } {
+function notFound(): {
+  body: string;
+  contentType?: string;
+  status?: number;
+  headers?: Record<string, string>;
+} {
   return { body: "", contentType: "text/plain", status: 404 };
 }
 
@@ -16,15 +21,20 @@ type MockResponse = {
   text: () => Promise<string>;
 };
 
-type FixtureMap = Record<string, MockResponse>;
-
-export function mockFetch(responses: FixtureMap) {
+export function mockFetch(responses: Record<string, MockResponse>) {
   return async (
     url: string | URL,
     _init?: RequestInit,
   ): Promise<MockResponse> => {
     const key = url.toString();
-    return responses[key] ?? notFound();
+    return (
+      responses[key] ?? {
+        ok: false,
+        status: 404,
+        headers: { get: () => null },
+        text: () => Promise.resolve(""),
+      }
+    );
   };
 }
 

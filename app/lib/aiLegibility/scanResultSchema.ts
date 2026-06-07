@@ -30,7 +30,7 @@ const SuggestionSchema = z.object({
 export const ScanResultSchema = z.object({
   url: z.string(),
   scannedAt: z.string(),
-  checks: z.array(CheckResultSchema),
+  checks: z.array(CheckResultSchema).optional(),
   suggestions: z.array(SuggestionSchema).optional(),
   summary: z.object({
     discovered: z.object({ passed: z.number(), total: z.number() }),

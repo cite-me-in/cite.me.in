@@ -29,7 +29,7 @@ describe("GET /api/openapi.json", () => {
     );
     expect(body.components.securitySchemes.BearerAuth).toBeDefined();
     invariant(
-      "scheme" in body.components.securitySchemes.BearerAuth,
+      "scheme" in body.components.securitySchemes.BearerAuth!,
       "BearerAuth scheme is required",
     );
     expect(body.components.securitySchemes.BearerAuth.scheme).toBe("bearer");

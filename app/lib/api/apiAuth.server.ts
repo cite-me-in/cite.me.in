@@ -19,7 +19,7 @@ export async function verifyUserAccess(request: Request): Promise<{
 }> {
   const auth = request.headers.get("authorization");
   if (!auth) throw new Response("Unauthorized", { status: 401 });
-  const [tokenType, token] = auth.split(/\s+/);
+  const [tokenType, token] = auth.split(/\s+/) as [string, string];
   if (tokenType !== "Bearer")
     throw new Response("Unauthorized", { status: 401 });
 

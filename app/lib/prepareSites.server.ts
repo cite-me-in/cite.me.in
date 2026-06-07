@@ -148,9 +148,9 @@ async function updateBotInsight({
     > = {};
     for (const v of visits) {
       if (!byBot[v.botType]) byBot[v.botType] = { total: 0, pathCounts: {} };
-      byBot[v.botType].total += v.count;
-      byBot[v.botType].pathCounts[v.path] =
-        (byBot[v.botType].pathCounts[v.path] ?? 0) + v.count;
+      byBot[v.botType]!.total += v.count;
+      byBot[v.botType]!.pathCounts[v.path] =
+        (byBot[v.botType]!.pathCounts[v.path] ?? 0) + v.count;
     }
     const botStats = Object.entries(byBot)
       .sort(([, a], [, b]) => b.total - a.total)

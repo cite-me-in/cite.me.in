@@ -7,6 +7,15 @@ import envVars from "./envVars.server";
 const logger = debug("setup:redis");
 const TTL = 86_400; // 24 hours
 
+const REDIS_STATUS_VALUES = ["running", "complete", "error"] as const;
+type RedisStatus = (typeof REDIS_STATUS_VALUES)[number];
+
+function isRedisStatus(value: string | null): value is RedisStatus | null {
+  return (
+    value === null || (REDIS_STATUS_VALUES as readonly string[]).includes(value)
+  );
+}
+
 /**
  * Appends a line to the log for the given site and user.
  *
@@ -88,7 +97,8 @@ export async function getStatus({
 }): Promise<"running" | "complete" | "error" | null> {
   try {
     const status = await getRedis().get(statusKey(siteId, userId));
-    return status as "running" | "complete" | "error" | null;
+    if (isRedisStatus(status)) return status;
+    return null;
   } catch (error) {
     captureAndLogError(error, { extra: { siteId, userId } });
     return null;

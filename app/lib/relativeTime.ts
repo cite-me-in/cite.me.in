@@ -99,7 +99,7 @@ export function duration(
   for (let i = 0; i < units.length; i++) {
     if (parts.length >= max_units) break;
 
-    const unit = units[i];
+    const unit = units[i]!;
     let value = Math.floor(remaining / unit.seconds);
 
     // Check if we have a value or if we're at the last possible unit with nothing yet
@@ -160,9 +160,9 @@ export function parseDuration(input: string): number {
   // Try colon notation first (h:mm or h:mm:ss)
   const colonMatch = trimmed.match(/^(\d+):(\d+)(?::(\d+))?$/);
   if (colonMatch) {
-    const hours = Number.parseInt(colonMatch[1], 10);
-    const minutes = Number.parseInt(colonMatch[2], 10);
-    const seconds = colonMatch[3] ? Number.parseInt(colonMatch[3], 10) : 0;
+    const hours = Number.parseInt(colonMatch[1]!, 10);
+    const minutes = Number.parseInt(colonMatch[2]!, 10);
+    const seconds = colonMatch[3] ? Number.parseInt(colonMatch[3]!, 10) : 0;
     const total = hours * 3600 + minutes * 60 + seconds;
     if (total < 0) throw new Error("Duration cannot be negative");
     return total * 1000;
@@ -210,12 +210,12 @@ export function parseDuration(input: string): number {
   let totalSeconds = 0;
 
   for (const match of matches) {
-    const value = Number.parseFloat(match[1]);
-    const unit = match[2].toLowerCase();
+    const value = Number.parseFloat(match[1]!);
+    const unit = match[2]!.toLowerCase();
 
     if (!(unit in unitMap)) throw new Error(`Unknown duration unit: ${unit}`);
 
-    totalSeconds += value * unitMap[unit];
+    totalSeconds += value * unitMap[unit]!;
   }
 
   if (totalSeconds < 0) throw new Error("Duration cannot be negative");

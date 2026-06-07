@@ -101,10 +101,7 @@ describe("strExport", () => {
 describe("boolExport", () => {
   it("returns true for TrueKeyword entry", () => {
     const map = new Map([
-      [
-        "flag",
-        { kind: ts.SyntaxKind.TrueKeyword, text: "true", strValue: undefined },
-      ],
+      ["flag", { kind: ts.SyntaxKind.TrueKeyword, text: "true" }],
     ]);
     expect(boolExport(map, "flag", false)).toBe(true);
   });
@@ -116,7 +113,6 @@ describe("boolExport", () => {
         {
           kind: ts.SyntaxKind.FalseKeyword,
           text: "false",
-          strValue: undefined,
         },
       ],
     ]);
@@ -204,7 +200,6 @@ describe("timeoutExport", () => {
         {
           kind: ts.SyntaxKind.CallExpression,
           text: 'convert(10, "minutes").to("seconds")',
-          strValue: undefined,
         },
       ],
     ]);
@@ -218,7 +213,6 @@ describe("timeoutExport", () => {
         {
           kind: ts.SyntaxKind.CallExpression,
           text: 'convert(2, "hours").to("seconds")',
-          strValue: undefined,
         },
       ],
     ]);
@@ -232,7 +226,6 @@ describe("timeoutExport", () => {
         {
           kind: ts.SyntaxKind.CallExpression,
           text: 'convert(10, "days").to("seconds")',
-          strValue: undefined,
         },
       ],
     ]);

@@ -34,7 +34,7 @@ export async function action({ request }: Route.ActionArgs) {
   const inviteToken = ((form.get("inviteToken") as string | null) ?? "").trim();
   const next = (form.get("next") as string | null) ?? "";
   const source =
-    ((form.get("source") as string | null) ?? "").trim() || undefined;
+    ((form.get("source") as string | null) ?? "").trim() || "unknown";
 
   const errors: Record<string, string> = {};
 

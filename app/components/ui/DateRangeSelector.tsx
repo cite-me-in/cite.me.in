@@ -71,7 +71,7 @@ export function parseDateRange(searchParams: URLSearchParams): {
   try {
     from = Temporal.PlainDate.from(searchParams.get("from") ?? "");
   } catch {
-    from = today.subtract({ days: periods[1] });
+    from = today.subtract({ days: periods[1]! });
   }
 
   const todayDate = today.toString();
@@ -83,7 +83,7 @@ export function parseDateRange(searchParams: URLSearchParams): {
             .until(until, { largestUnit: "day", smallestUnit: "day" })
             .total("hours") / 24,
         )
-      : periods[1];
+      : periods[1]!;
 
   return { from, period, today, until };
 }

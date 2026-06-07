@@ -74,7 +74,7 @@ export default function VisitorTrafficChart({
                 key={p}
                 name={p}
                 stackId="a"
-                stroke={PLATFORM_COLORS[i % PLATFORM_COLORS.length]}
+                stroke={PLATFORM_COLORS[i % PLATFORM_COLORS.length]!}
                 type="monotone"
               />
             ))}

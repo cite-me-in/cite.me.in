@@ -3,7 +3,7 @@ import { beforeAll, describe, it } from "vitest";
 
 import PLATFORMS from "~/lib/llm-visibility/platforms";
 import prisma from "~/lib/prisma.server";
-import type { SentimentLabel, User } from "~/prisma";
+import { SentimentLabel, type User } from "~/prisma";
 import { goto } from "~/test/helpers/launchBrowser";
 import { port } from "~/test/helpers/launchServer";
 import { signIn } from "~/test/helpers/signIn";
@@ -129,7 +129,7 @@ const RUN_DAYS = [14, 7, 0];
 function daysAgoStr(n: number): string {
   const d = new Date();
   d.setDate(d.getDate() - n);
-  return d.toISOString().split("T")[0];
+  return d.toISOString().split("T")[0]!;
 }
 
 // ---------------------------------------------------------------------------
@@ -146,7 +146,7 @@ async function seedSingleRun(
       siteId,
       platform,
       model,
-      onDate: daysAgoStr(daysAgo),
+      onDate: daysAgoStr(daysAgo!),
       queries: {
         createMany: {
           data: QUERIES.map(({ query, group }) => ({
@@ -159,7 +159,7 @@ async function seedSingleRun(
       },
       ...(runIdx === 2 && {
         sentimentLabel: SENTIMENT_MAP[platform]?.label as SentimentLabel,
-        sentimentSummary: SENTIMENT_MAP[platform]?.summary,
+        sentimentSummary: SENTIMENT_MAP[platform]?.summary as string,
       }),
     },
     include: { queries: true },
@@ -168,15 +168,15 @@ async function seedSingleRun(
   const queryIds = run.queries.map((q) => q.id) as string[];
   for (let qi = 0; qi < queryIds.length; qi++) {
     const { citations } =
-      CITATION_SETS[(qi * 3 + runIdx) % CITATION_SETS.length];
+      CITATION_SETS[(qi * 3 + runIdx) % CITATION_SETS.length]!;
     await prisma.citation.createMany({
-      data: citations.map((c) => ({
-        url: c,
-        domain: new URL(c).hostname,
-        queryId: queryIds[qi],
+      data: citations.map((citation) => ({
+        url: citation,
+        domain: new URL(citation).hostname,
+        queryId: queryIds[qi]!,
         runId: run.id,
         siteId,
-        relationship: new URL(c).hostname === HOSTNAME ? "direct" : null,
+        relationship: new URL(citation).hostname === HOSTNAME ? "direct" : null,
       })),
     });
   }

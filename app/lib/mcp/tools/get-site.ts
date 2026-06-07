@@ -70,7 +70,7 @@ export default {
           where: {
             run: {
               siteId: site.id,
-              onDate: { gte: weekAgo.toISOString().split("T")[0] },
+              onDate: { gte: weekAgo.toISOString().split("T")[0]! },
             },
           },
           select: { citations: { select: { url: true } } },
@@ -80,8 +80,8 @@ export default {
             run: {
               siteId: site.id,
               onDate: {
-                gte: twoWeeksAgo.toISOString().split("T")[0],
-                lt: weekAgo.toISOString().split("T")[0],
+                gte: twoWeeksAgo.toISOString().split("T")[0]!,
+                lt: weekAgo.toISOString().split("T")[0]!,
               },
             },
           },

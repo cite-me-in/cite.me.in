@@ -204,7 +204,7 @@ Disallow: /
       displayName: string;
     }[];
     expect(bots).toHaveLength(1);
-    expect(bots[0].agent).toBe("GPTBot");
+    expect(bots[0]?.agent).toBe("GPTBot");
     expect(result.details?.suggestedFix).toContain("User-agent: GPTBot");
     expect(result.details?.suggestedFix).toContain("Allow: /");
   });

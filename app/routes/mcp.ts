@@ -27,7 +27,7 @@ export async function action({ request }: Route.ActionArgs) {
   const match = authHeader.match(/^Bearer\s+(\S+)/);
   if (!match)
     throw new Response("Unauthorized", { headers: authResource, status: 401 });
-  const token = match[1];
+  const token = match[1]!;
 
   const tokenData = await verifyAccessToken(token);
   if (!tokenData)
@@ -67,7 +67,6 @@ export async function action({ request }: Route.ActionArgs) {
 
   const server = createMcpServer();
   const transport = new WebStandardStreamableHTTPServerTransport({
-    sessionIdGenerator: undefined,
     enableJsonResponse: true,
   });
 

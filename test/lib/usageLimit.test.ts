@@ -45,9 +45,9 @@ describe("recordUsageEvent", () => {
     });
     expect(events).toHaveLength(1);
     // $1.00 input + $5.00 output = $6.00
-    expect(Number(events[0].cost)).toBeCloseTo(6.0);
-    expect(events[0].inputTokens).toBe(1_000_000);
-    expect(events[0].outputTokens).toBe(1_000_000);
+    expect(Number(events[0]?.cost)).toBeCloseTo(6.0);
+    expect(events[0]?.inputTokens).toBe(1_000_000);
+    expect(events[0]?.outputTokens).toBe(1_000_000);
   });
 });
 

@@ -143,7 +143,7 @@ describe("prepareSites", () => {
       const result = await prepareSites({ log: vi.fn<() => void>() });
 
       expect(result).toHaveLength(1);
-      expect(result[0].domain).toBe("paid-null.com");
+      expect(result[0]?.domain).toBe("paid-null.com");
     });
 
     it("should select paid sites with lastProcessedAt older than 24 hours", async () => {
@@ -159,7 +159,7 @@ describe("prepareSites", () => {
       const result = await prepareSites({ log: vi.fn<() => void>() });
 
       expect(result).toHaveLength(1);
-      expect(result[0].domain).toBe("paid-old.com");
+      expect(result[0]?.domain).toBe("paid-old.com");
     });
 
     it("should not select paid sites processed within last 24 hours", async () => {
@@ -189,7 +189,7 @@ describe("prepareSites", () => {
       const result = await prepareSites({ log: vi.fn<() => void>() });
 
       expect(result).toHaveLength(1);
-      expect(result[0].domain).toBe("gratis-null.com");
+      expect(result[0]?.domain).toBe("gratis-null.com");
     });
 
     it("should select trial sites with lastProcessedAt null if account < 25 days old", async () => {
@@ -208,7 +208,7 @@ describe("prepareSites", () => {
       const result = await prepareSites({ log: vi.fn<() => void>() });
 
       expect(result).toHaveLength(1);
-      expect(result[0].domain).toBe("trial-new.com");
+      expect(result[0]?.domain).toBe("trial-new.com");
     });
 
     it("should select trial sites with lastProcessedAt older than 7 days if account < 25 days old", async () => {
@@ -228,7 +228,7 @@ describe("prepareSites", () => {
       const result = await prepareSites({ log: vi.fn<() => void>() });
 
       expect(result).toHaveLength(1);
-      expect(result[0].domain).toBe("trial-old.com");
+      expect(result[0]?.domain).toBe("trial-old.com");
     });
 
     it("should not select trial sites if account >= 25 days old", async () => {
@@ -329,7 +329,7 @@ describe("prepareSites", () => {
       });
 
       expect(result).toHaveLength(1);
-      expect(result[0].domain).toBe("filter-b.com");
+      expect(result[0]?.domain).toBe("filter-b.com");
     });
   });
 

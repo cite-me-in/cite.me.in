@@ -19,7 +19,7 @@ describe("get_site_citations", () => {
       },
     });
 
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toISOString().split("T")[0]!;
 
     await prisma.citationQueryRun.createMany({
       data: [
@@ -238,6 +238,7 @@ describe("get_site_citations", () => {
     });
 
     it("should return domain and date", async () => {
+      invariant(body.result.content[0]?.text, "no content");
       const content = JSON.parse(body.result.content[0].text) as {
         domain: string;
         date: string;
@@ -247,6 +248,7 @@ describe("get_site_citations", () => {
     });
 
     it("should return queries grouped by query text", async () => {
+      invariant(body.result.content[0]?.text, "no content");
       const content = JSON.parse(body.result.content[0].text) as {
         queries: { query: string; group: string; platforms: unknown[] }[];
       };
@@ -257,6 +259,7 @@ describe("get_site_citations", () => {
     });
 
     it("should return platforms for each query", async () => {
+      invariant(body.result.content[0]?.text, "no content");
       const content = JSON.parse(body.result.content[0].text) as {
         queries: {
           query: string;
@@ -272,6 +275,7 @@ describe("get_site_citations", () => {
     });
 
     it("should count mentions correctly", async () => {
+      invariant(body.result.content[0]?.text, "no content");
       const content = JSON.parse(body.result.content[0].text) as {
         queries: {
           query: string;
@@ -306,6 +310,7 @@ describe("get_site_citations", () => {
     });
 
     it("should return citations list", async () => {
+      invariant(body.result.content[0]?.text, "no content");
       const content = JSON.parse(body.result.content[0].text) as {
         queries: {
           query: string;
@@ -370,6 +375,7 @@ describe("get_site_citations", () => {
     });
 
     it("should return empty queries", async () => {
+      invariant(body.result.content[0]?.text, "no content");
       const content = JSON.parse(body.result.content[0].text) as {
         domain: string;
         date: string | null;
@@ -412,6 +418,8 @@ describe("get_site_citations", () => {
     });
 
     it("should return an error", async () => {
+      invariant(body.result.content[0]?.text, "no content");
+
       expect(body.result.isError).toBe(true);
       expect(body.result.content[0].text).toContain("not found");
     });

@@ -76,7 +76,7 @@ describe("queryPlatform", () => {
       },
     });
     let callIndex = 0;
-    queryFn = vi.fn<QueryFn>(async () => CITATION_SETS[callIndex++ % 3]);
+    queryFn = vi.fn<QueryFn>(async () => CITATION_SETS[callIndex++ % 3]!);
     await queryPlatform({
       ...PLATFORM_ARGS,
       site,
@@ -105,7 +105,7 @@ describe("queryPlatform", () => {
       expect(run.model).toBe("claude-haiku-4-5-20251001");
       expect(run.queries).toHaveLength(2);
 
-      const first = run.queries.find((q) => q.query === QUERIES[0].query);
+      const first = run.queries.find((q) => q.query === QUERIES[0]!.query);
       invariant(first, "first is not null");
       expect(first?.group).toBe("1. discovery");
       expect(first.citations.length).toBe(2);
@@ -115,7 +115,7 @@ describe("queryPlatform", () => {
         ),
       ).toBe(true);
 
-      const second = run.queries.find((q) => q.query === QUERIES[1].query);
+      const second = run.queries.find((q) => q.query === QUERIES[1]!.query);
       invariant(second, "second is not null");
       expect(second.group).toBe("2. active_search");
       expect(second.citations.length).toBe(3);
@@ -173,16 +173,17 @@ describe("queryPlatform", () => {
       expect(runs).toHaveLength(1);
 
       const [run] = runs;
+      invariant(run, "run is not null");
       expect(run.platform).toBe("claude");
       expect(run.model).toBe("claude-haiku-4-5-20251001");
       expect(run.siteId).toBe(site.id);
       expect(run.queries).toHaveLength(2);
 
-      const first = run.queries.find((q) => q.query === QUERIES[0].query);
+      const first = run.queries.find((q) => q.query === QUERIES[0]!.query);
       invariant(first, "first is not null");
       expect(first.citations).toHaveLength(2);
       expect(first.group).toBe("1. discovery");
-      expect(first.query).toBe(QUERIES[0].query);
+      expect(first.query).toBe(QUERIES[0]!.query);
       expect(first.text).toBe(
         "You can find short-term retail space on rentail.space.",
       );
@@ -192,11 +193,11 @@ describe("queryPlatform", () => {
         "https://rentail.space/listings",
       ]);
 
-      const second = run.queries.find((q) => q.query === QUERIES[1].query);
+      const second = run.queries.find((q) => q.query === QUERIES[1]!.query);
       invariant(second, "second is not null");
       expect(second.citations).toHaveLength(3);
       expect(second.group).toBe("2. active_search");
-      expect(second.query).toBe(QUERIES[1].query);
+      expect(second.query).toBe(QUERIES[1]!.query);
       expect(second.text).toBe(
         "Platforms like rentail.space offer temporary retail options.",
       );

@@ -35,7 +35,7 @@ export default function BotTrafficTrend({
           config={Object.fromEntries(
             topBots.map((bot, i) => [
               bot,
-              { label: bot, color: colors[i % colors.length] },
+              { label: bot, color: colors[i % colors.length]! },
             ]),
           )}
           className="h-48 w-full"
@@ -54,7 +54,7 @@ export default function BotTrafficTrend({
                 dataKey={bot}
                 key={bot}
                 name={bot}
-                stroke={colors[(i + 1) % colors.length]}
+                stroke={colors[(i + 1) % colors.length]!}
                 strokeDasharray="4 2"
                 strokeWidth={1.5}
                 type="monotone"

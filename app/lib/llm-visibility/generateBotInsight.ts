@@ -38,5 +38,5 @@ export default async function generateBotInsight(
     ],
   });
 
-  return completion.choices[0].message.content ?? "";
+  return completion.choices[0]!.message.content ?? "";
 }

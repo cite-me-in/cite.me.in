@@ -42,9 +42,9 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   });
 
   const map: Record<string, typeof rows> = {};
-  for (const r of rows) {
-    if (!map[r.group]) map[r.group] = [];
-    map[r.group].push(r);
+  for (const row of rows) {
+    if (!map[row.group]) map[row.group] = [];
+    map[row.group]!.push(row);
   }
   const groups = Object.entries(map).sort(([a], [b]) => a.localeCompare(b));
 

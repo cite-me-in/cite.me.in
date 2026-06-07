@@ -53,11 +53,11 @@ function extractBrandName(html: string): string | null {
     html.match(
       /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:site_name["']/i,
     );
-  if (ogMatch) return ogMatch[1].trim();
+  if (ogMatch) return ogMatch[1]!.trim();
 
   const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
   if (titleMatch) {
-    return titleMatch[1]
+    return titleMatch[1]!
       .trim()
       .replace(/\s*[-|—]\s*.+$/, "")
       .trim();

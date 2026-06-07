@@ -67,7 +67,7 @@ Rules:
     max_tokens: 5_000,
   });
 
-  const text = content.filter((c) => c.type === "text")[0].text;
+  const text = content.filter((c) => c.type === "text")[0]!.text;
   const json = z
     .array(z.object({ group: z.string(), query: z.string() }))
     .parse(JSON.parse(text));

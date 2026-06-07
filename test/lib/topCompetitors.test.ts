@@ -25,8 +25,8 @@ describe("topCompetitors", () => {
     ];
     const { competitors } = topCompetitors(citations, "mysite.com");
     expect(competitors).toHaveLength(1);
-    expect(competitors[0].domain).toBe("competitor.com");
-    expect(competitors[0].count).toBe(3);
+    expect(competitors[0]?.domain).toBe("competitor.com");
+    expect(competitors[0]?.count).toBe(3);
   });
 
   it("should return top 5 competitors sorted by count descending", () => {
@@ -49,12 +49,12 @@ describe("topCompetitors", () => {
     ];
     const { competitors } = topCompetitors(citations, "mysite.com");
     expect(competitors).toHaveLength(5);
-    expect(competitors[0].domain).toBe("c.com"); // 4 — clear winner
+    expect(competitors[0]?.domain).toBe("c.com"); // 4 — clear winner
     expect(competitors.map((c) => c.domain)).not.toContain("d.com");
     // Remaining order: sort stable by count desc; just verify counts are non-increasing
     for (let i = 1; i < competitors.length; i++)
-      expect(competitors[i].count).toBeLessThanOrEqual(
-        competitors[i - 1].count,
+      expect(competitors[i]?.count).toBeLessThanOrEqual(
+        competitors[i - 1]!.count,
       );
   });
 
@@ -68,7 +68,7 @@ describe("topCompetitors", () => {
     // total = 4, competitor.com = 3 → 75%
     const { total, competitors } = topCompetitors(citations, "mysite.com");
     expect(total).toBe(4);
-    expect(competitors[0].pct).toBe(75);
+    expect(competitors[0]?.pct).toBe(75);
   });
 
   it("should return empty competitors when all citations are own domain", () => {
@@ -96,7 +96,7 @@ describe("topCompetitors", () => {
     ];
     const { competitors } = topCompetitors(citations, "mysite.com");
     expect(competitors).toHaveLength(1);
-    expect(competitors[0].domain).toBe("competitor.com");
+    expect(competitors[0]?.domain).toBe("competitor.com");
   });
 
   it("should aggregate citations across multiple entries", () => {

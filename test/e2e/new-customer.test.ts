@@ -58,7 +58,7 @@ test("fills out site add form", async () => {
 
 test("verifies site created in DB", async () => {
   site = await prisma.site.findFirstOrThrow({
-    where: { ownerId: user?.id },
+    where: { ownerId: user!.id },
   });
   expect(site.domain).toBe("acme.com");
 });
@@ -69,11 +69,11 @@ test("waits for setup pipeline to complete", async () => {
 
 test("verifies queries saved in DB", async () => {
   const queries = await prisma.siteQuery.findMany({
-    where: { siteId: site?.id },
+    where: { siteId: site!.id },
   });
   expect(queries.length).toBeGreaterThan(0);
-  expect(queries[0].group).toBe("1. discovery");
-  expect(queries[0].query).toBe("Query 1");
-  expect(queries[3].group).toBe("2. active_search");
-  expect(queries[3].query).toBe("Query 4");
+  expect(queries[0]?.group).toBe("1. discovery");
+  expect(queries[0]?.query).toBe("Query 1");
+  expect(queries[3]?.group).toBe("2. active_search");
+  expect(queries[3]?.query).toBe("Query 4");
 });

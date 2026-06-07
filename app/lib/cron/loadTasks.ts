@@ -41,14 +41,22 @@ export async function loadCronTasks(): Promise<CronTaskConfig[]> {
   });
 }
 
-interface Expr {
-  kind: ts.SyntaxKind;
-  text: string;
-  strValue?: string;
-}
-
-function collect(sourceFile: ts.SourceFile): Map<string, Expr> {
-  const map = new Map<string, Expr>();
+function collect(sourceFile: ts.SourceFile): Map<
+  string,
+  {
+    kind: ts.SyntaxKind;
+    text: string;
+    strValue?: string;
+  }
+> {
+  const map = new Map<
+    string,
+    {
+      kind: ts.SyntaxKind;
+      text: string;
+      strValue?: string;
+    }
+  >();
   for (const stmt of sourceFile.statements) {
     if (
       !ts.isVariableStatement(stmt) ||
@@ -66,14 +74,24 @@ function collect(sourceFile: ts.SourceFile): Map<string, Expr> {
       map.set(decl.name.text, {
         kind: init.kind,
         text: init.getText(sourceFile),
-        strValue,
+        strValue: strValue!,
       });
     }
   }
   return map;
 }
 
-function strExport(map: Map<string, Expr>, name: string): string {
+function strExport(
+  map: Map<
+    string,
+    {
+      kind: ts.SyntaxKind;
+      text: string;
+      strValue?: string | undefined;
+    }
+  >,
+  name: string,
+): string {
   const entry = map.get(name);
   if (!entry) throw new Error(`app/cron/: missing export const ${name}`);
   if (entry.strValue === undefined)
@@ -82,7 +100,14 @@ function strExport(map: Map<string, Expr>, name: string): string {
 }
 
 function boolExport(
-  map: Map<string, Expr>,
+  map: Map<
+    string,
+    {
+      kind: ts.SyntaxKind;
+      text: string;
+      strValue?: string;
+    }
+  >,
   name: string,
   defaultVal: boolean,
 ): boolean {
@@ -93,14 +118,23 @@ function boolExport(
   throw new Error(`app/cron/: export const ${name} must be a boolean literal`);
 }
 
-function timeoutExport(map: Map<string, Expr>): number {
+function timeoutExport(
+  map: Map<
+    string,
+    {
+      kind: ts.SyntaxKind;
+      text: string;
+      strValue?: string;
+    }
+  >,
+): number {
   const entry = map.get("timeout");
   if (!entry) throw new Error("app/cron/: missing export const timeout");
 
   if (entry.strValue !== undefined) {
     const match = entry.strValue.match(/^(\d+)\s*(s|m|h)?$/);
     if (!match) throw new Error(`Invalid timeout string: "${entry.strValue}"`);
-    const value = parseInt(match[1], 10);
+    const value = parseInt(match[1]!, 10);
     const unit = match[2] ?? "s";
     switch (unit) {
       case "s":
@@ -128,7 +162,7 @@ function parseConvertCall(text: string): number | null {
     /^convert\(\s*(\d+)\s*,\s*"(minutes|hours)"\s*\)\s*\.\s*to\s*\(\s*"seconds"\s*\)\s*$/,
   );
   if (!match) return null;
-  const value = parseInt(match[1], 10);
+  const value = parseInt(match[1]!, 10);
   const unit = match[2];
   return unit === "minutes" ? value * 60 : value * 3600;
 }

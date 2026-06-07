@@ -1,3 +1,4 @@
+import invariant from "tiny-invariant";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import prisma from "~/lib/prisma.server";
@@ -48,6 +49,7 @@ describe("create_site", () => {
     });
 
     it("should return the created site", async () => {
+      invariant(body.result.content[0]?.text, "no content");
       const content = JSON.parse(body.result.content[0].text) as {
         id: string;
         domain: string;
@@ -94,6 +96,8 @@ describe("create_site", () => {
     });
 
     it("should return an error", async () => {
+      invariant(body.result.content[0]?.text, "no content");
+
       expect(body.result.isError).toBe(true);
       expect(body.result.content[0].text).toContain("already exists");
     });

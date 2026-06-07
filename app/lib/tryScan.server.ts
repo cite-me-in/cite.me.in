@@ -2,9 +2,10 @@ import { convert } from "convert";
 import Redis from "ioredis";
 
 import { runScanSteps } from "~/lib/aiLegibility/runAILegibilityScan";
-import type { ScanResult } from "~/lib/aiLegibility/types";
+import { ScanResultSchema } from "~/lib/aiLegibility/scanResultSchema";
 import { getDomainMeta } from "~/lib/domainMeta.server";
 
+import type { ScanResult } from "./aiLegibility/types";
 import envVars from "./envVars.server";
 
 const TTL = convert(5, "minutes").to("seconds");
@@ -35,7 +36,12 @@ function errorKey(domain: string) {
   return `ai-legibility:${domain}:error`;
 }
 
-export async function getScanStatus(domain: string) {
+export async function getScanStatus(domain: string): Promise<{
+  lines: string[];
+  status: string;
+  result?: ScanResult | undefined;
+  error?: string | null;
+} | null> {
   const redis = getRedis();
   const [rawStatus, lines, rawResult, rawError] = await Promise.all([
     redis.get(statusKey(domain)),
@@ -47,16 +53,16 @@ export async function getScanStatus(domain: string) {
 
   if (!rawStatus) return null;
 
-  let result: ScanResult | undefined;
-  if (rawStatus === "complete" && rawResult) {
-    result = JSON.parse(rawResult) as ScanResult;
-  }
+  const result =
+    rawStatus === "complete" && rawResult
+      ? (ScanResultSchema.parse(JSON.parse(rawResult)) as ScanResult)
+      : undefined;
 
   return {
     lines: lines ?? [],
     status: rawStatus,
     result,
-    error: rawError ?? null,
+    error: rawError,
   };
 }
 

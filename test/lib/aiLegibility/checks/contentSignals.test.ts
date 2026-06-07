@@ -28,8 +28,8 @@ describe("checkContentSignals", () => {
       | { key: string; value: string }[]
       | undefined;
     expect(signals).toHaveLength(1);
-    expect(signals![0].key).toBe("search");
-    expect(signals![0].value).toBe("yes");
+    expect(signals![0]!.key).toBe("search");
+    expect(signals![0]!.value).toBe("yes");
   });
 
   it("should fail when all Content-Signal keys are invalid", async () => {

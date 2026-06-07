@@ -85,15 +85,15 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
     for (const line of lines) {
       const checkMatch = line.match(/^Checking ([a-z0-9 \-/()]+?)\.\.\./i);
       if (checkMatch) {
-        const normalized = checkMatch[1].toLowerCase().trim();
-        currentCheck = LOG_TO_CHECK[normalized];
+        const normalized = checkMatch[1]!.toLowerCase().trim();
+        currentCheck = LOG_TO_CHECK[normalized]!;
         if (currentCheck) {
           const pageCountMatch = line.match(/\.\.\. \((\d+)\/(\d+)\)$/);
           if (pageCountMatch) {
             states[currentCheck] = {
               status: "running",
-              current: parseInt(pageCountMatch[1]),
-              total: parseInt(pageCountMatch[2]),
+              current: parseInt(pageCountMatch[1]!),
+              total: parseInt(pageCountMatch[2]!),
             };
           } else {
             states[currentCheck] = { status: "running" };
@@ -107,13 +107,13 @@ export default function TryPage({ loaderData }: Route.ComponentProps) {
         const isPassed = resultMatch[1] === "✓";
         states[currentCheck] = {
           status: isPassed ? "passed" : "failed",
-          message: resultMatch[2],
+          message: resultMatch[2]!,
         };
         currentCheck = null;
       }
     }
 
-    if (result) {
+    if (result?.checks) {
       for (const check of result.checks) {
         if (states[check.name]) {
           states[check.name] = {

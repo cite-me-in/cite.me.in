@@ -17,7 +17,7 @@ export function generateApiDocsMarkdown(
   spec: ReturnType<typeof createDocument>,
 ): string {
   if (!spec.servers) return "";
-  const baseUrl = spec.servers[0]?.url;
+  const baseUrl = spec.servers[0]!.url;
   const sections: string[] = [];
 
   sections.push("# cite.me.in API");

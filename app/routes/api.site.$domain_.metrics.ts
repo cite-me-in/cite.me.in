@@ -12,10 +12,10 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   return data(
     SiteMetricsSchema.parse({
-      allCitations: metrics.allCitations,
-      yourCitations: metrics.yourCitations,
-      visbilityScore: metrics.visbilityScore,
-      queryCoverageRate: metrics.queryCoverageRate,
+      allCitations: metrics!.allCitations,
+      yourCitations: metrics!.yourCitations,
+      visbilityScore: metrics!.visbilityScore,
+      queryCoverageRate: metrics!.queryCoverageRate,
     }),
   );
 }

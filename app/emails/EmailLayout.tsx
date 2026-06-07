@@ -39,10 +39,10 @@ export default function EmailLayout({
   user,
 }: {
   children: React.ReactNode;
-  domain?: string;
-  preview?: string;
+  domain?: string | undefined;
+  preview?: string | undefined;
   subject: string;
-  unsubscribeURL?: string | false;
+  unsubscribeURL?: string | false | undefined;
   user: { email: string };
 }) {
   const token = generateUnsubscribeToken(user.email);
@@ -85,7 +85,13 @@ export default function EmailLayout({
   );
 }
 
-function Header({ domain, subject }: { domain?: string; subject: string }) {
+function Header({
+  domain,
+  subject,
+}: {
+  domain?: string | undefined;
+  subject: string;
+}) {
   const logoSrc = new URL("/icon-192.png", envVars.VITE_APP_URL).toString();
 
   return domain ? (
@@ -136,7 +142,11 @@ function Header({ domain, subject }: { domain?: string; subject: string }) {
   );
 }
 
-function Footer({ unsubscribeURL }: { unsubscribeURL?: string | false }) {
+function Footer({
+  unsubscribeURL,
+}: {
+  unsubscribeURL?: string | false | undefined;
+}) {
   return (
     <Section className="mt-8 border-t border-gray-200 pt-6">
       {unsubscribeURL && (

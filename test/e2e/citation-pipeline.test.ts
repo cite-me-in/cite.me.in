@@ -52,7 +52,7 @@ test("adds site", async () => {
 
 test("verifies site created in DB", async () => {
   site = await prisma.site.findFirstOrThrow({
-    where: { ownerId: user?.id },
+    where: { ownerId: user!.id },
   });
   expect(site!.domain).toBe("acme.com");
 });
@@ -63,16 +63,16 @@ test("waits for setup pipeline to complete", async () => {
 
 test("verifies queries saved in DB", async () => {
   const queries = await prisma.siteQuery.findMany({
-    where: { siteId: site?.id },
+    where: { siteId: site!.id },
   });
   expect(queries.length).toBeGreaterThan(0);
-  expect(queries[0].group).toBe("1. discovery");
-  expect(queries[0].query).toBe("Query 1");
+  expect(queries[0]?.group).toBe("1. discovery");
+  expect(queries[0]?.query).toBe("Query 1");
 });
 
 test("verifies citation query runs exist", async () => {
   const runs = await prisma.citationQueryRun.findMany({
-    where: { siteId: site?.id },
+    where: { siteId: site!.id },
     include: { queries: true, citations: true },
   });
   expect(runs.length).toBeGreaterThan(0);
@@ -86,7 +86,7 @@ test("verifies citation query runs exist", async () => {
 
 test("verifies citations were created", async () => {
   const citations = await prisma.citation.findMany({
-    where: { siteId: site?.id },
+    where: { siteId: site!.id },
   });
   expect(citations.length).toBeGreaterThan(0);
 
@@ -100,7 +100,7 @@ test("verifies citations were created", async () => {
 
 test("verifies citing pages were created from citations", async () => {
   const citingPages = await prisma.citingPage.findMany({
-    where: { siteId: site?.id },
+    where: { siteId: site!.id },
   });
   expect(citingPages.length).toBeGreaterThan(0);
 

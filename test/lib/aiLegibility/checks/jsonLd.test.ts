@@ -338,8 +338,8 @@ describe("extractSchemas", () => {
     const html = `<html><head><script type="application/ld+json">{invalid}</script></head><body></body></html>`;
     const result = extractSchemas(html);
     expect(result).toHaveLength(1);
-    expect(result[0].valid).toBe(false);
-    expect(result[0].error).toContain("JSON parse error");
+    expect(result[0]?.valid).toBe(false);
+    expect(result[0]?.error).toContain("JSON parse error");
   });
 
   it("handles mixed valid and invalid schemas across multiple script tags", () => {
@@ -350,8 +350,8 @@ describe("extractSchemas", () => {
     const result = extractSchemas(html);
     expect(result).toHaveLength(2);
     expect(result[0]).toEqual({ type: "Organization", valid: true });
-    expect(result[1].valid).toBe(false);
-    expect(result[1].error).toContain("Missing required field");
+    expect(result[1]?.valid).toBe(false);
+    expect(result[1]?.error).toContain("Missing required field");
   });
 });
 

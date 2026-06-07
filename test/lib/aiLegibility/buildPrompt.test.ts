@@ -65,7 +65,7 @@ it("should skip skillURL and fixExample when absent", () => {
 });
 
 it("should return empty string when check has no detail", () => {
-  const noDetail: CheckResult = { ...baseCheck, detail: undefined };
+  const noDetail = { ...baseCheck, detail: undefined };
   expect(buildPrompt(noDetail)).toBe("");
 });
 

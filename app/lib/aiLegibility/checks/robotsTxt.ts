@@ -47,7 +47,7 @@ function parseRobotsTxt(content: string) {
 
     const agentMatch = trimmed.match(/^user-agent:\s*(.+)/i);
     if (agentMatch) {
-      const agent = agentMatch[1].trim();
+      const agent = agentMatch[1]!.trim();
       if (!current || current.rules.length > 0) {
         current = { agents: [], rules: [] };
         groups.push(current);
@@ -58,7 +58,7 @@ function parseRobotsTxt(content: string) {
 
     const ruleMatch = trimmed.match(/^(allow|disallow):\s*(.*)/i);
     if (ruleMatch && current)
-      current.rules.push(`${ruleMatch[1]}: ${ruleMatch[2].trim()}`);
+      current.rules.push(`${ruleMatch[1]}: ${ruleMatch[2]!.trim()}`);
   }
 
   return groups;
@@ -76,7 +76,7 @@ function findBlockedAiBots(content: string) {
     );
     if (matchingGroups.length === 0) continue;
 
-    const lastGroup = matchingGroups[matchingGroups.length - 1];
+    const lastGroup = matchingGroups[matchingGroups.length - 1]!;
     const isFullyBlocked = lastGroup.rules.some((r) =>
       /^disallow:\s*\/\s*$/i.test(r),
     );
@@ -86,7 +86,7 @@ function findBlockedAiBots(content: string) {
     if (hasAllow) continue;
 
     blocked.push({
-      agent: lastGroup.agents[0],
+      agent: lastGroup.agents[0]!,
       displayName: bot.name,
     });
   }

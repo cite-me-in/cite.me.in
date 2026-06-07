@@ -1,3 +1,4 @@
+import invariant from "tiny-invariant";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { accessToken, initSession, mcpRequest, parseResponse } from "./setup";
@@ -89,10 +90,14 @@ describe("list_sites", () => {
       expect(body.result.content).toBeDefined();
       expect(body.result.content.length).toBeGreaterThan(0);
       expect(body.result.content[0]).toBeDefined();
-      expect(body.result.content[0].type).toBe("text");
+      expect(body.result.content[0]?.type).toBe("text");
     });
 
     it("should return structured content with sites", async () => {
+      invariant(
+        body.result.content[0]?.type === "text",
+        "Expected text content",
+      );
       const content = JSON.parse(body.result.content[0].text) as {
         sites: {
           id: string;
@@ -107,6 +112,10 @@ describe("list_sites", () => {
     });
 
     it("should return the first site", async () => {
+      invariant(
+        body.result.content[0]?.type === "text",
+        "Expected text content",
+      );
       const content = JSON.parse(body.result.content[0].text) as {
         sites: {
           id: string;
@@ -115,7 +124,7 @@ describe("list_sites", () => {
           createdAt: string;
         }[];
       };
-      const site = content.sites[0];
+      const site = content.sites[0]!;
       expect(site.id).toBeDefined();
       expect(site.domain).toBe("mcp-test-site-1.example");
       expect(site.summary).toBe("Test summary");

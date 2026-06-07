@@ -140,12 +140,12 @@ function HeroSection() {
                   aria-label="Domain"
                   name="domain"
                   placeholder="yourwebsite.com"
-                  className="rounded-base h-14 w-full border-2 border-black bg-white pr-4 pl-12 text-lg font-bold shadow-[4px_4px_0px_0px_black] transition-all outline-none focus:translate-x-[-2px] focus:translate-y-[-2px] focus:shadow-[6px_6px_0px_0px_black]"
+                  className="rounded-base h-14 w-full border-2 border-black bg-white pr-4 pl-12 text-lg font-bold shadow-[4px_4px_0px_0px_black] transition-all outline-none focus:-translate-x-0.5 focus:-translate-y-0.5 focus:shadow-[6px_6px_0px_0px_black]"
                 />
               </div>
               <button
                 type="submit"
-                className="rounded-base inline-flex h-14 shrink-0 items-center gap-2 border-2 border-black bg-blue-500 px-6 text-lg font-bold text-white shadow-[4px_4px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_black]"
+                className="rounded-base inline-flex h-14 shrink-0 items-center gap-2 border-2 border-black bg-blue-500 px-6 text-lg font-bold text-white shadow-[4px_4px_0px_0px_black] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[6px_6px_0px_0px_black]"
               >
                 {navigation.state === "loading" &&
                 navigation.location?.pathname === "/try" ? (

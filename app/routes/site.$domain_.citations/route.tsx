@@ -108,7 +108,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
     .toISOString()
-    .split("T")[0];
+    .split("T")[0]!;
 
   const [runs, siteQueries, citationRows] = await Promise.all([
     prisma.citationQueryRun.findMany({
@@ -297,10 +297,12 @@ export default function SiteCitationsPage({
             site={site}
             classifications={relatedCitations}
           />
-          <BrandSentiment
-            sentiment={sentiment}
-            platformLabel={platform!.label}
-          />
+          {sentiment && (
+            <BrandSentiment
+              sentiment={sentiment}
+              platformLabel={platform!.label}
+            />
+          )}
           <RelatedCitations relatedCitations={relatedCitations} />
           <TopCompetitors
             competitors={competitors}

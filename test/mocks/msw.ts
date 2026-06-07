@@ -55,10 +55,10 @@ const EXAMPLE_COM_RESPONSES: Record<
 
 const handlers = [
   http.get("https://example.com/", () => {
-    const r = EXAMPLE_COM_RESPONSES["https://example.com"];
-    return new HttpResponse(r.body, {
+    const response = EXAMPLE_COM_RESPONSES["https://example.com"]!;
+    return new HttpResponse(response.body, {
       headers: {
-        "Content-Type": r.contentType,
+        "Content-Type": response.contentType,
         Link: '</sitemap.xml>; rel="sitemap"',
       },
     });
@@ -66,18 +66,18 @@ const handlers = [
   // Mock all legibility scan URLs for example.com — both GET and HEAD
   ...Object.keys(EXAMPLE_COM_RESPONSES).flatMap((url) => {
     if (url === "https://example.com") return [];
-    const r = EXAMPLE_COM_RESPONSES[url];
+    const response = EXAMPLE_COM_RESPONSES[url]!;
     return [
       http.get(url, () =>
-        HttpResponse.text(r.body, {
-          headers: { "Content-Type": r.contentType },
+        HttpResponse.text(response.body, {
+          headers: { "Content-Type": response.contentType },
         }),
       ),
       http.head(
         url,
         () =>
           new HttpResponse(null, {
-            headers: { "Content-Type": r.contentType },
+            headers: { "Content-Type": response.contentType },
           }),
       ),
     ];

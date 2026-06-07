@@ -288,13 +288,13 @@ function generateCitationChart(current: number[], previous: number[]): string {
   const toPath = (values: number[]) => {
     const pts = values.map((v, i) => ({ x: xAt(i), y: yAt(v ?? 0) }));
     if (pts.length === 0) return "";
-    let d = `M ${pts[0].x} ${pts[0].y}`;
+    let d = `M ${pts[0]!.x} ${pts[0]!.y}`;
     for (let i = 1; i < pts.length - 1; i++) {
-      const mx = (pts[i].x + pts[i + 1].x) / 2;
-      const my = (pts[i].y + pts[i + 1].y) / 2;
-      d += ` Q ${pts[i].x} ${pts[i].y} ${mx} ${my}`;
+      const mx = (pts[i]!.x + pts[i + 1]!.x) / 2;
+      const my = (pts[i]!.y + pts[i + 1]!.y) / 2;
+      d += ` Q ${pts[i]!.x} ${pts[i]!.y} ${mx} ${my}`;
     }
-    d += ` L ${pts[pts.length - 1].x} ${pts[pts.length - 1].y}`;
+    d += ` L ${pts[pts.length - 1]!.x} ${pts[pts.length - 1]!.y}`;
     return d;
   };
 

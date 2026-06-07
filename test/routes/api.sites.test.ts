@@ -1,3 +1,4 @@
+import invariant from "tiny-invariant";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import prisma from "~/lib/prisma.server";
@@ -34,7 +35,7 @@ beforeAll(async () => {
           summary: "Test summary",
           citationRuns: {
             create: {
-              onDate: new Date().toISOString().split("T")[0],
+              onDate: new Date().toISOString().split("T")[0]!,
               id: RUN_ID,
               platform: "chatgpt",
               model: "gpt-4o",
@@ -192,6 +193,8 @@ describe("GET /api/site/:domain/queries", () => {
     });
 
     it("should return the queries with citations", async () => {
+      invariant(body.platforms[0]?.sentiment, "no sentiment");
+
       expect(Array.isArray(body.platforms)).toBe(true);
       expect(body.platforms[0].model).toBe("gpt-4o");
       expect(body.platforms[0].onDate).toBe(
@@ -199,6 +202,8 @@ describe("GET /api/site/:domain/queries", () => {
       );
       expect(body.platforms[0].platform).toBe("chatgpt");
       expect(Array.isArray(body.platforms[0].queries)).toBe(true);
+
+      invariant(body.platforms[0].queries[0], "no query");
       expect(body.platforms[0].queries[0].query).toBe("best retail platforms");
       expect(body.platforms[0].queries[0].citations).toEqual([
         { url: `https://${DOMAIN}/page1` },
@@ -207,6 +212,7 @@ describe("GET /api/site/:domain/queries", () => {
     });
 
     it("should return the queries with sentiment", async () => {
+      invariant(body.platforms[0]?.sentiment, "no sentiment");
       expect(body.platforms[0].sentiment.label).toBe("positive");
       expect(body.platforms[0].sentiment.summary).toBe(
         "Rentail.space is cited positively across multiple queries, frequently appearing as a top recommendation for finding short-term retail space. It ranks prominently in citations and is described as a reliable marketplace for pop-up and kiosk leasing.",

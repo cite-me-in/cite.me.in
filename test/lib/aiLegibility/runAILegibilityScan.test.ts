@@ -206,7 +206,7 @@ describe("runScan", () => {
     for (const [key, value] of Object.entries(passingSite())) {
       responses[key.replace("https://acme.com", "https://www.acme.com")] = {
         body: value.body,
-        contentType: value.contentType,
+        contentType: value.contentType!,
       };
     }
     setupMswHandlers(responses);
@@ -309,10 +309,10 @@ describe("runScan", () => {
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
 
-    expect(result?.checks.length).toBe(16);
-    expect(result?.checks.every((c) => c.name && c.category && c.message)).toBe(
-      true,
-    );
+    expect(result?.checks?.length).toBe(16);
+    expect(
+      result?.checks?.every((c) => c.name && c.category && c.message),
+    ).toBe(true);
   });
 
   it("should categorize checks correctly", async () => {
@@ -326,13 +326,13 @@ describe("runScan", () => {
       user: { id: "1", email: "test@example.com", unsubscribed: false },
     });
 
-    const discoveredChecks = result?.checks.filter(
+    const discoveredChecks = result?.checks?.filter(
       (c) => c.category === "discovered",
     );
-    const trustedChecks = result?.checks.filter(
+    const trustedChecks = result?.checks?.filter(
       (c) => c.category === "trusted",
     );
-    const welcomedChecks = result?.checks.filter(
+    const welcomedChecks = result?.checks?.filter(
       (c) => c.category === "welcomed",
     );
 

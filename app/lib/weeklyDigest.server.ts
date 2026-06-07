@@ -85,7 +85,7 @@ export async function loadWeeklyDigestMetrics(
         (1000 * 60 * 60 * 24),
     );
     if (dayIndex >= 0 && dayIndex < 7)
-      current[dayIndex] += run.queries.flatMap((q) => q.citations).length;
+      current[dayIndex]! += run.queries.flatMap((q) => q.citations).length;
   }
   for (const run of prevRuns) {
     const dayIndex = Math.floor(
@@ -93,7 +93,7 @@ export async function loadWeeklyDigestMetrics(
         (1000 * 60 * 60 * 24),
     );
     if (dayIndex >= 0 && dayIndex < 7)
-      previous[dayIndex] += run.queries.flatMap((q) => q.citations).length;
+      previous[dayIndex]! += run.queries.flatMap((q) => q.citations).length;
   }
 
   // Top queries
@@ -101,12 +101,12 @@ export async function loadWeeklyDigestMetrics(
   for (const run of currentRuns)
     for (const q of run.queries) {
       queryCounts[q.query] ??= { current: 0, prev: 0 };
-      queryCounts[q.query].current += q.citations.length;
+      queryCounts[q.query]!.current += q.citations.length;
     }
   for (const run of prevRuns)
     for (const q of run.queries) {
       queryCounts[q.query] ??= { current: 0, prev: 0 };
-      queryCounts[q.query].prev += q.citations.length;
+      queryCounts[q.query]!.prev += q.citations.length;
     }
 
   const topQueries = Object.entries(queryCounts)

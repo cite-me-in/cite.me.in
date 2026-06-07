@@ -112,7 +112,7 @@ export default async function checkAiBotTraffic({
   log,
 }: {
   url: string;
-  sampleUrls?: string[];
+  sampleUrls?: string[] | undefined;
   log: (line: string) => Promise<void> | void;
 }): Promise<Omit<CheckResult, "category">> {
   const pagesToTest = shuffle([url, ...(sampleUrls ?? [])]).slice(0, 3);
@@ -122,7 +122,7 @@ export default async function checkAiBotTraffic({
   const results: BotTestResult[] = [];
   for (let i = 0; i < AI_BOTS.length; i++) {
     const botResults = await Promise.all(
-      pagesToTest.map((page) => testBotAccess(AI_BOTS[i], page)),
+      pagesToTest.map((page) => testBotAccess(AI_BOTS[i]!, page)),
     );
     results.push(...botResults);
     await log(`Checking AI bot traffic... (${i + 1}/${AI_BOTS.length})`);

@@ -25,7 +25,7 @@ export default function UpgradeSuccessPage() {
         </p>
         <Link
           to="/sites"
-          className="rounded-base inline-block border-2 border-black bg-amber-400 px-6 py-3 font-bold shadow-[4px_4px_0px_0px_black] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_black]"
+          className="rounded-base inline-block border-2 border-black bg-amber-400 px-6 py-3 font-bold shadow-[4px_4px_0px_0px_black] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_black]"
         >
           Go to Dashboard
         </Link>

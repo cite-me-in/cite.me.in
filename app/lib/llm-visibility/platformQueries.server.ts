@@ -17,15 +17,15 @@ const platforms = Object.fromEntries(
  * functions are not available in the client.
  */
 export default [
-  { ...platforms.chatgpt, queryFn: openaiClient },
-  { ...platforms.claude, queryFn: queryClaude },
-  { ...platforms.gemini, queryFn: queryGemini },
+  { ...platforms.chatgpt!, queryFn: openaiClient },
+  { ...platforms.claude!, queryFn: queryClaude },
+  { ...platforms.gemini!, queryFn: queryGemini },
   {
-    ...platforms.copilot,
+    ...platforms.copilot!,
     queryFn: ({ query, timeout }) =>
       fetchSERPResults({ query, engine: "bing_copilot", timeout }),
   },
-  { ...platforms.perplexity, queryFn: queryPerplexity },
+  { ...platforms.perplexity!, queryFn: queryPerplexity },
 ] satisfies {
   name: string;
   model: string;

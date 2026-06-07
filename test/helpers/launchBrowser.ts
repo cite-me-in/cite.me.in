@@ -24,7 +24,7 @@ async function getBrowser(): Promise<Browser> {
   const headless = process.env.CI ? true : !logger.enabled;
   browser = await chromium.launch({
     headless,
-    slowMo: process.env.SLOW_MO ? Number(process.env.SLOW_MO) : undefined,
+    slowMo: process.env.SLOW_MO ? Number(process.env.SLOW_MO) : 0,
     ...(process.env.CI && {
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     }),

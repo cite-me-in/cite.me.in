@@ -26,12 +26,12 @@ export default async function checkSitemapXml({
   robotsSitemapUrls,
 }: {
   url: string;
-  robotsSitemapUrls?: string[];
+  robotsSitemapUrls?: string[] | undefined;
 }): Promise<Omit<CheckResult, "category"> & { urls: string[] }> {
   const urlsToTry = robotsSitemapUrls ?? [new URL("/sitemap.xml", url).href];
   const startTime = Date.now();
 
-  if (urlsToTry.length === 1) return fetchSitemapXml(urlsToTry[0], startTime);
+  if (urlsToTry.length === 1) return fetchSitemapXml(urlsToTry[0]!, startTime);
 
   let lastError:
     | (Omit<CheckResult, "category"> & { urls: string[] })

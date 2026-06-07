@@ -79,17 +79,17 @@ async function getVisitorData(
     .sort()
     .map((date) => ({
       date,
-      total: sum(Object.values(dailyBySource[date]), (c) => c),
-      nonAi: dailyBySource[date].nonAi ?? 0,
+      total: sum(Object.values(dailyBySource[date]!), (c) => c),
+      nonAi: dailyBySource[date]!.nonAi ?? 0,
       ...Object.fromEntries(
-        platforms.map((p) => [p, dailyBySource[date][p] ?? 0]),
+        platforms.map((p) => [p, dailyBySource[date]![p] ?? 0]),
       ),
     }));
 
   const platformBreakdown = platforms.map((p) => ({
     platform: p,
     visitors: platformTotals[p],
-    pct: totalVisitors > 0 ? (platformTotals[p] / totalVisitors) * 100 : 0,
+    pct: totalVisitors > 0 ? (platformTotals[p]! / totalVisitors) * 100 : 0,
   }));
 
   const aiPct =
@@ -142,9 +142,9 @@ async function getBotTotals(
     .sort()
     .map((date) => ({
       date,
-      total: sum(Object.values(dailyByBot[date]), (c) => c),
+      total: sum(Object.values(dailyByBot[date]!), (c) => c),
       ...Object.fromEntries(
-        topBots.map((bot) => [bot, dailyByBot[date][bot] ?? 0]),
+        topBots.map((bot) => [bot, dailyByBot[date]![bot] ?? 0]),
       ),
     }));
 
@@ -169,9 +169,9 @@ async function getBotTotals(
         accepts: new Set(),
         referer: v.referer,
       };
-    byBot[v.botType].total += v.count;
-    byBot[v.botType].paths.add(v.path);
-    for (const mime of v.accept) byBot[v.botType].accepts.add(mime);
+    byBot[v.botType]!.total += v.count;
+    byBot[v.botType]!.paths.add(v.path);
+    for (const mime of v.accept) byBot[v.botType]!.accepts.add(mime);
   }
 
   const botActivity = Object.values(byBot)

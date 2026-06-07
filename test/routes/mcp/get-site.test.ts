@@ -1,3 +1,4 @@
+import invariant from "tiny-invariant";
 import { beforeAll, describe, expect, it } from "vitest";
 
 import { accessToken, initSession, mcpRequest, parseResponse } from "./setup";
@@ -42,6 +43,7 @@ describe("get_site", () => {
     });
 
     it("should return site details", async () => {
+      invariant(body.result.content[0]?.text, "no content");
       const content = JSON.parse(body.result.content[0].text) as {
         id: string;
         domain: string;
@@ -64,6 +66,7 @@ describe("get_site", () => {
     });
 
     it("should return visibility metrics", async () => {
+      invariant(body.result.content[0]?.text, "no content");
       const content = JSON.parse(body.result.content[0].text) as {
         metrics: {
           weekStart: string;
@@ -115,7 +118,7 @@ describe("get_site", () => {
 
     it("should return an error", async () => {
       expect(body.result.isError).toBe(true);
-      expect(body.result.content[0].text).toContain("not found");
+      expect(body.result.content[0]?.text).toContain("not found");
     });
   });
 

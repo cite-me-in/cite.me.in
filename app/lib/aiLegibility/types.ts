@@ -24,8 +24,8 @@ export type ScanResult = {
  */
 export type CheckResult = {
   category: CheckCategory;
-  detail?: CheckDetail;
-  details?: Record<string, unknown>;
+  detail?: CheckDetail | undefined;
+  details?: Record<string, unknown> | undefined;
   message: string;
   name: string;
   passed: boolean;
@@ -37,12 +37,12 @@ export type CheckResult = {
  */
 export type CheckDetail = {
   effort: "2 min" | "5 min" | "15 min" | "1 hour";
-  fixExample?: string;
+  fixExample?: string | undefined;
   goal: string;
   howToImplement: string;
   issue: string;
   resourceLinks: { label: string; url: string }[];
-  skillURL?: string;
+  skillURL?: string | undefined;
 };
 
 /**
@@ -64,5 +64,5 @@ export type ScanProgress = {
   lines: string[];
   done: boolean;
   nextOffset: number;
-  result?: ScanResult;
+  result?: ScanResult | undefined;
 };

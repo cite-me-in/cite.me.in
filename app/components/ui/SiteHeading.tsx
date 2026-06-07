@@ -12,7 +12,7 @@ export default function SiteHeading({
 }: {
   site: { domain: string };
   title: string;
-  subtitle?: string | null;
+  subtitle?: string | undefined;
   backTo?: { label: string; path: string } | null;
   children?: React.ReactNode;
 }) {

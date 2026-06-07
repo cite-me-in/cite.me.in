@@ -1,5 +1,5 @@
 export default function base64ToBlob(dataUrl: string) {
-  const [header, base64] = dataUrl.split(",", 2);
+  const [header, base64] = dataUrl.split(",", 2) as [string, string];
   const mime = header?.split(";")[0]?.split(":")[1] ?? "image/png";
   const bytes = atob(base64);
   const arr = new Uint8Array(bytes.length);

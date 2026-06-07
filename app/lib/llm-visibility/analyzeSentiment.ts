@@ -117,7 +117,7 @@ Respond with JSON only, no markdown fences:
   }
 
   try {
-    const raw = completion.choices[0].message.content ?? "{}";
+    const raw = completion.choices[0]!.message.content ?? "{}";
     const json = raw
       .replace(/^```(?:json)?\s*/i, "")
       .replace(/\s*```$/, "")

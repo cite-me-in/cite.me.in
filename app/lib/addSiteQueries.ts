@@ -100,7 +100,7 @@ export async function runQueryOnAllPlatforms({
   const trimmedQuery = query.trim().replace(/\s+/g, " ");
 
   await map(PLATFORMS, async ({ name: platform, model, queryFn }) => {
-    const onDate = new Date().toISOString().split("T")[0];
+    const onDate = new Date().toISOString().split("T")[0]!;
     const run = await prisma.citationQueryRun.upsert({
       where: {
         siteId_platform_onDate: { onDate, platform, siteId: site.id },

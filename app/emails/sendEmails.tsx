@@ -37,9 +37,9 @@ export async function sendEmail({
   sendTo,
   subject,
 }: {
-  domain?: string;
+  domain?: string | undefined;
   email: React.ReactNode;
-  headers?: Record<string, string>;
+  headers?: Record<string, string> | undefined;
   isTransactional: boolean;
   sendTo: {
     email: string;
@@ -87,7 +87,7 @@ export async function sendEmail({
       bcc: admins.map(({ email }) => email),
       from: `cite.me.in <${envVars.VITE_EMAIL_FROM}>`,
       headers: isTransactional
-        ? headers
+        ? { ...headers }
         : {
             ...headers,
             "List-Unsubscribe": `<${unsubscribeURL}>`,

@@ -14,6 +14,7 @@ import Main from "~/components/ui/Main";
 import SitePageHeader from "~/components/ui/SiteHeading";
 import { getProgress } from "~/lib/aiLegibility/progress.server";
 import { ScanResultSchema } from "~/lib/aiLegibility/scanResultSchema";
+import type { ScanResult } from "~/lib/aiLegibility/types";
 import { requireSiteAccess } from "~/lib/auth.server";
 import { formatDateMed } from "~/lib/formatDate";
 import prisma from "~/lib/prisma.server";
@@ -43,13 +44,12 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     site,
     results: isRunning
       ? progress.result
-      : (report &&
+      : ((report &&
           ScanResultSchema.parse(
             typeof report.result === "string"
               ? JSON.parse(report.result)
               : report.result,
-          )) ||
-        progress?.result,
+          )) as ScanResult) || progress?.result,
     isRunning,
     scannedAt: report?.scannedAt.toISOString(),
   };

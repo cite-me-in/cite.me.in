@@ -24,19 +24,24 @@ export default async function checkLinkHeaders({
       document.querySelector('link[rel="sitemap"]')?.getAttribute("href") ??
       null;
 
-    const headerSitemapLinks: { uri: string }[] = [];
+    const headerSitemapLinks = [];
 
     if (linkHeader) {
       const linkRegex = /<([^>]+)>\s*;\s*(.*?)(?=,\s*<|$)/g;
       let match;
       while ((match = linkRegex.exec(linkHeader)) !== null) {
-        const uri = match[1];
-        const paramsStr = match[2];
+        const uri = match[1]!;
+        const paramsStr = match[2]!;
         const params: Record<string, string> = {};
-        const paramRegex = /(\w+)\s*=\s*"([^"]*)"/g;
+        const paramRegex = /(\w+)\s*=\s*"([^"]*)"/g satisfies RegExp;
         let pm;
-        while ((pm = paramRegex.exec(paramsStr)) !== null)
-          params[pm[1]] = pm[2];
+        while (
+          (pm = paramRegex.exec(paramsStr) satisfies RegExpExecArray | null) !==
+          null
+        ) {
+          const [, key, value] = pm;
+          params[key!] = value!;
+        }
         if (params["rel"] === "sitemap") headerSitemapLinks.push({ uri });
       }
     }

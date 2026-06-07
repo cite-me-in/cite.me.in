@@ -116,8 +116,8 @@ describe("api.admin.users", () => {
 
     it("should return the user's sites", async () => {
       const user = body.users.find((u) => u.id === "admin-users-test-user-1");
-      expect(user?.sites[0].domain).toBe("admin-users-test.example.com");
-      expect(user?.sites[0].createdAt).toBeDefined();
+      expect(user?.sites[0]?.domain).toBe("admin-users-test.example.com");
+      expect(user?.sites[0]?.createdAt).toBeDefined();
     });
 
     it("should return details for a user with an account", async () => {

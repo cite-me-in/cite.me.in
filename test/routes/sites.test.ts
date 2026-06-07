@@ -1,6 +1,7 @@
 import { type Locator, type Page, expect } from "@playwright/test";
 import { ms } from "convert";
 import type { BrowserContext } from "playwright";
+import invariant from "tiny-invariant";
 import { afterAll, beforeAll, describe, it } from "vitest";
 
 import { hashPassword } from "~/lib/auth.server";
@@ -336,7 +337,7 @@ describe("sites route", () => {
             siteId,
             platform: "chatgpt",
             model: "gpt-4o",
-            onDate: new Date().toISOString().split("T")[0],
+            onDate: new Date().toISOString().split("T")[0]!,
             queries: {
               create: {
                 query: "test query",
@@ -348,7 +349,9 @@ describe("sites route", () => {
           },
           include: { queries: true },
         });
-        const queryId = run.queries[0].id;
+        const query = run.queries[0];
+        invariant(query, "query not found");
+        const queryId = query.id;
         await prisma.citation.createMany({
           data: [
             {

@@ -4,7 +4,11 @@ import { TableCell, TableRow } from "~/components/ui/Table";
 export default function AiPlatformBreakdown({
   platformBreakdown,
 }: {
-  platformBreakdown: { platform: string; visitors: number; pct: number }[];
+  platformBreakdown: {
+    platform: string;
+    visitors: number | undefined;
+    pct: number;
+  }[];
 }) {
   return (
     <CardTable
@@ -26,7 +30,7 @@ export default function AiPlatformBreakdown({
           <TableRow key={row.platform}>
             <TableCell className="font-medium">{row.platform}</TableCell>
             <TableCell className="text-right">
-              {row.visitors.toLocaleString()}
+              {row.visitors!.toLocaleString()}
             </TableCell>
             <TableCell className="text-right">{row.pct.toFixed(2)}%</TableCell>
           </TableRow>

@@ -90,7 +90,7 @@ export default function ScanResults({
           )}
 
           {CATEGORIES.map((cat) => {
-            const checks = result.checks.filter((c) => c.category === cat.key);
+            const checks = result.checks?.filter((c) => c.category === cat.key);
             if (checks.length === 0) return null;
 
             const failed = checks.filter((c: CheckResult) => !c.passed);
@@ -235,13 +235,15 @@ function CheckRow({
     name: string;
     message: string;
     passed: boolean;
-    details?: {
-      failedPages?: Array<{
-        url: string;
-        message: string;
-        timedOut?: boolean;
-      }>;
-    };
+    details?:
+      | {
+          failedPages?: Array<{
+            url: string;
+            message: string;
+            timedOut?: boolean;
+          }>;
+        }
+      | undefined;
   };
 }) {
   return (

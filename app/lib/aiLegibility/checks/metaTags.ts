@@ -76,16 +76,16 @@ export default async function checkMetaTags({
 
   if (allPassed) {
     if (pages.length === 1) {
-      const p = pageResults[0];
-      const foundOg = OG_PROPERTIES.filter((prop) => p.ogMatches[prop]);
+      const result = pageResults[0]!;
+      const foundOg = OG_PROPERTIES.filter((prop) => result.ogMatches[prop]);
       const found: string[] = [];
-      if (p.hasDescription) found.push("description");
-      if (p.allRequiredOg) {
+      if (result.hasDescription) found.push("description");
+      if (result.allRequiredOg) {
         found.push("all 4 required OG tags (title, type, image, url)");
       } else if (foundOg.length > 0) {
         found.push(`partial OG tags (${foundOg.join(", ")})`);
       }
-      if (p.hasCanonical) found.push("canonical");
+      if (result.hasCanonical) found.push("canonical");
       return {
         name: "Meta tags",
         passed: true,

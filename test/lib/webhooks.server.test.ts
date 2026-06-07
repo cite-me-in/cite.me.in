@@ -83,7 +83,7 @@ describe("emitWebhookEvent", () => {
         email: "new@test.com",
       });
       expect(capturedRequests).toHaveLength(1);
-      expect(capturedRequests[0].url).toBe("https://admin.test/hook");
+      expect(capturedRequests[0]?.url).toBe("https://admin.test/hook");
     });
 
     it("should not deliver to non-admin endpoints", async () => {
@@ -170,7 +170,7 @@ describe("emitWebhookEvent", () => {
     it("should include X-Webhook-Signature header matching sha256=<hex>", async () => {
       await emitWebhookEvent("user.created", { userId: USER_ID });
       expect(capturedRequests).toHaveLength(1);
-      expect(capturedRequests[0].headers.get("X-Webhook-Signature")).toMatch(
+      expect(capturedRequests[0]?.headers.get("X-Webhook-Signature")).toMatch(
         /^sha256=[0-9a-f]{64}$/,
       );
     });
@@ -178,7 +178,7 @@ describe("emitWebhookEvent", () => {
     it("should include X-Webhook-Event header", async () => {
       await emitWebhookEvent("user.created", { userId: USER_ID });
       expect(capturedRequests).toHaveLength(1);
-      expect(capturedRequests[0].headers.get("X-Webhook-Event")).toBe(
+      expect(capturedRequests[0]?.headers.get("X-Webhook-Event")).toBe(
         "user.created",
       );
     });

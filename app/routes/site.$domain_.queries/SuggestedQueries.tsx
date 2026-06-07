@@ -38,7 +38,7 @@ export default function SuggestedQueries() {
             if (!acc[suggestion.group]) {
               acc[suggestion.group] = [];
             }
-            acc[suggestion.group].push(suggestion);
+            acc[suggestion.group]!.push(suggestion);
             return acc;
           },
           {} as Record<string, typeof suggestions>,

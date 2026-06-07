@@ -15,6 +15,6 @@ export function getTestName(): string {
   );
   invariant(callerLine, "Could not determine test file name");
   const match = callerLine.match(/\/(.+?):\d+/);
-  const testFile = match ? path.basename(match[1]) : "unknown";
+  const testFile = match ? path.basename(match[1]!) : "unknown";
   return testFile.replace(/\.test\.(ts|tsx)$/, "");
 }

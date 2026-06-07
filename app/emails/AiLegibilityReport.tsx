@@ -6,6 +6,7 @@ import { BrandReminderCard } from "~/components/email/BrandReminder";
 import Button from "~/components/email/Button";
 import Card from "~/components/email/Card";
 import CATEGORIES from "~/lib/aiLegibility/checkDetails";
+import { ScanResultSchema } from "~/lib/aiLegibility/scanResultSchema";
 import type { CheckResult, ScanResult } from "~/lib/aiLegibility/types";
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";
@@ -66,7 +67,9 @@ export function AiLegibilityReportEmail({
   reportUrl: string;
 }) {
   const { checks, summary } =
-    typeof result === "string" ? (JSON.parse(result) as ScanResult) : result;
+    typeof result === "string"
+      ? (ScanResultSchema.parse(JSON.parse(result)) as ScanResult)
+      : result;
   const totalPassed = useMemo(
     () =>
       summary.discovered.passed +

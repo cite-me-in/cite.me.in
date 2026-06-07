@@ -23,7 +23,7 @@ describe("checkLinkHeaders", () => {
       | { uri: string }[]
       | undefined;
     expect(headerLinks).toHaveLength(1);
-    expect(headerLinks?.[0].uri).toBe("/sitemap.xml");
+    expect(headerLinks?.[0]?.uri).toBe("/sitemap.xml");
   });
 
   it("should parse multiple Link header entries per RFC 8288", async () => {

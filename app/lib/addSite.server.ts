@@ -126,7 +126,7 @@ async function runPlatformWithProgress({
 }) {
   invariant(platform, "Platform is required");
   invariant(model, "Model is required");
-  const onDate = new Date().toISOString().split("T")[0];
+  const onDate = new Date().toISOString().split("T")[0]!;
   const run = await prisma.citationQueryRun.upsert({
     where: { siteId_platform_onDate: { onDate, platform, siteId: site.id } },
     update: { model },

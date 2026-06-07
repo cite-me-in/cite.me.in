@@ -58,7 +58,7 @@ export default function BotActivity({
       {classOrder.map((cls) => {
         const bots = grouped[cls];
         if (!bots || bots.length === 0) return null;
-        const info = CLASS_LABELS[cls] ?? CLASS_LABELS.other;
+        const info = CLASS_LABELS[cls] ?? CLASS_LABELS.other!;
         return (
           <Fragment key={cls}>
             <TableRow className="bg-muted/50">

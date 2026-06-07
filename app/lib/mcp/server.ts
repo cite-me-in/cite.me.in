@@ -32,16 +32,7 @@ export function createMcpServer(): McpServer {
   });
 
   for (const tool of tools) {
-    server.registerTool(
-      tool.name,
-      {
-        title: tool.title,
-        description: tool.description,
-        inputSchema: tool.inputSchema,
-        outputSchema: tool.outputSchema,
-      },
-      tool.handler,
-    );
+    server.registerTool(tool.name, tool, tool.handler);
   }
 
   return server;

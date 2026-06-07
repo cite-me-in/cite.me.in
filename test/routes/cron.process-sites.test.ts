@@ -39,7 +39,7 @@ vi.mock("~/emails/sendEmails", () => ({
 async function makeRequest(auth?: string) {
   const { loader } = await import("~/routes/cron.process-sites");
   const request = new Request("http://localhost/cron/process-sites", {
-    headers: auth ? { authorization: `Bearer ${auth}` } : undefined,
+    headers: auth ? { authorization: `Bearer ${auth}` } : {},
   });
   const response = await loader({ request, params: {}, context: {} } as never);
 

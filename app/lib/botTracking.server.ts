@@ -199,7 +199,7 @@ function parseAccept(acceptHeader?: string | null): string[] {
   if (!acceptHeader) return [];
   return acceptHeader
     .split(",")
-    .map((t) => t.split(";")[0].trim())
+    .map((t) => t.split(";")[0]!.trim())
     .filter(Boolean);
 }
 

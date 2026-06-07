@@ -34,7 +34,7 @@ beforeAll(async () => {
               id: RUN_ID,
               platform: "chatgpt",
               model: "gpt-4o",
-              onDate: new Date().toISOString().split("T")[0],
+              onDate: new Date().toISOString().split("T")[0]!,
               queries: {
                 create: {
                   query: "best retail platforms",
@@ -82,8 +82,8 @@ describe("GET /api/me", () => {
     it("should return the user with their sites", async () => {
       expect(body.email).toBe(EMAIL);
       expect(Array.isArray(body.sites)).toBe(true);
-      expect(body.sites[0].domain).toBe(DOMAIN);
-      expect(body.sites[0].createdAt).toBe(
+      expect(body.sites[0]?.domain).toBe(DOMAIN);
+      expect(body.sites[0]?.createdAt).toBe(
         new Date().toISOString().split("T")[0],
       );
     });

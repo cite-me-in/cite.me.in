@@ -1,4 +1,5 @@
 import { shuffle } from "radashi";
+import invariant from "tiny-invariant";
 
 import {
   getProgress,
@@ -119,7 +120,7 @@ async function collectSampleUrls(
     const resolved: string[] = [];
     for (const match of links) {
       try {
-        const href = match[1];
+        const href = match[1]!;
         if (href.startsWith("/") || href.startsWith(url)) {
           resolved.push(new URL(href, url).href);
         }
@@ -138,8 +139,8 @@ async function fetchSamplePages(
   await log(`Checking sample pages... (0/${pagesToFetch.length})`);
   const fetchedPages: AssessedPage[] = [];
   for (let i = 0; i < pagesToFetch.length; i++) {
-    const results = await assessPages({ urls: [pagesToFetch[i]] });
-    fetchedPages.push(results[0]);
+    const results = await assessPages({ urls: [pagesToFetch[i]!] });
+    fetchedPages.push(results[0]!);
     await log(`Checking sample pages... (${i + 1}/${pagesToFetch.length})`);
   }
 
@@ -196,6 +197,8 @@ export async function runScanSteps({
   // Homepage — special case, not wrapped in runCheck
   await log("Checking page content...");
   const [homepageResult] = await assessPages({ urls: [url] });
+  invariant(homepageResult, "homepageResult is undefined");
+
   checks.push({
     name: "Page content",
     passed: homepageResult.passed,

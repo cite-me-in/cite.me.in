@@ -103,7 +103,7 @@ function extractArticleBody(html: string): string | null {
     match = scriptRegex.exec(html);
     if (match === null) break;
     try {
-      const ld = JSON.parse(match[1]) as {
+      const ld = JSON.parse(match[1]!) as {
         "@type": string | string[];
         articleBody?: string;
       };

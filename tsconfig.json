@@ -37,6 +37,8 @@
     "rootDirs": [".", "./.react-router/types"],
     "skipLibCheck": true,
     "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
     "target": "ES2022",
     "types": ["node", "vite/client"],
     "verbatimModuleSyntax": true

@@ -4,6 +4,7 @@ import Redis from "ioredis";
 
 import envVars from "~/lib/envVars.server";
 
+import { ScanResultSchema } from "./scanResultSchema";
 import type { ScanProgress, ScanResult } from "./types";
 
 const logger = debug("ai-legibility:redis");
@@ -73,7 +74,9 @@ export async function getProgress({
       const resultJson = await redis.get(resultKey(domain));
       if (!resultJson)
         return { lines, done: true, nextOffset: offset + lines.length };
-      const result = JSON.parse(resultJson) as ScanResult;
+      const result = ScanResultSchema.parse(
+        JSON.parse(resultJson),
+      ) as ScanResult;
       return { lines, done: true, nextOffset: offset + lines.length, result };
     }
     case "error":

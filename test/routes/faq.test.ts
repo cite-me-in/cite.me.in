@@ -65,7 +65,7 @@ describe("FAQ page", () => {
     expect(Array.isArray(structuredData.mainEntity)).toBe(true);
     expect(structuredData.mainEntity.length).toBe(totalQuestions);
 
-    const firstQuestion = structuredData.mainEntity[0];
+    const firstQuestion = structuredData.mainEntity[0]!;
     expect(firstQuestion["@type"]).toBe("Question");
     expect(firstQuestion.name).toBeTruthy();
     expect(firstQuestion.acceptedAnswer).toBeDefined();
