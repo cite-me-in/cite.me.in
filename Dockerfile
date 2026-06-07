@@ -1,4 +1,4 @@
-FROM node:24-slim AS base
+FROM node:26-slim AS base
 
 RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ libpq-dev && rm -rf /var/lib/apt/lists/*
 
@@ -32,7 +32,7 @@ RUN --mount=type=secret,id=env,required=true \
     cp /run/secrets/env .env && chmod 644 .env
 
 # --- RUNNER ---
-FROM node:24-slim AS runner
+FROM node:26-slim AS runner
 ENV NODE_ENV=production
 ENV DEBIAN_FRONTEND=noninteractive
 
