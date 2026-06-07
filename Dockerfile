@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends python3 make g+
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable pnpm
+RUN npm install -g corepack && corepack enable pnpm
 
 # --- DEPS ---
 FROM base AS deps
@@ -37,7 +37,7 @@ ENV NODE_ENV=production
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates && rm -rf /var/lib/apt/lists/*
-RUN corepack enable pnpm
+RUN npm install -g corepack && corepack enable pnpm
 
 WORKDIR /app
 
