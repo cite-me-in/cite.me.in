@@ -60,20 +60,21 @@ export async function action({ request, params }: Route.ActionArgs) {
   switch (intent) {
     case "add-group": {
       const group = data.get("group") as string;
-      if (!group) return { ok: false, error: "Group name is required" };
+      if (!group)
+        return { ok: false as const, error: "Group name is required" };
       await addSiteQueryGroup(site, group);
-      return { ok: true };
+      return { ok: true as const };
     }
     case "rename-group": {
       const oldGroup = data.get("oldGroup") as string;
       const newGroup = data.get("newGroup") as string;
       await renameSiteQueryGroup({ site, oldGroup, newGroup });
-      return { ok: true };
+      return { ok: true as const };
     }
     case "delete-group": {
       const group = data.get("group") as string;
       await prisma.siteQuery.deleteMany({ where: { siteId: site.id, group } });
-      return { ok: true };
+      return { ok: true as const };
     }
     case "add-query": {
       const group = data.get("group") as string;
@@ -115,25 +116,25 @@ export async function action({ request, params }: Route.ActionArgs) {
       const existing = await prisma.siteQuery.findFirst({
         where: { id, siteId: site.id },
       });
-      if (!existing) return { ok: false, error: "Query not found" };
+      if (!existing) return { ok: false as const, error: "Query not found" };
       await prisma.siteQuery.delete({ where: { id } });
-      return { ok: true };
+      return { ok: true as const };
     }
     case "suggest": {
       try {
         const suggestions = await generateSiteQueries(site.id);
-        return { ok: true, suggestions };
+        return { ok: true as const, suggestions };
       } catch (error) {
         captureAndLogError(error, { extra: { siteId: site.id } });
         return {
-          ok: false,
+          ok: false as const,
           error: "Couldn't generate suggestions. Please try again.",
         };
       }
     }
   }
 
-  return { ok: false, error: "Unknown action" };
+  return { ok: false as const, error: "Unknown action" };
 }
 
 export default function SiteQueriesPage({ loaderData }: Route.ComponentProps) {

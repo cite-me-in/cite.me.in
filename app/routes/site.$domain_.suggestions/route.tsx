@@ -55,7 +55,7 @@ export async function action({ params, request }: Route.ActionArgs) {
           data: { content },
         });
         await generateSiteQueries(updatedSite.id);
-        return { ok: true };
+        return { ok: true as const };
       }
 
       case "POST": {

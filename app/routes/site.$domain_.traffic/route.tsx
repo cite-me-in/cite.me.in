@@ -189,7 +189,7 @@ async function getBotTotals(
         search_indexing: 1,
         training: 2,
         other: 3,
-      };
+      } satisfies Record<string, number>;
       const aOrder = classOrder[a.botClass as keyof typeof classOrder] ?? 4;
       const bOrder = classOrder[b.botClass as keyof typeof classOrder] ?? 4;
       if (aOrder !== bOrder) return aOrder - bOrder;

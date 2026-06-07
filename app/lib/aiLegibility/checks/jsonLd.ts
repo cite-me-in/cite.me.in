@@ -25,6 +25,12 @@ const KNOWN_SCHEMAS = [
   "SoftwareApplication",
 ];
 
+type JsonLdNode = {
+  "@type"?: string;
+  "@graph"?: JsonLdNode | JsonLdNode[];
+  [key: string]: unknown;
+};
+
 type JsonLdResult = {
   type: string;
   valid: boolean;
@@ -49,7 +55,7 @@ function extractSchemas(html: string): JsonLdResult[] {
     if (!jsonContent) continue;
 
     try {
-      const parsed = JSON.parse(jsonContent) as Record<string, unknown>;
+      const parsed = JSON.parse(jsonContent) as JsonLdNode;
       const nodes = flattenNodes(parsed);
 
       for (const node of nodes) {
@@ -153,12 +159,12 @@ export default async function checkJsonLd({
   };
 }
 
-function flattenNodes(data: unknown): Record<string, unknown>[] {
+function flattenNodes(data: unknown): JsonLdNode[] {
   if (typeof data !== "object" || data === null) return [];
   if (Array.isArray(data)) return data.flatMap(flattenNodes);
 
-  const obj = data as Record<string, unknown>;
-  const nodes: Record<string, unknown>[] = [];
+  const obj = data as JsonLdNode;
+  const nodes: JsonLdNode[] = [];
 
   if (obj["@graph"] && Array.isArray(obj["@graph"]))
     nodes.push(...flattenNodes(obj["@graph"]));
@@ -168,7 +174,7 @@ function flattenNodes(data: unknown): Record<string, unknown>[] {
 }
 
 function validateSchema(type: string, data: unknown): string | null {
-  const obj = data as Record<string, unknown>;
+  const obj = data as JsonLdNode;
 
   switch (type) {
     case "Article":

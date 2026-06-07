@@ -102,5 +102,5 @@ export async function action({ request }: Route.ActionArgs) {
     return data({ error: "Webhook processing failed" }, { status: 500 });
   }
 
-  return data({ ok: true });
+  return data({ ok: true as const });
 }

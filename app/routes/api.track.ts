@@ -88,7 +88,7 @@ export async function action({ request }: { request: Request }) {
         url: inputs.url,
         userAgent,
       });
-      return data({ ok: true }, { headers: CORS_HEADERS });
+      return data({ ok: true as const }, { headers: CORS_HEADERS });
     } else {
       await recordHumanVisit({
         ip,
@@ -97,7 +97,7 @@ export async function action({ request }: { request: Request }) {
         userAgent,
         url: inputs.url,
       });
-      return data({ ok: true }, { headers: CORS_HEADERS });
+      return data({ ok: true as const }, { headers: CORS_HEADERS });
     }
   } catch (error) {
     logger(
