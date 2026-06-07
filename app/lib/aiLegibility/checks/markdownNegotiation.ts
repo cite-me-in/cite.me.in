@@ -85,7 +85,7 @@ export default async function checkMarkdownNegotiation({
       details: { pagesChecked: pages.length },
     };
   } catch (error) {
-    if (error instanceof Error && error.name === "TimeoutError") {
+    if (Error.isError(error) && error.name === "TimeoutError") {
       return {
         name: "Markdown content negotiation",
         passed: false,
@@ -96,7 +96,7 @@ export default async function checkMarkdownNegotiation({
     return {
       name: "Markdown content negotiation",
       passed: false,
-      message: `Failed to check markdown negotiation: ${error instanceof Error ? error.message : "Unknown error"}`,
+      message: `Failed to check markdown negotiation: ${Error.isError(error) ? error.message : "Unknown error"}`,
     };
   }
 }

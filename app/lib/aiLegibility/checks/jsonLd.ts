@@ -78,7 +78,7 @@ function extractSchemas(html: string): JsonLdResult[] {
       schemas.push({
         type: "unknown",
         valid: false,
-        error: `JSON parse error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        error: `JSON parse error: ${Error.isError(error) ? error.message : "Unknown error"}`,
       });
     }
   }

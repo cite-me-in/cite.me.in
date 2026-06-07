@@ -201,9 +201,8 @@ export default async function checkRobotsTxt({
       },
     };
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-    if (error instanceof Error && error.name === "TimeoutError") {
+    const errorMessage = Error.isError(error) ? error.message : "Unknown error";
+    if (Error.isError(error) && error.name === "TimeoutError") {
       return {
         name: "robots.txt",
         passed: false,

@@ -85,7 +85,7 @@ if (process.env.NODE_ENV === "test") {
     );
     verifyLocalhost("REDIS_URL", envVars.REDIS_URL);
   } catch (error) {
-    console.error(error instanceof Error ? error.message : String(error));
+    console.error(Error.isError(error) ? error.message : String(error));
     process.exit(1);
   }
 }

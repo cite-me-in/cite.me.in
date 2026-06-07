@@ -64,7 +64,7 @@ async function fetchSitemapURLs(
     }
   } catch (error) {
     captureAndLogError(
-      `Error fetching sitemap URLs: ${error instanceof Error ? error.message : String(error)}`,
+      `Error fetching sitemap URLs: ${Error.isError(error) ? error.message : String(error)}`,
       {
         extra: { url },
       },
@@ -128,7 +128,7 @@ async function fetchRSS(
     return urls;
   } catch (error) {
     captureAndLogError(
-      `Error fetching RSS: ${error instanceof Error ? error.message : String(error)}`,
+      `Error fetching RSS: ${Error.isError(error) ? error.message : String(error)}`,
       { extra: { url } },
     );
     return [];

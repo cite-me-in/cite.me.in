@@ -81,7 +81,7 @@ export default async function runAILegibilityScan({
     captureAndLogError(error, { extra: { site } });
     await setStatus({ domain: site.domain, status: "error" });
     await log(
-      `❌ Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+      `❌ Error: ${Error.isError(error) ? error.message : "Unknown error"}`,
     );
     return { lines: [], done: false, nextOffset: 0, result: undefined };
   }
@@ -296,10 +296,7 @@ export async function runScanSteps({
 
   const withCategory = checks.map((check) => ({
     ...check,
-    category: getCheckCategory(check.name) as
-      | "discovered"
-      | "trusted"
-      | "welcomed",
+    category: getCheckCategory(check.name)!,
     detail: getCheckDetail(check.name),
   }));
   const summary = await summarize({ checks: withCategory, log });

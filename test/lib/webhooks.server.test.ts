@@ -113,7 +113,10 @@ describe("emitWebhookEvent", () => {
 
   describe("delivery status", () => {
     it("should mark DELIVERED on 2xx response", async () => {
-      await emitWebhookEvent("user.created", { userId: USER_ID });
+      await emitWebhookEvent("user.created", {
+        userId: USER_ID,
+        email: "user@test.com",
+      });
       const delivery = await prisma.webhookDelivery.findFirstOrThrow({
         where: { endpointId: "ep-wh-admin-1" },
       });
@@ -123,7 +126,10 @@ describe("emitWebhookEvent", () => {
 
     it("should mark RETRY on non-2xx response", async () => {
       webhookResponseStatus = 500;
-      await emitWebhookEvent("user.created", { userId: USER_ID });
+      await emitWebhookEvent("user.created", {
+        userId: USER_ID,
+        email: "user@test.com",
+      });
       const delivery = await prisma.webhookDelivery.findFirstOrThrow({
         where: { endpointId: "ep-wh-admin-1" },
       });
@@ -135,7 +141,10 @@ describe("emitWebhookEvent", () => {
 
     it("should mark FAILED when attempts reach max", async () => {
       webhookResponseStatus = 500;
-      await emitWebhookEvent("user.created", { userId: USER_ID });
+      await emitWebhookEvent("user.created", {
+        userId: USER_ID,
+        email: "user@test.com",
+      });
       const delivery = await prisma.webhookDelivery.findFirstOrThrow({
         where: { endpointId: "ep-wh-admin-1" },
       });
@@ -157,7 +166,10 @@ describe("emitWebhookEvent", () => {
 
     it("should mark RETRY on network error", async () => {
       webhookResponseStatus = 0;
-      await emitWebhookEvent("user.created", { userId: USER_ID });
+      await emitWebhookEvent("user.created", {
+        userId: USER_ID,
+        email: "user@test.com",
+      });
       const delivery = await prisma.webhookDelivery.findFirstOrThrow({
         where: { endpointId: "ep-wh-admin-1" },
       });
@@ -168,7 +180,10 @@ describe("emitWebhookEvent", () => {
 
   describe("HMAC signature", () => {
     it("should include X-Webhook-Signature header matching sha256=<hex>", async () => {
-      await emitWebhookEvent("user.created", { userId: USER_ID });
+      await emitWebhookEvent("user.created", {
+        userId: USER_ID,
+        email: "user@test.com",
+      });
       expect(capturedRequests).toHaveLength(1);
       expect(capturedRequests[0]?.headers.get("X-Webhook-Signature")).toMatch(
         /^sha256=[0-9a-f]{64}$/,
@@ -176,7 +191,10 @@ describe("emitWebhookEvent", () => {
     });
 
     it("should include X-Webhook-Event header", async () => {
-      await emitWebhookEvent("user.created", { userId: USER_ID });
+      await emitWebhookEvent("user.created", {
+        userId: USER_ID,
+        email: "user@test.com",
+      });
       expect(capturedRequests).toHaveLength(1);
       expect(capturedRequests[0]?.headers.get("X-Webhook-Event")).toBe(
         "user.created",
@@ -187,7 +205,10 @@ describe("emitWebhookEvent", () => {
   describe("no matching endpoints", () => {
     it("should be a no-op when no endpoints are active", async () => {
       await prisma.webhookEndpoint.updateMany({ data: { isActive: false } });
-      await emitWebhookEvent("user.created", { userId: USER_ID });
+      await emitWebhookEvent("user.created", {
+        userId: USER_ID,
+        email: "user@test.com",
+      });
       expect(capturedRequests).toHaveLength(0);
       const deliveries = await prisma.webhookDelivery.findMany({});
       expect(deliveries).toHaveLength(0);

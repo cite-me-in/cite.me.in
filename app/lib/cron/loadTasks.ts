@@ -131,11 +131,19 @@ function timeoutExport(
   const entry = map.get("timeout");
   if (!entry) throw new Error("app/cron/: missing export const timeout");
 
+  const TIME_UNITS = ["s", "m", "h"] as const;
+  type TimeUnit = (typeof TIME_UNITS)[number];
+
+  function isTimeUnit(value: string): value is TimeUnit {
+    return (TIME_UNITS as readonly string[]).includes(value);
+  }
+
   if (entry.strValue !== undefined) {
     const match = entry.strValue.match(/^(\d+)\s*(s|m|h)?$/);
     if (!match) throw new Error(`Invalid timeout string: "${entry.strValue}"`);
     const value = parseInt(match[1]!, 10);
     const unit = match[2] ?? "s";
+    if (!isTimeUnit(unit)) throw new Error(`Invalid time unit: "${unit}"`);
     switch (unit) {
       case "s":
         return value;
@@ -143,6 +151,10 @@ function timeoutExport(
         return value * 60;
       case "h":
         return value * 3600;
+      default: {
+        const _exhaustive: never = unit;
+        return _exhaustive;
+      }
     }
   }
 

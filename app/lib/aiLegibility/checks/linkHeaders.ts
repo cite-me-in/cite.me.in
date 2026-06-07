@@ -33,12 +33,9 @@ export default async function checkLinkHeaders({
         const uri = match[1]!;
         const paramsStr = match[2]!;
         const params: Record<string, string> = {};
-        const paramRegex = /(\w+)\s*=\s*"([^"]*)"/g satisfies RegExp;
+        const paramRegex = /(\w+)\s*=\s*"([^"]*)"/g;
         let pm;
-        while (
-          (pm = paramRegex.exec(paramsStr) satisfies RegExpExecArray | null) !==
-          null
-        ) {
+        while ((pm = paramRegex.exec(paramsStr)) !== null) {
           const [, key, value] = pm;
           params[key!] = value!;
         }
@@ -80,7 +77,7 @@ export default async function checkLinkHeaders({
     };
   } catch (error) {
     const elapsed = Date.now() - startTime;
-    if (error instanceof Error && error.name === "TimeoutError") {
+    if (Error.isError(error) && error.name === "TimeoutError") {
       return {
         name: "Sitemap link headers",
         passed: false,
@@ -92,7 +89,7 @@ export default async function checkLinkHeaders({
     return {
       name: "Sitemap link headers",
       passed: false,
-      message: `Failed to check sitemap link headers: ${error instanceof Error ? error.message : "Unknown error"}`,
+      message: `Failed to check sitemap link headers: ${Error.isError(error) ? error.message : "Unknown error"}`,
       details: { elapsed },
     };
   }

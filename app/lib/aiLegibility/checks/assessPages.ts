@@ -93,7 +93,7 @@ export default async function assessPages({
         message: details.join(", "),
       };
     } catch (error) {
-      const isTimeout = error instanceof Error && error.name === "TimeoutError";
+      const isTimeout = Error.isError(error) && error.name === "TimeoutError";
       if (isTimeout)
         return {
           url,
@@ -106,8 +106,9 @@ export default async function assessPages({
           message: "Timed out (10s limit)",
         };
 
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error";
+      const errorMessage = Error.isError(error)
+        ? error.message
+        : "Unknown error";
       const isDnsError =
         errorMessage.includes("ENOTFOUND") ||
         errorMessage.includes("EAI_AGAIN");

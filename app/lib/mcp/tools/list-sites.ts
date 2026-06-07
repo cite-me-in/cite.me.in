@@ -58,7 +58,7 @@ export default {
         content: [
           {
             type: "text" as const,
-            text: `Error: ${error instanceof Error ? error.message : "Unknown error"}`,
+            text: `Error: ${Error.isError(error) ? error.message : "Unknown error"}`,
           },
         ],
         structuredContent: { sites: [] },

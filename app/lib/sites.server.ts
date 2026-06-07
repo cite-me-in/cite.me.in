@@ -115,7 +115,7 @@ export async function createSite({
       // Some servers reject HEAD; treat 405 as reachable.
       if (!res.ok && res.status !== 405) throw new Error(`HTTP ${res.status}`);
     } catch (error) {
-      if (error instanceof Error && error.message.startsWith("HTTP "))
+      if (Error.isError(error) && error.message.startsWith("HTTP "))
         throw new Error(
           `Could not reach ${domain} (${error.message}). Check the URL.`,
         );

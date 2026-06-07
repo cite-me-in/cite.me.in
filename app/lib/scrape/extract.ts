@@ -49,7 +49,7 @@ export default async function fetchAndExtract({
       : extractFromHtml(body, url);
   } catch (error) {
     captureAndLogError(
-      `Error fetching ${url}: ${error instanceof Error ? error.message : String(error)}`,
+      `Error fetching ${url}: ${Error.isError(error) ? error.message : String(error)}`,
       { extra: { url } },
     );
     return null;

@@ -2,7 +2,15 @@
  * The category of a check: discovered, trusted, welcomed. This indicates the
  * purpose of the check and the expected outcome.
  */
-type CheckCategory = "discovered" | "trusted" | "welcomed";
+export const CHECK_CATEGORIES = ["discovered", "trusted", "welcomed"] as const;
+export type CheckCategory = (typeof CHECK_CATEGORIES)[number];
+
+export const CHECK_EFFORT_LEVELS = [
+  "2 min",
+  "5 min",
+  "15 min",
+  "1 hour",
+] as const;
 
 /**
  * The result of scanning a site for AI legibility issues.
@@ -36,7 +44,7 @@ export type CheckResult = {
  * The details of a check result (eg robots.txt, sitemap.xml, etc.)
  */
 export type CheckDetail = {
-  effort: "2 min" | "5 min" | "15 min" | "1 hour";
+  effort: (typeof CHECK_EFFORT_LEVELS)[number];
   fixExample?: string | undefined;
   goal: string;
   howToImplement: string;

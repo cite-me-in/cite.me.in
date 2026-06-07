@@ -42,11 +42,11 @@ export async function action({ request }: { request: Request }) {
 
   let parsed: unknown;
   try {
-    parsed = (await request.json()) as z.infer<typeof TrackSchema>;
+    parsed = await request.json();
   } catch (error) {
     logger(
       "api.track: invalid JSON",
-      error instanceof Error ? error.stack : String(error),
+      Error.isError(error) ? error.stack : String(error),
     );
     throw new Response("Invalid JSON", {
       status: 400,
@@ -102,7 +102,7 @@ export async function action({ request }: { request: Request }) {
   } catch (error) {
     logger(
       "api.track: error tracking visit",
-      error instanceof Error ? error.stack : String(error),
+      Error.isError(error) ? error.stack : String(error),
     );
     throw new Response("Bad Request", { status: 400, headers: CORS_HEADERS });
   }

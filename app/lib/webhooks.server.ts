@@ -14,26 +14,37 @@ const WEBHOOK_EVENT_CONFIG = {
   "site.deleted": { scope: "user" as const },
   "subscription.cancelled": { scope: "owner" as const },
 } as const;
+
+type WebhookEventType = keyof typeof WEBHOOK_EVENT_CONFIG;
+
+type WebhookPayloadMap = {
+  "user.created": { userId: string; email: string };
+  "site.created": { siteId: string; domain: string };
+  "site.deleted": { siteId: string; domain: string };
+  "subscription.cancelled": { userId: string };
+};
+
 const MAX_ATTEMPTS = 3;
 const RETRY_DELAY = ms("5m");
 
 const logger = debug("server");
 
-export async function emitWebhookEvent(
-  eventType: keyof typeof WEBHOOK_EVENT_CONFIG,
-  payload: Record<string, unknown>,
+export async function emitWebhookEvent<T extends WebhookEventType>(
+  eventType: T,
+  payload: WebhookPayloadMap[T],
 ): Promise<void> {
   try {
-    const config = WEBHOOK_EVENT_CONFIG[eventType];
     let userFilter: object;
 
-    if (config.scope === "admin") {
+    if (eventType === "user.created") {
       userFilter = { isAdmin: true };
-    } else if (config.scope === "owner") {
-      const userId = payload.userId as string;
+    } else if (eventType === "subscription.cancelled") {
+      const { userId } = payload as WebhookPayloadMap["subscription.cancelled"];
       userFilter = { OR: [{ id: userId }, { isAdmin: true }] };
     } else {
-      const siteId = payload.siteId as string;
+      const { siteId } = payload as WebhookPayloadMap[
+        | "site.created"
+        | "site.deleted"];
       const site = await prisma.site.findUniqueOrThrow({
         where: { id: siteId },
         select: { ownerId: true },

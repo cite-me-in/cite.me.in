@@ -21,7 +21,7 @@ export async function runJob(
     });
   } catch (error) {
     const finishedAt = new Date();
-    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorMessage = Error.isError(error) ? error.message : String(error);
     await prisma.cronRun.create({
       data: {
         job: jobName,

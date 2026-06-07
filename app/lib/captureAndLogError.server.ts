@@ -32,7 +32,7 @@ export default function captureAndLogError(
 ) {
   sentryCaptureException(error, hints);
 
-  if (error instanceof Error) {
+  if (Error.isError(error)) {
     logger(error);
     console.error(error);
     if (logFile) logFile.write(`${error.stack}\n`);
@@ -42,7 +42,7 @@ export default function captureAndLogError(
     console.error(error);
     if (logFile)
       logFile.write(
-        `${error instanceof Error ? error.message : String(error)}\n`,
+        `${Error.isError(error) ? error.message : String(error)}\n`,
       );
     if (logtail) logtail.error(String(error), hints).catch(() => {});
   }

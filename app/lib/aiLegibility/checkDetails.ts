@@ -1,4 +1,4 @@
-import type { CheckDetail } from "./types";
+import type { CheckCategory, CheckDetail } from "./types";
 
 type CheckDef = {
   name: string;
@@ -7,7 +7,7 @@ type CheckDef = {
 };
 
 type Category = {
-  key: "discovered" | "trusted" | "welcomed";
+  key: CheckCategory;
   title: string;
   color: string;
   gaugeColor: string;
@@ -414,7 +414,7 @@ export function getCheckDetail(name: string): CheckDetail | undefined {
   return undefined;
 }
 
-export function getCheckCategory(name: string): string | undefined {
+export function getCheckCategory(name: string): CheckCategory | undefined {
   for (const category of CATEGORIES) {
     if (category.checks.some((c) => c.name === name)) return category.key;
   }

@@ -70,10 +70,9 @@ export async function action({ request }: Route.ActionArgs) {
     return redirect(`/site/${site.domain}/setup`);
   } catch (error) {
     return {
-      error:
-        error instanceof Error
-          ? error.message
-          : "An unknown error occurred while adding the site",
+      error: Error.isError(error)
+        ? error.message
+        : "An unknown error occurred while adding the site",
     };
   }
 }

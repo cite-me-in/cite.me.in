@@ -63,7 +63,7 @@ export default async function checkMdRoutes({
       });
     } catch (error) {
       allValid = false;
-      if (error instanceof Error && error.name === "TimeoutError") {
+      if (Error.isError(error) && error.name === "TimeoutError") {
         results.push({
           url: mdUrl,
           ok: false,

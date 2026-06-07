@@ -66,8 +66,7 @@ for (const level of ["debug", "error", "info", "log", "trace", "warn"]) {
           .call(logtail, formattedMessage, ...metadata)
           .catch(() => {});
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
+      const errorMessage = Error.isError(error) ? error.message : String(error);
       process.stderr.write(`${errorMessage}\n`);
     }
   });

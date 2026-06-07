@@ -21,6 +21,7 @@ import sendSiteSetupEmail, {
   SiteSetupCompleteEmail,
 } from "~/emails/SiteSetupComplete";
 import { WeeklyDigestEmail, sendSiteDigestEmails } from "~/emails/WeeklyDigest";
+import { ScanResultSchema } from "~/lib/aiLegibility/scanResultSchema";
 import type { ScanResult } from "~/lib/aiLegibility/types";
 import { requireUserAccess } from "~/lib/auth.server";
 import { formatDateShort } from "~/lib/formatDate";
@@ -38,11 +39,11 @@ const EMAIL_TYPES = [
 
 type EmailType = (typeof EMAIL_TYPES)[number];
 
-const EMAIL_LABELS: Record<EmailType, string> = {
+const EMAIL_LABELS = {
   "weekly-digest": "Weekly Digest",
   "setup-complete": "Setup Complete",
   "legibility-report": "AI Legibility Report",
-};
+} satisfies Record<EmailType, string>;
 
 export const handle = { siteNav: true };
 
@@ -96,7 +97,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
         <EmailLayout domain={site.domain} subject={subject} user={user}>
           <AiLegibilityReportEmail
             site={legibility.site}
-            result={legibility.result as ScanResult}
+            result={ScanResultSchema.parse(legibility.result) as ScanResult}
             reportUrl={`https://cite.me.in/site/${site.domain}/ai-legibility`}
           />
         </EmailLayout>,
@@ -144,7 +145,7 @@ export async function action({ request, params }: Route.ActionArgs) {
       });
       return await sendAiLegibilityReport({
         site: legibility.site,
-        result: legibility.result as ScanResult,
+        result: ScanResultSchema.parse(legibility.result) as ScanResult,
         sendTo: { email: user.email, id: user.id, unsubscribed: false },
       });
     }

@@ -48,7 +48,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     captureAndLogError(error, { extra: { step: "process-sites" } });
     return data({
       ok: false,
-      error: error instanceof Error ? error.message : String(error),
+      error: Error.isError(error) ? error.message : String(error),
     });
   }
 }

@@ -1,8 +1,10 @@
 import { z } from "zod";
 
+import { CHECK_CATEGORIES, CHECK_EFFORT_LEVELS } from "./types";
+
 const CheckResultSchema = z.object({
   name: z.string(),
-  category: z.enum(["discovered", "trusted", "welcomed"]),
+  category: z.enum(CHECK_CATEGORIES),
   passed: z.boolean(),
   message: z.string(),
   details: z.record(z.string(), z.unknown()).optional(),
@@ -13,7 +15,7 @@ const CheckResultSchema = z.object({
       issue: z.string(),
       howToImplement: z.string(),
       fixExample: z.string().optional(),
-      effort: z.enum(["2 min", "5 min", "15 min", "1 hour"]),
+      effort: z.enum(CHECK_EFFORT_LEVELS),
       resourceLinks: z.array(z.object({ label: z.string(), url: z.string() })),
       skillURL: z.string().optional(),
     })

@@ -100,7 +100,7 @@ async function startServer(this: void) {
   } catch (error) {
     send({
       type: "error",
-      error: error instanceof Error ? error.message : String(error),
+      error: Error.isError(error) ? error.message : String(error),
     });
   }
 }
