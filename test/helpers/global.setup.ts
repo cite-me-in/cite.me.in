@@ -8,24 +8,19 @@ import { rm } from "node:fs/promises";
 import { resolve } from "node:path";
 import { promisify } from "node:util";
 
-import "~/test/mocks/msw";
-
 import { closeServer, launchServer } from "./launchServer";
 import { removeTemporaryFiles } from "./toMatchVisual";
 
 export default async function setup() {
-  // Inject secrets from Infisical into process.env before anything else runs.
-  // This lets `vitest run` work without wrapping in `infisical run`.
-  try {
-    const raw = execSync("infisical export --env test --format json --silent", {
-      encoding: "utf-8",
-    });
-    const secrets = JSON.parse(raw) as Array<{ key: string; value: string }>;
-    for (const { key, value } of secrets)
-      if (value !== null) process.env[key] = value;
-  } catch {
-    // Infisical may not be available — that's fine if env vars are already set.
-  }
+  // Inject secrets from Infisical into process.env via the REST API.
+  // Uses Machine Identity (Universal Auth) — no CLI login needed.
+  // NOTE: This must happen before MSW is loaded, since MSW would intercept
+  // the fetch calls to the Infisical API.
+  const { loadInfisicalIntoEnv } = await import("~/lib/loadSecrets");
+  await loadInfisicalIntoEnv();
+
+  // Now load MSW to intercept external API calls during tests
+  await import("~/test/mocks/msw");
 
   // Dynamic import — prisma needs env vars from Infisical, so load it after injection
   const { default: prisma } = await import("~/lib/prisma.server");

@@ -40,14 +40,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v6
+      - name: Setup pnpm + Node.js
+        uses: pnpm/setup@v1
         with:
-          node-version: "26"
-
-      - name: Setup pnpm
-        run: |
-          corepack enable
-          corepack prepare --activate
+          runtime: node@26
+          install: true
 
       - name: Cache Playwright browsers
         id: playwright-cache
@@ -57,9 +54,6 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('package.json') }}
           restore-keys: |
             playwright-${{ runner.os }}-
-
-      - name: Install dependencies
-        run: pnpm store path | xargs rm -rf && pnpm install --frozen-lockfile
 
       - name: Install Playwright and system dependencies
         run: pnpm exec playwright install chromium

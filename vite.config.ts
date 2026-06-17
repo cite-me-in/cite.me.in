@@ -1,3 +1,4 @@
+import { execSync } from "node:child_process";
 import path from "node:path";
 
 import { reactRouter } from "@react-router/dev/vite";
@@ -33,7 +34,7 @@ export default defineConfig({
     env: {
       builtin: true,
     },
-    ignorePatterns: ["dist", "node_modules", ".opencode"],
+    ignorePatterns: ["dist", "node_modules", ".opencode", "scripts/"],
     rules: {
       "eslint/eqeqeq": "warn",
       "eslint/no-console": [
@@ -79,6 +80,29 @@ export default defineConfig({
     cors: false, // Disable Vite's CORS middleware, let React Router handle it
   },
   test: {
+    // Fetch secrets via Infisical REST API (Machine Identity) for worker processes.
+    // Falls back to process.env if Machine Identity credentials aren't configured.
+    env: (() => {
+      try {
+        const raw = execSync("node scripts/fetch-infisical-secrets.mjs", {
+          encoding: "utf-8",
+          timeout: 10_000,
+          stdio: ["pipe", "pipe", "pipe"],
+        });
+        const env: Record<string, string> = {};
+        for (const line of raw.split("\n")) {
+          const eqIdx = line.indexOf("=");
+          if (eqIdx > 7 && line.startsWith("export ")) {
+            const key = line.slice(7, eqIdx);
+            const value = line.slice(eqIdx + 1);
+            if (/^\w+$/.test(key)) env[key] = value;
+          }
+        }
+        return { ...env, ...process.env };
+      } catch {
+        return { ...process.env };
+      }
+    })(),
     fileParallelism: false,
     bail: 1,
     setupFiles: ["test/helpers/suite.setup.ts"],
