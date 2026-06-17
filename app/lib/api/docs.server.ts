@@ -91,7 +91,9 @@ function pathParamsTable(
     if ("name" in param)
       lines.push(
         `| \`${new String(param.name).toString()}\` | \`${
-          param.schema && "type" in param.schema
+          param.schema &&
+          typeof param.schema === "object" &&
+          "type" in param.schema
             ? (param.schema.type as string)
             : "string"
         }\` | ${param.description ?? ""} |`,
@@ -122,7 +124,9 @@ function queryParamsTable(
     if ("name" in param)
       lines.push(
         `| \`${param.name}\` | \`${
-          param.schema && "type" in param.schema
+          param.schema &&
+          typeof param.schema === "object" &&
+          "type" in param.schema
             ? param.schema.type?.toString()
             : "string"
         }\` | ${param.required ? "Yes" : "No"} | ${param.description ?? ""} |`,
@@ -139,7 +143,7 @@ function queryParamsTable(
  */
 function responseTable(schema: ZodOpenApiSchemaObject): string {
   const properties =
-    "properties" in schema && schema.properties
+    typeof schema === "object" && "properties" in schema
       ? Object.entries(schema.properties)
       : [];
   if (!properties.length) return "";
@@ -170,11 +174,16 @@ function addSchemaProperty({
   parent?: string;
   prop: ZodOpenApiSchemaObject;
 }) {
-  const type = "type" in prop ? (prop.type as string) : "unknown";
+  const type =
+    typeof prop === "object" && "type" in prop
+      ? (prop.type as string)
+      : "unknown";
   if (
     type === "array" &&
+    typeof prop === "object" &&
     "items" in prop &&
     prop.items &&
+    typeof prop.items === "object" &&
     "properties" in prop.items
   ) {
     const properties = prop.items.properties ?? {};
@@ -184,7 +193,12 @@ function addSchemaProperty({
       ([n]) => n,
     ))
       addSchemaProperty({ name, prop, lines, parent: thisParent });
-  } else if (type === "object" && "properties" in prop && prop.properties) {
+  } else if (
+    type === "object" &&
+    typeof prop === "object" &&
+    "properties" in prop &&
+    prop.properties
+  ) {
     const properties = prop.properties;
     const thisParent = `${parent ?? ""}${name}.`;
     for (const [name, prop] of alphabetical(
@@ -195,7 +209,9 @@ function addSchemaProperty({
   } else {
     lines.push(
       `| \`${parent ?? ""}${name}\` | \`${encodeForMarkdown(type)}\` | ${
-        "description" in prop ? prop.description : ""
+        typeof prop === "object" && "description" in prop
+          ? encodeForMarkdown(prop.description)
+          : ""
       } |`,
     );
   }

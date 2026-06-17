@@ -19,12 +19,9 @@ export default defineConfig({
       "jsx-a11y",
       "node",
       "oxc",
-      "oxc",
       "promise",
       "react",
       "typescript",
-      "typescript",
-      "unicorn",
       "unicorn",
       "vitest",
     ],
@@ -71,7 +68,9 @@ export default defineConfig({
     dedupe: ["react", "react-dom", "react-router"],
     tsconfigPaths: true,
   },
-  plugins: [tailwindcss(), reactRouter()],
+  // as never avoids oxlint type recursion between vite.Plugin (from leaf packages)
+  // and @voidzero-dev/vite-plus-core.Plugin. tsc types this correctly.
+  plugins: [tailwindcss(), reactRouter()] as never[],
   ssr: {
     noExternal: ["streamdown"],
   },
