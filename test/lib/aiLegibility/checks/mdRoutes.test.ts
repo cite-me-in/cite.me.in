@@ -1,5 +1,5 @@
 import { HttpResponse, http } from "msw";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vite-plus/test";
 
 import checkMdRoutes from "~/lib/aiLegibility/checks/mdRoutes";
 import msw from "~/test/mocks/msw";

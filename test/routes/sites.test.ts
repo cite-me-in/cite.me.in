@@ -2,7 +2,7 @@ import { type Locator, type Page, expect } from "@playwright/test";
 import { ms } from "convert";
 import type { BrowserContext } from "playwright";
 import invariant from "tiny-invariant";
-import { afterAll, beforeAll, describe, it } from "vitest";
+import { afterAll, beforeAll, describe, it } from "vite-plus/test";
 
 import { hashPassword } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";

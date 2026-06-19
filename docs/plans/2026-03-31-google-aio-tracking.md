@@ -130,7 +130,7 @@ git commit -m "feat: add DATAFORSEO_LOGIN/PASSWORD env vars"
 Create `test/lib/serp/dataForSeo.test.ts`:
 
 ```ts
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vite-plus/test";
 import fetchAioResults from "~/lib/serp/dataForSeo.server";
 
 vi.mock("~/lib/envVars.server", () => ({
@@ -293,7 +293,7 @@ git commit -m "feat: add DataForSEO SERP client with AIO citation parsing"
 Create `test/lib/serp/queryGoogleAio.test.ts`:
 
 ```ts
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vite-plus/test";
 import fetchAioResults from "~/lib/serp/dataForSeo.server";
 import queryGoogleAio from "~/lib/serp/queryGoogleAio.server";
 import prisma from "~/lib/prisma.server";

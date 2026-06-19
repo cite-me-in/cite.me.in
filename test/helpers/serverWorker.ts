@@ -9,7 +9,7 @@ import { rm } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import invariant from "tiny-invariant";
-import * as vite from "vite";
+import * as vite from "vite-plus";
 
 // Import and start the server
 async function startServer(this: void) {

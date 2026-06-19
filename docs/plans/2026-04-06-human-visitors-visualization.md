@@ -57,7 +57,7 @@ git commit -m "feat: add Human Visitors link to site nav"
 
 ```ts
 import { expect } from "@playwright/test";
-import { afterAll, beforeAll, describe, it } from "vitest";
+import { afterAll, beforeAll, describe, it } from "vite-plus/test";
 import { removeElements } from "~/lib/html/parseHTML";
 import prisma from "~/lib/prisma.server";
 import type { User } from "~/prisma";

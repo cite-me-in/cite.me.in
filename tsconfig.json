@@ -40,7 +40,7 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "target": "ES2022",
-    "types": ["node", "vite/client"],
+    "types": ["node"],
     "verbatimModuleSyntax": true
   }
 }

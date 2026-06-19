@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { beforeAll, describe, it } from "vitest";
+import { beforeAll, describe, it } from "vite-plus/test";
 
 import { sendTrialEndedEmail } from "~/emails/TrialEnded";
 import prisma from "~/lib/prisma.server";

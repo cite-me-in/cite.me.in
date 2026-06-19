@@ -701,7 +701,7 @@ git commit -m "feat: upsert CitedPage records after citation run"
 
 ```ts
 // test/lib/citedPageHealth.test.ts
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vite-plus/test";
 import { checkCitedPageHealth } from "~/lib/citedPageHealth.server";
 
 describe("checkCitedPageHealth", () => {
@@ -813,7 +813,7 @@ git commit -m "feat: add citedPageHealth utility"
 
 ```ts
 // test/routes/cron.check-cited-pages.test.ts
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
 
 vi.mock("~/lib/citedPageHealth.server", () => ({
@@ -1199,7 +1199,7 @@ git commit -m "feat: add Cited Pages UI route"
 
 ```ts
 // test/lib/citationGapAnalysis.test.ts
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { getCitationGaps } from "~/lib/citationGapAnalysis.server";
 
 describe("getCitationGaps", () => {

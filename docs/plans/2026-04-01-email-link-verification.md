@@ -33,7 +33,7 @@ from `@react-email/components`), Prisma (PostgreSQL), Node `crypto` HMAC
 Create `test/routes/r.test.ts`:
 
 ```ts
-import { afterEach, describe, it, expect } from "vitest";
+import { afterEach, describe, it, expect } from "vite-plus/test";
 import { hashPassword } from "~/lib/auth.server";
 import prisma from "~/lib/prisma.server";
 import generateUnsubscribeToken from "~/emails/generateUnsubscribeToken";

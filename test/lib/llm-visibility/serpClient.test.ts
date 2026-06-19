@@ -1,5 +1,5 @@
 import { HttpResponse, http } from "msw";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vite-plus/test";
 
 import { InsufficientCreditError } from "~/lib/llm-visibility/insufficientCreditError";
 import fetchSERPResults from "~/lib/llm-visibility/serpApi.server";

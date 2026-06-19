@@ -1,5 +1,5 @@
 import invariant from "tiny-invariant";
-import { beforeAll, describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vite-plus/test";
 
 import { isSameDomain } from "~/lib/isSameDomain";
 import type { QueryFn } from "~/lib/llm-visibility/queryFn";

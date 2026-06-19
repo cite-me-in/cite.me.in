@@ -111,7 +111,7 @@ git commit -m "feat: add Plan enum to User, lastProcessedAt to Site, remove Acco
 Create `test/lib/userPlan.test.ts`:
 
 ```ts
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import {
   TRIAL_DAYS,
   isDigestEligible,

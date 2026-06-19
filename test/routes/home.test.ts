@@ -1,5 +1,5 @@
 import { type Page, expect } from "@playwright/test";
-import { beforeAll, describe, it } from "vitest";
+import { beforeAll, describe, it } from "vite-plus/test";
 
 import { goto } from "~/test/helpers/launchBrowser";
 import { port } from "~/test/helpers/launchServer";

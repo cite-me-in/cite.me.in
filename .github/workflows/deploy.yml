@@ -81,7 +81,7 @@ jobs:
           pnpm exec knip
 
       - name: Run tests
-        run: pnpm vitest run
+        run: pnpm vp test run
         env:
           NODE_OPTIONS: --enable-source-maps
 

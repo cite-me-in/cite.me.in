@@ -1,7 +1,7 @@
 import { createHash, createHmac } from "node:crypto";
 
 import Stripe from "stripe";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vite-plus/test";
 
 import envVars from "~/lib/envVars.server";
 import prisma from "~/lib/prisma.server";

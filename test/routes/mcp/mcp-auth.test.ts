@@ -2,7 +2,7 @@ import { createHash, randomBytes } from "node:crypto";
 
 import bcrypt from "bcryptjs";
 import invariant from "tiny-invariant";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vite-plus/test";
 
 import prisma from "~/lib/prisma.server";
 import { resetRateLimit } from "~/lib/rateLimit.server";

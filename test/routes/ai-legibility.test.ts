@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
 import type { InputJsonObject } from "@prisma/client/runtime/client";
-import { beforeAll, describe, it } from "vitest";
+import { beforeAll, describe, it } from "vite-plus/test";
 
 import sendAiLegibilityReport from "~/emails/AiLegibilityReport";
 import { appendLog, startNewScan } from "~/lib/aiLegibility/progress.server";
@@ -82,9 +82,7 @@ describe("unauthenticated access", () => {
   it("should redirect to /sign-in", async () => {
     const response = await fetch(
       `http://localhost:${port}/site/example.com/ai-legibility`,
-      {
-        redirect: "manual",
-      },
+      { redirect: "manual" },
     );
     expect(response.status).toBe(302);
     expect(response.headers.get("location")).toContain("/sign-in");

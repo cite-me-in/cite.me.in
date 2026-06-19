@@ -1,4 +1,11 @@
-import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+  type Mock,
+} from "vite-plus/test";
 
 import { markdownMiddleware } from "~/middleware/markdown";
 

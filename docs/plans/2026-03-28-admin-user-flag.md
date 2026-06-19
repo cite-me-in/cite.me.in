@@ -319,7 +319,7 @@ Replace `envVars.ADMIN_API_SECRET` with a seeded admin user token.
 
 ```ts
 import { invariant } from "es-toolkit";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vite-plus/test";
 import prisma from "~/lib/prisma.server";
 import { port } from "../helpers/launchBrowser";
 

@@ -1,5 +1,5 @@
 import invariant from "tiny-invariant";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vite-plus/test";
 
 import { accessToken, initSession, mcpRequest, parseResponse } from "./setup";
 
