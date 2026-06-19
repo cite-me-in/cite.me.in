@@ -1,11 +1,11 @@
-#!/usr/bin/env infisical --env prod run -- tsx
+#!/usr/bin/env nub
 
 /**
  * This is used to prepare the sites for the digest email.
  *
  * Usage:
- *   infisical --env prod run -- tsx scripts/prepare-sites.ts
- *   infisical --env prod run -- tsx scripts/prepare-sites.ts <domain>
+ *   infisical --env prod run -- nub scripts/prepare-sites.ts
+ *   infisical --env prod run -- nub scripts/prepare-sites.ts <domain>
  */
 
 import debug from "debug";

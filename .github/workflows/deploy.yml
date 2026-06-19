@@ -72,13 +72,11 @@ jobs:
           pnpm prisma generate
           pnpm prisma db push
           pnpm react-router typegen
-          pnpm exec tsx app/lib/cron/writeConfig.ts
+          nub app/lib/cron/writeConfig.ts
 
       - name: Run checks
         run: |
-          pnpm exec secretlint --format stylish
-          pnpm exec react-router typegen
-          pnpm exec knip
+          ./scripts/check
 
       - name: Run tests
         run: pnpm vp test run
@@ -117,7 +115,7 @@ jobs:
           healthcheck-timeout: "60"
 
       - name: Sync cron tasks
-        run: pnpm exec tsx app/lib/cron/syncTasks.ts
+        run: nub app/lib/cron/syncTasks.ts
         env:
           COOLIFY_URL: "https://coolify.labnotes.org"
           COOLIFY_APP: "cite.me.in"

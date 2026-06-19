@@ -7,9 +7,11 @@ import prisma from "~/lib/prisma.server";
 const url = process.argv[2];
 
 if (!url) {
-  console.error("Usage: tsx scripts/ai-legibility-scan.ts <url>");
   console.error(
-    "Example: tsx scripts/ai-legibility-scan.ts https://example.com",
+    "Usage: infisical --env prod run -- nub scripts/ai-legibility-scan.ts <url>",
+  );
+  console.error(
+    "Example: infisical --env prod run -- nub scripts/ai-legibility-scan.ts https://example.com",
   );
   process.exit(1);
 }

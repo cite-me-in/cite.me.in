@@ -146,9 +146,6 @@ importers:
       tiny-invariant:
         specifier: ^1.3.3
         version: 1.3.3
-      tsx:
-        specifier: ^4.22.4
-        version: 4.22.4
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
@@ -171,6 +168,9 @@ importers:
       '@infisical/cli':
         specifier: ^0.43.96
         version: 0.43.96
+      '@nubjs/nub':
+        specifier: ^0.1.1
+        version: 0.1.1
       '@playwright/test':
         specifier: ^1.61.0
         version: 1.61.0
@@ -225,6 +225,9 @@ importers:
       secretlint:
         specifier: ^13.0.2
         version: 13.0.2
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
       vite:
         specifier: 8.0.16
         version: 8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0)
@@ -825,6 +828,55 @@ packages:
 
   '@nodable/entities@2.2.0':
     resolution: {integrity: sha512-9uGyhaQavEUMC8AIddIjau4NsnsXhou+j5sBAGojCM1oxmQpVKTWR/9JxABD6UAv12vpIms55fPZKFQEhG6uBg==}
+
+  '@nubjs/nub-darwin-arm64@0.1.1':
+    resolution: {integrity: sha512-7D7De/Me9p2AxTZnLyGtcRkGEMS2+GvO6SivLhqiwTL7gN4dZxM9CZhMSr3bBvidfK8jZEMJhx1B474CuQpTUA==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@nubjs/nub-darwin-x64@0.1.1':
+    resolution: {integrity: sha512-UQ5W7d3FFMpqT183l3AMUJK0MpEZL1rdclgz3COHmyyhwvinLqilKEFQEnJK5FLuuDhWzDN7WiTc6YYr22FllA==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@nubjs/nub-linux-arm64-musl@0.1.1':
+    resolution: {integrity: sha512-bqHTETnQyv1EA3pRi8A1ANcDKcGUOpL2JnA0pxhoOk5AS3yH7NkfYRPlmgV4dMDK3rzkt5+CFJeGTLZ864o6cQ==}
+    cpu: [arm64]
+    os: [linux]
+    libc: [musl]
+
+  '@nubjs/nub-linux-arm64@0.1.1':
+    resolution: {integrity: sha512-4FShg9Y2JUUnBdeXHay9GJ5rjHAVrXqliS/WFN4BWDayaeGG2tckiADxJhyIAkpocjKvOEdq02EzSm6KgyFpgQ==}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@nubjs/nub-linux-x64-musl@0.1.1':
+    resolution: {integrity: sha512-3sG/cd15PZktmZPsedUZ00X71jqaD41KVyTOZW6HwLagITPor6JOdPxTcUClrTCFNAfckgWTShNswi1bibUYHQ==}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
+  '@nubjs/nub-linux-x64@0.1.1':
+    resolution: {integrity: sha512-Pg2z5FueFb2OIgfKQJC9YgdiTuvSWhq3RlJauIxjW6Y6BaTd3I9sVcnvuC8D/iFigbHfQqwPiSOyKii/5tCdug==}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@nubjs/nub-win32-arm64@0.1.1':
+    resolution: {integrity: sha512-4rNWKQEYUkXsVipU56jEe2qNqs4PaBfBkzbt6rsQS84PhfwwrzOHeXsn9sD4mtKUrLHIsGCTdZWih/HjneuV3Q==}
+    cpu: [arm64]
+    os: [win32]
+
+  '@nubjs/nub-win32-x64@0.1.1':
+    resolution: {integrity: sha512-rzmx83lN1956dboOh2kBhXyf5YMIuc5O3C4vhfHwN5f6VUqfzErDQKNHZowYrUryT14AuPrW9krL5Pbw1QLwvg==}
+    cpu: [x64]
+    os: [win32]
+
+  '@nubjs/nub@0.1.1':
+    resolution: {integrity: sha512-yOWhMZFMTOBYAFVlUOdHqimu1xqR4AggNMc4rWOhfRg+MbAeabFGkmM7IjsrNm/M3fkCwg++9hFSmnr4ydqosQ==}
+    engines: {node: '>=18.19.0'}
+    hasBin: true
 
   '@open-draft/deferred-promise@2.2.0':
     resolution: {integrity: sha512-CecwLWx3rhxVQF6V4bAgPS5t+So2sTbPgAzafKkVizyi7tlwpcFpdFqq+wqF2OwNBmqFuu6tOyouTuxgpMfzmA==}
@@ -6070,6 +6122,41 @@ snapshots:
     optional: true
 
   '@nodable/entities@2.2.0': {}
+
+  '@nubjs/nub-darwin-arm64@0.1.1':
+    optional: true
+
+  '@nubjs/nub-darwin-x64@0.1.1':
+    optional: true
+
+  '@nubjs/nub-linux-arm64-musl@0.1.1':
+    optional: true
+
+  '@nubjs/nub-linux-arm64@0.1.1':
+    optional: true
+
+  '@nubjs/nub-linux-x64-musl@0.1.1':
+    optional: true
+
+  '@nubjs/nub-linux-x64@0.1.1':
+    optional: true
+
+  '@nubjs/nub-win32-arm64@0.1.1':
+    optional: true
+
+  '@nubjs/nub-win32-x64@0.1.1':
+    optional: true
+
+  '@nubjs/nub@0.1.1':
+    optionalDependencies:
+      '@nubjs/nub-darwin-arm64': 0.1.1
+      '@nubjs/nub-darwin-x64': 0.1.1
+      '@nubjs/nub-linux-arm64': 0.1.1
+      '@nubjs/nub-linux-arm64-musl': 0.1.1
+      '@nubjs/nub-linux-x64': 0.1.1
+      '@nubjs/nub-linux-x64-musl': 0.1.1
+      '@nubjs/nub-win32-arm64': 0.1.1
+      '@nubjs/nub-win32-x64': 0.1.1
 
   '@open-draft/deferred-promise@2.2.0': {}
 

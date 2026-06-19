@@ -1,6 +1,7 @@
 allowBuilds:
   "@google/genai": true
   "@infisical/cli": true
+  "@nubjs/nub": true
   "@prisma/engines": true
   "@sentry/cli": true
   esbuild: true
