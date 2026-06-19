@@ -158,6 +158,9 @@ importers:
       usehooks-ts:
         specifier: ^3.1.1
         version: 3.1.1(react@19.2.7)
+      vite-plus:
+        specifier: ^0.2.1
+        version: 0.2.1(@opentelemetry/api@1.9.1)(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(msw@2.14.6(@types/node@25.9.3)(typescript@6.0.3))(tsx@4.22.4)(typescript@6.0.3)(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -225,9 +228,6 @@ importers:
       vite:
         specifier: 8.0.16
         version: 8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0)
-      vite-plus:
-        specifier: ^0.2.1
-        version: 0.2.1(@opentelemetry/api@1.9.1)(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(msw@2.14.6(@types/node@25.9.3)(typescript@6.0.3))(tsx@4.22.4)(typescript@6.0.3)(vite@8.0.16(@types/node@25.9.3)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.22.4)(yaml@2.9.0))(yaml@2.9.0)
 
 packages:
 
