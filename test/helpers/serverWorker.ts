@@ -9,7 +9,7 @@ import { rm } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import invariant from "tiny-invariant";
-import * as vite from "vite-plus";
+import { createServer } from "vite";
 
 // Import and start the server
 async function startServer(this: void) {
@@ -27,7 +27,7 @@ async function startServer(this: void) {
     const testCacheDir = resolve("node_modules/.vite-test");
     await rm(testCacheDir, { recursive: true, force: true });
 
-    const devServer = await vite.createServer({
+    const devServer = await createServer({
       build: {
         minify: false,
         sourcemap: true,

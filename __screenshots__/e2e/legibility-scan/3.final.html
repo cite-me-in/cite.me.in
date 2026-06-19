@@ -1,0 +1,749 @@
+<nav class="flex items-center justify-between border-b-2 border-black bg-[hsl(60,100%,99%)] px-6 py-3">
+  <a aria-label="Go to home page" class="flex flex-nowrap items-center font-bold text-2xl leading-none transition-colors hover:text-[#F59E0B]" data-discover="true" href="/">
+    <img alt="Cite.me.in" height="42" src="/icon-192.png" width="42" />
+    <span class="text-[#F59E0B]">
+      Cite.me.in
+    </span>
+  </a>
+  <div class="flex items-center gap-6">
+    <div class="flex items-center gap-3">
+      <a class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold text-base transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 cursor-pointer rounded-base border-2 border-black bg-[#F59E0B] text-black shadow-[3px_3px_0px_0px_black] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] active:shadow-[1px_1px_0px_0px_black] active:translate-x-[2px] active:translate-y-[2px] h-12 px-6 py-3" data-discover="true" href="/sign-in">
+        Sign in
+      </a>
+      <a class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold text-base transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 cursor-pointer rounded-base border-2 border-black bg-[#F59E0B] text-black shadow-[3px_3px_0px_0px_black] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] active:shadow-[1px_1px_0px_0px_black] active:translate-x-[2px] active:translate-y-[2px] h-12 px-6 py-3" data-discover="true" href="/sign-up">
+        Get started
+      </a>
+    </div>
+  </div>
+</nav>
+<section class="border-b-2 border-black bg-amber-400 px-6 py-4">
+  <h1 class="mx-auto flex max-w-3xl items-center gap-2 text-4xl font-bold">
+    <span>
+      Scanned acme.com
+    </span>
+  </h1>
+</section>
+<section class="border-b-2 border-black px-6 py-16" id="scan-results">
+  <div class="mx-auto max-w-3xl">
+    <div class="mb-6 flex flex-wrap items-center gap-3">
+      <div class="rounded-base inline-flex items-center gap-2 border-2 border-black bg-white px-3 py-1.5 text-sm font-bold shadow-[2px_2px_0px_0px_black]">
+        <svg aria-hidden="true" class="lucide lucide-globe h-4 w-4 shrink-0 text-amber-500" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+          <path d="M2 12h20"></path>
+        </svg>
+        acme.com
+      </div>
+      <div class="rounded-base inline-flex items-center gap-2 border-2 border-black bg-green-100 px-3 py-1.5 text-sm font-bold shadow-[2px_2px_0px_0px_black]">
+        <svg aria-hidden="true" class="lucide lucide-check h-4 w-4 shrink-0 text-green-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 6 9 17l-5-5"></path>
+        </svg>
+        Scan complete
+      </div>
+    </div>
+    <div class="overflow-hidden transition-all duration-500 ease-in-out max-h-0 opacity-0">
+      <div class="space-y-4">
+        <div class="grid gap-3 sm:grid-cols-2">
+          <div class="rounded-base shadow-[2px_2px_0px_0px_black flex items-start gap-3 border-2 p-3 text-base border-red-600 bg-red-50">
+            <div class="pt-1">
+              <svg aria-hidden="true" class="lucide lucide-circle-x size-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m15 9-6 6"></path>
+                <path d="m9 9 6 6"></path>
+              </svg>
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="text-base font-bold text-red-800">
+                Page content
+              </div>
+              <div class="text-sm text-red-600">
+                Minimal content (47 chars, 7 words): no paragraph breaks, no sentence structure, only 7 words (need 25)
+              </div>
+            </div>
+          </div>
+          <div class="rounded-base shadow-[2px_2px_0px_0px_black flex items-start gap-3 border-2 p-3 text-base border-green-600 bg-green-50">
+            <div class="pt-1">
+              <svg aria-hidden="true" class="lucide lucide-circle-check-big size-4 shrink-0 text-green-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21.801 10A10 10 0 1 1 17 3.335"></path>
+                <path d="m9 11 3 3L22 4"></path>
+              </svg>
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="text-base font-bold text-green-800">
+                robots.txt
+              </div>
+              <div class="text-sm text-green-600">
+                robots.txt found with 3 lines (includes sitemap reference)
+              </div>
+            </div>
+          </div>
+          <div class="rounded-base shadow-[2px_2px_0px_0px_black flex items-start gap-3 border-2 p-3 text-base border-green-600 bg-green-50">
+            <div class="pt-1">
+              <svg aria-hidden="true" class="lucide lucide-circle-check-big size-4 shrink-0 text-green-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21.801 10A10 10 0 1 1 17 3.335"></path>
+                <path d="m9 11 3 3L22 4"></path>
+              </svg>
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="text-base font-bold text-green-800">
+                sitemap.xml
+              </div>
+              <div class="text-sm text-green-600">
+                sitemap.xml has 2 URLs
+              </div>
+            </div>
+          </div>
+          <div class="rounded-base shadow-[2px_2px_0px_0px_black flex items-start gap-3 border-2 p-3 text-base border-green-600 bg-green-50">
+            <div class="pt-1">
+              <svg aria-hidden="true" class="lucide lucide-circle-check-big size-4 shrink-0 text-green-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21.801 10A10 10 0 1 1 17 3.335"></path>
+                <path d="m9 11 3 3L22 4"></path>
+              </svg>
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="text-base font-bold text-green-800">
+                sitemap.txt
+              </div>
+              <div class="text-sm text-green-600">
+                sitemap.txt exists but no valid URLs found (AI agents will skip it)
+              </div>
+            </div>
+          </div>
+          <div class="rounded-base shadow-[2px_2px_0px_0px_black flex items-start gap-3 border-2 p-3 text-base border-red-600 bg-red-50">
+            <div class="pt-1">
+              <svg aria-hidden="true" class="lucide lucide-circle-x size-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m15 9-6 6"></path>
+                <path d="m9 9 6 6"></path>
+              </svg>
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="text-base font-bold text-red-800">
+                Sample pages
+              </div>
+              <div class="text-sm text-red-600">
+                0/1 pages have meaningful content (see details)
+              </div>
+            </div>
+          </div>
+          <div class="rounded-base shadow-[2px_2px_0px_0px_black flex items-start gap-3 border-2 p-3 text-base border-red-600 bg-red-50">
+            <div class="pt-1">
+              <svg aria-hidden="true" class="lucide lucide-circle-x size-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m15 9-6 6"></path>
+                <path d="m9 9 6 6"></path>
+              </svg>
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="text-base font-bold text-red-800">
+                JSON-LD
+              </div>
+              <div class="text-sm text-red-600">
+                No JSON-LD found on https://acme.com/about
+              </div>
+            </div>
+          </div>
+          <div class="rounded-base shadow-[2px_2px_0px_0px_black flex items-start gap-3 border-2 p-3 text-base border-red-600 bg-red-50">
+            <div class="pt-1">
+              <svg aria-hidden="true" class="lucide lucide-circle-x size-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m15 9-6 6"></path>
+                <path d="m9 9 6 6"></path>
+              </svg>
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="text-base font-bold text-red-800">
+                Meta tags
+              </div>
+              <div class="text-sm text-red-600">
+                1/2 pages have meta tags
+              </div>
+            </div>
+          </div>
+          <div class="rounded-base shadow-[2px_2px_0px_0px_black flex items-start gap-3 border-2 p-3 text-base border-green-600 bg-green-50">
+            <div class="pt-1">
+              <svg aria-hidden="true" class="lucide lucide-circle-check-big size-4 shrink-0 text-green-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21.801 10A10 10 0 1 1 17 3.335"></path>
+                <path d="m9 11 3 3L22 4"></path>
+              </svg>
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="text-base font-bold text-green-800">
+                llms.txt
+              </div>
+              <div class="text-sm text-green-600">
+                llms.txt with 2 lines. Notes: no H2 sections (recommended); no file links in [name](url) format (recommended)
+              </div>
+            </div>
+          </div>
+          <div class="rounded-base shadow-[2px_2px_0px_0px_black flex items-start gap-3 border-2 p-3 text-base border-green-600 bg-green-50">
+            <div class="pt-1">
+              <svg aria-hidden="true" class="lucide lucide-circle-check-big size-4 shrink-0 text-green-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21.801 10A10 10 0 1 1 17 3.335"></path>
+                <path d="m9 11 3 3L22 4"></path>
+              </svg>
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="text-base font-bold text-green-800">
+                Sitemap link headers
+              </div>
+              <div class="text-sm text-green-600">
+                Sitemap referenced via HTTP header (/sitemap.xml)
+              </div>
+            </div>
+          </div>
+          <div class="rounded-base shadow-[2px_2px_0px_0px_black flex items-start gap-3 border-2 p-3 text-base border-red-600 bg-red-50">
+            <div class="pt-1">
+              <svg aria-hidden="true" class="lucide lucide-circle-x size-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m15 9-6 6"></path>
+                <path d="m9 9 6 6"></path>
+              </svg>
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="text-base font-bold text-red-800">
+                Markdown alternate links
+              </div>
+              <div class="text-sm text-red-600">
+                No 
+                &lt;
+                link rel='alternate' type='text/markdown'
+                &gt;
+                 found on any reviewed page
+              </div>
+            </div>
+          </div>
+          <div class="rounded-base shadow-[2px_2px_0px_0px_black flex items-start gap-3 border-2 p-3 text-base border-red-600 bg-red-50">
+            <div class="pt-1">
+              <svg aria-hidden="true" class="lucide lucide-circle-x size-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m15 9-6 6"></path>
+                <path d="m9 9 6 6"></path>
+              </svg>
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="text-base font-bold text-red-800">
+                .md routes
+              </div>
+              <div class="text-sm text-red-600">
+                No markdown alternate URLs advertised — add 
+                &lt;
+                link rel='alternate' type='text/markdown'
+                &gt;
+                 to your pages
+              </div>
+            </div>
+          </div>
+          <div class="rounded-base shadow-[2px_2px_0px_0px_black flex items-start gap-3 border-2 p-3 text-base border-green-600 bg-green-50">
+            <div class="pt-1">
+              <svg aria-hidden="true" class="lucide lucide-circle-check-big size-4 shrink-0 text-green-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21.801 10A10 10 0 1 1 17 3.335"></path>
+                <path d="m9 11 3 3L22 4"></path>
+              </svg>
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="text-base font-bold text-green-800">
+                Robots directives
+              </div>
+              <div class="text-sm text-green-600">
+                No noindex directives found on any of 2 reviewed pages
+              </div>
+            </div>
+          </div>
+          <div class="rounded-base shadow-[2px_2px_0px_0px_black flex items-start gap-3 border-2 p-3 text-base border-red-600 bg-red-50">
+            <div class="pt-1">
+              <svg aria-hidden="true" class="lucide lucide-circle-x size-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m15 9-6 6"></path>
+                <path d="m9 9 6 6"></path>
+              </svg>
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="text-base font-bold text-red-800">
+                Markdown content negotiation
+              </div>
+              <div class="text-sm text-red-600">
+                No page serves markdown content
+              </div>
+            </div>
+          </div>
+          <div class="rounded-base shadow-[2px_2px_0px_0px_black flex items-start gap-3 border-2 p-3 text-base border-red-600 bg-red-50">
+            <div class="pt-1">
+              <svg aria-hidden="true" class="lucide lucide-circle-x size-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m15 9-6 6"></path>
+                <path d="m9 9 6 6"></path>
+              </svg>
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="text-base font-bold text-red-800">
+                Content Signals
+              </div>
+              <div class="text-sm text-red-600">
+                No Content-Signal found in robots.txt — AI agents lack a content usage signal
+              </div>
+            </div>
+          </div>
+          <div class="rounded-base shadow-[2px_2px_0px_0px_black flex items-start gap-3 border-2 p-3 text-base border-green-600 bg-green-50">
+            <div class="pt-1">
+              <svg aria-hidden="true" class="lucide lucide-circle-check-big size-4 shrink-0 text-green-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21.801 10A10 10 0 1 1 17 3.335"></path>
+                <path d="m9 11 3 3L22 4"></path>
+              </svg>
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="text-base font-bold text-green-800">
+                AI bot traffic
+              </div>
+              <div class="text-sm text-green-600">
+                All 7 AI bots can access the site
+              </div>
+            </div>
+          </div>
+          <div class="rounded-base shadow-[2px_2px_0px_0px_black flex items-start gap-3 border-2 p-3 text-base border-red-600 bg-red-50">
+            <div class="pt-1">
+              <svg aria-hidden="true" class="lucide lucide-circle-x size-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m15 9-6 6"></path>
+                <path d="m9 9 6 6"></path>
+              </svg>
+            </div>
+            <div class="flex flex-col gap-1">
+              <div class="text-base font-bold text-red-800">
+                llms-full.txt
+              </div>
+              <div class="text-sm text-red-600">
+                llms-full.txt returned HTTP 503
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="transition-all duration-500 ease-in-out translate-y-0 opacity-100" style="pointer-events: auto;">
+      <div class="space-y-8">
+        <div class="rounded-base border-2 border-black bg-white p-6 shadow-[4px_4px_0px_0px_black]">
+          <div class="mb-4 flex items-center justify-between">
+            <div>
+              <div class="font-medium text-black/50">
+                AI Legibility Score
+              </div>
+              <div class="text-5xl font-black">
+                44
+              </div>
+            </div>
+            <div class="text-6xl font-black">
+              F
+            </div>
+          </div>
+          <div class="rounded-base h-4 w-full overflow-hidden border-2 border-black bg-gray-100">
+            <div class="h-full bg-amber-400 transition-all duration-500" style="width: 44%;"></div>
+          </div>
+          <p class="mt-3 font-medium text-black/50">
+            Most sites score 45-65. There's room to improve.
+          </p>
+        </div>
+        <div class="flex flex-col gap-6 rounded-base border-2 border-border py-6 font-base shadow-shadow bg-[hsl(47,100%,95%)]" data-slot="card">
+          <div class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-[data-slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6" data-slot="card-header">
+            <div class="justify-center font-heading text-2xl leading-none flex items-center gap-2" data-slot="card-title">
+              <svg aria-hidden="true" class="lucide lucide-circle-check-big h-5 w-5 text-amber-500" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21.801 10A10 10 0 1 1 17 3.335"></path>
+                <path d="m9 11 3 3L22 4"></path>
+              </svg>
+              AI Legibility Report — 7/16 passed
+            </div>
+          </div>
+          <div class="px-6 space-y-6" data-slot="card-content">
+            <div class="grid gap-4 sm:grid-cols-3">
+              <div class="rounded-base border-2 border-black bg-white p-4 text-center shadow-[2px_2px_0px_0px_black]">
+                <div class="font-bold text-blue-600">
+                  Discovered
+                </div>
+                <div class="mt-1 text-2xl font-bold">
+                  4/6
+                </div>
+                <div class="text-black/50">
+                  checks passed
+                </div>
+              </div>
+              <div class="rounded-base border-2 border-black bg-white p-4 text-center shadow-[2px_2px_0px_0px_black]">
+                <div class="font-bold text-purple-600">
+                  Trusted
+                </div>
+                <div class="mt-1 text-2xl font-bold">
+                  0/5
+                </div>
+                <div class="text-black/50">
+                  checks passed
+                </div>
+              </div>
+              <div class="rounded-base border-2 border-black bg-white p-4 text-center shadow-[2px_2px_0px_0px_black]">
+                <div class="font-bold text-emerald-600">
+                  Welcomed
+                </div>
+                <div class="mt-1 text-2xl font-bold">
+                  3/5
+                </div>
+                <div class="text-black/50">
+                  checks passed
+                </div>
+              </div>
+            </div>
+            <div class="rounded-base border-2 border-emerald-500 bg-emerald-50 p-5 shadow-[4px_4px_0px_0px_#059669]">
+              <div class="mb-3 flex items-center justify-between">
+                <h3 class="flex items-center gap-2 text-lg font-bold text-emerald-900">
+                  <svg aria-hidden="true" class="lucide lucide-zap h-5 w-5" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path>
+                  </svg>
+                  Quick win
+                </h3>
+                <span class="rounded-base border-2 border-emerald-500 bg-emerald-100 px-3 py-1 font-bold text-emerald-700">
+                  5 min fix
+                </span>
+              </div>
+              <p class="mb-3 font-medium text-emerald-800">
+                <strong>
+                  1/2 pages have meta tags
+                </strong>
+              </p>
+              <p class="mb-3 font-medium text-emerald-700">
+                Without meta description and Open Graph tags, AI agents lack the rich context needed for high-quality citations and social previews.
+              </p>
+              <textarea aria-label="Prompt" class="rounded-base mb-3 w-full resize-none border-2 border-emerald-400 bg-white p-3 font-mono text-emerald-900" readonly rows="6">
+                Goal: Provide meta description and Open Graph tags so AI agents can format accurate citations
+
+Issue: 1/2 pages have meta tags
+
+Fix: Add a &amp;lt;meta name='description'&amp;gt; tag with a concise page summary, &amp;lt;meta property='og:title'&amp;gt; and &amp;lt;meta property='og:description'&amp;gt; for rich previews, and &amp;lt;link rel='canonical'&amp;gt; to prevent duplicate content confusion.
+
+Example:
+```
+&amp;lt;head&amp;gt;
+  &amp;lt;meta name="description" content="Brief summary of your page for AI agents and search engines"&amp;gt;
+  &amp;lt;meta property="og:title" content="Your Page Title"&amp;gt;
+  &amp;lt;meta property="og:description" content="Social preview description"&amp;gt;
+  &amp;lt;meta property="og:image" content="https://example.com/og-image.png"&amp;gt;
+  &amp;lt;link rel="canonical" href="https://example.com/page"&amp;gt;
+&amp;lt;/head&amp;gt;
+```
+
+Skill: https://skills.sh/coreyhaines31/marketingskills/seo-audit
+
+Docs: https://ogp.me/, https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta
+              </textarea>
+              <div class="flex items-center justify-between gap-4">
+                <span class="max-w-md font-medium text-emerald-700">
+                  Copy this prompt and paste it into your AI coding agent (Claude Code, Cursor, Copilot, Codex) — it will fix the code in minutes.
+                </span>
+                <button class="items-center gap-2 whitespace-nowrap font-bold text-base transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 cursor-pointer rounded-base border-2 border-black bg-[#F59E0B] text-black shadow-[3px_3px_0px_0px_black] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] active:shadow-[1px_1px_0px_0px_black] active:translate-x-[2px] active:translate-y-[2px] h-12 px-6 py-3 w-46 flex justify-center">
+                  <div class="flex items-center [&>svg]:relative [&>svg]:block [&>svg:not(:last-child)]:-mr-1">
+                    <svg fill="currentColor" fill-rule="evenodd" height="18" style="flex: 0 0 auto; line-height: 1;" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg">
+                      <title>
+                        OpenAI
+                      </title>
+                      <path d="M21.55 10.004a5.416 5.416 0 00-.478-4.501c-1.217-2.09-3.662-3.166-6.05-2.66A5.59 5.59 0 0010.831 1C8.39.995 6.224 2.546 5.473 4.838A5.553 5.553 0 001.76 7.496a5.487 5.487 0 00.691 6.5 5.416 5.416 0 00.477 4.502c1.217 2.09 3.662 3.165 6.05 2.66A5.586 5.586 0 0013.168 23c2.443.006 4.61-1.546 5.361-3.84a5.553 5.553 0 003.715-2.66 5.488 5.488 0 00-.693-6.497v.001zm-8.381 11.558a4.199 4.199 0 01-2.675-.954c.034-.018.093-.05.132-.074l4.44-2.53a.71.71 0 00.364-.623v-6.176l1.877 1.069c.02.01.033.029.036.05v5.115c-.003 2.274-1.87 4.118-4.174 4.123zM4.192 17.78a4.059 4.059 0 01-.498-2.763c.032.02.09.055.131.078l4.44 2.53c.225.13.504.13.73 0l5.42-3.088v2.138a.068.068 0 01-.027.057L9.9 19.288c-1.999 1.136-4.552.46-5.707-1.51h-.001zM3.023 8.216A4.15 4.15 0 015.198 6.41l-.002.151v5.06a.711.711 0 00.364.624l5.42 3.087-1.876 1.07a.067.067 0 01-.063.005l-4.489-2.559c-1.995-1.14-2.679-3.658-1.53-5.63h.001zm15.417 3.54l-5.42-3.088L14.896 7.6a.067.067 0 01.063-.006l4.489 2.557c1.998 1.14 2.683 3.662 1.529 5.633a4.163 4.163 0 01-2.174 1.807V12.38a.71.71 0 00-.363-.623zm1.867-2.773a6.04 6.04 0 00-.132-.078l-4.44-2.53a.731.731 0 00-.729 0l-5.42 3.088V7.325a.068.068 0 01.027-.057L14.1 4.713c2-1.137 4.555-.46 5.707 1.513.487.833.664 1.809.499 2.757h.001zm-11.741 3.81l-1.877-1.068a.065.065 0 01-.036-.051V6.559c.001-2.277 1.873-4.122 4.181-4.12.976 0 1.92.338 2.671.954-.034.018-.092.05-.131.073l-4.44 2.53a.71.71 0 00-.365.623l-.003 6.173v.002zm1.02-2.168L12 9.25l2.414 1.375v2.75L12 14.75l-2.415-1.375v-2.75z" fill="black"></path>
+                    </svg>
+                    <svg height="18" style="flex: 0 0 auto; line-height: 1;" viewBox="0 0 32 32" width="18" xmlns="http://www.w3.org/2000/svg">
+                      <title>
+                        Claude
+                      </title>
+                      <circle cx="16" cy="16" fill="#d77655" r="16"></circle>
+                      <g transform="translate(4, 4)">
+                        <path d="M4.709 15.955l4.72-2.647.08-.23-.08-.128H9.2l-.79-.048-2.698-.073-2.339-.097-2.266-.122-.571-.121L0 11.784l.055-.352.48-.321.686.06 1.52.103 2.278.158 1.652.097 2.449.255h.389l.055-.157-.134-.098-.103-.097-2.358-1.596-2.552-1.688-1.336-.972-.724-.491-.364-.462-.158-1.008.656-.722.881.06.225.061.893.686 1.908 1.476 2.491 1.833.365.304.145-.103.019-.073-.164-.274-1.355-2.446-1.446-2.49-.644-1.032-.17-.619a2.97 2.97 0 01-.104-.729L6.283.134 6.696 0l.996.134.42.364.62 1.414 1.002 2.229 1.555 3.03.456.898.243.832.091.255h.158V9.01l.128-1.706.237-2.095.23-2.695.08-.76.376-.91.747-.492.584.28.48.685-.067.444-.286 1.851-.559 2.903-.364 1.942h.212l.243-.242.985-1.306 1.652-2.064.73-.82.85-.904.547-.431h1.033l.76 1.129-.34 1.166-1.064 1.347-.881 1.142-1.264 1.7-.79 1.36.073.11.188-.02 2.856-.606 1.543-.28 1.841-.315.833.388.091.395-.328.807-1.969.486-2.309.462-3.439.813-.042.03.049.061 1.549.146.662.036h1.622l3.02.225.79.522.474.638-.079.485-1.215.62-1.64-.389-3.829-.91-1.312-.329h-.182v.11l1.093 1.068 2.006 1.81 2.509 2.33.127.578-.322.455-.34-.049-2.205-1.657-.851-.747-1.926-1.62h-.128v.17l.444.649 2.345 3.521.122 1.08-.17.353-.608.213-.668-.122-1.374-1.925-1.415-2.167-1.143-1.943-.14.08-.674 7.254-.316.37-.729.28-.607-.461-.322-.747.322-1.476.389-1.924.315-1.53.286-1.9.17-.632-.012-.042-.14.018-1.434 1.967-2.18 2.945-1.726 1.845-.414.164-.717-.37.067-.662.401-.589 2.388-3.036 1.44-1.882.93-1.086-.006-.158h-.055L4.132 18.56l-1.13.146-.487-.456.061-.746.231-.243 1.908-1.312-.006.006z" fill="white" fill-rule="evenodd"></path>
+                      </g>
+                    </svg>
+                    <svg height="18" style="flex: 0 0 auto; line-height: 1;" viewBox="0 0 32 32" width="18" xmlns="http://www.w3.org/2000/svg">
+                      <title>
+                        Cursor
+                      </title>
+                      <circle cx="16" cy="16" fill="#000" r="16"></circle>
+                      <g transform="translate(4, 4)">
+                        <path d="M11.925 24l10.425-6-10.425-6L1.5 18l10.425 6z" fill="url(#cursor-icon-gradient-0)"></path>
+                        <path d="M22.35 18V6L11.925 0v12l10.425 6z" fill="url(#cursor-icon-gradient-1)"></path>
+                        <path d="M11.925 0L1.5 6v12l10.425-6V0z" fill="url(#cursor-icon-gradient-2)"></path>
+                        <path d="M22.35 6L11.925 24V12L22.35 6z" fill="#E4E4E4"></path>
+                        <path d="M22.35 6l-10.425 6L1.5 6h20.85z" fill="#fff"></path>
+                      </g>
+                      <defs>
+                        <lineargradient gradientUnits="userSpaceOnUse" id="cursor-icon-gradient-0" x1="11.925" x2="11.925" y1="12" y2="24">
+                          <stop offset=".16" stop-color="#fff" stop-opacity=".39"></stop>
+                          <stop offset=".658" stop-color="#fff" stop-opacity=".8"></stop>
+                        </lineargradient>
+                        <lineargradient gradientUnits="userSpaceOnUse" id="cursor-icon-gradient-1" x1="22.35" x2="11.925" y1="6.037" y2="12.15">
+                          <stop offset=".182" stop-color="#fff" stop-opacity=".31"></stop>
+                          <stop offset=".715" stop-color="#fff" stop-opacity="0"></stop>
+                        </lineargradient>
+                        <lineargradient gradientUnits="userSpaceOnUse" id="cursor-icon-gradient-2" x1="11.925" x2="1.5" y1="0" y2="18">
+                          <stop stop-color="#fff" stop-opacity=".6"></stop>
+                          <stop offset=".667" stop-color="#fff" stop-opacity=".22"></stop>
+                        </lineargradient>
+                      </defs>
+                    </svg>
+                  </div>
+                  Copy prompt
+                </button>
+              </div>
+            </div>
+            <button aria-expanded="false" aria-haspopup="dialog" class="rounded-base inline-flex w-full items-center justify-center gap-2 border-2 border-black bg-emerald-400 px-8 py-4 text-lg font-bold shadow-[4px_4px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_black]" data-base-ui-click-trigger data-slot="dialog-trigger" id="base-ui-_r_2_" tabindex="0" type="button">
+              <svg aria-hidden="true" class="lucide lucide-sparkles h-5 w-5" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path>
+                <path d="M20 2v4"></path>
+                <path d="M22 4h-4"></path>
+                <circle cx="4" cy="20" r="2"></circle>
+              </svg>
+              Fix with AI prompts
+            </button>
+            <div>
+              <h3 class="mb-2 font-bold text-blue-600">
+                Discovered
+              </h3>
+              <div class="space-y-2">
+                <div class="rounded-base flex items-start gap-3 border-2 border-black p-3 shadow-[2px_2px_0px_0px_black] bg-red-50">
+                  <svg aria-hidden="true" class="lucide lucide-circle-x mt-0.5 h-4 w-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m15 9-6 6"></path>
+                    <path d="m9 9 6 6"></path>
+                  </svg>
+                  <div>
+                    <span class="font-bold">
+                      Markdown alternate links
+                    </span>
+                    <span class="ml-1 text-black/60">
+                      No 
+                      &lt;
+                      link rel='alternate' type='text/markdown'
+                      &gt;
+                       found on any reviewed page
+                    </span>
+                  </div>
+                </div>
+                <div class="rounded-base flex items-start gap-3 border-2 border-black p-3 shadow-[2px_2px_0px_0px_black] bg-red-50">
+                  <svg aria-hidden="true" class="lucide lucide-circle-x mt-0.5 h-4 w-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m15 9-6 6"></path>
+                    <path d="m9 9 6 6"></path>
+                  </svg>
+                  <div>
+                    <span class="font-bold">
+                      llms-full.txt
+                    </span>
+                    <span class="ml-1 text-black/60">
+                      llms-full.txt returned HTTP 503
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <button class="rounded-base flex w-full items-center gap-2 border-2 border-dashed border-black bg-green-50/50 px-3 py-2 text-left font-medium text-green-700 transition-all hover:bg-green-50">
+                    <svg aria-hidden="true" class="lucide lucide-chevron-down h-4 w-4 transition-transform -rotate-90" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="m6 9 6 6 6-6"></path>
+                    </svg>
+                    4 checks passed
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h3 class="mb-2 font-bold text-purple-600">
+                Trusted
+              </h3>
+              <div class="space-y-2">
+                <div class="rounded-base flex items-start gap-3 border-2 border-black p-3 shadow-[2px_2px_0px_0px_black] bg-red-50">
+                  <svg aria-hidden="true" class="lucide lucide-circle-x mt-0.5 h-4 w-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m15 9-6 6"></path>
+                    <path d="m9 9 6 6"></path>
+                  </svg>
+                  <div>
+                    <span class="font-bold">
+                      Page content
+                    </span>
+                    <span class="ml-1 text-black/60">
+                      Minimal content (47 chars, 7 words): no paragraph breaks, no sentence structure, only 7 words (need 25)
+                    </span>
+                  </div>
+                </div>
+                <div class="rounded-base flex items-start gap-3 border-2 border-black p-3 shadow-[2px_2px_0px_0px_black] bg-red-50">
+                  <svg aria-hidden="true" class="lucide lucide-circle-x mt-0.5 h-4 w-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m15 9-6 6"></path>
+                    <path d="m9 9 6 6"></path>
+                  </svg>
+                  <div>
+                    <span class="font-bold">
+                      Sample pages
+                    </span>
+                    <span class="ml-1 text-black/60">
+                      0/1 pages have meaningful content (see details)
+                    </span>
+                    <div class="mt-2 space-y-1">
+                      <div class="ml-4">
+                        <span>
+                          ✗
+                        </span>
+                         
+                        <span class="font-mono text-sm">
+                          https://acme.com/about
+                        </span>
+                        <span class="ml-1 text-sm text-black/60">
+                          Minimal content (100 chars, 17 words): no paragraph breaks, only 17 words (need 25)
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="rounded-base flex items-start gap-3 border-2 border-black p-3 shadow-[2px_2px_0px_0px_black] bg-red-50">
+                  <svg aria-hidden="true" class="lucide lucide-circle-x mt-0.5 h-4 w-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m15 9-6 6"></path>
+                    <path d="m9 9 6 6"></path>
+                  </svg>
+                  <div>
+                    <span class="font-bold">
+                      Meta tags
+                    </span>
+                    <span class="ml-1 text-black/60">
+                      1/2 pages have meta tags
+                    </span>
+                  </div>
+                </div>
+                <div class="rounded-base flex items-start gap-3 border-2 border-black p-3 shadow-[2px_2px_0px_0px_black] bg-red-50">
+                  <svg aria-hidden="true" class="lucide lucide-circle-x mt-0.5 h-4 w-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m15 9-6 6"></path>
+                    <path d="m9 9 6 6"></path>
+                  </svg>
+                  <div>
+                    <span class="font-bold">
+                      .md routes
+                    </span>
+                    <span class="ml-1 text-black/60">
+                      No markdown alternate URLs advertised — add 
+                      &lt;
+                      link rel='alternate' type='text/markdown'
+                      &gt;
+                       to your pages
+                    </span>
+                  </div>
+                </div>
+                <div class="rounded-base flex items-start gap-3 border-2 border-black p-3 shadow-[2px_2px_0px_0px_black] bg-red-50">
+                  <svg aria-hidden="true" class="lucide lucide-circle-x mt-0.5 h-4 w-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m15 9-6 6"></path>
+                    <path d="m9 9 6 6"></path>
+                  </svg>
+                  <div>
+                    <span class="font-bold">
+                      Markdown content negotiation
+                    </span>
+                    <span class="ml-1 text-black/60">
+                      No page serves markdown content
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h3 class="mb-2 font-bold text-emerald-600">
+                Welcomed
+              </h3>
+              <div class="space-y-2">
+                <div class="rounded-base flex items-start gap-3 border-2 border-black p-3 shadow-[2px_2px_0px_0px_black] bg-red-50">
+                  <svg aria-hidden="true" class="lucide lucide-circle-x mt-0.5 h-4 w-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m15 9-6 6"></path>
+                    <path d="m9 9 6 6"></path>
+                  </svg>
+                  <div>
+                    <span class="font-bold">
+                      JSON-LD
+                    </span>
+                    <span class="ml-1 text-black/60">
+                      No JSON-LD found on https://acme.com/about
+                    </span>
+                  </div>
+                </div>
+                <div class="rounded-base flex items-start gap-3 border-2 border-black p-3 shadow-[2px_2px_0px_0px_black] bg-red-50">
+                  <svg aria-hidden="true" class="lucide lucide-circle-x mt-0.5 h-4 w-4 shrink-0 text-red-600" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="m15 9-6 6"></path>
+                    <path d="m9 9 6 6"></path>
+                  </svg>
+                  <div>
+                    <span class="font-bold">
+                      Content Signals
+                    </span>
+                    <span class="ml-1 text-black/60">
+                      No Content-Signal found in robots.txt — AI agents lack a content usage signal
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <button class="rounded-base flex w-full items-center gap-2 border-2 border-dashed border-black bg-green-50/50 px-3 py-2 text-left font-medium text-green-700 transition-all hover:bg-green-50">
+                    <svg aria-hidden="true" class="lucide lucide-chevron-down h-4 w-4 transition-transform -rotate-90" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="m6 9 6 6 6-6"></path>
+                    </svg>
+                    3 checks passed
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="rounded-base border-2 border-black bg-white p-6 shadow-[6px_6px_0px_0px_black]">
+          <h3 class="mb-4 flex items-center gap-2 text-xl font-bold">
+            <svg aria-hidden="true" class="lucide lucide-sparkles h-5 w-5 text-amber-500" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path>
+              <path d="M20 2v4"></path>
+              <path d="M22 4h-4"></path>
+              <circle cx="4" cy="20" r="2"></circle>
+            </svg>
+            Now see if it's working
+          </h3>
+          <p class="mb-6 font-medium text-black/70">
+            Legibility is necessary but not sufficient. With a paid plan, we run 
+            <strong>
+              9 targeted queries
+            </strong>
+             across ChatGPT, Claude, Gemini, Copilot, and Perplexity every week — so you know exactly what's working.
+          </p>
+          <a class="rounded-base inline-flex w-full items-center justify-center gap-2 border-2 border-black bg-amber-400 px-8 py-4 text-lg font-bold shadow-[4px_4px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_black]" href="/sign-up?source=try">
+            Start monitoring — free
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="px-6 py-16 text-center">
+  <a class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-bold transition-all duration-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 rounded-base border-2 border-black bg-[hsl(120,100%,97%)] text-black shadow-[3px_3px_0px_0px_black] hover:shadow-[5px_5px_0px_0px_black] hover:translate-x-[-2px] hover:translate-y-[-2px] h-16 rounded-md px-10 text-lg" data-discover="true" href="/try">
+    <svg aria-hidden="true" class="lucide lucide-search h-4 w-4" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+      <path d="m21 21-4.34-4.34"></path>
+      <circle cx="11" cy="11" r="8"></circle>
+    </svg>
+    Check another site
+  </a>
+</section>
+<section class="border-b-2 border-black bg-[hsl(47,100%,95%)] px-6 py-20">
+  <div class="mx-auto max-w-3xl text-center">
+    <h2 class="mb-4 text-3xl font-bold md:text-4xl">
+      Turn this into weekly monitoring
+    </h2>
+    <p class="mb-10 text-lg font-medium text-black/70">
+      Create a free account. We'll add your site, run 9 queries across ChatGPT, Claude, Gemini, Copilot, and Perplexity every week — so you know exactly which fixes moved the needle.
+    </p>
+    <div class="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+      <a class="rounded-base inline-flex items-center gap-2 border-2 border-black bg-amber-400 px-8 py-4 text-lg font-bold shadow-[4px_4px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_black]" href="/sign-up?source=try&next=/try?domain=acme.com">
+        <svg aria-hidden="true" class="lucide lucide-sparkles h-5 w-5" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"></path>
+          <path d="M20 2v4"></path>
+          <path d="M22 4h-4"></path>
+          <circle cx="4" cy="20" r="2"></circle>
+        </svg>
+        Start monitoring — free
+      </a>
+      <a class="rounded-base border-2 border-black bg-white px-8 py-4 text-lg font-bold shadow-[4px_4px_0px_0px_black] transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_black]" href="/pricing">
+        See pricing
+      </a>
+    </div>
+  </div>
+</section>
