@@ -6,6 +6,8 @@
     "app/cron/*.ts",
     "app/emails/sendEmails.tsx",
     "app/global.css",
+    "app/lib/cron/writeConfig.ts",
+    "app/lib/cron/syncTasks.ts",
     "scripts/*",
     "test/**/*.ts",
     "test/helpers/serverWorker.ts"
@@ -16,7 +18,8 @@
     "oxfmt",
     "oxlint",
     "oxlint-tsgolint",
-    "portless"
+    "portless",
+    "secretlint"
   ],
   "ignoreBinaries": ["redis-cli"],
   "ignoreFiles": ["app/lib/truncateWords.ts"],
