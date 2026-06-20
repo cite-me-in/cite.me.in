@@ -5,7 +5,6 @@ import debug from "debug";
 import { renderToPipeableStream } from "react-dom/server";
 import type {
   ActionFunctionArgs,
-  AppLoadContext,
   EntryContext,
   LoaderFunctionArgs,
 } from "react-router";
@@ -28,7 +27,6 @@ export default Sentry.wrapSentryHandleRequest(
     responseStatusCode: number,
     responseHeaders: Headers,
     routerContext: EntryContext,
-    _loadContext?: AppLoadContext,
   ) => {
     if (import.meta.env.PROD) void trackVisits(request);
     const start = Date.now();
