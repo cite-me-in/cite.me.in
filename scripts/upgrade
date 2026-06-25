@@ -10,7 +10,7 @@ echo -e "\033[32m  Upgrading pnpm …\033[0m"
 pnpm self-update
 
 echo -e "\033[32m  Upgrading dependencies …\033[0m"
-pnpm update
+pnpm update --latest
 
 echo -e "\033[32m  Deduping dependencies …\033[0m"
 pnpm dedupe --ignore-scripts
